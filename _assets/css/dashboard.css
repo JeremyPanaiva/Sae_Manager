@@ -1,0 +1,156 @@
+/* dashboard.css */
+
+:root {
+    --amu-blue: #003366;
+    --amu-light-blue: #0066cc;
+    --amu-gray: #f8f9fa;
+    --amu-dark-gray: #6c757d;
+    --white: #ffffff;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+/* Page dashboard */
+.dashboard-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 30px 40px;
+    background-color: var(--amu-gray);
+}
+
+/* Section principale */
+.dashboard-section {
+    background: var(--white);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+/* Informations utilisateur */
+.user-info p {
+    margin: 6px 0;
+    font-size: 1rem;
+}
+
+/* Cartes SAE */
+.dashboard-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+}
+
+.dashboard-card h3 {
+    margin-top: 0;
+    color: var(--amu-blue);
+    font-size: 1.4rem;
+}
+
+.dashboard-card p {
+    margin: 5px 0;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.dashboard-card h4 {
+    margin-top: 15px;
+    color: var(--amu-blue);
+    font-size: 1.1rem;
+}
+
+/* Avis */
+.avis-card {
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--amu-light-blue);
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+}
+
+.avis-card p {
+    margin: 0;
+}
+
+.avis-card small {
+    color: var(--amu-dark-gray);
+    font-size: 0.8rem;
+}
+
+/* Liste To-Do */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+/* Checkbox To-Do */
+.todo-checkbox {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--amu-blue);
+}
+
+/* Formulaire ajout To-Do */
+.todo-add input[type="text"] {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.todo-add button {
+    padding: 0.45rem 0.9rem;
+    border: none;
+    background-color: var(--amu-blue);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.todo-add button:hover {
+    background-color: var(--amu-light-blue);
+}
+
+/* Barre de progression */
+.progress-bar {
+    width: 100%;
+    height: 22px;
+    background-color: #eee;
+    border-radius: 12px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--success);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .dashboard-page {
+        padding: 20px;
+    }
+
+    .todo-add input[type="text"] {
+        width: 60%;
+    }
+}

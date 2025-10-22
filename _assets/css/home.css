@@ -1,0 +1,87 @@
+/* ======== Styles généraux ======== */
+body {
+    background-color: #e0e4ea;
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.main-home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    text-align: center;
+    animation: fadeIn 1.2s ease-in-out;
+}
+
+/* ======== Titre principal (effet gradient) ======== */
+.title {
+    font-size: 6rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    margin: 0;
+    background: linear-gradient(135deg, #0077ff, #00d4ff, #232323) ;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* rend le texte transparent pour afficher le gradient */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+.title:hover {
+    transform: scale(1.05);
+    text-shadow: 3px 3px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Variante : animation subtile du gradient */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.title {
+    background-size: 200% 200%;
+    animation: gradientMove 6s ease infinite;
+}
+
+/* ======== Sous-titre ======== */
+.subtitle {
+    font-size: 1.6rem;
+    color: #222;
+    margin-top: 1.5rem;
+    text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.1);
+    font-weight: 400;
+}
+
+/* ======== Animation d'apparition ======== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ======== Responsive ======== */
+@media (max-width: 768px) {
+    .title {
+        font-size: 4rem;
+        display: flex;
+        flex-direction: column;
+        line-height: 1.2;
+        text-align: center;
+    }
+
+    .subtitle {
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        padding: 0 1rem;
+        text-align: center;
+    }
+}

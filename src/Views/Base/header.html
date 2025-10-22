@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <meta name="description" content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+    <link rel="stylesheet" href="/_assets/css/index.css">
+    <link rel="icon" href="/_assets/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/_assets/img/favicon.ico" type="image/x-icon">
+    <title>SAE Manager</title>
+</head>
+<body>
+<header class="header">
+    <section class="header-content" aria-label="En-tête de la page">
+        <section class="logo">
+            <h2 class="logo">
+                <a href="/">📚 SAE Manager</a>
+            </h2>
+        </section>
+        <section class="user-info" aria-label="Informations utilisateur">
+            <div class="user-meta">
+                <p>👤 {{USERNAME_KEY}} <span class="role-badge role-{{ROLE_CLASS}}">{{ROLE_KEY}}</span></p>
+            </div>
+            <div class="user-actions">
+                <a href="{{LINK_KEY}}" class="btn btn-outline">{{CONNECTION_LINK_KEY}}</a>
+                <a href="{{INSCRIPTION_LINK_KEY}}" class="btn btn-outline">S'inscrire</a>
+            </div>
+        </section>
+    </section>
+</header>
+
+<nav class="nav" aria-label="Contenu principal">
+    <ul class="nav-content">
+        <li class="nav-item {{ACTIVE_DASHBOARD}}">
+            <a href="{{DASHBOARD_LINK_KEY}}">Tableau de bord</a>
+        </li>
+        <li class="nav-item {{ACTIVE_SAE}}">
+            <a href="{{SAE_LINK_KEY}}">SAEs</a>
+        </li>
+        <li class="nav-item {{ACTIVE_USERS}}">
+            <a href="{{USERS_LINK_KEY}}">Utilisateurs</a>
+        </li>
+        <li class="nav-item">Notifications</li>
+    </ul>
+</nav>

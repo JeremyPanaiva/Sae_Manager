@@ -1,0 +1,12 @@
+# robots.txt pour SAE Manager
+# G4 - AlwaysData
+
+User-agent: *
+Disallow: /_assets/
+Disallow: /src/
+Disallow: /Autoloader.php
+Disallow: /README.md
+Allow: /
+
+# Lien vers le sitemap XML
+Sitemap: https://sae-manager-g4.alwaysdata.net/sitemap.xml

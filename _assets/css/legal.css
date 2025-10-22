@@ -1,0 +1,101 @@
+/* ================================
+   Legal Page – SAE Manager
+   ================================ */
+
+body {
+    background-color: #f9f9f9;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+.legal-main {
+    max-width: 900px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.legal-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.legal-title {
+    font-size: 2.5rem;
+    color: #004aad;
+    margin: 0;
+}
+
+.legal-title span {
+    color: #ff6600;
+}
+
+.legal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.legal-section {
+    line-height: 1.6;
+}
+
+.legal-subtitle {
+    font-size: 1.5rem;
+    color: #004aad;
+    border-left: 4px solid #ff6600;
+    padding-left: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.legal-list {
+    margin-left: 2rem;
+    list-style: disc;
+}
+
+.legal-address {
+    font-style: normal;
+    background-color: #f3f6f9;
+    border-left: 4px solid #004aad;
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+}
+
+.legal-address a {
+    color: #ff6600;
+    text-decoration: none;
+}
+.legal-section a {
+    color: #ff6600;
+    text-decoration: none;
+}
+
+.legal-section a:hover {
+    text-decoration: underline;
+}
+
+.legal-address a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-main {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .legal-title {
+        font-size: 2rem;
+    }
+
+    .legal-subtitle {
+        font-size: 1.3rem;
+    }
+
+
+}

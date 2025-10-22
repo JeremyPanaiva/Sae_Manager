@@ -1,0 +1,30 @@
+/* fichier : /_assets/css/errors.css */
+
+/* Conteneur de toutes les erreurs */
+ul.errors-list {
+    list-style: none;        /* supprime les puces */
+    padding: 0;
+    margin: 0 0 1em 0;
+}
+
+/* Chaque message d'erreur */
+ul.errors-list li {
+    background-color: #ffe6e6;   /* fond rouge très clair */
+    border: 1px solid #ff4d4d;   /* bordure rouge */
+    color: #b30000;              /* texte rouge foncé */
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Message d'erreur individuel */
+li.error-message {
+    background-color: #fff0f0;
+    border: 1px solid #ff6666;
+    color: #990000;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+}

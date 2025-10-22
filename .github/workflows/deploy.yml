@@ -1,0 +1,26 @@
+name: Deploy to AlwaysData
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ssh-sae-manager-g4.alwaysdata.net
+          username: sae-manager-g4
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /home/sae-manager-g4/www/Sae_Manager_G4
+            echo "🔄 Pulling latest code..."
+            git pull origin main || exit 1
+            echo "✅ Deployment completed successfully"
+            echo "📂 Current files:"
+            ls -lah

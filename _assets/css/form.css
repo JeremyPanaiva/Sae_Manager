@@ -1,0 +1,150 @@
+/* _assets/css/connection.css */
+
+/* ===== Couleurs globales ===== */
+:root {
+    --amu-blue: #003366;
+    --amu-light-blue: #0066cc;
+    --amu-gray: #f8f9fa;
+    --amu-dark-gray: #6c757d;
+    --white: #ffffff;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
+}
+
+/* ===== Style général du formulaire ===== */
+form {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 25px;
+    border: 1px solid var(--amu-dark-gray);
+    border-radius: 10px;
+    background-color: var(--amu-gray);
+    font-family: Arial, sans-serif;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* ===== Légende ===== */
+form legend {
+    font-size: 1.6em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--amu-blue);
+}
+
+/* ===== Labels ===== */
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--amu-dark-gray);
+}
+
+/* ===== Champs input ===== */
+form input[type="text"],
+form input[type="email"],
+form input[type="password"] {
+    width: 100%;
+    padding: 10px 40px 10px 10px; /* espace pour icône si nécessaire */
+    margin-bottom: 15px;
+    border: 1px solid var(--amu-dark-gray);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+form input[type="text"]:focus,
+form input[type="email"]:focus,
+form input[type="password"]:focus {
+    border-color: var(--amu-light-blue);
+    box-shadow: 0 0 6px rgba(0, 102, 204, 0.3);
+    outline: none;
+}
+
+/* ===== Placeholder ===== */
+form input::placeholder {
+    color: var(--amu-dark-gray);
+    font-style: italic;
+}
+
+/* ===== Bouton submit ===== */
+form input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--amu-light-blue);
+    color: var(--white);
+    font-size: 1em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form input[type="submit"]:hover {
+    background-color: var(--amu-blue);
+}
+
+/* ===== Wrapper mot de passe avec œil ===== */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper input {
+    flex: 1;
+    padding-right: 40px; /* espace pour l'icône */
+}
+
+.toggle-password {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    user-select: none;
+    color: var(--amu-dark-gray);
+    transition: color 0.3s;
+}
+
+.toggle-password:hover {
+    color: var(--amu-blue);
+}
+
+/* ===== Lien mot de passe oublié ===== */
+.forgot-password-link {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.forgot-password-link a {
+    color: var(--amu-blue);
+    text-decoration: none;
+    font-size: 0.9em;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Animation ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+    form {
+        width: 90%;
+        padding: 20px;
+        margin-top: 10%;
+    }
+
+    .toggle-password {
+        font-size: 16px;
+        right: 8px;
+    }
+}

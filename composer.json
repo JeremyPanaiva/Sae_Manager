@@ -1,0 +1,17 @@
+{
+    "name": "sae-manager/composer",
+    "description": "SAE Manager - Gestion des SAE",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "phpmailer/phpmailer": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Controllers\\": "src/Controllers/",
+            "Models\\": "src/Models/",
+            "Views\\": "src/Views/",
+            "Shared\\": "src/Shared/"
+        }
+    }
+}

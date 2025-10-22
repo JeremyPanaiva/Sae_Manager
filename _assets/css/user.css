@@ -1,0 +1,78 @@
+/* user.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+main {
+    padding: 2rem;
+}
+
+.users {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 2rem auto;
+}
+
+.users h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    color: #1e1e1e;
+    text-align: center;
+}
+
+.users table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+}
+
+.users table th,
+.users table td {
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.users table th {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+}
+
+.users table tr:hover {
+    background-color: #f1f8ff;
+}
+
+
+.pagination {
+    text-align: center;
+}
+
+.pagination a {
+    display: inline-block;
+    margin: 0 0.3rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.pagination a:hover {
+    background-color: #0056b3;
+}
+
+.pagination a[style*="font-weight:bold;"] {
+    background-color: #28a745; /* page active */
+    font-weight: bold;
+}

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Page d'accueil -->
+    <url>
+        <loc>https://sae-manager-g4.alwaysdata.net/</loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+
+    <!-- Pages utilisateur -->
+    <url>
+        <loc>https://sae-manager-g4.alwaysdata.net/user/connection</loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://sae-manager-g4.alwaysdata.net/user/inscription</loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <url>
+        <loc>https://sae-manager-g4.alwaysdata.net/user/forgot-password</loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Page d'utilisateur connecté (si publique) -->
+    <url>
+        <loc>https://sae-manager-g4.alwaysdata.net/user/profile</loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+
+    <!-- Mentions légales -->
+    <url>
+        <loc>
+            https://sae-manager-g4.alwaysdata.net/_assets/docs/Mentions%20l%C3%A9gales%20-%20SAE%20Manager%20-%20mentions-legales.pdf
+        </loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+    <!-- Plan du site PDF -->
+    <url>
+        <loc>
+            https://sae-manager-g4.alwaysdata.net/_assets/docs/Plan%20du%20site%20-%20SAE%20Manager%20-%20plan-du-site.pdf
+        </loc>
+        <lastmod>2025-10-09</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.3</priority>
+    </url>
+
+</urlset>

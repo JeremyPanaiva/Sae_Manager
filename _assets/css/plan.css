@@ -1,0 +1,83 @@
+/* ================================
+   Plan du site – SAE Manager
+   ================================ */
+
+body {
+    background-color: #f9f9f9;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+}
+
+.plan-main {
+    max-width: 900px;
+    margin: 4rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+.plan-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.plan-title {
+    font-size: 2.5rem;
+    color: #004aad;
+    margin: 0;
+}
+
+.plan-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.plan-section {
+    line-height: 1.6;
+}
+
+.plan-subtitle {
+    font-size: 1.5rem;
+    color: #004aad;
+    border-left: 4px solid #ff6600;
+    padding-left: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.plan-list {
+    margin-left: 2rem;
+    list-style: disc;
+}
+
+.plan-list li {
+    margin-bottom: 0.5rem;
+}
+
+.plan-list a {
+    color: #ff6600;
+    text-decoration: none;
+}
+
+.plan-list a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .plan-main {
+        margin: 2rem 1rem;
+        padding: 1.5rem;
+    }
+
+    .plan-title {
+        font-size: 2rem;
+    }
+
+    .plan-subtitle {
+        font-size: 1.3rem;
+    }
+}

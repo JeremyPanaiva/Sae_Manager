@@ -1,0 +1,204 @@
+/* =========================
+   Palette de couleurs AMU
+========================= */
+:root {
+    --amu-blue: #003366;
+    --amu-light-blue: #0066cc;
+    --amu-gray: #f8f9fa;
+    --amu-dark-gray: #6c757d;
+    --white: #ffffff;
+}
+
+/* =========================
+   Structure générale
+========================= */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+    background-color: var(--amu-gray);
+}
+
+section.main {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 50px 15px;
+}
+
+/* =========================
+   Formulaire
+========================= */
+form {
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    padding: 35px 25px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* moins d’espace pour un rendu plus épuré */
+}
+
+fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+legend {
+    font-size: 1.5em;
+    font-weight: 600;
+    text-align: center;
+    color: var(--amu-blue);
+}
+/* =========================
+   Labels et champs
+========================= */
+label {
+    font-weight: 600;
+    color: var(--amu-dark-gray);
+    font-size: 0.95em;
+    margin-top: 1vh;
+}
+
+/* Changement de fonte pour les champs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; /* <- nouvelle fonte */
+    box-sizing: border-box;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--amu-light-blue);
+    box-shadow: 0 0 5px rgba(0,102,204,0.2);
+    outline: none;
+}
+
+input::placeholder {
+    color: #999;
+}
+
+/* =========================
+   Mot de passe avec icône œil
+========================= */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center; /* centre verticalement le contenu */
+}
+
+.password-wrapper input {
+    flex: 1;
+    padding-right: 42px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+}
+
+
+/* =========================
+   Boutons
+========================= */
+input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--amu-light-blue);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    margin-top: 8px; /* petit espace au-dessus du bouton */
+}
+
+input[type="submit"]:hover {
+    background-color: var(--amu-blue);
+    transform: translateY(-1px);
+}
+
+/* =========================
+   Footer des formulaires
+========================= */
+.form-footer {
+    text-align: center;
+    font-size: 0.9em;
+    margin-top: 12px;
+    color: var(--amu-dark-gray);
+}
+
+.form-footer a {
+    color: var(--amu-light-blue);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s, text-decoration 0.2s;
+}
+
+.form-footer a:hover {
+    color: var(--amu-blue);
+    text-decoration: underline;
+}
+
+
+/* =========================
+   Lien mot de passe oublié
+========================= */
+.forgot-password-link {
+    text-align: right;
+    font-size: 0.9em;
+    margin-top: 4px;
+    margin-bottom: 8px; /* légèrement réduit */
+}
+
+.forgot-password-link a {
+    color: var(--amu-light-blue);
+    text-decoration: none;
+}
+
+.forgot-password-link a:hover {
+    text-decoration: underline;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 480px) {
+    form {
+        padding: 25px 20px;
+        border-radius: 10px;
+    }
+
+    legend {
+        font-size: 1.4em;
+    }
+
+    input,
+    select,
+    input[type="submit"] {
+        font-size: 0.95em;
+    }
+}
