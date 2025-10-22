@@ -8,9 +8,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
+      # Étape 1 : récupérer le code depuis GitHub
       - uses: actions/checkout@v3
 
+      # Étape 2 : déployer sur AlwaysData via SSH
       - name: Deploy via SSH to AlwaysData
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -21,9 +24,9 @@ jobs:
             # Aller dans le répertoire du site
             cd /home/sae-manager/www/Sae_Manager || exit 1
 
-            echo "🔄 Pulling latest code from GitHub..."
-            git reset --hard origin/main
-            git pull origin main || exit 1
+            echo "🔄 Fetching latest code from GitHub..."
+            git fetch origin main || exit 1
+            git reset --hard origin/main || exit 1
 
             echo "🔧 Setting correct permissions..."
             find . -type d -exec chmod 755 {} \;
