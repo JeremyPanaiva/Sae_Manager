@@ -169,13 +169,92 @@ class EmailService
         }
     }
 
+    /**
+     * Envoie un email de notification au responsable lors de la création d'une SAE
+     *
+     * @param string $responsableEmail Email du responsable
+     * @param string $responsableNom Nom du responsable
+     * @param string $clientNom Nom complet du client
+     * @param string $saeTitle Titre de la SAE créée
+     * @param string $saeDescription Description de la SAE
+     * @return bool
+     * @throws DataBaseException
+     */
+    public function sendSaeCreationNotification(
+        string $responsableEmail,
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): bool {
+        try {
+            // Réinitialiser le mailer pour un nouvel envoi
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($responsableEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Nouvelle SAE créée - ' . $saeTitle;
+
+            $this->mailer->Body = $this->getSaeCreationEmailBody(
+                $responsableNom,
+                $clientNom,
+                $saeTitle,
+                $saeDescription
+            );
+            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody(
+                $responsableNom,
+                $clientNom,
+                $saeTitle,
+                $saeDescription
+            );
+
+            $this->mailer->send();
+            error_log("Email de notification SAE envoyé à {$responsableEmail}");
+            return true;
+
+        } catch (Exception $e) {
+            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
+            error_log('PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+
+            // Fallback avec mail()
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+
+                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($from, $fromName);
+                }
+
+                $mail->addAddress($responsableEmail);
+                $mail->isHTML(true);
+                $mail->Subject = $this->mailer->Subject;
+                $mail->Body = $this->mailer->Body;
+                $mail->AltBody = $this->mailer->AltBody;
+
+                $mail->send();
+                error_log('Email SAE notification sent via local mail() fallback to ' . $responsableEmail);
+                return true;
+
+            } catch (Exception $e2) {
+                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
+                error_log('PHPMailer fallback exception (SAE notification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
+                throw new DataBaseException("Erreur d'envoi d'email de notification SAE: " . $e2->getMessage());
+            }
+        }
+    }
+
     private function getBaseUrl(): string
     {
         $appUrl = Database::parseEnvVar('APP_URL');
         if (!empty($appUrl)) {
             return rtrim($appUrl, '/');
         }
-        
+
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
         $path = dirname($_SERVER['SCRIPT_NAME']);
@@ -237,6 +316,83 @@ Pour réinitialiser votre mot de passe, cliquez sur le lien suivant :
 Ce lien est valide pendant 1 heure.
 
 Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet email.
+
+Cordialement,
+L'équipe SAE Manager
+        ";
+    }
+
+    private function getSaeCreationEmailBody(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <title>Nouvelle SAE créée</title>
+        </head>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+            <div style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;'>
+                <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                    <h2 style='color: #2c3e50; margin-top: 0;'>Bonjour {$responsableNom},</h2>
+                    
+                    <p>Une nouvelle SAE a été créée par <strong>{$clientNom}</strong> et nécessite votre attention.</p>
+                    
+                    <div style='background-color: #ecf0f1; padding: 15px; border-radius: 5px; margin: 20px 0;'>
+                        <h3 style='color: #34495e; margin-top: 0;'>📋 {$saeTitle}</h3>
+                        <p style='color: #555;'><strong>Description :</strong></p>
+                        <p style='color: #555;'>{$saeDescription}</p>
+                        <p style='color: #555;'><strong>Client :</strong> {$clientNom}</p>
+                    </div>
+                    
+                    <p>Vous pouvez consulter cette SAE et l'attribuer à des étudiants en vous connectant à la plateforme.</p>
+                    
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$saeUrl}' style='display: inline-block; padding: 12px 30px; background-color: #3498db; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+                            Voir les SAE
+                        </a>
+                    </div>
+                    
+                    <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                    
+                    <p style='font-size: 0.9em; color: #7f8c8d;'>
+                        Cordialement,<br>
+                        L'équipe SAE Manager
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+
+    private function getSaeCreationEmailTextBody(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+Bonjour {$responsableNom},
+
+Une nouvelle SAE a été créée par {$clientNom} et nécessite votre attention.
+
+TITRE : {$saeTitle}
+
+DESCRIPTION :
+{$saeDescription}
+
+CLIENT : {$clientNom}
+
+Vous pouvez consulter cette SAE et l'attribuer à des étudiants en vous connectant à la plateforme :
+{$saeUrl}
 
 Cordialement,
 L'équipe SAE Manager

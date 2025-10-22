@@ -116,6 +116,34 @@ class User
         $stmt->close();
         return $users;
     }
+
+    /**
+     * Récupère tous les responsables
+     *
+     * @return array Liste des responsables avec leurs informations
+     * @throws DataBaseException
+     */
+    public static function getAllResponsables(): array
+    {
+        try {
+            $conn = Database::getConnection();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Unable to connect to the database.");
+        }
+
+        $stmt = $conn->prepare("SELECT id, nom, prenom, mail FROM users WHERE role = 'Responsable'");
+        if (!$stmt) {
+            throw new DataBaseException("SQL prepare failed in getAllResponsables.");
+        }
+
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $responsables = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $responsables;
+    }
+
     public function getUsersPaginated(int $limit, int $offset): array
     {
         try {
