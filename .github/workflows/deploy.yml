@@ -11,14 +11,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Deploy via SSH
+      - name: Deploy via SSH to AlwaysData
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ssh-sae-manager-g4.alwaysdata.net
-          username: sae-manager-g4
+          host: ssh-sae-manager.alwaysdata.net
+          username: sae-manager
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd /home/sae-manager-g4/www/Sae_Manager_G4
-            echo "🔄 Pulling latest code..."
+            # Aller dans le répertoire du site
+            cd /home/sae-manager/www/Sae_Manager || exit 1
+
+            echo "🔄 Pulling latest code from GitHub..."
+            git reset --hard origin/main
             git pull origin main || exit 1
+
+            echo "🔧 Setting correct permissions..."
+            find . -type d -exec chmod 755 {} \;
+            find . -type f -exec chmod 644 {} \;
+
             echo "✅ Deployment completed successfully"
