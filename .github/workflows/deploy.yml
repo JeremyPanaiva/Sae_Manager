@@ -22,5 +22,3 @@ jobs:
             echo "🔄 Pulling latest code..."
             git pull origin main || exit 1
             echo "✅ Deployment completed successfully"
-            echo "📂 Current files:"
-            ls -lah
