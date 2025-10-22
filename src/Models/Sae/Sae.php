@@ -6,14 +6,26 @@ use Models\Database;
 
 class Sae
 {
-    public static function create(int $clientId, string $titre, string $description): void
+    /**
+     * Crée une nouvelle SAE et retourne son ID
+     *
+     * @param int $clientId
+     * @param string $titre
+     * @param string $description
+     * @return int L'ID de la SAE créée
+     */
+    public static function create(int $clientId, string $titre, string $description): int
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("INSERT INTO sae (titre, description, client_id, date_creation) VALUES (?, ?, ?, NOW())");
         $stmt->bind_param("ssi", $titre, $description, $clientId);
         $stmt->execute();
+        $saeId = $db->insert_id;
         $stmt->close();
+
+        return $saeId;
     }
+
     public static function getAllProposed(): array
     {
         $db = Database::getConnection();
@@ -34,6 +46,7 @@ class Sae
         $stmt->close();
         return $saes;
     }
+
     public static function delete(int $clientId, int $saeId): bool
     {
         $mysqli = \Models\Database::getConnection(); // mysqli
@@ -100,6 +113,4 @@ class Sae
 
         return $saes;
     }
-
-
 }
