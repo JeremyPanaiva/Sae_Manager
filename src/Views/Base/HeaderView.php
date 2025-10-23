@@ -16,9 +16,9 @@ class HeaderView extends AbstractView
     public const CONNECTION_LINK_KEY = 'CONNECTION_LINK_KEY';
     public const USERS_LINK_KEY = 'USERS_LINK_KEY';
     public const ROLE_KEY = 'ROLE_KEY';
-    public const DASHBOARD_LINK_KEY = 'DASHBOARD_LINK_KEY'; // 👈 nouveau
+    public const DASHBOARD_LINK_KEY = 'DASHBOARD_LINK_KEY';
 
-    public const SAE_LINK_KEY = 'SAE_LINK_KEY'; // 👈 nouveau lien SAE
+    public const SAE_LINK_KEY = 'SAE_LINK_KEY';
 
     public function __construct()
     {
@@ -68,6 +68,13 @@ class HeaderView extends AbstractView
         }
 
         $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'sae-manager.alwaysdata.net';
+        $path = $currentPath ?: '/';
+        $canonical = rtrim($scheme . '://' . $host . $path, '/');
+        if ($canonical === '') {
+            $canonical = $scheme . '://' . $host . '/';
+        }
 
         return [
             self::USERNAME_KEY => $username,
@@ -79,6 +86,9 @@ class HeaderView extends AbstractView
             self::USERS_LINK_KEY => $usersLink,
             self::DASHBOARD_LINK_KEY => $dashboardLink,
             self::SAE_LINK_KEY => $saeLink,
+
+            // Canonical URL pour la balise <link rel="canonical">
+            'CANONICAL_URL' => $canonical,
 
             // Classes actives dynamiques
             'ACTIVE_DASHBOARD' => $this->getActiveClass($dashboardLink),
