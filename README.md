@@ -15,8 +15,10 @@ Application web permettant le **suivi des SAEs** (Situations d’Apprentissage e
 
 ## 🌐 Déploiement
 
-🔗 **Site en ligne :** [https://sae-manager.alwaysdata.net/](https://sae-manager-g4.alwaysdata.net/) 
+🔗 **Site en ligne :** [https://sae-manager.alwaysdata.net](https://sae-manager.alwaysdata.net/) 
+
 📁 **Hébergement :** AlwaysData  
+
 💻 **Langage principal :** PHP (MVC artisanal)
 
 ---
