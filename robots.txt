@@ -9,4 +9,4 @@ Disallow: /README.md
 Allow: /
 
 # Lien vers le sitemap XML
-Sitemap: https://sae-manager-g4.alwaysdata.net/sitemap.xml
+Sitemap: https://sae-manager.alwaysdata.net/sitemap.xml

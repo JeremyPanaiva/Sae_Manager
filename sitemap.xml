@@ -3,7 +3,7 @@
 
     <!-- Page d'accueil -->
     <url>
-        <loc>https://sae-manager-g4.alwaysdata.net/</loc>
+    <loc>https://sae-manager.alwaysdata.net/</loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
@@ -11,21 +11,21 @@
 
     <!-- Pages utilisateur -->
     <url>
-        <loc>https://sae-manager-g4.alwaysdata.net/user/connection</loc>
+    <loc>https://sae-manager.alwaysdata.net/user/connection</loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://sae-manager-g4.alwaysdata.net/user/inscription</loc>
+    <loc>https://sae-manager.alwaysdata.net/user/inscription</loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
 
     <url>
-        <loc>https://sae-manager-g4.alwaysdata.net/user/forgot-password</loc>
+    <loc>https://sae-manager.alwaysdata.net/user/forgot-password</loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
@@ -33,7 +33,7 @@
 
     <!-- Page d'utilisateur connecté (si publique) -->
     <url>
-        <loc>https://sae-manager-g4.alwaysdata.net/user/profile</loc>
+    <loc>https://sae-manager.alwaysdata.net/user/profile</loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.5</priority>
@@ -42,7 +42,7 @@
     <!-- Mentions légales -->
     <url>
         <loc>
-            https://sae-manager-g4.alwaysdata.net/_assets/docs/Mentions%20l%C3%A9gales%20-%20SAE%20Manager%20-%20mentions-legales.pdf
+            https://sae-manager.alwaysdata.net/_assets/docs/Mentions%20l%C3%A9gales%20-%20SAE%20Manager%20-%20mentions-legales.pdf
         </loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>yearly</changefreq>
@@ -52,7 +52,7 @@
     <!-- Plan du site PDF -->
     <url>
         <loc>
-            https://sae-manager-g4.alwaysdata.net/_assets/docs/Plan%20du%20site%20-%20SAE%20Manager%20-%20plan-du-site.pdf
+            https://sae-manager.alwaysdata.net/_assets/docs/Plan%20du%20site%20-%20SAE%20Manager%20-%20plan-du-site.pdf
         </loc>
         <lastmod>2025-10-09</lastmod>
         <changefreq>yearly</changefreq>
