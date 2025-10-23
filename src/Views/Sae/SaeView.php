@@ -90,7 +90,6 @@ class SaeView extends BaseView
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
 
-                // Afficher le message d'erreur si présent
                 if (!empty($this->data['error_message'])) {
                     $html .= "<div class='error-message'>";
                     $html .= htmlspecialchars($this->data['error_message']);
@@ -102,6 +101,7 @@ class SaeView extends BaseView
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
 
+                    // Formulaire d’attribution existant
                     $html .= "<form method='POST' action='/attribuer_sae'>";
                     $html .= "<label>Attribuer à :</label>";
                     $html .= "<select name='etudiants[]' multiple size='5' required>";
@@ -109,14 +109,27 @@ class SaeView extends BaseView
                         $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                     }
                     $html .= "</select>";
-                    $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit'>Attribuer</button>";
+                    $html .= "</form>";
+
+                    // 🔥 Nouveau formulaire : suppression des étudiants
+                    $html .= "<form method='POST' action='/unassign_sae' class='remove-form'>";
+                    $html .= "<label>Supprimer de la SAE :</label>";
+                    $html .= "<select name='etudiants[]' multiple size='5' required>";
+                    foreach ($this->data['etudiants'] ?? [] as $etu) {
+                        $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                    }
+                    $html .= "</select>";
+                    $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
+                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+                    $html .= "<button type='submit' class='danger-btn'>Supprimer</button>";
                     $html .= "</form>";
 
                     $html .= "</div>";
                 }
                 break;
+
 
 
 
