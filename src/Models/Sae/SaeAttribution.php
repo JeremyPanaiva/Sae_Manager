@@ -224,4 +224,25 @@ class SaeAttribution
         $stmt->close();
     }
 
+    public static function removeFromStudent(int $saeId, int $studentId): bool
+    {
+        // Récupération de la connexion
+        $db = \Models\Database::getConnection();
+
+        // Préparation de la requête DELETE
+        $stmt = $db->prepare("DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?");
+        if (!$stmt) {
+            throw new \Exception("Erreur SQL prepare : " . $db->error);
+        }
+
+        $stmt->bind_param("ii", $saeId, $studentId);
+        $success = $stmt->execute();
+
+        $stmt->close();
+        return $success;
+    }
+
+
+
+
 }
