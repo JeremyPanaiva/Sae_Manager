@@ -6,6 +6,7 @@ Disallow: /_assets/
 Disallow: /src/
 Disallow: /Autoloader.php
 Disallow: /README.md
+Allow: /_assets/docs/
 Allow: /
 
 # Lien vers le sitemap XML
