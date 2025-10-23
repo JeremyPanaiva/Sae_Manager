@@ -39,7 +39,7 @@ class PasswordResetToken
 
         // Générer un token unique
         $token = bin2hex(random_bytes(32));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 day')); // Token valide 1 jour
+        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token valide 1 heure
 
         // Supprimer les anciens tokens pour cet utilisateur
         $stmt = $conn->prepare("DELETE FROM password_reset_tokens WHERE user_id = ?");
