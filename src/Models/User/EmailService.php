@@ -248,6 +248,142 @@ class EmailService
         }
     }
 
+    /**
+     * Envoie un email à un étudiant lors de son affectation à une SAE
+     */
+    public function sendStudentAssignmentNotification(
+        string $studentEmail,
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu = ''
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Nouvelle affectation SAE - ' . $saeTitre;
+
+            $dateRenduFormatted = !empty($dateRendu) ? date('d/m/Y', strtotime($dateRendu)) : 'Non définie';
+
+            $this->mailer->Body = $this->getStudentAssignmentEmailBody(
+                $studentNom,
+                $saeTitre,
+                $saeDescription,
+                $responsableNom,
+                $clientNom,
+                $dateRenduFormatted
+            );
+            $this->mailer->AltBody = $this->getStudentAssignmentEmailTextBody(
+                $studentNom,
+                $saeTitre,
+                $saeDescription,
+                $responsableNom,
+                $clientNom,
+                $dateRenduFormatted
+            );
+
+            $this->mailer->send();
+            return true;
+
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (student assignment): ' . $e->getMessage());
+
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+
+                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($from, $fromName);
+                }
+
+                $mail->addAddress($studentEmail);
+                $mail->isHTML(true);
+                $mail->Subject = $this->mailer->Subject;
+                $mail->Body = $this->mailer->Body;
+                $mail->AltBody = $this->mailer->AltBody;
+
+                $mail->send();
+                return true;
+            } catch (Exception $e2) {
+                error_log('PHPMailer fallback exception (student assignment): ' . $e2->getMessage());
+                throw new DataBaseException("Erreur d'envoi d'email d'affectation: " . $e2->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Envoie un email au client lors de l'affectation d'un étudiant à sa SAE
+     */
+    public function sendClientStudentAssignmentNotification(
+        string $clientEmail,
+        string $clientNom,
+        string $saeTitre,
+        string $studentNom,
+        string $responsableNom
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($clientEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Affectation d\'un étudiant à votre SAE - ' . $saeTitre;
+
+            $this->mailer->Body = $this->getClientAssignmentEmailBody(
+                $clientNom,
+                $saeTitre,
+                $studentNom,
+                $responsableNom
+            );
+            $this->mailer->AltBody = $this->getClientAssignmentEmailTextBody(
+                $clientNom,
+                $saeTitre,
+                $studentNom,
+                $responsableNom
+            );
+
+            $this->mailer->send();
+            return true;
+
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (client assignment): ' . $e->getMessage());
+
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+
+                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($from, $fromName);
+                }
+
+                $mail->addAddress($clientEmail);
+                $mail->isHTML(true);
+                $mail->Subject = $this->mailer->Subject;
+                $mail->Body = $this->mailer->Body;
+                $mail->AltBody = $this->mailer->AltBody;
+
+                $mail->send();
+                return true;
+            } catch (Exception $e2) {
+                error_log('PHPMailer fallback exception (client assignment): ' . $e2->getMessage());
+                throw new DataBaseException("Erreur d'envoi d'email au client: " . $e2->getMessage());
+            }
+        }
+    }
+
     private function getBaseUrl(): string
     {
         $appUrl = Database::parseEnvVar('APP_URL');
@@ -392,6 +528,173 @@ DESCRIPTION :
 CLIENT : {$clientNom}
 
 Vous pouvez consulter cette SAE et l'attribuer à des étudiants en vous connectant à la plateforme :
+{$saeUrl}
+
+Cordialement,
+L'équipe SAE Manager
+        ";
+    }
+
+    private function getStudentAssignmentEmailBody(
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <title>Nouvelle affectation SAE</title>
+        </head>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+            <div style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;'>
+                <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                    <div style='background-color: #4CAF50; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; margin: -30px -30px 20px -30px;'>
+                        <h1 style='margin: 0; font-size: 24px;'>🎓 Nouvelle Affectation SAE</h1>
+                    </div>
+                    
+                    <p>Bonjour <strong>{$studentNom}</strong>,</p>
+                    
+                    <p>Vous avez été affecté(e) à une nouvelle SAE par <strong>{$responsableNom}</strong>.</p>
+                    
+                    <div style='background-color: #e8f5e9; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #4CAF50;'>
+                        <h3 style='color: #2e7d32; margin-top: 0;'>📋 {$saeTitre}</h3>
+                        <p style='color: #555; margin: 10px 0;'><strong>Description :</strong></p>
+                        <p style='color: #555; margin: 10px 0;'>{$saeDescription}</p>
+                        <hr style='border: none; border-top: 1px dashed #4CAF50; margin: 15px 0;'>
+                        <p style='color: #555; margin: 5px 0;'><strong>👨‍💼 Client :</strong> {$clientNom}</p>
+                        <p style='color: #555; margin: 5px 0;'><strong>👨‍🏫 Responsable :</strong> {$responsableNom}</p>
+                        <p style='color: #555; margin: 5px 0;'><strong>📅 Date de rendu :</strong> {$dateRendu}</p>
+                    </div>
+                    
+                    <p>Vous pouvez consulter les détails de cette SAE et suivre votre progression sur la plateforme.</p>
+                    
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$saeUrl}' style='display: inline-block; padding: 12px 30px; background-color: #4CAF50; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+                            Voir mes SAE
+                        </a>
+                    </div>
+                    
+                    <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                    
+                    <p style='font-size: 0.9em; color: #7f8c8d;'>
+                        Bon courage !<br>
+                        L'équipe SAE Manager
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+
+    private function getStudentAssignmentEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+Bonjour {$studentNom},
+
+Vous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.
+
+TITRE : {$saeTitre}
+
+DESCRIPTION :
+{$saeDescription}
+
+CLIENT : {$clientNom}
+RESPONSABLE : {$responsableNom}
+DATE DE RENDU : {$dateRendu}
+
+Vous pouvez consulter les détails de cette SAE et suivre votre progression sur la plateforme :
+{$saeUrl}
+
+Bon courage !
+L'équipe SAE Manager
+        ";
+    }
+
+    private function getClientAssignmentEmailBody(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNom,
+        string $responsableNom
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+        <html>
+        <head>
+            <meta charset='UTF-8'>
+            <title>Affectation d'un étudiant à votre SAE</title>
+        </head>
+        <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+            <div style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;'>
+                <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+                    <div style='background-color: #2196F3; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; margin: -30px -30px 20px -30px;'>
+                        <h1 style='margin: 0; font-size: 24px;'>✅ Étudiant Affecté à Votre SAE</h1>
+                    </div>
+                    
+                    <p>Bonjour <strong>{$clientNom}</strong>,</p>
+                    
+                    <p>Nous vous informons qu'un étudiant a été affecté à votre SAE par le responsable <strong>{$responsableNom}</strong>.</p>
+                    
+                    <div style='background-color: #e3f2fd; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #2196F3;'>
+                        <h3 style='color: #1565c0; margin-top: 0;'>📋 {$saeTitre}</h3>
+                        <p style='color: #555; margin: 10px 0;'><strong>🎓 Étudiant affecté :</strong> {$studentNom}</p>
+                        <p style='color: #555; margin: 10px 0;'><strong>👨‍🏫 Responsable :</strong> {$responsableNom}</p>
+                    </div>
+                    
+                    <p>L'étudiant commencera bientôt à travailler sur votre projet. N'hésitez pas à vous connecter à la plateforme pour suivre l'avancement.</p>
+                    
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$saeUrl}' style='display: inline-block; padding: 12px 30px; background-color: #2196F3; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+                            Voir mes SAE
+                        </a>
+                    </div>
+                    
+                    <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+                    
+                    <p style='font-size: 0.9em; color: #7f8c8d;'>
+                        Cordialement,<br>
+                        L'équipe SAE Manager
+                    </p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+    }
+
+    private function getClientAssignmentEmailTextBody(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNom,
+        string $responsableNom
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        return "
+Bonjour {$clientNom},
+
+Nous vous informons qu'un étudiant a été affecté à votre SAE par le responsable {$responsableNom}.
+
+SAE : {$saeTitre}
+ÉTUDIANT AFFECTÉ : {$studentNom}
+RESPONSABLE : {$responsableNom}
+
+L'étudiant commencera bientôt à travailler sur votre projet. N'hésitez pas à vous connecter à la plateforme pour suivre l'avancement :
 {$saeUrl}
 
 Cordialement,
