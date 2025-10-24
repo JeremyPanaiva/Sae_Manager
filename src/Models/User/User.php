@@ -204,4 +204,19 @@ class User
 
         return $students;
     }
+
+    /**
+     * Récupère un utilisateur par son ID
+     */
+    public static function getById(int $id): ?array
+    {
+        $db = \Models\Database::getConnection();
+        $stmt = $db->prepare("SELECT id, nom, prenom, mail, role FROM users WHERE id = ? LIMIT 1");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        $stmt->close();
+        return $user ?: null;
+    }
 }
