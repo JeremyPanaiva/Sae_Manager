@@ -1,8 +1,10 @@
 <?php
+
 namespace Controllers\Dashboard;
 
 use Controllers\ControllerInterface;
 use Models\Sae\TodoList;
+use Shared\Exceptions\DataBaseException;
 
 class TodoController implements ControllerInterface
 {
@@ -15,32 +17,29 @@ class TodoController implements ControllerInterface
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
         if ($method === 'POST') {
-            if ($path === self::PATH_ADD) {
-                error_log(">>> handleAdd exécuté");
-                $this->handleAdd();
-                return;
-            } elseif ($path === self::PATH_TOGGLE) {
-                error_log(">>> handleToggle exécuté");
-                $this->handleToggle();
-                return;
+            try {
+                if ($path === self::PATH_ADD) {
+                    $this->handleAdd();
+                    return;
+                } elseif ($path === self::PATH_TOGGLE) {
+                    $this->handleToggle();
+                    return;
+                }
+            } catch (DataBaseException $e) {
+                // On stocke le message dans la session pour le dashboard
+                $_SESSION['error_message'] = $e->getMessage();
+                header('Location: /dashboard');
+                exit();
             }
         }
 
-        // Si on arrive ici, c’est un appel direct à /todo ou autre → redirection
+        // Redirection si URL invalide
         header('Location: /dashboard');
         exit();
     }
 
-
-
     public function handleAdd(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /dashboard');
-            exit();
-        }
-
-        // Vérification du rôle étudiant
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'etudiant') {
             header('Location: /login');
             exit();
@@ -53,19 +52,12 @@ class TodoController implements ControllerInterface
             TodoList::addTask($saeAttributionId, $titre);
         }
 
-        error_log(">>> handleAdd() exécuté avec POST = " . print_r($_POST, true));
-
         header('Location: /dashboard');
         exit();
     }
 
     public function handleToggle(): void
     {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /dashboard');
-            exit();
-        }
-
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'etudiant') {
             header('Location: /login');
             exit();

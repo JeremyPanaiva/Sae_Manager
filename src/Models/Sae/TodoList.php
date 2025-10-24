@@ -3,11 +3,13 @@ namespace Models\Sae;
 
 use Models\Database;
 use mysqli_sql_exception;
+use Shared\Exceptions\DataBaseException;
 
 class TodoList
 {
     public static function addTask(int $saeAttributionId, string $titre): void
     {
+        self::checkDatabaseConnection();
         $db = Database::getConnection();
 
         try {
@@ -22,6 +24,7 @@ class TodoList
 
     public static function toggleTask(int $taskId, bool $fait): void
     {
+        self::checkDatabaseConnection();
         $db = Database::getConnection();
         $stmt = $db->prepare("UPDATE todo_list SET fait = ? WHERE id = ?");
         $faitInt = $fait ? 1 : 0;
@@ -61,6 +64,19 @@ class TodoList
         $stmt->close();
 
         return $todos;
+    }
+
+    public static function checkDatabaseConnection(): void
+    {
+        try {
+            $db = Database::getConnection();
+            // simple ping pour tester la connexion
+            if (!$db->ping()) {
+                throw new DataBaseException("Unable to connect to the database");
+            }
+        } catch (\Exception $e) {
+            throw new DataBaseException("Unable to connect to the database");
+        }
     }
 
 }

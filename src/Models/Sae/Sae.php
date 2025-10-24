@@ -3,6 +3,7 @@
 namespace Models\Sae;
 
 use Models\Database;
+use Shared\Exceptions\DataBaseException;
 
 class Sae
 {
@@ -16,15 +17,60 @@ class Sae
      */
     public static function create(int $clientId, string $titre, string $description): int
     {
-        $db = Database::getConnection();
-        $stmt = $db->prepare("INSERT INTO sae (titre, description, client_id, date_creation) VALUES (?, ?, ?, NOW())");
-        $stmt->bind_param("ssi", $titre, $description, $clientId);
-        $stmt->execute();
-        $saeId = $db->insert_id;
-        $stmt->close();
+        try {
+            self::checkDatabaseConnection();
 
-        return $saeId;
+            $db = Database::getConnection();
+            $stmt = $db->prepare("INSERT INTO sae (titre, description, client_id, date_creation) VALUES (?, ?, ?, NOW())");
+            if (!$stmt) {
+                throw new \Exception("Erreur prepare: " . $db->error);
+            }
+
+            $stmt->bind_param("ssi", $titre, $description, $clientId);
+
+            if (!$stmt->execute()) {
+                throw new \Exception("Erreur execute: " . $stmt->error);
+            }
+
+            $saeId = $db->insert_id;
+            $stmt->close();
+
+            return $saeId;
+        } catch (\Exception $e) {
+            throw new \Shared\Exceptions\DataBaseException(
+                "Impossible de créer la SAE : " . $e->getMessage()
+            );
+        }
     }
+
+    public static function delete(int $clientId, int $saeId): bool
+    {
+        try {
+            self::checkDatabaseConnection();
+
+            $db = Database::getConnection();
+
+            $stmt = $db->prepare("DELETE FROM sae WHERE id = ? AND client_id = ?");
+            if (!$stmt) {
+                throw new \Exception("Erreur prepare: " . $db->error);
+            }
+
+            $stmt->bind_param("ii", $saeId, $clientId);
+
+            if (!$stmt->execute()) {
+                throw new \Exception("Erreur execute: " . $stmt->error);
+            }
+
+            $stmt->close();
+
+            return true;
+        } catch (\Exception $e) {
+            throw new \Shared\Exceptions\DataBaseException(
+                "Impossible de supprimer la SAE : " . $e->getMessage()
+            );
+        }
+    }
+
 
     public static function getAllProposed(): array
     {
@@ -47,22 +93,7 @@ class Sae
         return $saes;
     }
 
-    public static function delete(int $clientId, int $saeId): bool
-    {
-        $mysqli = \Models\Database::getConnection(); // mysqli
 
-        // Supprime uniquement de la table SAE
-        $stmt = $mysqli->prepare("DELETE FROM sae WHERE id = ? AND client_id = ?");
-        if (!$stmt) {
-            throw new \Exception("Erreur prepare: " . $mysqli->error);
-        }
-
-        $stmt->bind_param("ii", $saeId, $clientId);
-        $result = $stmt->execute();
-        $stmt->close();
-
-        return $result;
-    }
 
     public static function isAttribuee(int $saeId): bool
     {
@@ -130,4 +161,18 @@ class Sae
 
         return $saes;
     }
+
+    public static function checkDatabaseConnection(): void
+    {
+        try {
+            $db = Database::getConnection();
+            // simple ping pour tester la connexion
+            if (!$db->ping()) {
+                throw new DataBaseException("Unable to connect to the database");
+            }
+        } catch (\Exception $e) {
+            throw new DataBaseException("Unable to connect to the database");
+        }
+    }
+
 }

@@ -58,12 +58,17 @@ class DashboardView extends BaseView
     {
         $html = '';
 
-        // Affichage du message d'erreur s'il existe
-        if (!empty($this->data['error_message'])) {
+        // 1️⃣ On récupère l'erreur, soit depuis data, soit depuis la session
+        $errorMessage = $this->data['error_message'] ?? $_SESSION['error_message'] ?? null;
+        if ($errorMessage) {
             $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
-            $html .= htmlspecialchars($this->data['error_message']);
+            $html .= htmlspecialchars($errorMessage);
             $html .= "</div>";
+
+            // On supprime la session pour que ça ne réapparaisse pas au prochain refresh
+            unset($_SESSION['error_message']);
         }
+
 
         switch (strtolower($this->role)) {
 

@@ -231,17 +231,39 @@ class SaeAttribution
 
     public static function updateDateRendu(int $saeId, int $responsableId, string $newDate): void
     {
-        $db = \Models\Database::getConnection();
+        try {
+            self::checkDatabaseConnection();
 
-        $stmt = $db->prepare("
-        UPDATE sae_attributions
-        SET date_rendu = ?
-        WHERE sae_id = ? AND responsable_id = ?
-    ");
-        $stmt->bind_param("sii", $newDate, $saeId, $responsableId);
-        $stmt->execute();
-        $stmt->close();
+            $db = \Models\Database::getConnection();
+
+            $stmt = $db->prepare("
+            UPDATE sae_attributions
+            SET date_rendu = ?
+            WHERE sae_id = ? AND responsable_id = ?
+        ");
+
+            if (!$stmt) {
+                throw new \Exception("Erreur lors de la préparation de la requête SQL");
+            }
+
+            $stmt->bind_param("sii", $newDate, $saeId, $responsableId);
+
+            if (!$stmt->execute()) {
+                throw new \Exception("Erreur lors de l'exécution de la requête SQL");
+            }
+
+            $stmt->close();
+        } catch (\Shared\Exceptions\DataBaseException $e) {
+            // On remonte directement l'exception pour que le controller la récupère
+            throw $e;
+        } catch (\Exception $e) {
+            // On transforme toutes les autres exceptions en DataBaseException pour cohérence
+            throw new \Shared\Exceptions\DataBaseException(
+                "Impossible de mettre à jour la date de rendu. Veuillez contacter l'administrateur."
+            );
+        }
     }
+
 
     // Désassigner un étudiant d'une SAE
     public static function removeFromStudent(int $saeId, int $studentId): void
