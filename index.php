@@ -10,6 +10,7 @@ use Controllers\Legal\PlanDuSiteController;
 use Controllers\Sae\AttribuerSaeController;
 use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
+use Controllers\Sae\UnassignSaeController;
 use Controllers\Sae\UpdateSaeDateController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
@@ -58,7 +59,9 @@ $controllers = [
     new AttribuerSaeController(),
     new DeleteSaeController(),
     new TodoController(),
-    new UpdateSaeDateController()
+    new UpdateSaeDateController(),
+    new UnassignSaeController() ,
+
 ];
 
 
