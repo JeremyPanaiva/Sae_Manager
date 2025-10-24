@@ -118,8 +118,22 @@ html, body {
 .btn-outline:hover {
     background: var(--amu-light-blue);
     color: var(--white);
+    border-color: white;
     transform: translateY(-1px);
 }
+
+/* (Se connecter / Se déconnecter) */
+.header .user-actions .btn-outline:first-child {
+    border: none;
+    background: transparent;
+    color: var(--white);
+}
+
+.header .user-actions .btn-outline:first-child:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--white);
+}
+
 
 /* ================================
    📑 Navigation
