@@ -89,12 +89,16 @@ class SaeView extends BaseView
 
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
+                // Ajoute cette ligne pour inspecter les données
+
 
                 if (!empty($this->data['error_message'])) {
                     $html .= "<div class='error-message'>";
                     $html .= htmlspecialchars($this->data['error_message']);
                     $html .= "</div>";
                 }
+
+                // Dans ta vue (sae.html)
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
                     $html .= "<div class='sae-card'>";
@@ -105,21 +109,27 @@ class SaeView extends BaseView
                     $html .= "<form method='POST' action='/attribuer_sae'>";
                     $html .= "<label>Attribuer à :</label>";
                     $html .= "<select name='etudiants[]' multiple size='5' required>";
-                    foreach ($this->data['etudiants'] ?? [] as $etu) {
+
+                    // Affichage uniquement des étudiants non attribués
+                    foreach ($sae['etudiants_disponibles'] ?? [] as $etu) {
                         $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                     }
+
                     $html .= "</select>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit'>Attribuer</button>";
                     $html .= "</form>";
 
-                    // 🔥 Nouveau formulaire : suppression des étudiants
+                    // Formulaire de suppression
                     $html .= "<form method='POST' action='/unassign_sae' class='remove-form'>";
                     $html .= "<label>Supprimer de la SAE :</label>";
                     $html .= "<select name='etudiants[]' multiple size='5' required>";
-                    foreach ($this->data['etudiants'] ?? [] as $etu) {
+
+                    // Afficher tous les étudiants déjà attribués (pour la suppression)
+                    foreach ($sae['etudiants_attribues'] ?? [] as $etu) {
                         $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                     }
+
                     $html .= "</select>";
                     $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
@@ -128,7 +138,13 @@ class SaeView extends BaseView
 
                     $html .= "</div>";
                 }
+
+
+
                 break;
+
+
+
 
 
 
