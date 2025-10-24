@@ -1,11 +1,15 @@
 # robots.txt pour SAE Manager
 # G4 - AlwaysData
+# Dernière mise à jour : 2025-10-09
 
 User-agent: *
+# Répertoires à ne pas explorer
 Disallow: /_assets/
 Disallow: /src/
 Disallow: /Autoloader.php
 Disallow: /README.md
+
+# Autoriser les documents publics
 Allow: /_assets/docs/
 Allow: /
 
