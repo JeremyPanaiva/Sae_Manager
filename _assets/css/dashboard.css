@@ -154,3 +154,15 @@ ul li {
         width: 60%;
     }
 }
+
+
+/* Style du message d'erreur pour le client */
+.error-message {
+    background-color: #ffe6e6;
+    color: #cc0000;
+    border: 1px solid #cc0000;
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}

@@ -22,9 +22,14 @@ class DashboardController implements ControllerInterface
         $username = $user['nom'] . ' ' . $user['prenom'];
         $userId = $user['id'];
 
-        $data = $this->prepareDashboardData($userId, $role);
+        try {
+            $data = $this->prepareDashboardData($userId, $role);
+        } catch (\Shared\Exceptions\DataBaseException $e) {
+            // On capture l'erreur et on transmet le message à la vue
+            $data = ['error_message' => $e->getMessage()];
+        }
 
-        $view = new DashboardView(
+        $view = new \Views\Dashboard\DashboardView(
             title: 'Tableau de bord',
             username: $username,
             role: ucfirst($role),
@@ -33,6 +38,7 @@ class DashboardController implements ControllerInterface
 
         echo $view->render();
     }
+
 
     private function prepareDashboardData(int $userId, string $role): array
     {
