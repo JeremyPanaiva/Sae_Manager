@@ -121,8 +121,8 @@ class SaeAttribution
         $db = Database::getConnection();
 
         // Requête pour récupérer les étudiants attribués à la SAE
-        $query = "SELECT users.id, users.nom, users.prenom 
-                  FROM users 
+        $query = "SELECT users.id, users.nom, users.prenom
+                  FROM users
                   INNER JOIN sae_attributions ON sae_attributions.student_id = users.id
                   WHERE sae_attributions.sae_id = ?";
 
@@ -176,7 +176,7 @@ class SaeAttribution
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT 
+            SELECT
                 MIN(sa.id) AS sae_attribution_id,
                 s.id AS sae_id,
                 s.titre AS sae_titre,
@@ -339,6 +339,40 @@ class SaeAttribution
         $assigned = (bool) $result->fetch_assoc();
         $stmt->close();
         return $assigned;
+    }
+
+
+
+    /**
+     * Récupère toutes les SAE attribuées à un étudiant
+     */
+    public static function getSaeForStudent(int $studentId): array
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+        SELECT 
+            sa.id AS sae_attribution_id,
+            s.id AS sae_id,
+            s.titre AS sae_titre,
+            s.description AS sae_description,
+            u_resp.nom AS responsable_nom,
+            u_resp.prenom AS responsable_prenom,
+            u_resp.mail AS responsable_mail,
+            u_client.nom AS client_nom,
+            u_client.prenom AS client_prenom,
+            u_client.mail AS client_mail,
+            sa.date_rendu
+        FROM sae s
+        JOIN sae_attributions sa ON s.id = sa.sae_id
+        LEFT JOIN users u_resp ON sa.responsable_id = u_resp.id
+        LEFT JOIN users u_client ON s.client_id = u_client.id
+        WHERE sa.student_id = ?
+    ");
+        $stmt->bind_param("i", $studentId);
+        $stmt->execute();
+        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $saes;
     }
 
 
