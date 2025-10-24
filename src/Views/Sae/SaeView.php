@@ -89,67 +89,64 @@ class SaeView extends BaseView
 
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
-                // Ajoute cette ligne pour inspecter les données
 
-
+                // Affichage du message d'erreur s'il existe
                 if (!empty($this->data['error_message'])) {
-                    $html .= "<div class='error-message'>";
+                    $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
                     $html .= htmlspecialchars($this->data['error_message']);
                     $html .= "</div>";
                 }
 
-                // Dans ta vue (sae.html)
+                // Affichage du message de succès s'il existe
+                if (!empty($this->data['success_message'])) {
+                    $html .= "<div class='success-message' style='background-color: #efe; border: 1px solid #8f8; color: #070; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+                    $html .= htmlspecialchars($this->data['success_message']);
+                    $html .= "</div>";
+                }
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
                     $html .= "<div class='sae-card'>";
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
 
-                    // Formulaire d’attribution existant
+                    // Formulaire d'attribution
                     $html .= "<form method='POST' action='/attribuer_sae'>";
                     $html .= "<label>Attribuer à :</label>";
 
-                    // Vérifier si la liste des étudiants disponibles est vide
                     if (empty($sae['etudiants_disponibles'])) {
-                        $html .= "<p>Aucun étudiant disponible pour l'attribution.</p>";
+                        $html .= "<p class='info-message'>Aucun étudiant disponible pour l'attribution.</p>";
                     } else {
                         $html .= "<select name='etudiants[]' multiple size='5' required>";
-                        foreach ($sae['etudiants_disponibles'] ?? [] as $etu) {
+                        foreach ($sae['etudiants_disponibles'] as $etu) {
                             $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                         }
                         $html .= "</select>";
+                        $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
+                        $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+                        $html .= "<button type='submit'>Attribuer</button>";
                     }
-
-                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
-                    $html .= "<button type='submit'>Attribuer</button>";
                     $html .= "</form>";
 
                     // Formulaire de suppression
                     $html .= "<form method='POST' action='/unassign_sae' class='remove-form'>";
-                    $html .= "<label>Supprimer de la SAE :</label>";
+                    $html .= "<label>Retirer de la SAE (vos attributions uniquement) :</label>";
 
-                    // Vérifier si la liste des étudiants attribués est vide
                     if (empty($sae['etudiants_attribues'])) {
-                        $html .= "<p>Aucun étudiant attribué à cette SAE.</p>";
+                        $html .= "<p class='info-message'>Vous n'avez attribué aucun étudiant à cette SAE.</p>";
                     } else {
                         $html .= "<select name='etudiants[]' multiple size='5' required>";
-                        foreach ($sae['etudiants_attribues'] ?? [] as $etu) {
+                        foreach ($sae['etudiants_attribues'] as $etu) {
                             $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                         }
                         $html .= "</select>";
+                        $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
+                        $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+                        $html .= "<button type='submit' class='danger-btn'>Retirer</button>";
                     }
-
-                    $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
-                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
-                    $html .= "<button type='submit' class='danger-btn'>Supprimer</button>";
                     $html .= "</form>";
 
                     $html .= "</div>";
                 }
-
-
-
-
                 break;
 
 
