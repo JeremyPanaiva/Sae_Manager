@@ -1,62 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset 
+    xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 
+    http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+
+<!--  Created for SAE Manager | AlwaysData  -->
+<!--  Sitemap generated manually and structured following best SEO practices  -->
+
+    <!-- Page de connexion -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/user/login</loc>
+        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- Page d'inscription -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/user/register</loc>
+        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.90</priority>
+    </url>
 
     <!-- Page d'accueil -->
     <url>
-    <loc>https://sae-manager.alwaysdata.net/</loc>
-        <lastmod>2025-10-09</lastmod>
+        <loc>https://sae-manager.alwaysdata.net/</loc>
+        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>1.0</priority>
+        <priority>1.00</priority>
     </url>
 
-    <!-- Pages utilisateur -->
+    <!-- Page mentions légales -->
     <url>
-    <loc>https://sae-manager.alwaysdata.net/user/connection</loc>
-        <lastmod>2025-10-09</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <url>
-    <loc>https://sae-manager.alwaysdata.net/user/inscription</loc>
-        <lastmod>2025-10-09</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.8</priority>
-    </url>
-
-    <url>
-    <loc>https://sae-manager.alwaysdata.net/user/forgot-password</loc>
-        <lastmod>2025-10-09</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.6</priority>
-    </url>
-
-    <!-- Page d'utilisateur connecté (si publique) -->
-    <url>
-    <loc>https://sae-manager.alwaysdata.net/user/profile</loc>
-        <lastmod>2025-10-09</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.5</priority>
-    </url>
-
-    <!-- Mentions légales -->
-    <url>
-        <loc>
-            https://sae-manager.alwaysdata.net/_assets/docs/Mentions%20l%C3%A9gales%20-%20SAE%20Manager%20-%20mentions-legales.pdf
-        </loc>
-        <lastmod>2025-10-09</lastmod>
+        <loc>https://sae-manager.alwaysdata.net/mentions-legales</loc>
+        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
         <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
+        <priority>0.50</priority>
     </url>
 
-    <!-- Plan du site PDF -->
+    <!-- Page plan du site -->
     <url>
-        <loc>
-            https://sae-manager.alwaysdata.net/_assets/docs/Plan%20du%20site%20-%20SAE%20Manager%20-%20plan-du-site.pdf
-        </loc>
-        <lastmod>2025-10-09</lastmod>
+        <loc>https://sae-manager.alwaysdata.net/plan-du-site</loc>
+        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
         <changefreq>yearly</changefreq>
-        <priority>0.3</priority>
+        <priority>0.50</priority>
     </url>
 
 </urlset>
