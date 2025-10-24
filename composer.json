@@ -4,7 +4,8 @@
     "type": "project",
     "require": {
         "php": ">=8.0",
-        "phpmailer/phpmailer": "^7.0"
+        "phpmailer/phpmailer": "^7.0",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
