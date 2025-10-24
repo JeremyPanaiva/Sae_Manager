@@ -18,7 +18,10 @@ class HeaderView extends AbstractView
     public const ROLE_KEY = 'ROLE_KEY';
     public const DASHBOARD_LINK_KEY = 'DASHBOARD_LINK_KEY';
     public const SAE_LINK_KEY = 'SAE_LINK_KEY';
+
     public const NAV_STYLE_KEY = 'NAV_STYLE';
+
+    public const USER_META_STYLE_KEY = 'USER_META_STYLE';
 
     public function __construct()
     {
@@ -51,21 +54,25 @@ class HeaderView extends AbstractView
         $dashboardLink = Login::PATH;
         $saeLink = Login::PATH;
 
-        // par défaut: cacher le menu
+        // Déconnecté: cacher le menu et le bloc nom/prénom
         $navStyle = 'display:none;';
+        $userMetaStyle = 'display:none;';
 
         if (isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
             $role = strtolower($_SESSION['user']['role']);
             $username = $_SESSION['user']['nom'] . ' ' . $_SESSION['user']['prenom'];
             $roleDisplay = ucfirst($role);
             $roleClass = $role;
+
             $link = Logout::PATH;
             $connectionText = 'Se déconnecter';
             $usersLink = ListUsers::PATH;
             $saeLink = '/sae';
             $dashboardLink = DashboardController::PATH;
-            // connecté: afficher le menu
+
+            // Connecté: afficher le menu et le bloc nom/prénom
             $navStyle = '';
+            $userMetaStyle = '';
         }
 
         $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -88,7 +95,10 @@ class HeaderView extends AbstractView
             self::DASHBOARD_LINK_KEY => $dashboardLink,
             self::SAE_LINK_KEY => $saeLink,
             'CANONICAL_URL' => $canonical,
-            self::NAV_STYLE_KEY => $navStyle, // 👈 AJOUT
+
+            self::NAV_STYLE_KEY => $navStyle,
+            self::USER_META_STYLE_KEY => $userMetaStyle,
+
             'ACTIVE_DASHBOARD' => $this->getActiveClass($dashboardLink),
             'ACTIVE_SAE' => $this->getActiveClass($saeLink),
             'ACTIVE_USERS' => $this->getActiveClass($usersLink),
