@@ -108,14 +108,18 @@ class SaeView extends BaseView
                     // Formulaire d’attribution existant
                     $html .= "<form method='POST' action='/attribuer_sae'>";
                     $html .= "<label>Attribuer à :</label>";
-                    $html .= "<select name='etudiants[]' multiple size='5' required>";
 
-                    // Affichage uniquement des étudiants non attribués
-                    foreach ($sae['etudiants_disponibles'] ?? [] as $etu) {
-                        $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                    // Vérifier si la liste des étudiants disponibles est vide
+                    if (empty($sae['etudiants_disponibles'])) {
+                        $html .= "<p>Aucun étudiant disponible pour l'attribution.</p>";
+                    } else {
+                        $html .= "<select name='etudiants[]' multiple size='5' required>";
+                        foreach ($sae['etudiants_disponibles'] ?? [] as $etu) {
+                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                        }
+                        $html .= "</select>";
                     }
 
-                    $html .= "</select>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit'>Attribuer</button>";
                     $html .= "</form>";
@@ -123,14 +127,18 @@ class SaeView extends BaseView
                     // Formulaire de suppression
                     $html .= "<form method='POST' action='/unassign_sae' class='remove-form'>";
                     $html .= "<label>Supprimer de la SAE :</label>";
-                    $html .= "<select name='etudiants[]' multiple size='5' required>";
 
-                    // Afficher tous les étudiants déjà attribués (pour la suppression)
-                    foreach ($sae['etudiants_attribues'] ?? [] as $etu) {
-                        $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                    // Vérifier si la liste des étudiants attribués est vide
+                    if (empty($sae['etudiants_attribues'])) {
+                        $html .= "<p>Aucun étudiant attribué à cette SAE.</p>";
+                    } else {
+                        $html .= "<select name='etudiants[]' multiple size='5' required>";
+                        foreach ($sae['etudiants_attribues'] ?? [] as $etu) {
+                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                        }
+                        $html .= "</select>";
                     }
 
-                    $html .= "</select>";
                     $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit' class='danger-btn'>Supprimer</button>";
@@ -138,6 +146,7 @@ class SaeView extends BaseView
 
                     $html .= "</div>";
                 }
+
 
 
 
