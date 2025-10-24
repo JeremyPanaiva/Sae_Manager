@@ -1,5 +1,4 @@
 <?php
-
 namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
@@ -44,21 +43,30 @@ class AttribuerSaeController implements ControllerInterface
             header('Location: /sae?success=sae_assigned');
             exit();
 
-        }catch (SaeAlreadyAssignedException $e) {
+        } catch (SaeAlreadyAssignedException $e) {
             $message = "Impossible d'attribuer la SAE « {$e->getSae()} » : elle a déjà été attribuée par le responsable \"{$e->getResponsable()}\".";
-        }
-        catch (StudentAlreadyAssignedException $e) {
+        } catch (StudentAlreadyAssignedException $e) {
             $message = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
         }
 
+        // Récupérer tous les étudiants
+        $allStudents = User::getAllStudents();
 
-        // Récupérer toutes les SAE et tous les étudiants pour la vue
+        // Récupérer les étudiants déjà assignés à cette SAE
+        $assignedStudents = SaeAttribution::getStudentsBySae($saeId);
+
+        // Extraire les IDs des étudiants assignés
+        $assignedStudentIds = array_map(fn($student) => $student['id'], $assignedStudents);
+
+        // Filtrer les étudiants non assignés
+        $unassignedStudents = array_filter($allStudents, fn($student) => !in_array($student['id'], $assignedStudentIds));
+
+        // Passer les étudiants non assignés à la vue
         $data = [
-            'error_message' => $e->getMessage(), // pas besoin de getSae() ni getResponsable()
+            'error_message' => $message ?? '',
             'saes' => \Models\Sae\Sae::getAll(),
-            'etudiants' => User::getAllStudents(),
+            'etudiants' => $unassignedStudents, // Non attribués
         ];
-
 
         // Afficher la vue avec l'erreur si elle existe
         $view = new SaeView("Attribution des SAE", $data, $username, $role);
