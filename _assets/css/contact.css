@@ -1,0 +1,90 @@
+/* Conteneur du formulaire dans la page légale */
+.legal-form {
+    display: block;
+    max-width: 700px;
+    margin: 0 auto;
+    background: #fff; /* la carte principale de .legal-main est déjà blanche */
+    border-radius: 12px;
+    padding: 1rem 0;  /* léger padding interne au bloc */
+}
+
+/* Groupes de champs */
+.legal-form .legal-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+}
+
+/* Labels */
+.legal-form label {
+    font-weight: 600;
+    color: var(--amu-dark-gray);
+}
+
+/* Champs (inputs/textarea) */
+.legal-form input[type="email"],
+.legal-form input[type="text"],
+.legal-form textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #ccd3da;
+    border-radius: 8px;
+    font-size: 0.98rem;
+    background: #fafbfc;
+    color: #1f2d3d;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-sizing: border-box;
+}
+
+.legal-form input::placeholder,
+.legal-form textarea::placeholder {
+    color: var(--amu-dark-gray);
+    opacity: 0.8;
+}
+
+.legal-form input:focus,
+.legal-form textarea:focus {
+    outline: none;
+    border-color: var(--amu-light-blue);
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+    background: #fff;
+}
+
+/* Bouton envoyer (réutilise .btn .btn-primary de index.css) */
+.legal-form .btn.btn-primary {
+    padding: 0.65rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Notices (succès / erreur) alignées avec la charte du site */
+.legal-notice {
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0 0 18px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    border: 1px solid transparent;
+}
+
+/* Succès: vert (utilise --success) */
+.legal-notice.success {
+    background-color: rgba(40, 167, 69, 0.12);  /* var(--success) allégée */
+    border-color: var(--success);
+    color: #176c30;
+}
+
+/* Erreur: rouge (utilise --danger) */
+.legal-notice.error {
+    background-color: rgba(220, 53, 69, 0.12);  /* var(--danger) allégée */
+    border-color: var(--danger);
+    color: #a52a37;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-form {
+        max-width: 100%;
+    }
+}
