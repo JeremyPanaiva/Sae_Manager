@@ -58,6 +58,13 @@ class SaeView extends BaseView
     {
         $html = '';
 
+        // Affichage du message d'erreur s'il existe
+        if (!empty($this->data['error_message'])) {
+            $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= htmlspecialchars($this->data['error_message']);
+            $html .= "</div>";
+        }
+
         switch (strtolower($this->role)) {
 
             case 'etudiant':
@@ -90,12 +97,7 @@ class SaeView extends BaseView
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
 
-                // Affichage du message d'erreur s'il existe
-                if (!empty($this->data['error_message'])) {
-                    $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
-                    $html .= htmlspecialchars($this->data['error_message']);
-                    $html .= "</div>";
-                }
+
 
                 // Affichage du message de succès s'il existe
                 if (!empty($this->data['success_message'])) {
