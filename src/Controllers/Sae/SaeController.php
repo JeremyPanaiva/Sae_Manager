@@ -42,6 +42,16 @@ class SaeController implements ControllerInterface
     /**
      * Préparer les données SAE selon le rôle de l'utilisateur
      */
+    // Contrôleur SaeController.php
+
+    // Contrôleur SaeController.php
+
+    /**
+     * Préparer les données SAE selon le rôle de l'utilisateur
+     */
+    /**
+     * Préparer les données SAE selon le rôle de l'utilisateur
+     */
     private function prepareSaeContent(int $userId, string $role): array
     {
         switch ($role) {
@@ -54,7 +64,29 @@ class SaeController implements ControllerInterface
                 // Responsable : voir toutes les SAE proposées + liste des étudiants
                 $saes = Sae::getAllProposed();
                 $etudiants = User::getAllByRole('etudiant');
-                return ['saes' => $saes, 'etudiants' => $etudiants];
+
+                // Exclure les étudiants déjà attribués à chaque SAE pour le formulaire d'attribution
+                foreach ($saes as &$sae) {
+                    // Récupérer les étudiants déjà attribués à cette SAE
+                    $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
+
+                    // Filtrer les étudiants non attribués pour l'attribution
+                    $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
+                        foreach ($assignedStudents as $assignedStudent) {
+                            if ($assignedStudent['id'] == $etudiant['id']) {
+                                return false; // L'étudiant est déjà attribué, on l'exclut
+                            }
+                        }
+                        return true; // L'étudiant n'est pas encore attribué à la SAE
+                    });
+
+                    // Ajouter les étudiants disponibles pour cette SAE pour l'attribution
+                    $sae['etudiants_disponibles'] = $etudiantsDisponibles;
+
+                    // Ajouter la liste des étudiants déjà attribués pour la suppression
+                    $sae['etudiants_attribues'] = $assignedStudents; // Liste des étudiants déjà attribués
+                }
+                return ['saes' => $saes];
 
             case 'client':
                 // Client : voir ses SAE et possibilité d’en créer
@@ -65,6 +97,9 @@ class SaeController implements ControllerInterface
                 return [];
         }
     }
+
+
+
 
     /**
      * Gestion de la création d'une SAE (client)
