@@ -58,9 +58,9 @@ class SaeView extends BaseView
     {
         $html = '';
 
-        // Affichage du message d'erreur s'il existe
+        // Message d'erreur
         if (!empty($this->data['error_message'])) {
-            $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= "<div class='error-message'>";
             $html .= htmlspecialchars($this->data['error_message']);
             $html .= "</div>";
         }
@@ -168,12 +168,6 @@ class SaeView extends BaseView
                 $html .= "<button type='submit'>Créer SAE</button>";
                 $html .= "</form>";
 
-                // Message d'erreur
-                if (!empty($this->data['error_message'])) {
-                    $html .= "<div class='error-message'>";
-                    $html .= htmlspecialchars($this->data['error_message']);
-                    $html .= "</div>";
-                }
 
                 $html .= "<h2>Vos SAE existantes</h2>";
                 foreach ($this->data['saes'] ?? [] as $sae) {

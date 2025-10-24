@@ -25,16 +25,20 @@ class SaeController implements ControllerInterface
         $username = $currentUser['nom'] . ' ' . $currentUser['prenom'];
         $userId = $currentUser['id'];
 
+        $contentData = [
+            'saes' => [],
+            'error_message' => '',
+            'success_message' => ''
+        ];
+
         try {
             // Récupération des données selon le rôle
-            $contentData = $this->prepareSaeContent($userId, $role);
+            $contentData = array_merge($contentData, $this->prepareSaeContent($userId, $role));
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // Message clair pour erreur de DB
-            $contentData = [
-                'saes' => [],
-                'error_message' => $e->getMessage(),
-                'success_message' => ''
-            ];
+            // On met le message dans la view SAE
+            $contentData['error_message'] =  $e->getMessage();
+        } catch (\Exception $e) {
+            $contentData['error_message'] = "Erreur inattendue : " . $e->getMessage();
         }
 
         $view = new SaeView(
@@ -46,6 +50,7 @@ class SaeController implements ControllerInterface
 
         echo $view->render();
     }
+
 
     private function prepareSaeContent(int $userId, string $role): array
     {

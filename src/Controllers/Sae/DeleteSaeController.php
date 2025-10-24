@@ -34,6 +34,9 @@ class DeleteSaeController implements ControllerInterface
             exit();
         }
 
+        $username = $_SESSION['user']['nom'] . ' ' . $_SESSION['user']['prenom'];
+        $role = $_SESSION['user']['role'];
+
         try {
             // Récupère la SAE
             $sae = Sae::getById($saeId);
@@ -44,7 +47,7 @@ class DeleteSaeController implements ControllerInterface
 
             // Vérifie si la SAE est déjà attribuée
             if (Sae::isAttribuee($saeId)) {
-                throw new SaeAttribueException($sae['titre']);
+                throw new \Shared\Exceptions\SaeAttribueException($sae['titre']);
             }
 
             // Supprimer la SAE
@@ -54,24 +57,34 @@ class DeleteSaeController implements ControllerInterface
             header('Location: /sae?success=sae_deleted');
             exit();
 
+        } catch (\Shared\Exceptions\DataBaseException $e) {
+            // Erreur DB → affiche la vue avec message, SAE vide
+            $data = [
+                'saes' => [],
+                'error_message' => $e->getMessage(),
+            ];
+            $view = new SaeView("Gestion des SAE", $data, $username, $role);
+            echo $view->render();
+            exit();
         } catch (\Throwable $e) {
-            // Récupère toutes les SAE du client
-            $saes = Sae::getByClient($clientId);
-            $username = $_SESSION['user']['nom'] . ' ' . $_SESSION['user']['prenom'];
-            $role = $_SESSION['user']['role'];
+            // Autres erreurs → si possible, récupère les SAE sinon vide
+            $saes = [];
+            try {
+                $saes = Sae::getByClient($clientId);
+            } catch (\Shared\Exceptions\DataBaseException $dbEx) {
+                // Si la DB est HS, on laisse vide
+            }
 
-            // Prépare les données pour la vue
             $data = [
                 'saes' => $saes,
                 'error_message' => $e->getMessage(),
             ];
-
-            // Affiche la page SAE avec le message d'erreur
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
         }
     }
+
 
     public static function support(string $path, string $method): bool
     {
