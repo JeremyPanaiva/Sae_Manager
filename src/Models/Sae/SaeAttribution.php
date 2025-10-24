@@ -279,6 +279,67 @@ class SaeAttribution
     }
 
 
+    /**
+     * Vérifie que le responsable est bien celui qui a attribué l'étudiant à la SAE
+     * @throws UnauthorizedSaeUnassignmentException
+     */
+    /**
+     * Vérifie que le responsable est bien celui qui a attribué l'étudiant à la SAE
+     * @throws UnauthorizedSaeUnassignmentException
+     */
+    public static function checkResponsableOwnership(int $saeId, int $responsableId, int $studentId): void
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+        SELECT sa.responsable_id, s.titre, u.nom, u.prenom, resp.nom AS resp_nom, resp.prenom AS resp_prenom
+        FROM sae_attributions sa
+        JOIN sae s ON sa.sae_id = s.id
+        JOIN users u ON sa.student_id = u.id
+        JOIN users resp ON sa.responsable_id = resp.id
+        WHERE sa.sae_id = ? AND sa.student_id = ?
+        LIMIT 1
+    ");
+        $stmt->bind_param("ii", $saeId, $studentId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($row = $result->fetch_assoc()) {
+            $actualResponsableId = (int)$row['responsable_id'];
+
+            if ($actualResponsableId !== $responsableId) {
+                $saeTitre = $row['titre'] ?? 'N/A';
+                $studentName = trim(($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? 'N/A'));
+                $actualResponsableName = trim(($row['resp_nom'] ?? '') . ' ' . ($row['resp_prenom'] ?? 'N/A'));
+
+                $stmt->close();
+                throw new \Shared\Exceptions\UnauthorizedSaeUnassignmentException(
+                    $saeTitre,
+                    $studentName,
+                    $actualResponsableName
+                );
+            }
+        }
+
+        $stmt->close();
+    }
+
+    public static function isStudentAssignedByResponsable(int $saeId, int $studentId, int $responsableId): bool
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+        SELECT id 
+        FROM sae_attributions 
+        WHERE sae_id = ? AND student_id = ? AND responsable_id = ? 
+        LIMIT 1
+    ");
+        $stmt->bind_param("iii", $saeId, $studentId, $responsableId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $assigned = (bool) $result->fetch_assoc();
+        $stmt->close();
+        return $assigned;
+    }
 
 
 }
