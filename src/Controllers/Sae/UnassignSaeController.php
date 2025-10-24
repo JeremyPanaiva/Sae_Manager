@@ -3,6 +3,7 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
+use Models\User\User;
 
 class UnassignSaeController implements ControllerInterface
 {
@@ -10,8 +11,6 @@ class UnassignSaeController implements ControllerInterface
 
     public function control()
     {
-        session_start();
-
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
             header('Location: /login');
             exit();
@@ -26,6 +25,15 @@ class UnassignSaeController implements ControllerInterface
             }
         }
 
+        // Récupérer les étudiants déjà assignés à cette SAE
+        $assignedStudents = SaeAttribution::getStudentsBySae($saeId);
+
+        // Passer les étudiants assignés à la vue
+        $data = [
+            'assignedStudents' => $assignedStudents,
+        ];
+
+        // Rediriger vers la page SAE après la suppression
         header('Location: /sae');
         exit();
     }
