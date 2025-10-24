@@ -19,7 +19,7 @@ class Database {
                 self::$conn->set_charset('utf8mb4');
             } catch (\mysqli_sql_exception $e) {
                 // On lance notre exception personnalisée
-                throw new DataBaseException("Unable to connect to the database");
+                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
             }
         }
         return self::$conn;
