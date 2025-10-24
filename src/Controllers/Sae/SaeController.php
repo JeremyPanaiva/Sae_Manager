@@ -56,8 +56,18 @@ class SaeController implements ControllerInterface
     {
         switch ($role) {
             case 'etudiant':
-                // Étudiant : voir ses SAE attribuées
+                // ✅ Étudiant : voir ses SAE attribuées avec les infos du responsable
                 $saes = SaeAttribution::getSaeForStudent($userId);
+
+                // On peut formater les dates ou les données si besoin
+                foreach ($saes as &$sae) {
+                    if (!empty($sae['date_rendu'])) {
+                        $sae['date_rendu_formatee'] = date('d/m/Y', strtotime($sae['date_rendu']));
+                    } else {
+                        $sae['date_rendu_formatee'] = 'Non définie';
+                    }
+                }
+
                 return ['saes' => $saes];
 
             case 'responsable':
