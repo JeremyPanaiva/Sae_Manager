@@ -32,6 +32,9 @@ class AttribuerSaeController implements ControllerInterface
         $responsableId = $_SESSION['user']['id'];
 
         try {
+            // Vérifie la connexion à la base
+            SaeAttribution::checkDatabaseConnection();
+
             // Attribuer les étudiants
             SaeAttribution::assignStudentsToSae($saeId, array_map('intval', $etudiants), $responsableId);
 
@@ -57,19 +60,21 @@ class AttribuerSaeController implements ControllerInterface
                 $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « $saeTitre » : $listeEtudiants.";
             }
 
-            // Redirection si succès
             header('Location: /sae');
             exit();
 
+        } catch (\Shared\Exceptions\DataBaseException $e) {
+            $_SESSION['error_message'] = $e->getMessage(); // "Unable to connect to the database"
         } catch (SaeAlreadyAssignedException $e) {
             $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
         } catch (StudentAlreadyAssignedException $e) {
             $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
         }
 
-        // Redirection avec message d'erreur
+// Redirection avec message d'erreur
         header('Location: /sae');
         exit();
+
     }
 
     public static function support(string $path, string $method): bool
