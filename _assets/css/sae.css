@@ -232,20 +232,24 @@
     margin-bottom: 15px;
     border-radius: 5px;
 }
-
-/* Bouton supprimer */
-.btn-supprimer {
-    background-color: #cc0000;
-    color: #fff;
+/* Bouton suppression SAE */
+.remove-form button.danger-btn {
+    background-color: #e74c3c;   /* Rouge vif */
+    color: white;
     border: none;
-    padding: 7px 12px;
+    padding: 8px 16px;
+    font-size: 14px;
     border-radius: 4px;
     cursor: pointer;
-    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.btn-supprimer:hover {
-    background-color: #990000;
+.remove-form button.danger-btn:hover {
+    background-color: #c0392b;   /* Rouge foncé au survol */
+    transform: scale(1.05);      /* Petit effet zoom */
 }
 
-
+.remove-form button.danger-btn:active {
+    background-color: #a93226;   /* Rouge encore plus foncé au clic */
+    transform: scale(0.98);      /* Petit effet enfoncé */
+}

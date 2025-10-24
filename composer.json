@@ -3,7 +3,7 @@
     "description": "SAE Manager - Gestion des SAE",
     "type": "project",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "phpmailer/phpmailer": "^7.0"
     },
     "autoload": {
