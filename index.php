@@ -6,6 +6,7 @@ require_once "Autoloader.php";
 // Importer les controllers
 use Controllers\Dashboard\TodoController;
 use Controllers\Home\HomeController;
+use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
 use Controllers\Sae\AttribuerSaeController;
 use Controllers\Sae\DeleteSaeController;
@@ -25,6 +26,7 @@ use Controllers\User\ListUsers;
 use Controllers\Legal\MentionsLegalesController;
 use Controllers\Dashboard\DashboardController;
 use Controllers\Sae\CreateSaeController;
+use Controllers\Legal\ContactPost;
 
 
 // Démarrer la session dès le départ
@@ -60,7 +62,9 @@ $controllers = [
     new DeleteSaeController(),
     new TodoController(),
     new UpdateSaeDateController(),
-    new UnassignSaeController() ,
+    new UnassignSaeController(),
+    new ContactController(),
+    new ContactPost(),
 
 ];
 
