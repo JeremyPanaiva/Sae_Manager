@@ -21,14 +21,22 @@ class SaeController implements ControllerInterface
         }
 
         $currentUser = $_SESSION['user'];
-        $role = strtolower($currentUser['role']); // identique au header
+        $role = strtolower($currentUser['role']);
         $username = $currentUser['nom'] . ' ' . $currentUser['prenom'];
         $userId = $currentUser['id'];
 
-        // Récupération des données selon le rôle
-        $contentData = $this->prepareSaeContent($userId, $role);
+        try {
+            // Récupération des données selon le rôle
+            $contentData = $this->prepareSaeContent($userId, $role);
+        } catch (\Shared\Exceptions\DataBaseException $e) {
+            // Message clair pour erreur de DB
+            $contentData = [
+                'saes' => [],
+                'error_message' => $e->getMessage(),
+                'success_message' => ''
+            ];
+        }
 
-        // Instanciation de la vue
         $view = new SaeView(
             'Gestion des SAE',
             $contentData,
@@ -39,81 +47,47 @@ class SaeController implements ControllerInterface
         echo $view->render();
     }
 
-    /**
-     * Préparer les données SAE selon le rôle de l'utilisateur
-     */
-    // Contrôleur SaeController.php
-
-    // Contrôleur SaeController.php
-
-    /**
-     * Préparer les données SAE selon le rôle de l'utilisateur
-     */
-    /**
-     * Préparer les données SAE selon le rôle de l'utilisateur
-     */
     private function prepareSaeContent(int $userId, string $role): array
     {
         switch ($role) {
             case 'etudiant':
-                // ✅ Étudiant : voir ses SAE attribuées avec les infos du responsable
                 $saes = SaeAttribution::getSaeForStudent($userId);
-
-                // On peut formater les dates ou les données si besoin
                 foreach ($saes as &$sae) {
-                    if (!empty($sae['date_rendu'])) {
-                        $sae['date_rendu_formatee'] = date('d/m/Y', strtotime($sae['date_rendu']));
-                    } else {
-                        $sae['date_rendu_formatee'] = 'Non définie';
-                    }
+                    $sae['date_rendu_formatee'] = !empty($sae['date_rendu'])
+                        ? date('d/m/Y', strtotime($sae['date_rendu']))
+                        : 'Non définie';
                 }
-
                 return ['saes' => $saes];
 
             case 'responsable':
-                // Responsable : voir toutes les SAE proposées + liste des étudiants
                 $saes = Sae::getAllProposed();
                 $etudiants = User::getAllByRole('etudiant');
-                $responsableId = $userId; // ID du responsable connecté
+                $responsableId = $userId;
 
-                // Exclure les étudiants déjà attribués à chaque SAE pour le formulaire d'attribution
                 foreach ($saes as &$sae) {
-                    // Récupérer les étudiants déjà attribués à cette SAE
                     $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
 
-                    // Filtrer les étudiants attribués PAR CE RESPONSABLE pour la suppression
                     $etudiantsAttribuesParMoi = [];
                     foreach ($assignedStudents as $assignedStudent) {
-                        // Vérifier si c'est bien ce responsable qui a attribué cet étudiant
                         if (SaeAttribution::isStudentAssignedByResponsable($sae['id'], $assignedStudent['id'], $responsableId)) {
                             $etudiantsAttribuesParMoi[] = $assignedStudent;
                         }
                     }
 
-                    // Filtrer les étudiants non attribués pour l'attribution
                     $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
                         foreach ($assignedStudents as $assignedStudent) {
-                            if ($assignedStudent['id'] == $etudiant['id']) {
-                                return false; // L'étudiant est déjà attribué, on l'exclut
-                            }
+                            if ($assignedStudent['id'] == $etudiant['id']) return false;
                         }
-                        return true; // L'étudiant n'est pas encore attribué à la SAE
+                        return true;
                     });
 
-                    // Ajouter les étudiants disponibles pour cette SAE pour l'attribution
                     $sae['etudiants_disponibles'] = $etudiantsDisponibles;
-
-                    // Ajouter SEULEMENT les étudiants attribués par CE responsable
                     $sae['etudiants_attribues'] = $etudiantsAttribuesParMoi;
                 }
 
-                // Récupérer les messages de session
                 $errorMessage = $_SESSION['error_message'] ?? '';
                 $successMessage = $_SESSION['success_message'] ?? '';
-
-                // Nettoyer les messages de session
-                unset($_SESSION['error_message']);
-                unset($_SESSION['success_message']);
+                unset($_SESSION['error_message'], $_SESSION['success_message']);
 
                 return [
                     'saes' => $saes,
@@ -122,7 +96,6 @@ class SaeController implements ControllerInterface
                 ];
 
             case 'client':
-                // Client : voir ses SAE et possibilité d'en créer
                 $saes = Sae::getByClient($userId);
                 return ['saes' => $saes];
 
@@ -131,11 +104,6 @@ class SaeController implements ControllerInterface
         }
     }
 
-
-
-    /**
-     * Gestion de la création d'une SAE (client)
-     */
     public function handleCreateSae(): void
     {
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'client') {
@@ -149,7 +117,14 @@ class SaeController implements ControllerInterface
             $clientId = $_SESSION['user']['id'];
 
             if ($titre !== '' && $description !== '') {
-                Sae::create($clientId, $titre, $description);
+                try {
+                    SaeAttribution::checkDatabaseConnection();
+                    Sae::create($clientId, $titre, $description);
+                } catch (\Shared\Exceptions\DataBaseException $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
+                } catch (\Exception $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
+                }
             }
         }
 
@@ -157,9 +132,6 @@ class SaeController implements ControllerInterface
         exit();
     }
 
-    /**
-     * Gestion de l'attribution d'une SAE à un ou plusieurs étudiants (responsable)
-     */
     public function handleAssignSae(): void
     {
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
@@ -173,8 +145,15 @@ class SaeController implements ControllerInterface
             $etudiants = $_POST['etudiants'] ?? [];
 
             if ($saeId > 0 && !empty($etudiants)) {
-                foreach ($etudiants as $studentId) {
-                    SaeAttribution::assignToStudent($saeId, (int)$studentId, $dateRendu);
+                try {
+                    SaeAttribution::checkDatabaseConnection();
+                    foreach ($etudiants as $studentId) {
+                        SaeAttribution::assignToStudent($saeId, (int)$studentId, $dateRendu);
+                    }
+                } catch (\Shared\Exceptions\DataBaseException $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
+                } catch (\Exception $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
                 }
             }
         }
@@ -183,9 +162,6 @@ class SaeController implements ControllerInterface
         exit();
     }
 
-    /**
-     * 🔥 Gestion de la désattribution d'une SAE (suppression d'étudiants)
-     */
     public function handleUnassignSae(): void
     {
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
@@ -198,8 +174,15 @@ class SaeController implements ControllerInterface
             $etudiants = $_POST['etudiants'] ?? [];
 
             if ($saeId > 0 && !empty($etudiants)) {
-                foreach ($etudiants as $studentId) {
-                    SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+                try {
+                    SaeAttribution::checkDatabaseConnection();
+                    foreach ($etudiants as $studentId) {
+                        SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+                    }
+                } catch (\Shared\Exceptions\DataBaseException $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
+                } catch (\Exception $e) {
+                    $_SESSION['error_message'] = $e->getMessage();
                 }
             }
         }
@@ -208,9 +191,6 @@ class SaeController implements ControllerInterface
         exit();
     }
 
-    /**
-     * Vérifie si ce contrôleur supporte la route
-     */
     public static function support(string $path, string $method): bool
     {
         return $path === self::PATH && $method === 'GET';

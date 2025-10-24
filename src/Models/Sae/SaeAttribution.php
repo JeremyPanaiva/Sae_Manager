@@ -2,6 +2,7 @@
 namespace Models\Sae;
 
 use Models\Database;
+use Shared\Exceptions\DataBaseException;
 use Shared\Exceptions\SaeAlreadyAssignedException;
 use Shared\Exceptions\StudentAlreadyAssignedException;
 
@@ -12,6 +13,8 @@ class SaeAttribution
      */
     public static function assignStudentsToSae(int $saeId, array $studentIds, int $responsableId): void
     {
+        self::checkDatabaseConnection();
+
         $db = Database::getConnection();
 
         // Vérifie si la SAE est déjà attribuée à un autre responsable
@@ -243,25 +246,28 @@ class SaeAttribution
     // Désassigner un étudiant d'une SAE
     public static function removeFromStudent(int $saeId, int $studentId): void
     {
-        // Connexion à la base de données
-        $db = Database::getConnection();
+        try {
+            // Connexion à la base de données
+            $db = \Models\Database::getConnection();
 
-        // Requête pour supprimer l'attribution de la SAE pour l'étudiant
-        $query = "DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?";
+            // Requête pour supprimer l'attribution de la SAE pour l'étudiant
+            $query = "DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?";
 
-        // Préparation de la requête
-        $stmt = $db->prepare($query);
+            $stmt = $db->prepare($query);
+            if ($stmt === false) {
+                throw new \Shared\Exceptions\DataBaseException("Erreur de préparation de la requête : " . $db->error);
+            }
 
-        if ($stmt === false) {
-            die('Erreur de préparation de la requête : ' . $db->error);
-        }
+            $stmt->bind_param('ii', $saeId, $studentId);
 
-        // Lier les paramètres sae_id et student_id
-        $stmt->bind_param('ii', $saeId, $studentId); // 'ii' pour deux entiers
+            if (!$stmt->execute()) {
+                throw new \Shared\Exceptions\DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
+            }
 
-        // Exécution de la requête
-        if (!$stmt->execute()) {
-            die('Erreur lors de l\'exécution de la requête : ' . $stmt->error);
+            $stmt->close();
+
+        } catch (\mysqli_sql_exception $e) {
+            throw new \Shared\Exceptions\DataBaseException("Unable to connect to the database");
         }
     }
 
@@ -373,6 +379,19 @@ class SaeAttribution
         $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
+    }
+
+    public static function checkDatabaseConnection(): void
+    {
+        try {
+            $db = Database::getConnection();
+            // simple ping pour tester la connexion
+            if (!$db->ping()) {
+                throw new DataBaseException("Unable to connect to the database");
+            }
+        } catch (\Exception $e) {
+            throw new DataBaseException("Unable to connect to the database");
+        }
     }
 
 

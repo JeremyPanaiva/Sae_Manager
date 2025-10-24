@@ -4,6 +4,7 @@ namespace Controllers\Sae;
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\UnauthorizedSaeUnassignmentException;
+use Shared\Exceptions\DataBaseException;
 
 class UnassignSaeController implements ControllerInterface
 {
@@ -22,6 +23,9 @@ class UnassignSaeController implements ControllerInterface
             $responsableId = (int)$_SESSION['user']['id'];
 
             try {
+                // Vérifie la connexion à la base avant toute suppression
+                SaeAttribution::checkDatabaseConnection();
+
                 foreach ($students as $studentId) {
                     // Vérifier que le responsable est bien celui qui a attribué la SAE
                     SaeAttribution::checkResponsableOwnership($saeId, $responsableId, (int)$studentId);
@@ -29,12 +33,16 @@ class UnassignSaeController implements ControllerInterface
                 }
 
                 $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
+
             } catch (UnauthorizedSaeUnassignmentException $e) {
+                $_SESSION['error_message'] = $e->getMessage();
+            } catch (DataBaseException $e) {
+                $_SESSION['error_message'] = $e->getMessage(); // "Unable to connect to the database"
+            } catch (\Exception $e) {
                 $_SESSION['error_message'] = $e->getMessage();
             }
         }
 
-        // Rediriger vers la page SAE après la suppression
         header('Location: /sae');
         exit();
     }
