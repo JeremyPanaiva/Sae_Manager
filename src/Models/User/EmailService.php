@@ -194,7 +194,7 @@ class EmailService
 
             $this->mailer->addAddress($responsableEmail);
             $this->mailer->isHTML(true);
-            $this->mailer->Subject = 'Nouvelle SAE créée - ' . $saeTitle;
+            $this->mailer->Subject = 'Nouvelle proposition de SAE';
 
             $this->mailer->Body = $this->getSaeCreationEmailBody(
                 $responsableNom,
@@ -477,7 +477,7 @@ L'équipe SAE Manager
                 <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
                     <h2 style='color: #2c3e50; margin-top: 0;'>Bonjour {$responsableNom},</h2>
                     
-                    <p>Une nouvelle SAE a été créée par <strong>{$clientNom}</strong> et nécessite votre attention.</p>
+                    <p>Une nouvelle SAE a été proposée par <strong>{$clientNom}</strong> et nécessite votre attention.</p>
                     
                     <div style='background-color: #ecf0f1; padding: 15px; border-radius: 5px; margin: 20px 0;'>
                         <h3 style='color: #34495e; margin-top: 0;'>📋 {$saeTitle}</h3>
