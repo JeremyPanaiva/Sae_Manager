@@ -3,7 +3,7 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
-use Models\User\User;
+use Shared\Exceptions\UnauthorizedSaeUnassignmentException;
 
 class UnassignSaeController implements ControllerInterface
 {
@@ -19,19 +19,20 @@ class UnassignSaeController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $saeId = (int)($_POST['sae_id'] ?? 0);
             $students = $_POST['etudiants'] ?? [];
+            $responsableId = (int)$_SESSION['user']['id'];
 
-            foreach ($students as $studentId) {
-                SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+            try {
+                foreach ($students as $studentId) {
+                    // Vérifier que le responsable est bien celui qui a attribué la SAE
+                    SaeAttribution::checkResponsableOwnership($saeId, $responsableId, (int)$studentId);
+                    SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+                }
+
+                $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
+            } catch (UnauthorizedSaeUnassignmentException $e) {
+                $_SESSION['error_message'] = $e->getMessage();
             }
         }
-
-        // Récupérer les étudiants déjà assignés à cette SAE
-        $assignedStudents = SaeAttribution::getStudentsBySae($saeId);
-
-        // Passer les étudiants assignés à la vue
-        $data = [
-            'assignedStudents' => $assignedStudents,
-        ];
 
         // Rediriger vers la page SAE après la suppression
         header('Location: /sae');
