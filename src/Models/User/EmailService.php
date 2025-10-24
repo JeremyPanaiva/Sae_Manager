@@ -398,4 +398,70 @@ Cordialement,
 L'équipe SAE Manager
         ";
     }
+
+    public function sendContactEmail(string $fromUserEmail, string $subject, string $message): bool
+    {
+        try {
+            // Nettoyage
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            // Destinataire de contact
+            $to = 'sae-manager@alwaysdata.net';
+            $this->mailer->addAddress($to);
+
+            // Reply-To = email de l'utilisateur
+            if (filter_var($fromUserEmail, FILTER_VALIDATE_EMAIL)) {
+                $this->mailer->addReplyTo($fromUserEmail);
+            }
+
+            // Sujet / contenu
+            $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
+            $this->mailer->isHTML(false);
+            $this->mailer->Subject = '[Contact] ' . $safeSubject;
+            $this->mailer->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
+                . "De       : {$fromUserEmail}\n"
+                . "Sujet    : {$safeSubject}\n"
+                . "---------\n\n"
+                . "{$message}\n";
+
+            $this->mailer->send();
+            error_log("Contact email sent to {$to} (reply-to: {$fromUserEmail})");
+            return true;
+        } catch (Exception $e) {
+            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
+            error_log('PHPMailer SMTP exception (contact): ' . $e->getMessage() . ' | ErrorInfo: ' . $phpmailerError);
+
+            // Fallback mail() local si configuré
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+
+                $from = $this->mailer->From ?? \Models\Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? \Models\Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($fromUserEmail ?: $from, $fromName);
+                }
+
+                $mail->addAddress('sae-manager@alwaysdata.net');
+                $mail->isHTML(false);
+                $mail->Subject = '[Contact] ' . $safeSubject;
+                $mail->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
+                    . "De       : {$fromUserEmail}\n"
+                    . "Sujet    : {$safeSubject}\n"
+                    . "---------\n\n"
+                    . "{$message}\n";
+
+                $mail->send();
+                error_log('Contact email sent via local mail() fallback');
+                return true;
+            } catch (Exception $e2) {
+                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
+                error_log('PHPMailer fallback exception (contact): ' . $e2->getMessage() . ' | ErrorInfo: ' . $phpmailerError2);
+                throw new DataBaseException("Erreur d'envoi d'email de contact: " . $e2->getMessage());
+            }
+        }
+    }
 }
