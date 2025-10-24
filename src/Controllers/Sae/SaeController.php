@@ -64,11 +64,21 @@ class SaeController implements ControllerInterface
                 // Responsable : voir toutes les SAE proposées + liste des étudiants
                 $saes = Sae::getAllProposed();
                 $etudiants = User::getAllByRole('etudiant');
+                $responsableId = $userId; // ID du responsable connecté
 
                 // Exclure les étudiants déjà attribués à chaque SAE pour le formulaire d'attribution
                 foreach ($saes as &$sae) {
                     // Récupérer les étudiants déjà attribués à cette SAE
                     $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
+
+                    // Filtrer les étudiants attribués PAR CE RESPONSABLE pour la suppression
+                    $etudiantsAttribuesParMoi = [];
+                    foreach ($assignedStudents as $assignedStudent) {
+                        // Vérifier si c'est bien ce responsable qui a attribué cet étudiant
+                        if (SaeAttribution::isStudentAssignedByResponsable($sae['id'], $assignedStudent['id'], $responsableId)) {
+                            $etudiantsAttribuesParMoi[] = $assignedStudent;
+                        }
+                    }
 
                     // Filtrer les étudiants non attribués pour l'attribution
                     $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
@@ -83,13 +93,26 @@ class SaeController implements ControllerInterface
                     // Ajouter les étudiants disponibles pour cette SAE pour l'attribution
                     $sae['etudiants_disponibles'] = $etudiantsDisponibles;
 
-                    // Ajouter la liste des étudiants déjà attribués pour la suppression
-                    $sae['etudiants_attribues'] = $assignedStudents; // Liste des étudiants déjà attribués
+                    // Ajouter SEULEMENT les étudiants attribués par CE responsable
+                    $sae['etudiants_attribues'] = $etudiantsAttribuesParMoi;
                 }
-                return ['saes' => $saes];
+
+                // Récupérer les messages de session
+                $errorMessage = $_SESSION['error_message'] ?? '';
+                $successMessage = $_SESSION['success_message'] ?? '';
+
+                // Nettoyer les messages de session
+                unset($_SESSION['error_message']);
+                unset($_SESSION['success_message']);
+
+                return [
+                    'saes' => $saes,
+                    'error_message' => $errorMessage,
+                    'success_message' => $successMessage
+                ];
 
             case 'client':
-                // Client : voir ses SAE et possibilité d’en créer
+                // Client : voir ses SAE et possibilité d'en créer
                 $saes = Sae::getByClient($userId);
                 return ['saes' => $saes];
 
@@ -97,7 +120,6 @@ class SaeController implements ControllerInterface
                 return [];
         }
     }
-
 
 
 
