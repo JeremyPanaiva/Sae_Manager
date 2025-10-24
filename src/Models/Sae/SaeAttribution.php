@@ -111,34 +111,50 @@ class SaeAttribution
 
     /* -------------------- Fonctions pour le dashboard -------------------- */
 
-    public static function getSaeForStudent(int $studentId): array
+    // Modèle SaeAttribution.php
+
+    // Modèle SaeAttribution.php
+
+    public static function getStudentsForSae(int $saeId): array
     {
+        // Connexion à la base de données
         $db = Database::getConnection();
-        $stmt = $db->prepare("
-            SELECT 
-                sa.id AS sae_attribution_id,
-                s.id AS sae_id,
-                s.titre AS sae_titre,
-                s.description AS sae_description,
-                u_resp.nom AS responsable_nom,
-                u_resp.prenom AS responsable_prenom,
-                u_resp.mail AS responsable_mail,
-                u_client.nom AS client_nom,
-                u_client.prenom AS client_prenom,
-                u_client.mail AS client_mail,
-                sa.date_rendu
-            FROM sae s
-            JOIN sae_attributions sa ON s.id = sa.sae_id
-            LEFT JOIN users u_resp ON sa.responsable_id = u_resp.id
-            LEFT JOIN users u_client ON s.client_id = u_client.id
-            WHERE sa.student_id = ?
-        ");
-        $stmt->bind_param("i", $studentId);
-        $stmt->execute();
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-        return $saes;
+
+        // Requête pour récupérer les étudiants attribués à la SAE
+        $query = "SELECT users.id, users.nom, users.prenom 
+                  FROM users 
+                  INNER JOIN sae_attributions ON sae_attributions.student_id = users.id
+                  WHERE sae_attributions.sae_id = ?";
+
+        // Préparation de la requête
+        $stmt = $db->prepare($query);
+
+        if ($stmt === false) {
+            die('Erreur de préparation de la requête : ' . $db->error);
+        }
+
+        // Lier le paramètre sae_id
+        $stmt->bind_param('i', $saeId);
+
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            die('Erreur lors de l\'exécution de la requête : ' . $stmt->error);
+        }
+
+        // Récupération des résultats
+        $result = $stmt->get_result();
+
+        // Vérifie si des résultats sont retournés
+        if ($result->num_rows === 0) {
+            return [];  // Aucun étudiant trouvé pour cette SAE
+        }
+
+        // Retourner tous les étudiants associés à la SAE
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
+
+
+
 
     public static function getStudentsBySae(int $saeId): array
     {
@@ -224,22 +240,42 @@ class SaeAttribution
         $stmt->close();
     }
 
-    public static function removeFromStudent(int $saeId, int $studentId): bool
+    // Désassigner un étudiant d'une SAE
+    public static function removeFromStudent(int $saeId, int $studentId): void
     {
-        // Récupération de la connexion
-        $db = \Models\Database::getConnection();
+        // Connexion à la base de données
+        $db = Database::getConnection();
 
-        // Préparation de la requête DELETE
-        $stmt = $db->prepare("DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?");
-        if (!$stmt) {
-            throw new \Exception("Erreur SQL prepare : " . $db->error);
+        // Requête pour supprimer l'attribution de la SAE pour l'étudiant
+        $query = "DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?";
+
+        // Préparation de la requête
+        $stmt = $db->prepare($query);
+
+        if ($stmt === false) {
+            die('Erreur de préparation de la requête : ' . $db->error);
         }
 
-        $stmt->bind_param("ii", $saeId, $studentId);
-        $success = $stmt->execute();
+        // Lier les paramètres sae_id et student_id
+        $stmt->bind_param('ii', $saeId, $studentId); // 'ii' pour deux entiers
 
-        $stmt->close();
-        return $success;
+        // Exécution de la requête
+        if (!$stmt->execute()) {
+            die('Erreur lors de l\'exécution de la requête : ' . $stmt->error);
+        }
+    }
+
+    // Obtenir les étudiants assignés à une SAE
+    public static function getAssignedStudents(int $saeId): array
+    {
+        $query = "SELECT u.id, u.nom, u.prenom FROM users u
+                  JOIN sae_attribution sa ON u.id = sa.student_id
+                  WHERE sa.sae_id = :sae_id";
+        $stmt = Database::getConnection()->prepare($query);
+        $stmt->bindValue(':sae_id', $saeId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
 
