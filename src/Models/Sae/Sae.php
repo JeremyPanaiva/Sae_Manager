@@ -75,11 +75,28 @@ class Sae
         return $result['count'] > 0;
     }
 
+    /**
+     * 🔧 MODIFIÉ : Récupère une SAE par son ID AVEC les informations du client
+     */
     public static function getById(int $saeId): ?array
     {
         $db = \Models\Database::getConnection();
 
-        $stmt = $db->prepare("SELECT * FROM sae WHERE id = ?");
+        // 🆕 JOIN avec la table users pour récupérer les infos du client
+        $stmt = $db->prepare("
+            SELECT 
+                s.id,
+                s.titre,
+                s.description,
+                s.client_id,
+                s.date_creation,
+                u.nom AS client_nom,
+                u.prenom AS client_prenom,
+                u.mail AS client_mail
+            FROM sae s
+            LEFT JOIN users u ON s.client_id = u.id
+            WHERE s.id = ?
+        ");
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
         $result = $stmt->get_result();

@@ -1,4 +1,7 @@
 <?php
+
+date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
+
 // Inclure l'autoloader
 require_once "Autoloader.php";
 \Autoloader::register();
