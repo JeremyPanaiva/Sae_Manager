@@ -84,13 +84,21 @@ class HeaderView extends AbstractView
             $canonical = $scheme . '://' . $host . '/';
         }
 
+        $inscriptionLink = '/user/register';
+        $inscriptionStyle = '';
+        if (isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
+            $inscriptionLink = '';
+            $inscriptionStyle = 'display:none;';
+        }
+
         return [
             self::USERNAME_KEY => $username,
             self::ROLE_KEY => $roleDisplay,
             'ROLE_CLASS' => $roleClass,
             self::LINK_KEY => $link,
             self::CONNECTION_LINK_KEY => $connectionText,
-            self::INSCRIPTION_LINK_KEY => '/user/register',
+            self::INSCRIPTION_LINK_KEY => $inscriptionLink,
+            'INSCRIPTION_STYLE_KEY' => $inscriptionStyle,
             self::USERS_LINK_KEY => $usersLink,
             self::DASHBOARD_LINK_KEY => $dashboardLink,
             self::SAE_LINK_KEY => $saeLink,
