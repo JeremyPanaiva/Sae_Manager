@@ -145,18 +145,22 @@ class DashboardView extends BaseView
                     }
 
 
-
-                    // --- Avis / remarques ---
+                    // --- Remarques / avis pour RESPONSABLE ---
                     if (!empty($sae['avis'])) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($sae['avis'] as $avis) {
-                            $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
+                            $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                            $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                            $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
                             $message = htmlspecialchars($avis['message'] ?? '');
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                            $avisId = $avis['id'] ?? 0;
+                            $currentUserId = $_SESSION['user']['id'] ?? 0;
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
                             $html .= "<small>{$dateAvis}</small>";
+
                             $html .= "</div>";
                         }
                     } else {
@@ -169,50 +173,44 @@ class DashboardView extends BaseView
                 break;
 
 
-
-
             case 'client':
                 $html .= "<h2>Vos SAE créées et leurs attributions</h2>";
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    // --- Titre et description de la SAE ---
+                    // Titre et description
                     $titreSae = htmlspecialchars($sae['titre'] ?? 'Titre inconnu');
                     $description = htmlspecialchars($sae['description'] ?? '');
                     $html .= "<h3>{$titreSae}</h3>";
                     $html .= "<p><strong>Description :</strong> {$description}</p>";
 
-                    // --- Prendre la première attribution pour l'affichage ---
-                    $firstAttrib = $sae['attributions'][0] ?? null;
-                    if ($firstAttrib) {
-                        // --- Étudiants associés ---
-                        $etudiants = $firstAttrib['etudiants'] ?? [];
+                    // Parcours des attributions
+                    foreach ($sae['attributions'] ?? [] as $attrib) {
+                        $saeAttributionId = $attrib['sae_attribution_id'] ?? 0;
+
+                        // Étudiants associés
+                        $etudiants = $attrib['etudiants'] ?? [];
                         if (!empty($etudiants)) {
-                            $etudiantsList = [];
-                            foreach ($etudiants as $etu) {
-                                $etudiantsList[] = htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? ''));
-                            }
+                            $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')), $etudiants);
                             $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                         } else {
                             $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
                         }
 
-                        // --- Date de rendu ---
-                        $dateRendu = htmlspecialchars($firstAttrib['date_rendu'] ?? '');
+                        // Date de rendu
+                        $dateRendu = htmlspecialchars($attrib['date_rendu'] ?? '');
                         $html .= "<p><strong>Date de rendu :</strong> {$dateRendu}</p>";
 
-                        // --- To-Do list et barre de progression ---
-                        $todos = $firstAttrib['todos'] ?? [];
+                        // To-Do list et progression
+                        $todos = $attrib['todos'] ?? [];
                         if (!empty($todos)) {
                             $totalTasks = count($todos);
                             $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
                             $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                             $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                            $html .= "<div class='progress-bar'>";
-                            $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
-                            $html .= "</div>";
+                            $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
 
                             $html .= "<ul class='todo-list'>";
                             foreach ($todos as $task) {
@@ -225,38 +223,55 @@ class DashboardView extends BaseView
                             $html .= "<p>Aucune tâche pour cette attribution.</p>";
                         }
 
-                        // --- Remarques / avis ---
-                        if (!empty($firstAttrib['avis'])) {
+                        // Avis / remarques
+                        $avisList = $attrib['avis'] ?? [];
+                        if (!empty($avisList)) {
                             $html .= "<h4>Remarques</h4>";
-                            foreach ($firstAttrib['avis'] as $avis) {
-                                $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
+                            foreach ($avisList as $avis) {
+                                $userIdAuteur = $avis['user_id'] ?? 0;
                                 $message = htmlspecialchars($avis['message'] ?? '');
                                 $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                                $avisId = $avis['id'] ?? 0;
+                                $currentUserId = $_SESSION['user']['id'] ?? 0;
+
+                                // On prend le nom, prénom et rôle directement depuis l'avis
+                                $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                                $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                                $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
 
                                 $html .= "<div class='avis-card'>";
-                                $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
+                                $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
                                 $html .= "<small>{$dateAvis}</small>";
+
+                                // Bouton supprimer si même utilisateur
+                                if ($userIdAuteur === $currentUserId) {
+                                    $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                    $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
+                                    $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                    $html .= "</form>";
+                                }
+
                                 $html .= "</div>";
                             }
                         } else {
-                            $html .= "<p>Aucun avis pour cette attribution.</p>";
+                            $html .= "<p>Aucun avis pour cette SAE.</p>";
                         }
+
+
+                        // Formulaire ajouter un avis
                         $html .= "<h4>Ajouter un avis</h4>";
                         $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
-                        $html .= "<input type='hidden' name='sae_attribution_id' value='".($firstAttrib['sae_attribution_id'] ?? 0)."'>";
+                        $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
                         $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
                         $html .= "<button type='submit'>Envoyer</button>";
                         $html .= "</form>";
 
-
+                        $html .= "</div>"; // dashboard-card
                     }
 
                     $html .= "</div>"; // dashboard-card
                 }
                 break;
-
-
-
 
 
             case 'responsable':
@@ -265,45 +280,42 @@ class DashboardView extends BaseView
                 foreach ($this->data['saes'] ?? [] as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    // --- Titre de la SAE ---
+                    // Titre SAE
                     $titreSae = htmlspecialchars($sae['sae_titre'] ?? 'Titre inconnu');
                     $html .= "<h3>{$titreSae}</h3>";
 
-                    // --- Étudiants associés ---
+                    // Étudiants associés
                     $etudiants = $sae['etudiants'] ?? [];
                     if (!empty($etudiants)) {
-                        $etudiantsList = [];
-                        foreach ($etudiants as $etu) {
-                            $etudiantsList[] = htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? ''));
-                        }
+                        $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')), $etudiants);
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                     } else {
                         $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
                     }
 
-                    // --- Date de rendu modifiable ---
+                    // Date de rendu modifiable pour responsable
                     $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
                     $dateRendu = htmlspecialchars($sae['date_rendu'] ?? '');
-                    $html .= "<form method='POST' action='/sae/update_date' class='update-date-form'>";
+
+                    $html .= "<div class='date-rendu-wrapper'>";
+                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin:0;'>";
                     $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
                     $html .= "<input type='date' name='date_rendu' value='{$dateRendu}'>";
-                    $html .= "<button type='submit'>Modifier la date de rendu</button>";
+                    $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
                     $html .= "</form>";
+                    $html .= "</div>";
 
-                    // --- To-Do list et barre de progression ---
+
+                    // To-Do list et progression
                     $todos = $sae['todos'] ?? [];
                     if (!empty($todos)) {
                         $totalTasks = count($todos);
                         $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
-                        // Barre de progression
                         $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                        $html .= "<div class='progress-bar'>";
-                        $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
-                        $html .= "</div>";
+                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
 
-                        // Liste des tâches (lecture seule)
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
                             $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
@@ -314,22 +326,43 @@ class DashboardView extends BaseView
                     } else {
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
-                    // --- Remarques / avis ---
-                    if (!empty($sae['avis'])) {
+
+                    // Avis / remarques
+                    $avisList = $sae['avis'] ?? [];
+                    if (!empty($avisList)) {
                         $html .= "<h4>Remarques</h4>";
-                        foreach ($sae['avis'] as $avis) {
-                            $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
+                        foreach ($avisList as $avis) {
+                            $userIdAuteur = $avis['user_id'] ?? 0;
                             $message = htmlspecialchars($avis['message'] ?? '');
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                            $avisId = $avis['id'] ?? 0;
+                            $currentUserId = $_SESSION['user']['id'] ?? 0;
+
+                            // On prend le nom, prénom et rôle directement depuis l'avis
+                            $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                            $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                            $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
                             $html .= "<small>{$dateAvis}</small>";
+
+                            // Bouton supprimer si même utilisateur
+                            if ($userIdAuteur === $currentUserId) {
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "</form>";
+                            }
+
                             $html .= "</div>";
                         }
                     } else {
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
+
+
+                    // Formulaire ajouter un avis
                     $html .= "<h4>Ajouter un avis</h4>";
                     $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
                     $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
@@ -337,13 +370,9 @@ class DashboardView extends BaseView
                     $html .= "<button type='submit'>Envoyer</button>";
                     $html .= "</form>";
 
-
-
                     $html .= "</div>"; // dashboard-card
                 }
                 break;
-
-
 
 
 
