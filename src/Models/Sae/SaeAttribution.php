@@ -407,7 +407,7 @@ class SaeAttribution
     {
         $db = \Models\Database::getConnection();
         $stmt = $db->prepare("
-        SELECT DISTINCT u.nom, u.prenom
+        SELECT DISTINCT u.id, u.nom, u.prenom
         FROM sae_attributions sa
         JOIN users u ON sa.responsable_id = u.id
         WHERE sa.sae_id = ?
@@ -418,7 +418,7 @@ class SaeAttribution
         $resp = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        return $resp ?: null;
+        return $resp ?: null; // null si pas attribué
     }
 
 
