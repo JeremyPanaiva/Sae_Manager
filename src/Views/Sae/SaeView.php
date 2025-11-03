@@ -105,7 +105,17 @@ class SaeView extends BaseView
                 }
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
-                    $html .= "<div class='sae-card'>";
+
+                    // ✅ Déterminer la classe CSS selon l'état
+                    if (!empty($sae['etudiants_attribues'])) {
+                        $cardClass = "sae-card my-attr"; // SAE attribuée par moi
+                    } elseif (empty($sae['responsable_attribution'])) {
+                        $cardClass = "sae-card free"; // SAE libre / non attribuée
+                    } else {
+                        $cardClass = "sae-card other-attr"; // SAE attribuée par un autre responsable
+                    }
+
+                    $html .= "<div class='{$cardClass}'>";
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
 
@@ -157,6 +167,7 @@ class SaeView extends BaseView
                     $html .= "</div>";
                 }
                 break;
+
 
 
 
