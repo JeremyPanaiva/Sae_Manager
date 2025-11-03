@@ -30,6 +30,7 @@ use Controllers\Legal\MentionsLegalesController;
 use Controllers\Dashboard\DashboardController;
 use Controllers\Sae\CreateSaeController;
 use Controllers\Legal\ContactPost;
+use Controllers\Sae\AvisController;
 
 
 // Démarrer la session dès le départ
@@ -68,6 +69,7 @@ $controllers = [
     new UnassignSaeController(),
     new ContactController(),
     new ContactPost(),
+    new AvisController() ,
 
 ];
 
