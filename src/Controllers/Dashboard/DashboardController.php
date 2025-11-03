@@ -47,8 +47,8 @@ class DashboardController implements ControllerInterface
         if ($role === 'etudiant') {
             $saes = SaeAttribution::getSaeForStudent($userId);
             foreach ($saes as &$sae) {
-                $saeId = $sae['sae_id'] ?? null;
                 $attribId = $sae['sae_attribution_id'] ?? null;
+                $saeId = $sae['sae_id'] ?? null;
 
                 $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
                 $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
@@ -57,8 +57,8 @@ class DashboardController implements ControllerInterface
         } elseif ($role === 'responsable') {
             $saes = SaeAttribution::getSaeForResponsable($userId);
             foreach ($saes as &$sae) {
-                $saeId = $sae['sae_id'] ?? null;
                 $attribId = $sae['sae_attribution_id'] ?? null;
+                $saeId = $sae['sae_id'] ?? null;
 
                 $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
                 $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
@@ -69,7 +69,6 @@ class DashboardController implements ControllerInterface
 
             foreach ($clientSaes as $sae) {
                 $saeId = $sae['id'];
-
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
                 if (empty($attributions)) continue;
 
