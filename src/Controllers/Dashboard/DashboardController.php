@@ -1,9 +1,11 @@
 <?php
+
 namespace Controllers\Dashboard;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Models\Sae\TodoList;
+use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
 
 class DashboardController implements ControllerInterface
@@ -25,11 +27,10 @@ class DashboardController implements ControllerInterface
         try {
             $data = $this->prepareDashboardData($userId, $role);
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // On capture l'erreur et on transmet le message à la vue
             $data = ['error_message' => $e->getMessage()];
         }
 
-        $view = new \Views\Dashboard\DashboardView(
+        $view = new DashboardView(
             title: 'Tableau de bord',
             username: $username,
             role: ucfirst($role),
@@ -39,51 +40,45 @@ class DashboardController implements ControllerInterface
         echo $view->render();
     }
 
-
     private function prepareDashboardData(int $userId, string $role): array
     {
         $saes = [];
 
         if ($role === 'etudiant') {
-            // Récupération des SAE pour l'étudiant
             $saes = SaeAttribution::getSaeForStudent($userId);
-
-            foreach ($saes as &$sae) {
-                $saeAttributionId = $sae['sae_attribution_id'] ?? null;
-                $sae['todos'] = $sae['sae_id'] ? TodoList::getBySae($sae['sae_id']) : [];
-                $sae['etudiants'] = $sae['sae_id'] ? SaeAttribution::getStudentsBySae($sae['sae_id']) : [];
-            }
-        }
-        elseif ($role === 'responsable') {
-            // Récupération des SAE attribuées par le responsable
-            $saes = SaeAttribution::getSaeForResponsable($userId);
-
             foreach ($saes as &$sae) {
                 $saeId = $sae['sae_id'] ?? null;
-                $sae['todos'] = $saeId ? TodoList::getBySae($saeId) : [];
+                $attribId = $sae['sae_attribution_id'] ?? null;
+
+                $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
                 $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
+                $sae['avis'] = $attribId ? SaeAvis::getBySaeAttribution($attribId) : [];
             }
-        }
-        elseif ($role === 'client') {
-            // Récupérer toutes les SAE créées par ce client
+        } elseif ($role === 'responsable') {
+            $saes = SaeAttribution::getSaeForResponsable($userId);
+            foreach ($saes as &$sae) {
+                $saeId = $sae['sae_id'] ?? null;
+                $attribId = $sae['sae_attribution_id'] ?? null;
+
+                $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
+                $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
+                $sae['avis'] = $attribId ? SaeAvis::getBySaeAttribution($attribId) : [];
+            }
+        } elseif ($role === 'client') {
             $clientSaes = \Models\Sae\Sae::getByClient($userId);
 
             foreach ($clientSaes as $sae) {
                 $saeId = $sae['id'];
 
-                // Récupérer les attributions de cette SAE
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
-
-                // Ne garder que les SAE qui ont au moins une attribution
-                if (empty($attributions)) {
-                    continue; // passe à la SAE suivante
-                }
+                if (empty($attributions)) continue;
 
                 foreach ($attributions as &$attrib) {
+                    $attribId = $attrib['id'];
                     $attrib['etudiants'] = SaeAttribution::getStudentsBySae($saeId);
-                    $attrib['todos'] = TodoList::getBySaeAttribution($attrib['id']);
-                    $attrib['avis'] = SaeAttribution::getAvisBySaeAttribution($attrib['id']);
-                    $attrib['sae_attribution_id'] = $attrib['id'];
+                    $attrib['todos'] = TodoList::getBySaeAttribution($attribId);
+                    $attrib['avis'] = SaeAvis::getBySaeAttribution($attribId);
+                    $attrib['sae_attribution_id'] = $attribId;
                 }
 
                 $sae['attributions'] = $attributions;
@@ -91,17 +86,8 @@ class DashboardController implements ControllerInterface
             }
         }
 
-
-
         return ['saes' => $saes];
     }
-
-
-
-
-
-
-
 
     public static function support(string $path, string $method): bool
     {
