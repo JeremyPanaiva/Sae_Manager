@@ -1,5 +1,3 @@
-/* dashboard.css */
-
 :root {
     --amu-blue: #003366;
     --amu-light-blue: #0066cc;
@@ -9,6 +7,7 @@
     --success: #28a745;
     --warning: #ffc107;
     --danger: #dc3545;
+    --red: #dc3545;
 }
 
 /* Page dashboard */
@@ -20,7 +19,7 @@
 
 /* Section principale */
 .dashboard-section {
-    background: var(--white);
+    background-color: var(--white);
     padding: 25px;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.08);
@@ -38,13 +37,14 @@
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 25px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    border-left: 6px solid var(--amu-blue);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .dashboard-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.18);
 }
 
 .dashboard-card h3 {
@@ -53,19 +53,29 @@
     font-size: 1.4rem;
 }
 
-.dashboard-card p {
-    margin: 5px 0;
-    color: #444;
-    font-size: 0.95rem;
-}
-
 .dashboard-card h4 {
     margin-top: 15px;
     color: var(--amu-blue);
     font-size: 1.1rem;
 }
 
-/* Avis */
+.dashboard-card p {
+    margin: 5px 0;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+/* Liste d'étudiants */
+.student-list {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.student-list li {
+    margin-bottom: 5px;
+}
+
+/* Avis / remarques */
 .avis-card {
     background-color: #f8f9fa;
     border-left: 4px solid var(--amu-light-blue);
@@ -83,13 +93,102 @@
     font-size: 0.8rem;
 }
 
+/* Formulaire ajout avis */
+.avis-add {
+    margin-top: 10px;
+}
+
+.avis-add textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+}
+
+.avis-add button {
+    margin-top: 5px;
+    padding: 0.45rem 0.9rem;
+    border: none;
+    background-color: var(--amu-blue);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.avis-add button:hover {
+    background-color: var(--amu-light-blue);
+}
+
+/* Wrapper date + bouton */
+.date-rendu-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0;
+}
+
+/* Date de rendu */
+.date-rendu {
+    font-weight: bold;
+    color: #444;
+}
+
+/* Formulaire modification date de rendu */
+.update-date-form {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.update-date-form input[type="date"] {
+    padding: 4px 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+}
+/* Wrapper date + bouton sur la même ligne */
+.date-rendu-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Date de rendu */
+.date-rendu {
+    font-weight: bold;
+    color: #444;
+}
+
+/* Bouton discret à côté de la date */
+.btn-update-date {
+    padding: 4px 10px;
+    border: none;
+    background-color: var(--amu-light-blue);
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.btn-update-date:hover {
+    background-color: var(--amu-blue);
+}
+
+
 /* Liste To-Do */
-ul {
+ul.todo-list {
     list-style-type: none;
     padding-left: 0;
 }
 
-ul li {
+ul.todo-list li {
     margin-bottom: 8px;
     display: flex;
     align-items: center;
@@ -105,10 +204,16 @@ ul li {
 }
 
 /* Formulaire ajout To-Do */
+.todo-add {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+}
+
 .todo-add input[type="text"] {
+    flex: 1;
     padding: 0.5rem;
-    margin-right: 0.5rem;
-    width: 70%;
     border: 1px solid #ccc;
     border-radius: 6px;
 }
@@ -144,6 +249,35 @@ ul li {
     transition: width 0.3s ease;
 }
 
+/* Compte à rebours */
+.countdown {
+    font-weight: bold;
+    color: var(--danger);
+}
+
+/* Boutons supprimer avis */
+form button {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 2px 6px;
+}
+
+form button:hover {
+    opacity: 0.8;
+}
+
+/* Message d'erreur */
+.error-message {
+    background-color: #ffe6e6;
+    color: var(--red);
+    border: 1px solid var(--red);
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
     .dashboard-page {
@@ -153,16 +287,13 @@ ul li {
     .todo-add input[type="text"] {
         width: 60%;
     }
-}
 
+    .update-date-form {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-/* Style du message d'erreur pour le client */
-.error-message {
-    background-color: #ffe6e6;
-    color: #cc0000;
-    border: 1px solid #cc0000;
-    padding: 10px 15px;
-    margin: 15px 0;
-    border-radius: 5px;
-    font-weight: bold;
+    .update-date-form button {
+        width: 100%;
+    }
 }
