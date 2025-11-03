@@ -70,7 +70,6 @@ class SaeController implements ControllerInterface
                 $responsableId = $userId;
 
                 foreach ($saes as &$sae) {
-
                     // Tous les étudiants attribués à cette SAE
                     $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
 
@@ -100,6 +99,19 @@ class SaeController implements ControllerInterface
                     $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
                 }
 
+                // 🔹 TRI : mes attributions → libres → attribuées par d'autres
+                usort($saes, function ($a, $b) use ($responsableId) {
+                    $aIsMine  = !empty($a['etudiants_attribues']);
+                    $bIsMine  = !empty($b['etudiants_attribues']);
+
+                    $aIsFree  = empty($a['responsable_attribution']);
+                    $bIsFree  = empty($b['responsable_attribution']);
+
+                    $priorityA = $aIsMine ? 0 : ($aIsFree ? 1 : 2);
+                    $priorityB = $bIsMine ? 0 : ($bIsFree ? 1 : 2);
+
+                    return $priorityA - $priorityB;
+                });
 
                 $errorMessage = $_SESSION['error_message'] ?? '';
                 $successMessage = $_SESSION['success_message'] ?? '';
@@ -110,6 +122,7 @@ class SaeController implements ControllerInterface
                     'error_message' => $errorMessage,
                     'success_message' => $successMessage
                 ];
+
 
             case 'client':
                 $saes = Sae::getByClient($userId);
