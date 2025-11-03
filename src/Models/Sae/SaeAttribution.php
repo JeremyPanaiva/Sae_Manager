@@ -421,6 +421,38 @@ class SaeAttribution
         return $resp ?: null; // null si pas attribué
     }
 
+    public static function getStudentsByAttribution(int $attribId): array
+    {
+        $db = Database::getConnection();
+
+        // Requête : récupérer l'étudiant associé à cette attribution
+        $stmt = $db->prepare("
+        SELECT u.id, u.nom, u.prenom
+        FROM users u
+        JOIN sae_attributions sa ON sa.student_id = u.id
+        WHERE sa.id = ?
+    ");
+
+        if (!$stmt) {
+            throw new \Shared\Exceptions\DataBaseException("Erreur de préparation de la requête : " . $db->error);
+        }
+
+        $stmt->bind_param("i", $attribId);
+
+        if (!$stmt->execute()) {
+            throw new \Shared\Exceptions\DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        $students = $result->fetch_all(MYSQLI_ASSOC);
+
+        $stmt->close();
+
+        return $students;
+    }
+
+
+
 
     public static function checkDatabaseConnection(): void
     {
