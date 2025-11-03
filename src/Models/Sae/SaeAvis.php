@@ -61,6 +61,27 @@ class SaeAvis
         $stmt->close();
     }
 
+    public static function getBySae(int $saeId): array
+
+    {
+        self::checkDatabaseConnection();
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+        SELECT sa.id AS sae_attribution_id, a.*
+        FROM sae_avis a
+        JOIN sae_attributions sa ON a.sae_attribution_id = sa.id
+        WHERE sa.sae_id = ?
+        ORDER BY a.date_envoi ASC
+    ");
+        $stmt->bind_param("i", $saeId);
+        $stmt->execute();
+        $avis = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $avis;
+    }
+
+
     public static function checkDatabaseConnection(): void
     {
         try {
