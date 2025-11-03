@@ -254,3 +254,26 @@
     transform: scale(0.98);      /* Petit effet enfoncé */
 }
 
+/* SAE libre / non attribuée */
+.sae-card.free {
+    background-color: #d1f0ff; /* bleu clair */
+    border: 2px solid #00aaff;
+}
+
+/* SAE attribuée par moi */
+.sae-card.my-attr {
+    background-color: #e8ffe8; /* vert clair */
+    border: 2px solid #28a745;
+}
+
+/* SAE attribuée par un autre responsable */
+.sae-card.other-attr {
+    background-color: #fff0f0; /* rouge clair */
+    border: 2px solid #ff4d4d;
+}
+
+.sae-card {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+}
