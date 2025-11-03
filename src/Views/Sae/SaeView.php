@@ -97,8 +97,6 @@ class SaeView extends BaseView
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
 
-
-
                 // Affichage du message de succès s'il existe
                 if (!empty($this->data['success_message'])) {
                     $html .= "<div class='success-message' style='background-color: #efe; border: 1px solid #8f8; color: #070; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
@@ -110,6 +108,15 @@ class SaeView extends BaseView
                     $html .= "<div class='sae-card'>";
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
+
+                    // ✅ AJOUT : Attribué par...
+                    if (!empty($sae['responsable_attribution'])) {
+                        $html .= "<p><strong>Attribué par :</strong> "
+                            . htmlspecialchars($sae['responsable_attribution']['nom'] . ' ' . $sae['responsable_attribution']['prenom'])
+                            . "</p>";
+                    } else {
+                        $html .= "<p><strong>Attribué par :</strong> Pas attribué</p>";
+                    }
 
                     // Formulaire d'attribution
                     $html .= "<form method='POST' action='/attribuer_sae'>";
