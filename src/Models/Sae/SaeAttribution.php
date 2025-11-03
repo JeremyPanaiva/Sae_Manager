@@ -403,6 +403,25 @@ class SaeAttribution
         return $saes;
     }
 
+    public static function getResponsableForSae(int $saeId): ?array
+    {
+        $db = \Models\Database::getConnection();
+        $stmt = $db->prepare("
+        SELECT DISTINCT u.nom, u.prenom
+        FROM sae_attributions sa
+        JOIN users u ON sa.responsable_id = u.id
+        WHERE sa.sae_id = ?
+        LIMIT 1
+    ");
+        $stmt->bind_param("i", $saeId);
+        $stmt->execute();
+        $resp = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        return $resp ?: null;
+    }
+
+
     public static function checkDatabaseConnection(): void
     {
         try {
