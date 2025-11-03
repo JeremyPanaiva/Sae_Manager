@@ -159,7 +159,10 @@ class DashboardView extends BaseView
                             $html .= "<small>{$dateAvis}</small>";
                             $html .= "</div>";
                         }
+                    } else {
+                        $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
+
 
                     $html .= "</div>"; // dashboard-card
                 }
@@ -235,7 +238,17 @@ class DashboardView extends BaseView
                                 $html .= "<small>{$dateAvis}</small>";
                                 $html .= "</div>";
                             }
+                        } else {
+                            $html .= "<p>Aucun avis pour cette attribution.</p>";
                         }
+                        $html .= "<h4>Ajouter un avis</h4>";
+                        $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                        $html .= "<input type='hidden' name='sae_attribution_id' value='".($firstAttrib['sae_attribution_id'] ?? 0)."'>";
+                        $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                        $html .= "<button type='submit'>Envoyer</button>";
+                        $html .= "</form>";
+
+
                     }
 
                     $html .= "</div>"; // dashboard-card
@@ -301,6 +314,30 @@ class DashboardView extends BaseView
                     } else {
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
+                    // --- Remarques / avis ---
+                    if (!empty($sae['avis'])) {
+                        $html .= "<h4>Remarques</h4>";
+                        foreach ($sae['avis'] as $avis) {
+                            $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
+                            $message = htmlspecialchars($avis['message'] ?? '');
+                            $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+
+                            $html .= "<div class='avis-card'>";
+                            $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
+                            $html .= "<small>{$dateAvis}</small>";
+                            $html .= "</div>";
+                        }
+                    } else {
+                        $html .= "<p>Aucun avis pour cette SAE.</p>";
+                    }
+                    $html .= "<h4>Ajouter un avis</h4>";
+                    $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
+                    $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                    $html .= "<button type='submit'>Envoyer</button>";
+                    $html .= "</form>";
+
+
 
                     $html .= "</div>"; // dashboard-card
                 }
