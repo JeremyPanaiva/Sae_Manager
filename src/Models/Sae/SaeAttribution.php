@@ -269,29 +269,47 @@ class SaeAttribution
     public static function removeFromStudent(int $saeId, int $studentId): void
     {
         try {
-            // Connexion à la base de données
             $db = \Models\Database::getConnection();
 
-            // Requête pour supprimer l'attribution de la SAE pour l'étudiant
-            $query = "DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?";
-
-            $stmt = $db->prepare($query);
-            if ($stmt === false) {
-                throw new \Shared\Exceptions\DataBaseException("Erreur de préparation de la requête : " . $db->error);
-            }
-
-            $stmt->bind_param('ii', $saeId, $studentId);
-
-            if (!$stmt->execute()) {
-                throw new \Shared\Exceptions\DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
-            }
-
+            // 1️⃣ Vérifier combien d'étudiants ont cette SAE
+            $stmt = $db->prepare("SELECT COUNT(*) FROM sae_attributions WHERE sae_id = ?");
+            if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
+            $stmt->bind_param("i", $saeId);
+            $stmt->execute();
+            $stmt->bind_result($count);
+            $stmt->fetch();
             $stmt->close();
 
+            // 2️⃣ Supprimer uniquement l'attribution pour cet étudiant
+            $stmt = $db->prepare("DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?");
+            if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
+            $stmt->bind_param("ii", $saeId, $studentId);
+            if (!$stmt->execute()) throw new \Shared\Exceptions\DataBaseException("Erreur d'exécution : " . $stmt->error);
+            $stmt->close();
+
+            // 3️⃣ Si c'était le dernier étudiant, supprimer aussi les avis et tâches
+            if ($count === 1) {
+                // Supprimer tous les avis liés
+                $stmt = $db->prepare("DELETE FROM sae_avis WHERE sae_attribution_id IN (SELECT id FROM sae_attributions WHERE sae_id = ?)");
+                if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
+                $stmt->bind_param("i", $saeId);
+                $stmt->execute();
+                $stmt->close();
+
+                // Supprimer toutes les tâches liées
+                $stmt = $db->prepare("DELETE FROM todo_list WHERE sae_attribution_id IN (SELECT id FROM sae_attributions WHERE sae_id = ?)");
+                if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
+                $stmt->bind_param("i", $saeId);
+                $stmt->execute();
+                $stmt->close();
+            }
+
         } catch (\mysqli_sql_exception $e) {
-            throw new \Shared\Exceptions\DataBaseException("Unable to connect to the database");
+            throw new \Shared\Exceptions\DataBaseException("Erreur SQL : " . $e->getMessage());
         }
     }
+
+
 
     // Obtenir les étudiants assignés à une SAE
     public static function getAssignedStudents(int $saeId): array
