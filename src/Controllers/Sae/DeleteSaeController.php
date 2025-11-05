@@ -4,6 +4,7 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\Sae;
+use Models\Sae\SaeAttribution;
 use Shared\Exceptions\SaeAttribueException;
 use Views\Sae\SaeView;
 
@@ -47,7 +48,7 @@ class DeleteSaeController implements ControllerInterface
 
             // Vérifie si la SAE est déjà attribuée
             if (Sae::isAttribuee($saeId)) {
-                throw new \Shared\Exceptions\SaeAttribueException($sae['titre']);
+                throw new SaeAttribueException($sae['titre']);
             }
 
             // Supprimer la SAE
@@ -66,11 +67,15 @@ class DeleteSaeController implements ControllerInterface
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-        } catch (\Throwable $e) {
-            // Autres erreurs → si possible, récupère les SAE sinon vide
+        } catch (SaeAttribueException $e) {
+            // SAE attribuée → on récupère toutes les SAE pour afficher la liste avec le message
             $saes = [];
             try {
                 $saes = Sae::getByClient($clientId);
+                // Ajout info sur le responsable de chaque SAE
+                foreach ($saes as &$s) {
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($s['id']);
+                }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
                 // Si la DB est HS, on laisse vide
             }
@@ -79,12 +84,32 @@ class DeleteSaeController implements ControllerInterface
                 'saes' => $saes,
                 'error_message' => $e->getMessage(),
             ];
+
+            $view = new SaeView("Gestion des SAE", $data, $username, $role);
+            echo $view->render();
+            exit();
+        } catch (\Throwable $e) {
+            // Autres erreurs → si possible, récupère les SAE sinon vide
+            $saes = [];
+            try {
+                $saes = Sae::getByClient($clientId);
+                foreach ($saes as &$s) {
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($s['id']);
+                }
+            } catch (\Shared\Exceptions\DataBaseException $dbEx) {
+                // Si la DB est HS, on laisse vide
+            }
+
+            $data = [
+                'saes' => $saes,
+                'error_message' => $e->getMessage(),
+            ];
+
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
         }
     }
-
 
     public static function support(string $path, string $method): bool
     {
