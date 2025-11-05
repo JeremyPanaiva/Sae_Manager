@@ -74,10 +74,30 @@ class Sae
 
     public static function getAllProposed(): array
     {
-        $db = Database::getConnection();
-        $result = $db->query("SELECT * FROM sae");
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $db = \Models\Database::getConnection();
+
+        $stmt = $db->prepare("
+        SELECT 
+            s.id,
+            s.titre,
+            s.description,
+            s.client_id,
+            s.date_creation
+        FROM sae s
+    ");
+
+        if (!$stmt->execute()) {
+            throw new \Shared\Exceptions\DataBaseException(
+                "Impossible de récupérer les SAE."
+            );
+        }
+
+        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $saes;
     }
+
 
     public static function getByClient(int $clientId): array
     {
