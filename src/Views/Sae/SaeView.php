@@ -171,14 +171,9 @@ class SaeView extends BaseView
 
 
 
-
-
-
-
-
-
-
             case 'client':
+
+                // Formulaire de création
                 $html .= "<h2>Créer une nouvelle SAE</h2>";
                 $html .= "<form method='POST' action='/creer_sae'>";
                 $html .= "<label>Titre :</label><input type='text' name='titre' required>";
@@ -186,15 +181,44 @@ class SaeView extends BaseView
                 $html .= "<button type='submit'>Créer SAE</button>";
                 $html .= "</form>";
 
-
+                // Liste des SAE existantes
                 $html .= "<h2>Vos SAE existantes</h2>";
+
                 foreach ($this->data['saes'] ?? [] as $sae) {
-                    $html .= "<div class='sae-card'>";
+
+                    // --------------------------
+                    //   CODE COULEUR
+                    // --------------------------
+                    if (!empty($sae['responsable_attribution'])) {
+                        // La SAE est attribuée (peu importe les étudiants côté client)
+                        $cardClass = "sae-card attribuee";
+                    } else {
+                        // La SAE n'est pas attribuée
+                        $cardClass = "sae-card libre";
+                    }
+
+                    $html .= "<div class='{$cardClass}'>";
+
+                    // Titre, description, date
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
                     $html .= "<p><strong>Date de création :</strong> " . htmlspecialchars($sae['date_creation']) . "</p>";
 
-                    // Formulaire de suppression
+                    // --------------------------
+                    //   RESPONSABLE ATTRIBUTION
+                    // --------------------------
+                    if (!empty($sae['responsable_attribution'])) {
+                        $responsable = $sae['responsable_attribution'];
+                        $html .= "<p><strong>Attribuée par :</strong> "
+                            . htmlspecialchars($responsable['prenom'] . " " . $responsable['nom'])
+                            . "</p>";
+                    } else {
+                        $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
+                    }
+
+                    // --------------------------
+                    //   BOUTON SUPPRESSION
+                    // --------------------------
                     $html .= "<form method='POST' action='/delete_sae' onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit' class='btn-supprimer'>Supprimer</button>";
@@ -202,6 +226,7 @@ class SaeView extends BaseView
 
                     $html .= "</div>";
                 }
+
                 break;
 
 
