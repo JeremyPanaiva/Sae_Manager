@@ -190,23 +190,20 @@ class SaeView extends BaseView
                     //   CODE COULEUR
                     // --------------------------
                     if (!empty($sae['responsable_attribution'])) {
-                        // La SAE est attribuée (peu importe les étudiants côté client)
                         $cardClass = "sae-card attribuee";
                     } else {
-                        // La SAE n'est pas attribuée
                         $cardClass = "sae-card libre";
                     }
 
                     $html .= "<div class='{$cardClass}'>";
 
-                    // Titre, description, date
+                    // --------------------------
+                    //   AFFICHAGE NORMAL
+                    // --------------------------
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
                     $html .= "<p><strong>Date de création :</strong> " . htmlspecialchars($sae['date_creation']) . "</p>";
 
-                    // --------------------------
-                    //   RESPONSABLE ATTRIBUTION
-                    // --------------------------
                     if (!empty($sae['responsable_attribution'])) {
                         $responsable = $sae['responsable_attribution'];
                         $html .= "<p><strong>Attribuée par :</strong> "
@@ -215,6 +212,28 @@ class SaeView extends BaseView
                     } else {
                         $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
                     }
+
+                    // --------------------------
+                    //   BOUTON : MODIFIER
+                    // --------------------------
+                    $html .= "<button class='btn-modifier' onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
+
+                    // --------------------------
+                    //   FORMULAIRE DE MODIFICATION (hidden par défaut)
+                    // --------------------------
+                    $html .= "<div id='edit-{$sae['id']}' class='edit-form' style='display:none; margin-top:10px;'>";
+                    $html .= "<form method='POST' action='/update_sae'>";
+                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+
+                    $html .= "<label>Nouveau titre :</label>";
+                    $html .= "<input type='text' name='titre' value='" . htmlspecialchars($sae['titre']) . "' required>";
+
+                    $html .= "<label>Nouvelle description :</label>";
+                    $html .= "<textarea name='description' required>" . htmlspecialchars($sae['description']) . "</textarea>";
+
+                    $html .= "<button type='submit' class='btn-valider'>Valider</button>";
+                    $html .= "</form>";
+                    $html .= "</div>";
 
                     // --------------------------
                     //   BOUTON SUPPRESSION
