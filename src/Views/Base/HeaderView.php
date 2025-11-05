@@ -18,9 +18,10 @@ class HeaderView extends AbstractView
     public const ROLE_KEY = 'ROLE_KEY';
     public const DASHBOARD_LINK_KEY = 'DASHBOARD_LINK_KEY';
     public const SAE_LINK_KEY = 'SAE_LINK_KEY';
+    public const OVERVIEW_SAE_LINK_KEY = 'OVERVIEW_SAE_LINK_KEY';
+    public const OVERVIEW_SAE_STYLE_KEY = 'OVERVIEW_SAE_STYLE_KEY';
 
     public const NAV_STYLE_KEY = 'NAV_STYLE';
-
     public const USER_META_STYLE_KEY = 'USER_META_STYLE';
 
     public function __construct()
@@ -53,6 +54,8 @@ class HeaderView extends AbstractView
         $usersLink = Login::PATH;
         $dashboardLink = Login::PATH;
         $saeLink = Login::PATH;
+        $overviewSaeLink = '/overview_sae';
+        $overviewSaeStyle = 'display:none;';
 
         // Déconnecté: cacher le menu et le bloc nom/prénom
         $navStyle = 'display:none;';
@@ -73,6 +76,7 @@ class HeaderView extends AbstractView
             // Connecté: afficher le menu et le bloc nom/prénom
             $navStyle = '';
             $userMetaStyle = '';
+            $overviewSaeStyle = ''; // Affiche le bouton
         }
 
         $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -102,6 +106,8 @@ class HeaderView extends AbstractView
             self::USERS_LINK_KEY => $usersLink,
             self::DASHBOARD_LINK_KEY => $dashboardLink,
             self::SAE_LINK_KEY => $saeLink,
+            self::OVERVIEW_SAE_LINK_KEY => $overviewSaeLink,
+            self::OVERVIEW_SAE_STYLE_KEY => $overviewSaeStyle,
             'CANONICAL_URL' => $canonical,
 
             self::NAV_STYLE_KEY => $navStyle,
