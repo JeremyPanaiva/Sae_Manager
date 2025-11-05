@@ -11,6 +11,7 @@ use Controllers\Dashboard\TodoController;
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
+use Controllers\OverviewSae\OverviewSaeController;
 use Controllers\Sae\AttribuerSaeController;
 use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
@@ -72,6 +73,7 @@ $controllers = [
     new ContactPost(),
     new AvisController() ,
     new UpdateContentSaeController(),
+    new OverviewSaeController(),
 
 ];
 
