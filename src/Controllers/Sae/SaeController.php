@@ -198,6 +198,8 @@ class SaeController implements ControllerInterface
         exit();
     }
 
+
+
     public function handleUnassignSae(): void
     {
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
