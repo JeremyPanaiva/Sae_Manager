@@ -182,6 +182,36 @@ class Sae
         return $saes;
     }
 
+
+    public static function update(int $clientId, int $saeId, string $titre, string $description): bool
+    {
+        try {
+            self::checkDatabaseConnection();
+
+            $db = Database::getConnection();
+            $stmt = $db->prepare("
+            UPDATE sae 
+            SET titre = ?, description = ?
+            WHERE id = ? AND client_id = ?
+        ");
+            if (!$stmt) {
+                throw new \Exception("Erreur prepare: " . $db->error);
+            }
+
+            $stmt->bind_param("ssii", $titre, $description, $saeId, $clientId);
+
+            if (!$stmt->execute()) {
+                throw new \Exception("Erreur execute: " . $stmt->error);
+            }
+
+            $stmt->close();
+            return true;
+
+        } catch (\Exception $e) {
+            throw new DataBaseException("Impossible de modifier la SAE : " . $e->getMessage());
+        }
+    }
+
     public static function checkDatabaseConnection(): void
     {
         try {
