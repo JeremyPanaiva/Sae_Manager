@@ -126,7 +126,14 @@ class SaeController implements ControllerInterface
 
             case 'client':
                 $saes = Sae::getByClient($userId);
+
+                foreach ($saes as &$sae) {
+                    // Ajout : responsable ayant attribué la SAE (ou null si pas attribué)
+                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
+                }
+
                 return ['saes' => $saes];
+
 
             default:
                 return [];
