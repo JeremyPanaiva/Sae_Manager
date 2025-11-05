@@ -15,6 +15,7 @@ use Controllers\Sae\AttribuerSaeController;
 use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
+use Controllers\Sae\UpdateContentSaeController;
 use Controllers\Sae\UpdateSaeDateController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
@@ -70,6 +71,7 @@ $controllers = [
     new ContactController(),
     new ContactPost(),
     new AvisController() ,
+    new UpdateContentSaeController(),
 
 ];
 
