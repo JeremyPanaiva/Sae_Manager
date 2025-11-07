@@ -58,14 +58,39 @@ class DashboardView extends BaseView
     {
         $html = '';
 
-        // 1️⃣ On récupère l'erreur, soit depuis data, soit depuis la session
+        // Messages de succès
+        $successMessage = $this->data['success_message'] ?? $_SESSION['success_message'] ?? null;
+        if ($successMessage) {
+            $html .= "<div class='success-message' style='background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= htmlspecialchars($successMessage);
+            $html .= "</div>";
+            unset($_SESSION['success_message']);
+        }
+
+        // Messages d'avertissement
+        $warningMessage = $this->data['warning_message'] ?? $_SESSION['warning_message'] ?? null;
+        if ($warningMessage) {
+            $html .= "<div class='warning-message' style='background-color: #fff3cd; border: 1px solid #ffc107; color: #856404; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= htmlspecialchars($warningMessage);
+            $html .= "</div>";
+            unset($_SESSION['warning_message']);
+        }
+
+        // Messages d'information
+        $infoMessage = $this->data['info_message'] ?? $_SESSION['info_message'] ?? null;
+        if ($infoMessage) {
+            $html .= "<div class='info-message' style='background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= htmlspecialchars($infoMessage);
+            $html .= "</div>";
+            unset($_SESSION['info_message']);
+        }
+
+        // Messages d'erreur
         $errorMessage = $this->data['error_message'] ?? $_SESSION['error_message'] ?? null;
         if ($errorMessage) {
             $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
             $html .= htmlspecialchars($errorMessage);
             $html .= "</div>";
-
-            // On supprime la session pour que ça ne réapparaisse pas au prochain refresh
             unset($_SESSION['error_message']);
         }
 
@@ -132,6 +157,7 @@ class DashboardView extends BaseView
                     } else {
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
+
                     // --- Étudiants associés ---
                     $etudiants = $sae['etudiants'] ?? [];
                     if (!empty($etudiants)) {
@@ -144,8 +170,7 @@ class DashboardView extends BaseView
                         $html .= "</ul>";
                     }
 
-
-                    // --- Remarques / avis pour RESPONSABLE ---
+                    // --- Remarques / avis ---
                     if (!empty($sae['avis'])) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($sae['avis'] as $avis) {
@@ -154,19 +179,15 @@ class DashboardView extends BaseView
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
                             $message = htmlspecialchars($avis['message'] ?? '');
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
-                            $avisId = $avis['id'] ?? 0;
-                            $currentUserId = $_SESSION['user']['id'] ?? 0;
 
                             $html .= "<div class='avis-card'>";
                             $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
                             $html .= "<small>{$dateAvis}</small>";
-
                             $html .= "</div>";
                         }
                     } else {
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
-
 
                     $html .= "</div>"; // dashboard-card
                 }
@@ -288,8 +309,6 @@ class DashboardView extends BaseView
                 break;
 
 
-
-
             case 'responsable':
                 $html .= "<h2>Vos SAE attribuées</h2>";
 
@@ -320,7 +339,6 @@ class DashboardView extends BaseView
                     $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
                     $html .= "</form>";
                     $html .= "</div>";
-
 
                     // To-Do list et progression
                     $todos = $sae['todos'] ?? [];
@@ -354,7 +372,6 @@ class DashboardView extends BaseView
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
 
-                            // On prend le nom, prénom et rôle directement depuis l'avis
                             $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
                             $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
@@ -363,7 +380,6 @@ class DashboardView extends BaseView
                             $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
-                            // Bouton supprimer si même utilisateur
                             if ($userIdAuteur === $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
@@ -377,7 +393,6 @@ class DashboardView extends BaseView
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
 
-
                     // Formulaire ajouter un avis
                     $html .= "<h4>Ajouter un avis</h4>";
                     $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
@@ -388,14 +403,67 @@ class DashboardView extends BaseView
 
                     $html .= "</div>"; // dashboard-card
                 }
-                break;
 
+
+                $currentDelays = \Models\Sae\AutoReminder::getReminderDelays();
+
+                // Séparateur visuel
+                $html .= "<hr style='margin: 40px 0; border: none; border-top: 2px solid #ddd;'>";
+
+                // Nouveau titre de section
+                $html .= "<h2>Gestion des rappels par email</h2>";
+
+                $html .= "<div class='dashboard-card' style='background-color: #f8f9fa;'>";
+
+                // Envoi immédiat
+                $html .= "<h4>Envoyer un rappel immédiatement</h4>";
+                $html .= "<p style='color: #666; font-size: 0.95em; margin-bottom: 12px;'>Envoyez un email aux étudiants ayant une échéance dans le délai sélectionné.</p>";
+                $html .= "<form method='POST' action='/sae/manage-reminders' class='todo-add'>";
+                $html .= "<input type='hidden' name='action' value='send_now'>";
+                $html .= "<select name='days'>";
+                foreach ([1, 2, 3, 5, 7, 10, 14] as $d) {
+                    $selected = $d == 3 ? 'selected' : '';
+                    $label = $d == 1 ? '1 jour avant' : "{$d} jours avant";
+                    $html .= "<option value='{$d}' {$selected}>{$label}</option>";
+                }
+                $html .= "</select>";
+                $html .= "<button type='submit'>Envoyer maintenant</button>";
+                $html .= "</form>";
+
+                // Ligne de séparation
+                $html .= "<hr style='margin: 25px 0; border: none; border-top: 1px solid #ddd;'>";
+
+                // Configuration auto
+                $html .= "<h4>Configuration des rappels automatiques</h4>";
+                $html .= "<p style='color: #666; font-size: 0.95em; margin-bottom: 12px;'>Les rappels seront envoyés automatiquement chaque jour aux délais cochés ci-dessous.</p>";
+                $html .= "<form method='POST' action='/sae/manage-reminders'>";
+                $html .= "<input type='hidden' name='action' value='configure_auto'>";
+
+                foreach ([1, 3, 7, 10, 14] as $d) {
+                    $checked = in_array($d, $currentDelays) ? 'checked' : '';
+                    $label = $d == 1 ? '1 jour avant' : "{$d} jours avant";
+                    $html .= "<label style='display:block; margin:10px 0; cursor:pointer;'>";
+                    $html .= "<input type='checkbox' name='delays[]' value='{$d}' {$checked} style='margin-right:8px;'> {$label}";
+                    $html .= "</label>";
+                }
+
+                $html .= "<button type='submit' style='margin-top:15px;'>Enregistrer la configuration</button>";
+                $html .= "</form>";
+
+                if (!empty($currentDelays)) {
+                    $html .= "<p style='margin-top:20px; padding:10px; background-color:#fff; border-left:3px solid #28a745; color:#666; font-size:0.9em;'>";
+                    $html .= "<strong>Actuellement actif :</strong> J-" . implode(', J-', $currentDelays);
+                    $html .= "</p>";
+                }
+
+                $html .= "</div>"; // dashboard-card
+
+                break;
 
 
             default:
                 $html .= "<p>Rôle inconnu ou aucune donnée disponible.</p>";
         }
-
 
         return $html;
     }
