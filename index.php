@@ -6,6 +6,25 @@ date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 require_once "Autoloader.php";
 \Autoloader::register();
 
+// Démarrer la session dès le départ
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+use Models\Sae\AutoReminder;
+try {
+    AutoReminder::checkAndSendReminders();
+} catch (\Exception $e) {
+    error_log("Erreur rappels auto: " . $e->getMessage());
+}
+
+
+if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+}
+
 // Importer les controllers
 use Controllers\Dashboard\TodoController;
 use Controllers\Home\HomeController;
@@ -16,6 +35,7 @@ use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
 use Controllers\Sae\UpdateSaeDateController;
+use Controllers\Sae\ManageRemindersController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
 use Controllers\User\Register;
@@ -31,18 +51,6 @@ use Controllers\Dashboard\DashboardController;
 use Controllers\Sae\CreateSaeController;
 use Controllers\Legal\ContactPost;
 use Controllers\Sae\AvisController;
-
-
-// Démarrer la session dès le départ
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
-}
 
 // Liste des contrôleurs
 $controllers = [
@@ -61,7 +69,7 @@ $controllers = [
     new PlanDuSiteController(),
     new DashboardController(),
     new SaeController(),
-    new CreateSaeController() ,
+    new CreateSaeController(),
     new AttribuerSaeController(),
     new DeleteSaeController(),
     new TodoController(),
@@ -69,10 +77,9 @@ $controllers = [
     new UnassignSaeController(),
     new ContactController(),
     new ContactPost(),
-    new AvisController() ,
-
+    new AvisController(),
+    new ManageRemindersController(),
 ];
-
 
 // Récupérer uniquement le chemin de l'URL (sans query string)
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
