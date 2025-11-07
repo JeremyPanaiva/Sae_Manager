@@ -377,6 +377,81 @@ class EmailService
         }
     }
 
+    /**
+     * Envoie un email de rappel à un étudiant X jours avant la date limite
+     */
+    public function sendDeadlineReminderNotification(
+        string $studentEmail,
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom,
+        int $daysBefore = 3
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+
+            $dayWord = $daysBefore == 1 ? 'jour' : 'jours';
+            $this->mailer->Subject = "Rappel : Date limite SAE dans {$daysBefore} {$dayWord} - " . $saeTitre;
+
+            $dateRenduFormatted = !empty($dateRendu) ? date('d/m/Y', strtotime($dateRendu)) : 'Non définie';
+            $saeUrl = $this->getBaseUrl() . '/dashboard';
+
+            $emailView = new EmailView('deadline_reminder', [
+                'STUDENT_NAME' => $studentNom,
+                'SAE_TITLE' => $saeTitre,
+                'DATE_RENDU' => $dateRenduFormatted,
+                'RESPONSABLE_NAME' => $responsableNom,
+                'SAE_URL' => $saeUrl,
+                'DAYS_BEFORE' => $daysBefore
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getDeadlineReminderEmailTextBody(
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $responsableNom,
+                $daysBefore
+            );
+
+            $this->mailer->send();
+            return true;
+
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (deadline reminder): ' . $e->getMessage());
+
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+
+                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($from, $fromName);
+                }
+
+                $mail->addAddress($studentEmail);
+                $mail->isHTML(true);
+                $mail->Subject = $this->mailer->Subject;
+                $mail->Body = $this->mailer->Body;
+                $mail->AltBody = $this->mailer->AltBody;
+
+                $mail->send();
+                return true;
+            } catch (Exception $e2) {
+                error_log('PHPMailer fallback exception (deadline reminder): ' . $e2->getMessage());
+                throw new DataBaseException("Erreur d'envoi d'email de rappel: " . $e2->getMessage());
+            }
+        }
+    }
+
     private function getBaseUrl(): string
     {
         $appUrl = Database::parseEnvVar('APP_URL');
@@ -390,11 +465,9 @@ class EmailService
         return $protocol . '://' . $host . $path;
     }
 
-    // ===== Versions texte (AltBody) =====
-
     private function getPasswordResetEmailTextBody(string $resetLink): string
     {
-        return "Réinitialisation de votre mot de passe - SAE Manager\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nLien : {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nCordialement,\nL'équipe SAE Manager";
+        return "Réinitialisation de votre mot de passe - SAE Manager\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nLien : {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet email.\n\nCordialement,\nL'équipe SAE Manager";
     }
 
     private function getSaeCreationEmailTextBody(string $responsableNom, string $clientNom, string $saeTitle, string $saeDescription): string
@@ -415,23 +488,26 @@ class EmailService
         return "Bonjour {$clientNom},\n\nUn étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\nSAE : {$saeTitre}\nÉTUDIANT AFFECTÉ : {$studentNom}\nRESPONSABLE : {$responsableNom}\n\n{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
+    private function getDeadlineReminderEmailTextBody(string $studentNom, string $saeTitre, string $dateRendu, string $responsableNom, int $daysBefore = 3): string
+    {
+        $saeUrl = $this->getBaseUrl() . '/dashboard';
+        $dayWord = $daysBefore == 1 ? 'jour' : 'jours';
+        return "Bonjour {$studentNom},\n\nRAPPEL IMPORTANT\n\nLa date limite de rendu de votre SAE approche !\n\nSAE : {$saeTitre}\nDATE LIMITE : {$dateRendu} (dans {$daysBefore} {$dayWord})\nRESPONSABLE : {$responsableNom}\n\nN'oubliez pas de finaliser votre travail et de le soumettre avant la date limite.\n\n{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
+    }
+
     public function sendContactEmail(string $fromUserEmail, string $subject, string $message): bool
     {
         try {
-            // Nettoyage
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
 
-            // Destinataire de contact
             $to = 'sae-manager@alwaysdata.net';
             $this->mailer->addAddress($to);
 
-            // Reply-To = email de l'utilisateur
             if (filter_var($fromUserEmail, FILTER_VALIDATE_EMAIL)) {
                 $this->mailer->addReplyTo($fromUserEmail);
             }
 
-            // Sujet / contenu
             $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
             $this->mailer->isHTML(false);
             $this->mailer->Subject = '[Contact] ' . $safeSubject;
@@ -448,7 +524,6 @@ class EmailService
             $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
             error_log('PHPMailer SMTP exception (contact): ' . $e->getMessage() . ' | ErrorInfo: ' . $phpmailerError);
 
-            // Fallback mail() local si configuré
             try {
                 $mail = new PHPMailer(true);
                 $mail->isMail();
