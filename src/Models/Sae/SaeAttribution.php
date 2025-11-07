@@ -112,52 +112,35 @@ class SaeAttribution
         return $assigned;
     }
 
-    /* -------------------- Fonctions pour le dashboard -------------------- */
-
-    // Modèle SaeAttribution.php
-
-    // Modèle SaeAttribution.php
-
     public static function getStudentsForSae(int $saeId): array
     {
-        // Connexion à la base de données
         $db = Database::getConnection();
 
-        // Requête pour récupérer les étudiants attribués à la SAE
         $query = "SELECT users.id, users.nom, users.prenom
                   FROM users
                   INNER JOIN sae_attributions ON sae_attributions.student_id = users.id
                   WHERE sae_attributions.sae_id = ?";
 
-        // Préparation de la requête
         $stmt = $db->prepare($query);
 
         if ($stmt === false) {
             die('Erreur de préparation de la requête : ' . $db->error);
         }
 
-        // Lier le paramètre sae_id
         $stmt->bind_param('i', $saeId);
 
-        // Exécution de la requête
         if (!$stmt->execute()) {
             die('Erreur lors de l\'exécution de la requête : ' . $stmt->error);
         }
 
-        // Récupération des résultats
         $result = $stmt->get_result();
 
-        // Vérifie si des résultats sont retournés
         if ($result->num_rows === 0) {
-            return [];  // Aucun étudiant trouvé pour cette SAE
+            return [];
         }
 
-        // Retourner tous les étudiants associés à la SAE
         return $result->fetch_all(MYSQLI_ASSOC);
     }
-
-
-
 
     public static function getStudentsBySae(int $saeId): array
     {
@@ -254,24 +237,19 @@ class SaeAttribution
 
             $stmt->close();
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // On remonte directement l'exception pour que le controller la récupère
             throw $e;
         } catch (\Exception $e) {
-            // On transforme toutes les autres exceptions en DataBaseException pour cohérence
             throw new \Shared\Exceptions\DataBaseException(
                 "Impossible de mettre à jour la date de rendu. Veuillez contacter l'administrateur."
             );
         }
     }
 
-
-    // Désassigner un étudiant d'une SAE
     public static function removeFromStudent(int $saeId, int $studentId): void
     {
         try {
             $db = \Models\Database::getConnection();
 
-            // 1️⃣ Vérifier combien d'étudiants ont cette SAE
             $stmt = $db->prepare("SELECT COUNT(*) FROM sae_attributions WHERE sae_id = ?");
             if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
             $stmt->bind_param("i", $saeId);
@@ -280,23 +258,19 @@ class SaeAttribution
             $stmt->fetch();
             $stmt->close();
 
-            // 2️⃣ Supprimer uniquement l'attribution pour cet étudiant
             $stmt = $db->prepare("DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?");
             if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
             $stmt->bind_param("ii", $saeId, $studentId);
             if (!$stmt->execute()) throw new \Shared\Exceptions\DataBaseException("Erreur d'exécution : " . $stmt->error);
             $stmt->close();
 
-            // 3️⃣ Si c'était le dernier étudiant, supprimer aussi les avis et tâches
             if ($count === 1) {
-                // Supprimer tous les avis liés
                 $stmt = $db->prepare("DELETE FROM sae_avis WHERE sae_attribution_id IN (SELECT id FROM sae_attributions WHERE sae_id = ?)");
                 if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
                 $stmt->bind_param("i", $saeId);
                 $stmt->execute();
                 $stmt->close();
 
-                // Supprimer toutes les tâches liées
                 $stmt = $db->prepare("DELETE FROM todo_list WHERE sae_attribution_id IN (SELECT id FROM sae_attributions WHERE sae_id = ?)");
                 if ($stmt === false) throw new \Shared\Exceptions\DataBaseException("Erreur de préparation : " . $db->error);
                 $stmt->bind_param("i", $saeId);
@@ -309,9 +283,6 @@ class SaeAttribution
         }
     }
 
-
-
-    // Obtenir les étudiants assignés à une SAE
     public static function getAssignedStudents(int $saeId): array
     {
         $query = "SELECT u.id, u.nom, u.prenom FROM users u
@@ -324,15 +295,6 @@ class SaeAttribution
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-
-    /**
-     * Vérifie que le responsable est bien celui qui a attribué l'étudiant à la SAE
-     * @throws UnauthorizedSaeUnassignmentException
-     */
-    /**
-     * Vérifie que le responsable est bien celui qui a attribué l'étudiant à la SAE
-     * @throws UnauthorizedSaeUnassignmentException
-     */
     public static function checkResponsableOwnership(int $saeId, int $responsableId, int $studentId): void
     {
         $db = Database::getConnection();
@@ -387,8 +349,6 @@ class SaeAttribution
         return $assigned;
     }
 
-
-
     /**
      * Récupère toutes les SAE attribuées à un étudiant
      */
@@ -436,14 +396,13 @@ class SaeAttribution
         $resp = $stmt->get_result()->fetch_assoc();
         $stmt->close();
 
-        return $resp ?: null; // null si pas attribué
+        return $resp ?: null;
     }
 
     public static function getStudentsByAttribution(int $attribId): array
     {
         $db = Database::getConnection();
 
-        // Requête : récupérer l'étudiant associé à cette attribution
         $stmt = $db->prepare("
         SELECT u.id, u.nom, u.prenom
         FROM users u
@@ -469,14 +428,55 @@ class SaeAttribution
         return $students;
     }
 
+    /**
+     * Récupère toutes les SAE dont la date de rendu est dans X jours
+     *
+     * @param int $days Nombre de jours avant la date limite
+     * @return array Liste des SAE avec les informations des étudiants et responsables
+     */
+    public static function getSaesDueInDays(int $days): array
+    {
+        self::checkDatabaseConnection();
+        $db = Database::getConnection();
 
+        $targetDate = date('Y-m-d', strtotime("+{$days} days"));
 
+        $stmt = $db->prepare("
+            SELECT 
+                sa.sae_id,
+                s.titre AS sae_titre,
+                sa.date_rendu,
+                sa.student_id,
+                student.nom AS student_nom,
+                student.prenom AS student_prenom,
+                student.mail AS student_email,
+                responsable.nom AS responsable_nom,
+                responsable.prenom AS responsable_prenom
+            FROM sae_attributions sa
+            JOIN sae s ON sa.sae_id = s.id
+            JOIN users student ON sa.student_id = student.id
+            JOIN users responsable ON sa.responsable_id = responsable.id
+            WHERE DATE(sa.date_rendu) = ?
+            ORDER BY s.titre, student.nom, student.prenom
+        ");
+
+        if (!$stmt) {
+            throw new \Exception("Erreur lors de la préparation de la requête SQL");
+        }
+
+        $stmt->bind_param("s", $targetDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $saes;
+    }
 
     public static function checkDatabaseConnection(): void
     {
         try {
             $db = Database::getConnection();
-            // simple ping pour tester la connexion
             if (!$db->ping()) {
                 throw new DataBaseException("Unable to connect to the database");
             }
@@ -484,6 +484,4 @@ class SaeAttribution
             throw new DataBaseException("Unable to connect to the database");
         }
     }
-
-
 }
