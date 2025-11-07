@@ -30,16 +30,16 @@ class DashboardView extends BaseView
         $this->role = $role;
     }
 
+    function rendreLiensCliquables($texte) {
+        $pattern = '/(https?:\/\/[^\s]+)/i'; // détecte les URLs commençant par http(s)
+        $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
+        return preg_replace($pattern, $remplacement, $texte);
+    }
     public function templatePath(): string
     {
         return __DIR__ . '/dashboard.html';
     }
 
-    function rendreLiensCliquables($texte) {
-        $pattern = '/(https?:\/\/[^\s]+)/i';
-        $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
-        return preg_replace($pattern, $remplacement, $texte);
-    }
     public function templateKeys(): array
     {
         $contentHtml = $this->buildContentHtml();
