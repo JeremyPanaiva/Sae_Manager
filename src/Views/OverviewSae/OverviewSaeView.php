@@ -33,10 +33,10 @@ class OverviewSaeView extends BaseView
         $headerKeys = $headerView->templateKeys();
 
         return array_merge($headerKeys, [
-            'TITLE_KEY'    => $this->title,
-            'CONTENT_KEY'  => $contentHtml,
+            'TITLE_KEY' => $this->title,
+            'CONTENT_KEY' => $contentHtml,
             'USERNAME_KEY' => $this->username,
-            'ROLE_KEY'     => ucfirst($this->role),
+            'ROLE_KEY' => ucfirst($this->role),
         ]);
     }
 
@@ -90,6 +90,16 @@ class OverviewSaeView extends BaseView
      */
     private function buildTable(array $rows, array $headers, callable $rowDataCallback): string
     {
+        // 1. Lister tous les ids SAE distincts afin de garantir une palette stable
+        $saeKeys = [];
+        foreach ($rows as $sae) {
+            $key = $sae['sae_id'] ?? $sae['id'] ?? $sae['sae_titre'] ?? 'unknown';
+            if (!in_array($key, $saeKeys, true)) {
+                $saeKeys[] = $key;
+            }
+        }
+
+        // 2. Générer la table et passer les clés uniques à getColorForSae
         $html = "<table id='myTable' class='display'>";
         $html .= "<thead><tr>";
         foreach ($headers as $header) {
@@ -98,7 +108,7 @@ class OverviewSaeView extends BaseView
         $html .= "</tr></thead><tbody>";
 
         foreach ($rows as $sae) {
-            $color = $this->getColorForSae($sae);
+            $color = $this->getColorForSae($sae, $saeKeys);
             $html .= "<tr style='background-color: $color'>";
             foreach ($rowDataCallback($sae) as $cell) {
                 $html .= "<td>" . htmlspecialchars($cell) . "</td>";
@@ -111,16 +121,19 @@ class OverviewSaeView extends BaseView
     }
 
     /**
-     * Retourne une couleur pastel unique pour chaque SAE
+     * Retourne une couleur pastel unique pour chaque SAE.
+     * $allKeys = tableau des ids SAE distincts dans le tableau affiché
      */
-    private function getColorForSae(array $sae): string
+    private function getColorForSae(array $sae, array $allKeys): string
     {
-        if (($sae['sae_id'] ?? 0) === 0) {
-            return "hsl(0, 0%, 95%)"; // neutre pour les étudiants sans SAE
-        }
         $key = $sae['sae_id'] ?? $sae['id'] ?? $sae['sae_titre'] ?? 'unknown';
-        $hash = crc32($key);
-        $hue = $hash % 360;
-        return "hsl($hue, 50%, 90%)";
+
+        // Trouve la position de la SAE dans la liste des différentes SAE
+        $idx = array_search($key, $allKeys, true);
+        $colorCount = count($allKeys);
+
+        // Répartition régulière sur le cercle HSL
+        $hue = ($colorCount > 0 && $idx !== false) ? intval(($idx / $colorCount) * 360) : 0;
+        return "hsl($hue, 65%, 85%)";
     }
 }

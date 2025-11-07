@@ -1,5 +1,32 @@
 <link rel="stylesheet" href="/_assets/css/OverviewSae.css">
 
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css"/>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script>
+    $(function() {
+        $('#myTable').DataTable({
+            language: { url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/fr-FR.json" }
+        });
+
+        // Coloration dynamique de chaque SAE (ligne)
+        // On laisse le PHP générer le background-color sur chaque <tr style="">,
+        // rien à faire côté JS.
+        // Si jamais tu veux une couleur seulement sur la 4e colonne (ex: SAE titre), dé-commente ci-dessous :
+
+        /*
+        $('#myTable tbody tr').each(function() {
+            var color = $(this).css('background-color');
+            $(this).find('td').eq(3).css('background-color', color); // 3 : index colonne SAE
+            $(this).css('background-color', ''); // retire le background sur toute la ligne
+        });
+        */
+    });
+</script>
+
 <section class="main sae-page" aria-label="Récapitulatif des SAE">
     <fieldset class="sae-section">
         <legend>Récapitulatif des SAE - {{ROLE_KEY}}</legend>
