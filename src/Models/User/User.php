@@ -211,7 +211,7 @@ class User
     public static function getById(int $id): ?array
     {
         $db = \Models\Database::getConnection();
-        $stmt = $db->prepare("SELECT id, nom, prenom, mail, role FROM users WHERE id = ? LIMIT 1");
+        $stmt = $db->prepare("SELECT id, nom, prenom, mail, role, date_creation FROM users WHERE id = ? LIMIT 1");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -219,4 +219,27 @@ class User
         $stmt->close();
         return $user ?: null;
     }
+
+    public static function checkDatabaseConnection(): void
+    {
+        try {
+            $db = \Models\Database::getConnection();
+            if (!$db->ping()) {
+                throw new \Shared\Exceptions\DataBaseException(
+                    "Unable to connect to the database please contact sae-manager@alwaysdata.net"
+                );
+            }
+        } catch (\Throwable $e) {
+            // 🔹 Message user-friendly pour toutes les exceptions
+            throw new \Shared\Exceptions\DataBaseException(
+                "Unable to connect to the database please contact sae-manager@alwaysdata.net"
+            );
+        }
+    }
+
+
+
+
+
+
 }
