@@ -149,8 +149,26 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+### Project Specific ###
+# Environment files
 .env
+.env.local
+.env.*.local
+
+# Dependencies
 vendor/
-.log
+composer.phar
+node_modules/
+
+# Logs
+*.log
+/logs/
+
+# System tracking files (auto-generated)
+last_reminder_check.json
+
+# Cache
+/cache/
+/tmp/
 
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,visualstudiocode,intellij+all
