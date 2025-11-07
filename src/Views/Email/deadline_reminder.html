@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8'>
+    <title>Rappel de date limite SAE</title>
+</head>
+<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
+<div style='max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9f9f9;'>
+    <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
+        <div style='background-color: #FF9800; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; margin: -30px -30px 20px -30px;'>
+            <h1 style='margin: 0; font-size: 24px;'>⚠️ Rappel : Date Limite Proche</h1>
+        </div>
+
+        <p>Bonjour <strong>{{STUDENT_NAME}}</strong>,</p>
+
+        <p>Nous vous rappelons que la date limite de rendu de votre SAE approche !</p>
+
+        <div style='background-color: #fff3e0; padding: 20px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #FF9800;'>
+            <h3 style='color: #f57c00; margin-top: 0;'>📋 {{SAE_TITLE}}</h3>
+            <hr style='border: none; border-top: 1px dashed #FF9800; margin: 15px 0;'>
+            <p style='color: #555; margin: 5px 0;'><strong>👨‍🏫 Responsable :</strong> {{RESPONSABLE_NAME}}</p>
+            <p style='color: #d32f2f; margin: 15px 0; font-size: 1.2em; font-weight: bold;'>
+                <strong>⏰ Date limite :</strong> {{DATE_RENDU}}
+            </p>
+            <p style='background-color: #ffebee; padding: 10px; border-radius: 5px; margin: 10px 0; text-align: center; font-weight: bold; color: #d32f2f;'>
+                🔔 Il ne reste plus que 3 jours !
+            </p>
+        </div>
+
+        <p>N'oubliez pas de finaliser votre travail et de le soumettre avant la date limite.</p>
+
+        <p><strong>Conseils :</strong></p>
+        <ul style='color: #555;'>
+            <li>Vérifiez que tous vos livrables sont prêts</li>
+            <li>Relisez les consignes de la SAE</li>
+            <li>Testez vos rendus avant la soumission finale</li>
+            <li>Contactez votre responsable en cas de question</li>
+        </ul>
+
+        <div style='text-align: center; margin: 30px 0;'>
+            <a href='{{SAE_URL}}' style='display: inline-block; padding: 12px 30px; background-color: #FF9800; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+                Voir ma SAE
+            </a>
+        </div>
+
+        <hr style='border: none; border-top: 1px solid #ddd; margin: 20px 0;'>
+
+        <p style='font-size: 0.9em; color: #7f8c8d;'>
+            Bon courage pour la finalisation !<br>
+            L'équipe SAE Manager
+        </p>
+    </div>
+</div>
+</body>
+</html>
