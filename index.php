@@ -19,6 +19,7 @@ use Controllers\Sae\UpdateContentSaeController;
 use Controllers\Sae\UpdateSaeDateController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
+use Controllers\User\ProfileController;
 use Controllers\User\Register;
 use Controllers\User\RegisterPost;
 use Controllers\User\Logout;
@@ -72,6 +73,7 @@ $controllers = [
     new ContactPost(),
     new AvisController() ,
     new UpdateContentSaeController(),
+    new ProfileController()
 
 ];
 
