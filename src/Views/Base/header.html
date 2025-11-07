@@ -44,7 +44,11 @@
         </section>
     <section class="user-info" aria-label="Informations utilisateur">
             <div class="user-meta" style="{{USER_META_STYLE}}">
-                <p>👤 {{USERNAME_KEY}} <span class="role-badge role-{{ROLE_CLASS}}">{{ROLE_KEY}}</span></p>
+                <p>
+                    👤 <a href="/user/profile" class="user-profile-link">{{USERNAME_KEY}}</a>
+                    <span class="role-badge role-{{ROLE_CLASS}}">{{ROLE_KEY}}</span>
+                </p>
+
             </div>
             <div class="user-actions">
                 <a href="{{LINK_KEY}}" class="btn btn-outline">{{CONNECTION_LINK_KEY}}</a>
