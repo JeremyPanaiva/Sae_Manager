@@ -30,6 +30,11 @@ class DashboardView extends BaseView
         $this->role = $role;
     }
 
+    function rendreLiensCliquables($texte) {
+        $pattern = '/(https?:\/\/[^\s]+)/i'; // détecte les URLs commençant par http(s)
+        $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
+        return preg_replace($pattern, $remplacement, $texte);
+    }
     public function templatePath(): string
     {
         return __DIR__ . '/dashboard.html';
@@ -153,6 +158,7 @@ class DashboardView extends BaseView
                             $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
                             $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
@@ -252,6 +258,7 @@ class DashboardView extends BaseView
                             $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
                             $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
@@ -350,6 +357,7 @@ class DashboardView extends BaseView
                         foreach ($avisList as $avis) {
                             $userIdAuteur = $avis['user_id'] ?? 0;
                             $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
