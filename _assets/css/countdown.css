@@ -1,0 +1,22 @@
+/* Compte à rebours simple et discret */
+.countdown {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    color: #555;
+    padding: 4px 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-left: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .countdown {
+        display: block;
+        margin-left: 0;
+        margin-top: 5px;
+        font-size: 13px;
+    }
+}
