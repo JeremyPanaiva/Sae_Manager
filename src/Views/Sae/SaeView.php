@@ -86,7 +86,13 @@ class SaeView extends BaseView
                     $clientMail = htmlspecialchars($sae['client_mail'] ?? '');
                     $html .= "<p><strong>Client :</strong> {$clientNom} {$clientPrenom} - {$clientMail}</p>";
 
-                    $html .= "<p><strong>Date de rendu :</strong> " . htmlspecialchars($sae['date_rendu']) . "</p>";
+                    $dateRendu = htmlspecialchars($sae['date_rendu'] ?? '');
+                    if (!empty($dateRendu)) {
+                        $html .= "<p><strong>Date de rendu :</strong></p>";
+                        $html .= "<span class='countdown' data-date='{$dateRendu}'>Calcul en cours...</span>";
+                    } else {
+                        $html .= "<p><strong>Date de rendu :</strong> Non définie</p>";
+                    }
                     $html .= "</div>";
                 }
                 break;
