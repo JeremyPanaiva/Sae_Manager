@@ -297,3 +297,79 @@ form button:hover {
         width: 100%;
     }
 }
+
+/* Liste To-Do */
+ul. todo-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul.todo-list li {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius:  8px;
+    transition: background-color 0.2s ease;
+}
+
+ul.todo-list li:hover {
+    background-color: #f0f0f0;
+}
+
+/* Formulaire toggle (checkbox) */
+.todo-toggle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+/* Checkbox To-Do */
+.todo-checkbox {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--amu-blue);
+}
+
+/* ✅ NOUVEAU : Bouton de suppression avec croix design */
+.todo-delete {
+    margin: 0;
+}
+
+.btn-delete-task {
+    background: none;
+    border: none;
+    cursor:  pointer;
+    font-size:  1.4rem;
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #999;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.btn-delete-task::before {
+    content: '×';
+    font-size: 24px;
+    font-weight: 300;
+    line-height: 1;
+}
+
+.btn-delete-task:hover {
+    background-color: #ff4444;
+    color: white;
+    transform: rotate(90deg);
+}
+
+.btn-delete-task:active {
+    transform: rotate(90deg) scale(0.9);
+}
