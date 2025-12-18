@@ -238,6 +238,29 @@ class User
     }
 
 
+    public static function deleteAccount(int $userId): void
+    {
+        self::checkDatabaseConnection();
+        $db = Database::getConnection();
+
+        try {
+            // ✅ Une seule requête suffit grâce à ON DELETE CASCADE !
+            $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+
+            if ($stmt->affected_rows === 0) {
+                throw new \Exception("Aucun utilisateur trouvé avec cet ID.");
+            }
+
+            $stmt->close();
+
+        } catch (\Exception $e) {
+            error_log("Erreur User::deleteAccount : " . $e->getMessage());
+            throw new DataBaseException("Impossible de supprimer le compte.");
+        }
+    }
+
 
 
 
