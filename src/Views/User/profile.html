@@ -7,7 +7,7 @@
         {{ERRORS_KEY}}
         {{SUCCESS_KEY}}
 
-        <p><strong>Date de création du compte :</strong> {{DATE_CREATION_KEY}}</p>
+        <p><strong>Date de création du compte : </strong> {{DATE_CREATION_KEY}}</p>
 
         <form action="/user/profile" method="POST" class="profile-form">
             <label for="prenom">Prénom :</label>
@@ -25,5 +25,15 @@
 
             <input type="submit" value="Mettre à jour" class="btn btn-primary">
         </form>
+
+        <!-- ✅ NOUVEAU : Zone de suppression du compte -->
+        <div class="danger-zone">
+            <h3>Zone dangereuse</h3>
+            <p>La suppression de votre compte est <strong>définitive et irréversible</strong>.  Toutes vos données seront supprimées.</p>
+
+            <form action="/user/profile/delete" method="POST" class="delete-form" onsubmit="return confirm('⚠️ ATTENTION : Cette action est IRRÉVERSIBLE.\n\nÊtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\nToutes vos SAE, to-do lists, avis et données personnelles seront perdues.');">
+                <button type="submit" class="btn btn-danger">Supprimer définitivement mon compte</button>
+            </form>
+        </div>
     </section>
 </main>
