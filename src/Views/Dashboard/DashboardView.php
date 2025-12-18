@@ -92,13 +92,27 @@ class DashboardView extends BaseView
                     $html .= "<p><strong>Date de rendu :</strong> {$dateRendu} ";
                     $html .= "<span class='countdown' data-date='{$dateRendu}'></span></p>";
 
-                    // --- Avancement To-Do List ---
-                    $todos = $sae['todos'] ?? [];
-                    $totalTasks = count($todos);
-                    $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                    // --- Lien GitHub ---
+                    $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
+                    $allTodos = $sae['todos'] ?? [];
+                    $githubLink = \Controllers\Dashboard\GithubLinkController::extractGithubLink($allTodos);
+
+                    $html .= "<div style='background-color: #f0f7ff; padding: 15px; border-left: 4px solid #0366d6; border-radius: 6px; margin:  15px 0;'>";
+                    $html .= "<h4 style='margin-top: 0; color: #0366d6;'>Lien GitHub du projet</h4>";
+                    $html .= "<form method='POST' action='/github/add' style='margin:  0;'>";
+                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
+                    $html .= "<input type='url' name='github_link' placeholder='https://github.com/votre-org/votre-repo' value='" . htmlspecialchars($githubLink ??  '') . "' style='width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-family: monospace; font-size:  0.9rem;'>";
+                    $html .= "<button type='submit' style='margin-top: 10px; padding: 8px 16px; background-color: var(--amu-blue); color: white; border: none; border-radius: 6px; cursor: pointer;'>💾 Enregistrer le lien GitHub</button>";
+                    $html .= "</form>";
+                    $html .= "</div>";
+
+                    // --- Avancement To-Do List (filtré sans le lien GitHub) ---
+                    $filteredTodos = \Controllers\Dashboard\GithubLinkController::filterOutGithubLink($allTodos);
+                    $totalTasks = count($filteredTodos);
+                    $doneTasks = count(array_filter($filteredTodos, fn($task) => !empty($task['fait'])));
                     $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
-                    $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
+                    $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
 
                     // --- Barre de progression ---
                     $html .= "<div class='progress-bar'>";
@@ -106,17 +120,16 @@ class DashboardView extends BaseView
                     $html .= "</div>";
 
                     // --- Formulaire pour ajouter une tâche ---
-                    $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
                     $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
                     $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
-                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
+                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche.. .' required>";
                     $html .= "<button type='submit'>Ajouter</button>";
                     $html .= "</form>";
 
                     // --- Liste des tâches ---
                     if ($totalTasks > 0) {
                         $html .= "<ul class='todo-list'>";
-                        foreach ($todos as $task) {
+                        foreach ($filteredTodos as $task) {
                             $taskId = $task['id'] ?? 0;
                             $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
                             $fait = !empty($task['fait']);
@@ -135,15 +148,15 @@ class DashboardView extends BaseView
                         }
                         $html .= "</ul>";
                     } else {
-                        $html .= "<p>Aucune tâche pour cette SAE.</p>";
+                        $html .= "<p>Aucune tâche pour cette SAE. </p>";
                     }
                     // --- Étudiants associés ---
                     $etudiants = $sae['etudiants'] ?? [];
-                    if (!empty($etudiants)) {
+                    if (! empty($etudiants)) {
                         $html .= "<h4>Autres étudiants associés :</h4>";
                         $html .= "<ul class='student-list'>";
                         foreach ($etudiants as $etudiant) {
-                            $nomComplet = htmlspecialchars($etudiant['nom'] . ' ' . $etudiant['prenom']);
+                            $nomComplet = htmlspecialchars($etudiant['nom'] .  ' ' . $etudiant['prenom']);
                             $html .= "<li>{$nomComplet}</li>";
                         }
                         $html .= "</ul>";
@@ -151,7 +164,7 @@ class DashboardView extends BaseView
 
 
                     // --- Remarques / avis pour RESPONSABLE ---
-                    if (!empty($sae['avis'])) {
+                    if (! empty($sae['avis'])) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($sae['avis'] as $avis) {
                             $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
@@ -182,7 +195,7 @@ class DashboardView extends BaseView
             case 'client':
                 $html .= "<h2>Vos SAE créées et leurs attributions</h2>";
 
-                foreach ($this->data['saes'] ?? [] as $sae) {
+                foreach ($this->data['saes'] ??  [] as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
                     // --- Titre et description de la SAE ---
@@ -202,8 +215,8 @@ class DashboardView extends BaseView
                             $allEtudiants[$etu['id']] = htmlspecialchars(trim(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')));
                         }
 
-                        // Date de rendu : on prend la date de la première attribution
-                        if (!isset($dateRendu)) {
+                        // Date de rendu :  on prend la date de la première attribution
+                        if (! isset($dateRendu)) {
                             $dateRendu = htmlspecialchars($attrib['date_rendu'] ?? '');
                         }
 
@@ -227,20 +240,30 @@ class DashboardView extends BaseView
                     }
                     $html .= "</p>";
 
-                    // --- Date de rendu ---
-                    $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ?? '') . "</p>";
+                    // --- Lien GitHub (lecture seule pour client) ---
+                    $githubLink = \Controllers\Dashboard\GithubLinkController::extractGithubLink($allTodos);
 
-                    // --- To-Do et progression ---
-                    if (!empty($allTodos)) {
-                        $totalTasks = count($allTodos);
-                        $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
+                    if ($githubLink) {
+                        $html .= "<p><strong>GitHub du projet :</strong> <a href='" . htmlspecialchars($githubLink) . "' target='_blank' rel='noopener noreferrer' style='color: #0366d6; font-weight: bold; text-decoration: none; font-family: monospace;'>" . htmlspecialchars($githubLink) . "</a></p>";
+                    } else {
+                        $html .= "<p><strong>GitHub du projet :</strong> <em style='color: #999;'>Non renseigné par les étudiants</em></p>";
+                    }
+
+                    // --- Date de rendu ---
+                    $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ??  '') . "</p>";
+
+                    // --- To-Do et progression (filtré sans le lien GitHub) ---
+                    $filteredTodos = \Controllers\Dashboard\GithubLinkController::filterOutGithubLink($allTodos);
+                    if (!empty($filteredTodos)) {
+                        $totalTasks = count($filteredTodos);
+                        $doneTasks = count(array_filter($filteredTodos, fn($task) => !empty($task['fait'])));
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
-                        $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
+                        $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
                         $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
 
                         $html .= "<ul class='todo-list'>";
-                        foreach ($allTodos as $task) {
+                        foreach ($filteredTodos as $task) {
                             $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
                             $fait = !empty($task['fait']);
                             $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
@@ -251,7 +274,7 @@ class DashboardView extends BaseView
                     }
 
                     // --- Avis / Remarques ---
-                    if (!empty($allAvis)) {
+                    if (! empty($allAvis)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($allAvis as $avis) {
                             $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
@@ -268,16 +291,16 @@ class DashboardView extends BaseView
                             $html .= "<small>{$dateAvis}</small>";
 
                             if (($avis['user_id'] ?? 0) === $currentUserId) {
-                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display: inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color: red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
                                 $html .= "</form>";
                             }
 
                             $html .= "</div>";
                         }
                     } else {
-                        $html .= "<p>Aucun avis pour cette SAE.</p>";
+                        $html .= "<p>Aucun avis pour cette SAE. </p>";
                     }
 
                     // --- Formulaire Ajouter un avis ---
@@ -308,7 +331,7 @@ class DashboardView extends BaseView
                     $html .= "<h3>{$titreSae}</h3>";
 
                     // Étudiants associés
-                    $etudiants = $sae['etudiants'] ?? [];
+                    $etudiants = $sae['etudiants'] ??  [];
                     if (!empty($etudiants)) {
                         $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')), $etudiants);
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
@@ -316,12 +339,22 @@ class DashboardView extends BaseView
                         $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
                     }
 
+                    // --- Lien GitHub (lecture seule pour responsable) ---
+                    $allTodos = $sae['todos'] ?? [];
+                    $githubLink = \Controllers\Dashboard\GithubLinkController::extractGithubLink($allTodos);
+
+                    if ($githubLink) {
+                        $html .= "<p><strong>GitHub du projet :</strong> <a href='" . htmlspecialchars($githubLink) . "' target='_blank' rel='noopener noreferrer' style='color: #0366d6; font-weight:  bold; text-decoration: none; font-family: monospace;'>" . htmlspecialchars($githubLink) . "</a></p>";
+                    } else {
+                        $html .= "<p><strong>GitHub du projet :</strong> <em style='color: #999;'>Non renseigné par les étudiants</em></p>";
+                    }
+
                     // Date de rendu modifiable pour responsable
                     $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
                     $dateRendu = htmlspecialchars($sae['date_rendu'] ?? '');
 
                     $html .= "<div class='date-rendu-wrapper'>";
-                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin:0;'>";
+                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin: 0;'>";
                     $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
                     $html .= "<input type='date' name='date_rendu' value='{$dateRendu}'>";
                     $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
@@ -329,18 +362,18 @@ class DashboardView extends BaseView
                     $html .= "</div>";
 
 
-                    // To-Do list et progression
-                    $todos = $sae['todos'] ?? [];
-                    if (!empty($todos)) {
-                        $totalTasks = count($todos);
-                        $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                    // To-Do list et progression (filtré sans le lien GitHub)
+                    $filteredTodos = \Controllers\Dashboard\GithubLinkController::filterOutGithubLink($allTodos);
+                    if (!empty($filteredTodos)) {
+                        $totalTasks = count($filteredTodos);
+                        $doneTasks = count(array_filter($filteredTodos, fn($task) => !empty($task['fait'])));
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                         $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
                         $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
 
                         $html .= "<ul class='todo-list'>";
-                        foreach ($todos as $task) {
+                        foreach ($filteredTodos as $task) {
                             $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
                             $fait = !empty($task['fait']);
                             $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
@@ -352,7 +385,7 @@ class DashboardView extends BaseView
 
                     // Avis / remarques
                     $avisList = $sae['avis'] ?? [];
-                    if (!empty($avisList)) {
+                    if (! empty($avisList)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($avisList as $avis) {
                             $userIdAuteur = $avis['user_id'] ?? 0;

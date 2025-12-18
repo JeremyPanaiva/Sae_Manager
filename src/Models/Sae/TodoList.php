@@ -22,6 +22,24 @@ class TodoList
         }
     }
 
+    public static function deleteTask(int $taskId): void
+    {
+        try {
+            $db = Database:: getConnection();
+            $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
+            if ($stmt === false) {
+                throw new DataBaseException("Erreur de préparation de la requête.");
+            }
+            $stmt->bind_param("i", $taskId);
+            if (!$stmt->execute()) {
+                throw new DataBaseException("Erreur lors de la suppression de la tâche.");
+            }
+            $stmt->close();
+        } catch (\mysqli_sql_exception $e) {
+            throw new DataBaseException("Impossible de supprimer la tâche.");
+        }
+    }
+
     public static function toggleTask(int $taskId, bool $fait): void
     {
         self::checkDatabaseConnection();

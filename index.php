@@ -8,6 +8,7 @@ require_once "Autoloader.php";
 
 // Importer les controllers
 use Controllers\Dashboard\TodoController;
+use Controllers\Dashboard\GithubLinkController;
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
@@ -53,6 +54,7 @@ $controllers = [
     new LoginPost(),
     new Register(),
     new RegisterPost(),
+    new GithubLinkController(),
     new Logout(),
     new ForgotPassword(),
     new ForgotPasswordPost(),
