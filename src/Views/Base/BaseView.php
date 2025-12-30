@@ -48,13 +48,25 @@ abstract class BaseView implements View
 
     function renderBody(): string
     {
-        $template = file_get_contents($this->templatePath());
+        $templatePath = $this->templatePath();
+
+        // Si c'est un template PHP, on l'inclut avec les données extraites
+        if (str_ends_with($templatePath, '.php')) {
+            ob_start();
+            // Extrait les données pour qu'elles soient accessibles comme variables locales (ex: $KEY devient $KEY)
+            extract($this->data);
+            include $templatePath;
+            return ob_get_clean();
+        }
+
+        // Sinon, comportement legacy (remplacement de chaînes)
+        $template = file_get_contents($templatePath);
 
         foreach ($this->templateKeys() as $key => $value) {
             $replacement = '';
             if (is_string($value)) {
                 if (array_key_exists($value, $this->data)) {
-                    $replacement = (string)$this->data[$value];
+                    $replacement = (string) $this->data[$value];
                 } else {
                     $replacement = $value;
                 }

@@ -3,27 +3,31 @@
 namespace Views\User;
 use Views\Base\BaseView;
 
-class ResetPasswordView extends BaseView {
+class ResetPasswordView extends BaseView
+{
 
-    public const TOKEN = "token";
-    public const EMAIL = "email";
-    public const TOKEN_KEY = 'TOKEN_KEY';
-    public const EMAIL_KEY = 'EMAIL_KEY';
-    public const ERROR_MESSAGE_KEY = 'ERROR_MESSAGE';
-    
-    private const KEYS = [
-        self::TOKEN_KEY => self::TOKEN,
-        self::EMAIL_KEY => self::EMAIL,
-        self::ERROR_MESSAGE_KEY => 'ERROR_MESSAGE'
-    ];
-    private const TEMPLATE_HTML = __DIR__ . '/reset-password.html';
+    private const TEMPLATE_FILE = __DIR__ . '/reset-password.php';
 
-    public function templatePath() : string {
-        return self::TEMPLATE_HTML;
+    public function templatePath(): string
+    {
+        return self::TEMPLATE_FILE;
     }
 
-    public function templateKeys() : array {
-        return self::KEYS;
+    public function templateKeys(): array
+    {
+        return [];
+    }
+
+    public function renderBody(): string
+    {
+        ob_start();
+        // Extraction des données pour les rendre accessibles comme variables dans la vue (ex: $token, $email)
+        extract($this->data);
+
+        // Inclusion du template PHP
+        include $this->templatePath();
+
+        return ob_get_clean();
     }
 
     public function render(): string

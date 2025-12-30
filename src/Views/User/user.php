@@ -5,17 +5,17 @@
         <h2>Liste des utilisateurs</h2>
         <table>
             <thead>
-            <tr>
-                <th>Prenom</th>
-                <th>Nom</th>
-            </tr>
+                <tr>
+                    <th>Prenom</th>
+                    <th>Nom</th>
+                </tr>
             </thead>
             <tbody>
-            {{USERS_ROWS}}
+                <?= $USERS_ROWS ?? '' ?>
             </tbody>
         </table>
         <div class="pagination">
-            {{PAGINATION}}
+            <?= $PAGINATION ?? '' ?>
         </div>
     </section>
 </main>
