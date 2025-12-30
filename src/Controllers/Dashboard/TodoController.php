@@ -10,6 +10,7 @@ class TodoController implements ControllerInterface
 {
     public const PATH_ADD = '/todo/add';
     public const PATH_TOGGLE = '/todo/toggle';
+    public const PATH_DELETE = '/todo/delete';
 
     public function control()
     {
@@ -21,27 +22,28 @@ class TodoController implements ControllerInterface
                 if ($path === self::PATH_ADD) {
                     $this->handleAdd();
                     return;
-                } elseif ($path === self::PATH_TOGGLE) {
+                } elseif ($path === self:: PATH_TOGGLE) {
                     $this->handleToggle();
+                    return;
+                } elseif ($path === self:: PATH_DELETE) {
+                    $this->handleDelete();
                     return;
                 }
             } catch (DataBaseException $e) {
-                // On stocke le message dans la session pour le dashboard
                 $_SESSION['error_message'] = $e->getMessage();
                 header('Location: /dashboard');
                 exit();
             }
         }
 
-        // Redirection si URL invalide
         header('Location: /dashboard');
         exit();
     }
 
     public function handleAdd(): void
     {
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'etudiant') {
-            header('Location: /login');
+        if (! isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'etudiant') {
+            header('Location:  /login');
             exit();
         }
 
@@ -74,8 +76,26 @@ class TodoController implements ControllerInterface
         exit();
     }
 
+    // ✅ NOUVELLE MÉTHODE : Gérer la suppression
+    public function handleDelete(): void
+    {
+        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'etudiant') {
+            header('Location: /login');
+            exit();
+        }
+
+        $taskId = (int)($_POST['task_id'] ?? 0);
+
+        if ($taskId > 0) {
+            TodoList::deleteTask($taskId);
+        }
+
+        header('Location:  /dashboard');
+        exit();
+    }
+
     public static function support(string $path, string $method): bool
     {
-        return in_array($path, [self::PATH_ADD, self::PATH_TOGGLE]) && $method === 'POST';
+        return in_array($path, [self::PATH_ADD, self::PATH_TOGGLE, self::PATH_DELETE]) && $method === 'POST';
     }
 }

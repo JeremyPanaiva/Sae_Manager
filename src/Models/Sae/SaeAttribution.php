@@ -266,32 +266,30 @@ class SaeAttribution
 
 
     // Désassigner un étudiant d'une SAE
+    /**
+     * Désassigne un étudiant d'une SAE.
+     * @throws DataBaseException
+     */
     public static function removeFromStudent(int $saeId, int $studentId): void
     {
         try {
-            // Connexion à la base de données
-            $db = \Models\Database::getConnection();
-
-            // Requête pour supprimer l'attribution de la SAE pour l'étudiant
-            $query = "DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?";
-
-            $stmt = $db->prepare($query);
+            $db = Database::getConnection();
+            $stmt = $db->prepare("DELETE FROM sae_attributions WHERE sae_id = ? AND student_id = ?");
             if ($stmt === false) {
-                throw new \Shared\Exceptions\DataBaseException("Erreur de préparation de la requête : " . $db->error);
+                throw new DataBaseException("Erreur de préparation de la requête : " . $db->error);
             }
-
-            $stmt->bind_param('ii', $saeId, $studentId);
-
+            $stmt->bind_param("ii", $saeId, $studentId);
             if (!$stmt->execute()) {
-                throw new \Shared\Exceptions\DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
+                throw new DataBaseException("Erreur d'exécution : " . $stmt->error);
             }
-
             $stmt->close();
-
         } catch (\mysqli_sql_exception $e) {
-            throw new \Shared\Exceptions\DataBaseException("Unable to connect to the database");
+            throw new DataBaseException("Erreur SQL : " . $e->getMessage());
         }
     }
+
+
+
 
     // Obtenir les étudiants assignés à une SAE
     public static function getAssignedStudents(int $saeId): array
@@ -402,6 +400,57 @@ class SaeAttribution
         $stmt->close();
         return $saes;
     }
+
+    public static function getResponsableForSae(int $saeId): ?array
+    {
+        $db = \Models\Database::getConnection();
+        $stmt = $db->prepare("
+        SELECT DISTINCT u.id, u.nom, u.prenom
+        FROM sae_attributions sa
+        JOIN users u ON sa.responsable_id = u.id
+        WHERE sa.sae_id = ?
+        LIMIT 1
+    ");
+        $stmt->bind_param("i", $saeId);
+        $stmt->execute();
+        $resp = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
+        return $resp ?: null; // null si pas attribué
+    }
+
+    public static function getStudentsByAttribution(int $attribId): array
+    {
+        $db = Database::getConnection();
+
+        // Requête : récupérer l'étudiant associé à cette attribution
+        $stmt = $db->prepare("
+        SELECT u.id, u.nom, u.prenom
+        FROM users u
+        JOIN sae_attributions sa ON sa.student_id = u.id
+        WHERE sa.id = ?
+    ");
+
+        if (!$stmt) {
+            throw new \Shared\Exceptions\DataBaseException("Erreur de préparation de la requête : " . $db->error);
+        }
+
+        $stmt->bind_param("i", $attribId);
+
+        if (!$stmt->execute()) {
+            throw new \Shared\Exceptions\DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        $students = $result->fetch_all(MYSQLI_ASSOC);
+
+        $stmt->close();
+
+        return $students;
+    }
+
+
+
 
     public static function checkDatabaseConnection(): void
     {

@@ -288,3 +288,14 @@ html, body {
         padding: 0.6rem 0.8rem;
     }
 }
+
+.user-profile-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.user-profile-link:hover {
+    text-decoration: underline;
+}
+

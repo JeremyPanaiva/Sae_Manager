@@ -15,9 +15,11 @@ use Controllers\Sae\AttribuerSaeController;
 use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
+use Controllers\Sae\UpdateContentSaeController;
 use Controllers\Sae\UpdateSaeDateController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
+use Controllers\User\ProfileController;
 use Controllers\User\Register;
 use Controllers\User\RegisterPost;
 use Controllers\User\Logout;
@@ -30,6 +32,7 @@ use Controllers\Legal\MentionsLegalesController;
 use Controllers\Dashboard\DashboardController;
 use Controllers\Sae\CreateSaeController;
 use Controllers\Legal\ContactPost;
+use Controllers\Sae\AvisController;
 
 
 // Démarrer la session dès le départ
@@ -68,6 +71,9 @@ $controllers = [
     new UnassignSaeController(),
     new ContactController(),
     new ContactPost(),
+    new AvisController() ,
+    new UpdateContentSaeController(),
+    new ProfileController()
 
 ];
 

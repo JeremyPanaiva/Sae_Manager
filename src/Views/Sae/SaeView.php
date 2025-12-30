@@ -97,8 +97,6 @@ class SaeView extends BaseView
             case 'responsable':
                 $html .= "<h2>SAE proposées par les clients</h2>";
 
-
-
                 // Affichage du message de succès s'il existe
                 if (!empty($this->data['success_message'])) {
                     $html .= "<div class='success-message' style='background-color: #efe; border: 1px solid #8f8; color: #070; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
@@ -107,9 +105,28 @@ class SaeView extends BaseView
                 }
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
-                    $html .= "<div class='sae-card'>";
+
+                    // ✅ Déterminer la classe CSS selon l'état
+                    if (!empty($sae['etudiants_attribues'])) {
+                        $cardClass = "sae-card my-attr"; // SAE attribuée par moi
+                    } elseif (empty($sae['responsable_attribution'])) {
+                        $cardClass = "sae-card free"; // SAE libre / non attribuée
+                    } else {
+                        $cardClass = "sae-card other-attr"; // SAE attribuée par un autre responsable
+                    }
+
+                    $html .= "<div class='{$cardClass}'>";
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
+
+                    // ✅ AJOUT : Attribué par...
+                    if (!empty($sae['responsable_attribution'])) {
+                        $html .= "<p><strong>Attribué par :</strong> "
+                            . htmlspecialchars($sae['responsable_attribution']['nom'] . ' ' . $sae['responsable_attribution']['prenom'])
+                            . "</p>";
+                    } else {
+                        $html .= "<p><strong>Attribué par :</strong> Pas attribué</p>";
+                    }
 
                     // Formulaire d'attribution
                     $html .= "<form method='POST' action='/attribuer_sae'>";
@@ -154,13 +171,9 @@ class SaeView extends BaseView
 
 
 
-
-
-
-
-
-
             case 'client':
+
+                // Formulaire de création
                 $html .= "<h2>Créer une nouvelle SAE</h2>";
                 $html .= "<form method='POST' action='/creer_sae'>";
                 $html .= "<label>Titre :</label><input type='text' name='titre' required>";
@@ -168,15 +181,63 @@ class SaeView extends BaseView
                 $html .= "<button type='submit'>Créer SAE</button>";
                 $html .= "</form>";
 
-
+                // Liste des SAE existantes
                 $html .= "<h2>Vos SAE existantes</h2>";
+
                 foreach ($this->data['saes'] ?? [] as $sae) {
-                    $html .= "<div class='sae-card'>";
+
+                    // --------------------------
+                    //   CODE COULEUR
+                    // --------------------------
+                    if (!empty($sae['responsable_attribution'])) {
+                        $cardClass = "sae-card attribuee";
+                    } else {
+                        $cardClass = "sae-card libre";
+                    }
+
+                    $html .= "<div class='{$cardClass}'>";
+
+                    // --------------------------
+                    //   AFFICHAGE NORMAL
+                    // --------------------------
                     $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
                     $html .= "<p><strong>Date de création :</strong> " . htmlspecialchars($sae['date_creation']) . "</p>";
 
-                    // Formulaire de suppression
+                    if (!empty($sae['responsable_attribution'])) {
+                        $responsable = $sae['responsable_attribution'];
+                        $html .= "<p><strong>Attribuée par :</strong> "
+                            . htmlspecialchars($responsable['prenom'] . " " . $responsable['nom'])
+                            . "</p>";
+                    } else {
+                        $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
+                    }
+
+                    // --------------------------
+                    //   BOUTON : MODIFIER
+                    // --------------------------
+                    $html .= "<button class='btn-modifier' onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
+
+                    // --------------------------
+                    //   FORMULAIRE DE MODIFICATION (hidden par défaut)
+                    // --------------------------
+                    $html .= "<div id='edit-{$sae['id']}' class='edit-form' style='display:none; margin-top:10px;'>";
+                    $html .= "<form method='POST' action='/update_sae'>";
+                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+
+                    $html .= "<label>Nouveau titre :</label>";
+                    $html .= "<input type='text' name='titre' value='" . htmlspecialchars($sae['titre']) . "' required>";
+
+                    $html .= "<label>Nouvelle description :</label>";
+                    $html .= "<textarea name='description' required>" . htmlspecialchars($sae['description']) . "</textarea>";
+
+                    $html .= "<button type='submit' class='btn-valider'>Valider</button>";
+                    $html .= "</form>";
+                    $html .= "</div>";
+
+                    // --------------------------
+                    //   BOUTON SUPPRESSION
+                    // --------------------------
                     $html .= "<form method='POST' action='/delete_sae' onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit' class='btn-supprimer'>Supprimer</button>";
@@ -184,6 +245,7 @@ class SaeView extends BaseView
 
                     $html .= "</div>";
                 }
+
                 break;
 
 

@@ -74,10 +74,30 @@ class Sae
 
     public static function getAllProposed(): array
     {
-        $db = Database::getConnection();
-        $result = $db->query("SELECT * FROM sae");
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $db = \Models\Database::getConnection();
+
+        $stmt = $db->prepare("
+        SELECT 
+            s.id,
+            s.titre,
+            s.description,
+            s.client_id,
+            s.date_creation
+        FROM sae s
+    ");
+
+        if (!$stmt->execute()) {
+            throw new \Shared\Exceptions\DataBaseException(
+                "Impossible de récupérer les SAE."
+            );
+        }
+
+        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $saes;
     }
+
 
     public static function getByClient(int $clientId): array
     {
@@ -160,6 +180,36 @@ class Sae
         $stmt->close();
 
         return $saes;
+    }
+
+
+    public static function update(int $clientId, int $saeId, string $titre, string $description): bool
+    {
+        try {
+            self::checkDatabaseConnection();
+
+            $db = Database::getConnection();
+            $stmt = $db->prepare("
+            UPDATE sae 
+            SET titre = ?, description = ?
+            WHERE id = ? AND client_id = ?
+        ");
+            if (!$stmt) {
+                throw new \Exception("Erreur prepare: " . $db->error);
+            }
+
+            $stmt->bind_param("ssii", $titre, $description, $saeId, $clientId);
+
+            if (!$stmt->execute()) {
+                throw new \Exception("Erreur execute: " . $stmt->error);
+            }
+
+            $stmt->close();
+            return true;
+
+        } catch (\Exception $e) {
+            throw new DataBaseException("Impossible de modifier la SAE : " . $e->getMessage());
+        }
     }
 
     public static function checkDatabaseConnection(): void

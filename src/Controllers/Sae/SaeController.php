@@ -70,8 +70,10 @@ class SaeController implements ControllerInterface
                 $responsableId = $userId;
 
                 foreach ($saes as &$sae) {
+                    // Tous les étudiants attribués à cette SAE
                     $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
 
+                    // ✅ Étudiants attribués par CE responsable
                     $etudiantsAttribuesParMoi = [];
                     foreach ($assignedStudents as $assignedStudent) {
                         if (SaeAttribution::isStudentAssignedByResponsable($sae['id'], $assignedStudent['id'], $responsableId)) {
@@ -79,16 +81,37 @@ class SaeController implements ControllerInterface
                         }
                     }
 
+                    // ✅ Étudiants disponibles (non attribués du tout)
                     $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
                         foreach ($assignedStudents as $assignedStudent) {
-                            if ($assignedStudent['id'] == $etudiant['id']) return false;
+                            if ($assignedStudent['id'] == $etudiant['id']) {
+                                return false;
+                            }
                         }
                         return true;
                     });
 
+                    // Injection dans la SAE
                     $sae['etudiants_disponibles'] = $etudiantsDisponibles;
-                    $sae['etudiants_attribues'] = $etudiantsAttribuesParMoi;
+                    $sae['etudiants_attribues']   = $etudiantsAttribuesParMoi;
+
+                    // ✅ Ajout : responsable ayant attribué la SAE (ou null si pas attribué)
+                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
                 }
+
+                // 🔹 TRI : mes attributions → libres → attribuées par d'autres
+                usort($saes, function ($a, $b) use ($responsableId) {
+                    $aIsMine  = !empty($a['etudiants_attribues']);
+                    $bIsMine  = !empty($b['etudiants_attribues']);
+
+                    $aIsFree  = empty($a['responsable_attribution']);
+                    $bIsFree  = empty($b['responsable_attribution']);
+
+                    $priorityA = $aIsMine ? 0 : ($aIsFree ? 1 : 2);
+                    $priorityB = $bIsMine ? 0 : ($bIsFree ? 1 : 2);
+
+                    return $priorityA - $priorityB;
+                });
 
                 $errorMessage = $_SESSION['error_message'] ?? '';
                 $successMessage = $_SESSION['success_message'] ?? '';
@@ -100,9 +123,17 @@ class SaeController implements ControllerInterface
                     'success_message' => $successMessage
                 ];
 
+
             case 'client':
                 $saes = Sae::getByClient($userId);
+
+                foreach ($saes as &$sae) {
+                    // Ajout : responsable ayant attribué la SAE (ou null si pas attribué)
+                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
+                }
+
                 return ['saes' => $saes];
+
 
             default:
                 return [];
@@ -166,6 +197,8 @@ class SaeController implements ControllerInterface
         header('Location: /sae');
         exit();
     }
+
+
 
     public function handleUnassignSae(): void
     {
