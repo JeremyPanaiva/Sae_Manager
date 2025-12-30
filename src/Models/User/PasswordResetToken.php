@@ -39,7 +39,6 @@ class PasswordResetToken
 
         // Générer un token unique
         $token = bin2hex(random_bytes(32));
-        $expiresAt = date('Y-m-d H:i:s', strtotime('+1 hour')); // Token valide 1 heure
 
         // Supprimer les anciens tokens pour cet utilisateur
         $stmt = $conn->prepare("DELETE FROM password_reset_tokens WHERE user_id = ?");
@@ -50,12 +49,12 @@ class PasswordResetToken
         $stmt->execute();
         $stmt->close();
 
-        // Insérer le nouveau token
-        $stmt = $conn->prepare("INSERT INTO password_reset_tokens (user_id, token, expiry, used) VALUES (?, ?, ?, 0)");
+        // Insérer le nouveau token avec expiration gérée par la DB
+        $stmt = $conn->prepare("INSERT INTO password_reset_tokens (user_id, token, expiry, used) VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), 0)");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in createToken (insert).");
         }
-        $stmt->bind_param("iss", $userId, $token, $expiresAt);
+        $stmt->bind_param("is", $userId, $token);
         $stmt->execute();
         $stmt->close();
 
@@ -84,7 +83,7 @@ class PasswordResetToken
         $stmt->bind_param("s", $token);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $row = $result->fetch_assoc();
         $stmt->close();
 

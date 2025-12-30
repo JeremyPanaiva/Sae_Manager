@@ -3,32 +3,39 @@
 namespace Views\User;
 use Views\Base\BaseView;
 
-class ForgotPasswordView extends BaseView {
+class ForgotPasswordView extends BaseView
+{
 
-    public const EMAIL = "email";
     public const EMAIL_KEY = 'EMAIL_KEY';
     public const SUCCESS_MESSAGE_KEY = 'SUCCESS_MESSAGE';
     public const ERROR_MESSAGE_KEY = 'ERROR_MESSAGE';
-    
-    private const KEYS = [
-        self::EMAIL_KEY => self::EMAIL,
-        self::SUCCESS_MESSAGE_KEY => 'SUCCESS_MESSAGE',
-        self::ERROR_MESSAGE_KEY => 'ERROR_MESSAGE'
-    ];
-    private const TEMPLATE_HTML = __DIR__ . '/forgot-password.html';
 
-    public function templatePath() : string {
-        return self::TEMPLATE_HTML;
+    private const TEMPLATE_PATH = __DIR__ . '/forgot-password.php';
+
+    public function templatePath(): string
+    {
+        return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys() : array {
-        return self::KEYS;
+    public function templateKeys(): array
+    {
+        return []; // Not used with PHP templates
     }
 
     public function render(): string
     {
         $this->handleMessages();
         return parent::render();
+    }
+
+    public function renderBody(): string
+    {
+        ob_start();
+        // Extract data for the template
+        $SUCCESS_MESSAGE = $this->data['SUCCESS_MESSAGE'] ?? '';
+        $ERROR_MESSAGE = $this->data['ERROR_MESSAGE'] ?? '';
+        include $this->templatePath();
+        return ob_get_clean();
     }
 
     private function handleMessages(): void

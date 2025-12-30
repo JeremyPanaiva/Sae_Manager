@@ -42,7 +42,7 @@ class EmailService
             $this->mailer->SMTPAuth = !empty($smtpUser) && !empty($smtpPass);
 
             $this->mailer->SMTPSecure = $smtpSecure === 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-            $this->mailer->Port = (int)(Database::parseEnvVar('SMTP_PORT') ?: 587);
+            $this->mailer->Port = (int) (Database::parseEnvVar('SMTP_PORT') ?: 587);
             $this->mailer->CharSet = 'UTF-8';
 
             $this->mailer->SMTPAutoTLS = ($smtpSecure === 'tls');
@@ -97,7 +97,8 @@ class EmailService
                 ];
             }
 
-            error_log(sprintf("EmailService SMTP config: host=%s port=%s user=%s secure=%s auth=%s",
+            error_log(sprintf(
+                "EmailService SMTP config: host=%s port=%s user=%s secure=%s auth=%s",
                 $this->mailer->Host,
                 $this->mailer->Port,
                 $this->mailer->Username ? 'set' : 'not-set',
@@ -379,6 +380,12 @@ class EmailService
 
     private function getBaseUrl(): string
     {
+        // En local, on utilise toujours l'hôte détecté pour éviter les redirections impromptues vers la prod
+        if (isset($_SERVER['HTTP_HOST']) && (str_contains($_SERVER['HTTP_HOST'], 'localhost') || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1'))) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            return $protocol . '://' . $_SERVER['HTTP_HOST'];
+        }
+
         $appUrl = Database::parseEnvVar('APP_URL');
         if (!empty($appUrl)) {
             return rtrim($appUrl, '/');
