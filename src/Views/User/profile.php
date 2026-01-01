@@ -7,9 +7,7 @@
         <?= $ERRORS_KEY ?? '' ?>
         <?= $SUCCESS_KEY ?? '' ?>
 
-        <p><strong>Date de création du compte : </strong>
-            <?= $date_creation ?? '' ?>
-        </p>
+        <p><strong>Date de création du compte : </strong> <?= $date_creation ?? '' ?></p>
 
         <form action="/user/profile" method="POST" class="profile-form">
             <label for="prenom">Prénom :</label>
@@ -28,7 +26,7 @@
             <input type="submit" value="Mettre à jour" class="btn btn-primary">
         </form>
 
-        <!-- ✅ NOUVEAU : Zone de suppression du compte -->
+        <!-- Zone de suppression du compte -->
         <div class="danger-zone">
             <h3>Zone dangereuse</h3>
             <p>La suppression de votre compte est <strong>définitive et irréversible</strong>. Toutes vos données seront

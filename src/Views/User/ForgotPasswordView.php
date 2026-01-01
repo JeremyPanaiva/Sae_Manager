@@ -19,7 +19,7 @@ class ForgotPasswordView extends BaseView
 
     public function templateKeys(): array
     {
-        return []; // Not used with PHP templates
+        return [];
     }
 
     public function render(): string
@@ -31,7 +31,6 @@ class ForgotPasswordView extends BaseView
     public function renderBody(): string
     {
         ob_start();
-        // Extract data for the template
         $SUCCESS_MESSAGE = $this->data['SUCCESS_MESSAGE'] ?? '';
         $ERROR_MESSAGE = $this->data['ERROR_MESSAGE'] ?? '';
         include $this->templatePath();
