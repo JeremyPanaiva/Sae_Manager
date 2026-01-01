@@ -4,9 +4,10 @@ namespace Views\User;
 use Views\Base\BaseView;
 use Views\Base\ErrorsView;
 
-class ProfileView extends BaseView {
+class ProfileView extends BaseView
+{
 
-    private const TEMPLATE_HTML = __DIR__ . '/profile.html';
+    private const TEMPLATE_PATH = __DIR__ . '/profile.php';
 
     public const NOM_KEY = 'NOM_KEY';
     public const PRENOM_KEY = 'PRENOM_KEY';
@@ -26,18 +27,29 @@ class ProfileView extends BaseView {
         $this->success = $success;
     }
 
-    public function templatePath(): string {
-        return self::TEMPLATE_HTML;
+    public function templatePath(): string
+    {
+        return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys(): array {
-        return [
-            self::NOM_KEY => $this->userData['nom'] ?? '',
-            self::PRENOM_KEY => $this->userData['prenom'] ?? '',
-            self::MAIL_KEY => $this->userData['mail'] ?? '',
-            self::DATE_CREATION_KEY => $this->userData['date_creation'] ?? '',
-            self::ERRORS_KEY => (new ErrorsView($this->errors))->renderBody(),
-            self::SUCCESS_KEY => $this->success ? "<div class='success-message'>{$this->success}</div>" : '',
-        ];
+    public function templateKeys(): array
+    {
+        return []; // Pas utilisé
+    }
+
+    public function renderBody(): string
+    {
+        ob_start();
+
+        $nom = $this->userData['nom'] ?? '';
+        $prenom = $this->userData['prenom'] ?? '';
+        $mail = $this->userData['mail'] ?? '';
+        $date_creation = $this->userData['date_creation'] ?? '';
+
+        $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
+        $SUCCESS_KEY = $this->success ? "<div class='success-message'>{$this->success}</div>" : '';
+
+        include $this->templatePath();
+        return ob_get_clean();
     }
 }

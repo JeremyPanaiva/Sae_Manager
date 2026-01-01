@@ -20,6 +20,7 @@ use Controllers\Sae\UpdateSaeDateController;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
 use Controllers\User\ProfileController;
+use Controllers\User\VerifyEmailController;
 use Controllers\User\Register;
 use Controllers\User\RegisterPost;
 use Controllers\User\Logout;
@@ -53,6 +54,7 @@ $controllers = [
     new LoginPost(),
     new Register(),
     new RegisterPost(),
+    new VerifyEmailController(),
     new Logout(),
     new ForgotPassword(),
     new ForgotPasswordPost(),
@@ -63,7 +65,7 @@ $controllers = [
     new PlanDuSiteController(),
     new DashboardController(),
     new SaeController(),
-    new CreateSaeController() ,
+    new CreateSaeController(),
     new AttribuerSaeController(),
     new DeleteSaeController(),
     new TodoController(),
@@ -71,7 +73,7 @@ $controllers = [
     new UnassignSaeController(),
     new ContactController(),
     new ContactPost(),
-    new AvisController() ,
+    new AvisController(),
     new UpdateContentSaeController(),
     new ProfileController()
 

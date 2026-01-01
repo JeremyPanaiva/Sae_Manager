@@ -42,7 +42,7 @@ class EmailService
             $this->mailer->SMTPAuth = !empty($smtpUser) && !empty($smtpPass);
 
             $this->mailer->SMTPSecure = $smtpSecure === 'tls' ? PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-            $this->mailer->Port = (int)(Database::parseEnvVar('SMTP_PORT') ?: 587);
+            $this->mailer->Port = (int) (Database::parseEnvVar('SMTP_PORT') ?: 587);
             $this->mailer->CharSet = 'UTF-8';
 
             $this->mailer->SMTPAutoTLS = ($smtpSecure === 'tls');
@@ -97,7 +97,8 @@ class EmailService
                 ];
             }
 
-            error_log(sprintf("EmailService SMTP config: host=%s port=%s user=%s secure=%s auth=%s",
+            error_log(sprintf(
+                "EmailService SMTP config: host=%s port=%s user=%s secure=%s auth=%s",
                 $this->mailer->Host,
                 $this->mailer->Port,
                 $this->mailer->Username ? 'set' : 'not-set',
@@ -158,6 +159,60 @@ class EmailService
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
                 error_log('PHPMailer fallback exception: ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
+                throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Envoie un email de vérification de compte
+     */
+    public function sendAccountVerificationEmail(string $email, string $token): bool
+    {
+        $this->mailer->clearAddresses();
+        $this->mailer->addAddress($email);
+        $this->mailer->isHTML(true);
+        $this->mailer->Subject = 'Vérification de votre compte - SAE Manager';
+
+        $verificationLink = $this->getBaseUrl() . "/user/verify-email?token=" . $token;
+
+        $emailView = new EmailView('account_verification', [
+            'VERIFICATION_LINK' => $verificationLink
+        ]);
+
+        $this->mailer->Body = $emailView->render();
+        $this->mailer->AltBody = $this->getAccountVerificationEmailTextBody($verificationLink);
+
+        try {
+            $this->mailer->send();
+            return true;
+        } catch (Exception $e) {
+            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
+            error_log('PHPMailer SMTP exception (account verification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+
+            try {
+                $mail = new PHPMailer(true);
+                $mail->isMail();
+                $mail->CharSet = 'UTF-8';
+                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
+                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+                if (!empty($from)) {
+                    $mail->setFrom($from, $fromName);
+                    $mail->addReplyTo($from, $fromName);
+                }
+
+                $mail->addAddress($email);
+                $mail->isHTML(true);
+                $mail->Subject = $this->mailer->Subject;
+                $mail->Body = $this->mailer->Body;
+                $mail->AltBody = $this->mailer->AltBody;
+
+                $mail->send();
+                error_log('Email sent via local mail() fallback to ' . $email);
+                return true;
+            } catch (Exception $e2) {
+                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
+                error_log('PHPMailer fallback exception (account verification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
                 throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
             }
         }
@@ -379,6 +434,12 @@ class EmailService
 
     private function getBaseUrl(): string
     {
+        // En local, on utilise toujours l'hôte détecté pour éviter les redirections impromptues vers la prod
+        if (isset($_SERVER['HTTP_HOST']) && (str_contains($_SERVER['HTTP_HOST'], 'localhost') || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1'))) {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+            return $protocol . '://' . $_SERVER['HTTP_HOST'];
+        }
+
         $appUrl = Database::parseEnvVar('APP_URL');
         if (!empty($appUrl)) {
             return rtrim($appUrl, '/');
@@ -395,6 +456,11 @@ class EmailService
     private function getPasswordResetEmailTextBody(string $resetLink): string
     {
         return "Réinitialisation de votre mot de passe - SAE Manager\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nLien : {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function getAccountVerificationEmailTextBody(string $verificationLink): string
+    {
+        return "Vérification de votre compte - SAE Manager\n\nMerci de vous être inscrit. Pour activer votre compte, veuillez copier et coller le lien suivant dans votre navigateur :\n\nLien : {$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
     private function getSaeCreationEmailTextBody(string $responsableNom, string $clientNom, string $saeTitle, string $saeDescription): string

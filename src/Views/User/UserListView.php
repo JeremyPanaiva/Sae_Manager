@@ -4,9 +4,10 @@ namespace Views\User;
 
 use Views\Base\BaseView;
 
-class UserListView extends BaseView {
+class UserListView extends BaseView
+{
 
-    private const TEMPLATE_HTML = __DIR__ . '/user.html';
+    private const TEMPLATE_PATH = __DIR__ . '/user.php';
 
     public const USERS_ROWS_KEY = 'USERS_ROWS';
     public const PAGINATION_KEY = 'PAGINATION';
@@ -22,20 +23,25 @@ class UserListView extends BaseView {
 
     public function templatePath(): string
     {
-        return self::TEMPLATE_HTML;
+        return self::TEMPLATE_PATH;
     }
 
     public function templateKeys(): array
     {
-        // Génération des lignes du tableau
-        $rowsHtml = '';
+        return [];
+    }
+
+    public function renderBody(): string
+    {
+        ob_start();
+        $PAGINATION = $this->paginationHtml;
+
+        $USERS_ROWS = '';
         foreach ($this->users as $user) {
-            $rowsHtml .= "<tr><td>{$user['prenom']}</td><td>{$user['nom']}</td></tr>";
+            $USERS_ROWS .= "<tr><td>{$user['prenom']}</td><td>{$user['nom']}</td></tr>";
         }
 
-        return [
-            self::USERS_ROWS_KEY => $rowsHtml,
-            self::PAGINATION_KEY => $this->paginationHtml,
-        ];
+        include $this->templatePath();
+        return ob_get_clean();
     }
 }
