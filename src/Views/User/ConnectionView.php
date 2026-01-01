@@ -7,7 +7,7 @@ use Views\Base\ErrorsView;
 
 class ConnectionView extends BaseView
 {
-    // Champs du formulaire (non utilisés directement avec le nouveau template PHP mais gardés pour ref future si besoin)
+    // Champs du formulaire
     public const USERNAME_KEY = 'USERNAME_KEY';
     public const PASSWORD_KEY = 'PASSWORD_KEY';
     public const ERRORS_KEY = 'ERRORS_KEY';
@@ -29,7 +29,7 @@ class ConnectionView extends BaseView
 
     public function templateKeys(): array
     {
-        return []; // Pas utilisé avec le template PHP
+        return [];
     }
 
     public function renderBody(): string
@@ -37,7 +37,6 @@ class ConnectionView extends BaseView
         ob_start();
         $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">' . $this->successMessage . '</div>' : '';
         $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
-        // Valeurs par défaut pour les champs si réaffichage (à implémenter si besoin, pour l'instant vide comme avant)
         $uname = '';
 
         include $this->templatePath();

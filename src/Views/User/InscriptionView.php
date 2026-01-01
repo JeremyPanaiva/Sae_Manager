@@ -9,7 +9,7 @@ use Views\Base\ErrorView;
 class InscriptionView extends BaseView
 {
 
-    // Champs du formulaire (gardés pour référence)
+    // Champs du formulaire
     public const NOM_KEY = 'NOM_KEY';
     public const PRENOM_KEY = 'PRENOM_KEY';
     public const MAIL_KEY = 'MAIL_KEY';
@@ -38,7 +38,6 @@ class InscriptionView extends BaseView
     {
         ob_start();
         $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
-        // Variables pour repeupler le formulaire en cas d'erreur (à implémenter si les données sont dispos dans $this->data)
         $nom = $this->data['nom'] ?? '';
         $prenom = $this->data['prenom'] ?? '';
         $mail = $this->data['mail'] ?? '';

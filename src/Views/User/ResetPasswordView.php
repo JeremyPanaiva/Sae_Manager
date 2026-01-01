@@ -21,7 +21,7 @@ class ResetPasswordView extends BaseView
     public function renderBody(): string
     {
         ob_start();
-        // Extraction des données pour les rendre accessibles comme variables dans la vue (ex: $token, $email)
+        // Extraction des données
         extract($this->data);
 
         // Inclusion du template PHP
@@ -59,6 +59,9 @@ class ResetPasswordView extends BaseView
                     break;
                 case 'general_error':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Une erreur est survenue. Veuillez réessayer plus tard.</div>';
+                    break;
+                case 'same_password':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le nouveau mot de passe doit être différent de l\'actuel.</div>';
                     break;
             }
         }

@@ -4,9 +4,10 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\User\PasswordResetToken;
-use Models\User\User;
+
 use Models\Database;
 use Shared\Exceptions\DataBaseException;
+use Shared\Exceptions\SamePasswordException;
 
 class ResetPasswordPost implements ControllerInterface
 {
@@ -47,8 +48,28 @@ class ResetPasswordPost implements ControllerInterface
                 exit;
             }
 
-            // Mettre à jour le mot de passe
+            // Vérifier si le nouveau mot de passe est identique à l'ancien
             $conn = Database::getConnection();
+            $stmt = $conn->prepare("SELECT mdp FROM users WHERE mail = ?");
+            if (!$stmt) {
+                throw new DataBaseException("SQL prepare failed in user check.");
+            }
+            $stmt->bind_param("s", $email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($row = $result->fetch_assoc()) {
+                if (password_verify($password, $row['mdp'])) {
+                    throw new SamePasswordException();
+                }
+            } else {
+                // Utilisateur introuvable
+                header('Location: /user/forgot-password?error=invalid_token');
+                exit;
+            }
+            $stmt->close();
+
+            // Mettre à jour le mot de passe
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             $stmt = $conn->prepare("UPDATE users SET mdp = ? WHERE mail = ?");
@@ -65,6 +86,9 @@ class ResetPasswordPost implements ControllerInterface
             header('Location: /user/login?success=password_reset');
             exit;
 
+        } catch (SamePasswordException $e) {
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=same_password');
+            exit;
         } catch (DataBaseException $e) {
             error_log("Erreur base de données dans ResetPasswordPost: " . $e->getMessage());
             header('Location: /user/reset-password?token=' . urlencode($token) . '&error=database_error');
