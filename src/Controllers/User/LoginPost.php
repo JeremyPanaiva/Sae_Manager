@@ -14,22 +14,23 @@ class LoginPost implements ControllerInterface
 {
     function control()
     {
-        if (!isset($_POST['ok'])) return;
+        if (!isset($_POST['ok']))
+            return;
 
         $email = $_POST['uname'] ?? '';
-        $mdp   = $_POST['psw'] ?? '';
+        $mdp = $_POST['psw'] ?? '';
 
         $User = new User();
         $validationExceptions = [];
 
         //  Vérifie email vide ou invalide
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $validationExceptions[] = new ValidationException("mail", "string", "Email invalide.");
+            $validationExceptions[] = new ValidationException("Email invalide.");
         }
 
         //  Vérifie mot de passe vide
         if (empty($mdp)) {
-            $validationExceptions[] = new ValidationException("mdp", "string", "Le mot de passe ne peut pas être vide.");
+            $validationExceptions[] = new ValidationException("Le mot de passe ne peut pas être vide.");
         }
 
         try {
@@ -50,6 +51,11 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException([new EmailNotFoundException($email)]);
             }
 
+            //  Vérifie compte activé
+            if (isset($userData['is_verified']) && (int) $userData['is_verified'] === 0) {
+                throw new ArrayException([new ValidationException("Votre compte n'est pas vérifié. Veuillez cliquer sur le lien reçu par email.")]);
+            }
+
             //  Vérifie mot de passe
             if (!password_verify($mdp, $userData['mdp'])) {
                 throw new ArrayException([new InvalidPasswordException()]);
@@ -63,10 +69,10 @@ class LoginPost implements ControllerInterface
             $role = isset($userData['role']) ? strtolower(trim($userData['role'])) : 'etudiant';
 
             $_SESSION['user'] = [
-                'id'     => $userData['id'],
-                'nom'    => $userData['nom'],
+                'id' => $userData['id'],
+                'nom' => $userData['nom'],
                 'prenom' => $userData['prenom'],
-                'role'   => $role
+                'role' => $role
             ];
 
 

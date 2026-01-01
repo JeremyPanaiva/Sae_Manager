@@ -45,7 +45,7 @@ class User
      *
      * @throws DataBaseException
      */
-    public function register(string $firstName, string $lastName, string $email, string $password, string $role): void
+    public function register(string $firstName, string $lastName, string $email, string $password, string $role, string $verificationToken): void
     {
         try {
             $conn = Database::getConnection();
@@ -55,18 +55,18 @@ class User
 
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // ✅ On ajoute la colonne "role" dans la requête
-        $stmt = $conn->prepare("INSERT INTO users (nom, prenom, mail, mdp, role) VALUES (?, ?, ?, ?, ?)");
+        // On ajoute la colonne "role" et "verification_token" dans la requête
+        $stmt = $conn->prepare("INSERT INTO users (nom, prenom, mail, mdp, role, verification_token, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in register.");
         }
 
-        // ✅ On lie les 5 paramètres
-        $stmt->bind_param("sssss", $lastName, $firstName, $email, $hashedPassword, $role);
+        // On lie les 6 paramètres
+        $stmt->bind_param("ssssss", $lastName, $firstName, $email, $hashedPassword, $role, $verificationToken);
 
         $stmt->execute();
         $stmt->close();
-        // ❌ Ne pas fermer $conn ici
+        // Ne pas fermer $conn ici
     }
 
     /**
@@ -82,7 +82,7 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
-        $stmt = $conn->prepare("SELECT id, mdp, nom, prenom, mail, role FROM users WHERE mail = ?");
+        $stmt = $conn->prepare("SELECT id, mdp, nom, prenom, mail, role, is_verified FROM users WHERE mail = ?");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in findByEmail.");
         }
@@ -94,7 +94,7 @@ class User
         $user = $result->fetch_assoc() ?: null;
 
         $stmt->close();
-        // ❌ Ne pas fermer $conn ici
+        // Ne pas fermer $conn ici
 
         return $user;
     }
@@ -259,6 +259,48 @@ class User
             error_log("Erreur User::deleteAccount : " . $e->getMessage());
             throw new DataBaseException("Impossible de supprimer le compte.");
         }
+    }
+
+    /**
+     * Vérifie le compte de l'utilisateur via le token
+     *
+     * @return bool True si vérification réussie, False sinon
+     * @throws DataBaseException
+     */
+    public function verifyAccount(string $token): bool
+    {
+        try {
+            $conn = Database::getConnection();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Unable to connect to the database.");
+        }
+
+        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_token = ? AND is_verified = 0");
+        if (!$stmt) {
+            return false;
+        }
+
+        $stmt->bind_param("s", $token);
+        $stmt->execute();
+        $stmt->store_result();
+
+        if ($stmt->num_rows === 0) {
+            $stmt->close();
+            return false;
+        }
+
+        $stmt->close();
+
+        $stmt = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?");
+        if (!$stmt) {
+            throw new DataBaseException("SQL prepare failed in verifyAccount update.");
+        }
+
+        $stmt->bind_param("s", $token);
+        $result = $stmt->execute();
+        $stmt->close();
+
+        return $result;
     }
 
 
