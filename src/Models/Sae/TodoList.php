@@ -79,4 +79,20 @@ class TodoList
         }
     }
 
+    public static function deleteTask(int $taskId): void
+    {
+        self::checkDatabaseConnection();
+        $db = Database:: getConnection();
+
+        try {
+            $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
+            $stmt->bind_param("i", $taskId);
+            $stmt->execute();
+            $stmt->close();
+        } catch (mysqli_sql_exception $e) {
+            error_log("Erreur TodoList::deleteTask : " . $e->getMessage());
+        }
+    }
+
+
 }

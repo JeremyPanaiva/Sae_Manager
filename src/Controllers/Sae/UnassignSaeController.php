@@ -12,6 +12,7 @@ class UnassignSaeController implements ControllerInterface
 
     public function control()
     {
+        // Vérifie que l'utilisateur est connecté et est un responsable
         if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
             header('Location: /login');
             exit();
@@ -23,17 +24,19 @@ class UnassignSaeController implements ControllerInterface
             $responsableId = (int)$_SESSION['user']['id'];
 
             try {
-                // Vérifie la connexion à la base avant toute suppression
+                // Vérifie la connexion à la base de données
                 SaeAttribution::checkDatabaseConnection();
 
                 foreach ($students as $studentId) {
-                    // Vérifier que le responsable est bien celui qui a attribué la SAE
+                    // Vérifie que le responsable est bien celui qui a attribué la SAE
                     SaeAttribution::checkResponsableOwnership($saeId, $responsableId, (int)$studentId);
+
+                    // Supprime l'attribution de la SAE à l'étudiant
+                    // Les entrées associées dans todo_list et sae_avis seront supprimées automatiquement grâce à ON DELETE CASCADE
                     SaeAttribution::removeFromStudent($saeId, (int)$studentId);
                 }
 
                 $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
-
             } catch (UnauthorizedSaeUnassignmentException $e) {
                 $_SESSION['error_message'] = $e->getMessage();
             } catch (DataBaseException $e) {

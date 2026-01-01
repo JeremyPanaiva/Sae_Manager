@@ -30,6 +30,11 @@ class DashboardView extends BaseView
         $this->role = $role;
     }
 
+    function rendreLiensCliquables($texte) {
+        $pattern = '/(https?:\/\/[^\s]+)/i'; // détecte les URLs commençant par http(s)
+        $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
+        return preg_replace($pattern, $remplacement, $texte);
+    }
     public function templatePath(): string
     {
         return __DIR__ . '/dashboard.html';
@@ -72,6 +77,7 @@ class DashboardView extends BaseView
 
         switch (strtolower($this->role)) {
 
+
             case 'etudiant':
                 $html .= "<h2>Vos SAE attribuées</h2>";
 
@@ -100,72 +106,83 @@ class DashboardView extends BaseView
                     $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
                     $html .= "</div>";
 
-                    // --- Formulaire pour ajouter une tâche ---
-                    $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
-                    $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
-                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
-                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
-                    $html .= "<button type='submit'>Ajouter</button>";
+                // --- Formulaire pour ajouter une tâche ---
+                $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
+                $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
+                $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
+                $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche.. .' required>";
+                $html .= "<button type='submit'>Ajouter</button>";
+                $html .= "</form>";
+
+                // --- Liste des tâches ---
+                if ($totalTasks > 0) {
+                    $html .= "<ul class='todo-list'>";
+                foreach ($todos as $task) {
+                $taskId = $task['id'] ?? 0;
+                $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
+                $fait = !empty($task['fait']);
+                $checked = $fait ? 'checked' : '';
+
+                $html .= "<li>";
+
+                // Formulaire toggle (checkbox)
+                $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'>";
+                $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
+                $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
+                $html .= "<label>";
+                $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' {$checked}> ";
+                $html .= $taskTitre;
+                $html .= "</label>";
+                $html .= "</form>";
+
+                    // ✅ Bouton de suppression avec croix
+                    $html .= "<form method='POST' action='/todo/delete' class='todo-delete'>";
+                    $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
+                    $html .= "<button type='submit' class='btn-delete-task' onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
                     $html .= "</form>";
 
-                    // --- Liste des tâches ---
-                    if ($totalTasks > 0) {
-                        $html .= "<ul class='todo-list'>";
-                        foreach ($todos as $task) {
-                            $taskId = $task['id'] ?? 0;
-                            $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
-                            $fait = !empty($task['fait']);
-                            $checked = $fait ? 'checked' : '';
+                $html .= "</li>";
+            }
+            $html .= "</ul>";
+        } else {
+            $html .= "<p>Aucune tâche pour cette SAE. </p>";
+        }
 
-                            $html .= "<li>";
-                            $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'>";
-                            $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
-                            $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
-                            $html .= "<label>";
-                            $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' {$checked}> ";
-                            $html .= $taskTitre;
-                            $html .= "</label>";
-                            $html .= "</form>";
-                            $html .= "</li>";
-                        }
-                        $html .= "</ul>";
-                    } else {
-                        $html .= "<p>Aucune tâche pour cette SAE.</p>";
-                    }
-                    // --- Étudiants associés ---
-                    $etudiants = $sae['etudiants'] ?? [];
-                    if (!empty($etudiants)) {
-                        $html .= "<h4>Autres étudiants associés :</h4>";
-                        $html .= "<ul class='student-list'>";
-                        foreach ($etudiants as $etudiant) {
-                            $nomComplet = htmlspecialchars($etudiant['nom'] . ' ' . $etudiant['prenom']);
-                            $html .= "<li>{$nomComplet}</li>";
-                        }
-                        $html .= "</ul>";
-                    }
+        // --- Étudiants associés ---
+        $etudiants = $sae['etudiants'] ??  [];
+        if (!empty($etudiants)) {
+            $html .= "<h4>Autres étudiants associés :</h4>";
+            $html .= "<ul class='student-list'>";
+            foreach ($etudiants as $etudiant) {
+                $nomComplet = htmlspecialchars($etudiant['nom'] . ' ' . $etudiant['prenom']);
+                $html .= "<li>{$nomComplet}</li>";
+            }
+            $html .= "</ul>";
+        }
 
+        // --- Remarques / avis pour RESPONSABLE ---
+        if (! empty($sae['avis'])) {
+            $html .= "<h4>Remarques</h4>";
+            foreach ($sae['avis'] as $avis) {
+                $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
+                $message = htmlspecialchars($avis['message'] ?? '');
+                $message = $this->rendreLiensCliquables($message);
+                $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
 
+                $html .= "<div class='avis-card'>";
+                $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                $html .= "<small>{$dateAvis}</small>";
+                $html .= "</div>";
+            }
+        } else {
+            $html .= "<p>Aucun avis pour cette SAE.</p>";
+        }
 
-                    // --- Avis / remarques ---
-                    if (!empty($sae['avis'])) {
-                        $html .= "<h4>Remarques</h4>";
-                        foreach ($sae['avis'] as $avis) {
-                            $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
-                            $message = htmlspecialchars($avis['message'] ?? '');
-                            $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
-
-                            $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
-                            $html .= "<small>{$dateAvis}</small>";
-                            $html .= "</div>";
-                        }
-                    }
-
-                    $html .= "</div>"; // dashboard-card
-                }
+        $html .= "</div>"; // dashboard-card
+    }
                 break;
-
-
 
 
             case 'client':
@@ -180,68 +197,108 @@ class DashboardView extends BaseView
                     $html .= "<h3>{$titreSae}</h3>";
                     $html .= "<p><strong>Description :</strong> {$description}</p>";
 
-                    // --- Prendre la première attribution pour l'affichage ---
-                    $firstAttrib = $sae['attributions'][0] ?? null;
-                    if ($firstAttrib) {
-                        // --- Étudiants associés ---
-                        $etudiants = $firstAttrib['etudiants'] ?? [];
-                        if (!empty($etudiants)) {
-                            $etudiantsList = [];
-                            foreach ($etudiants as $etu) {
-                                $etudiantsList[] = htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? ''));
-                            }
-                            $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
-                        } else {
-                            $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
+                    // --- Regrouper les informations par SAE ---
+                    $allEtudiants = [];
+                    $allTodos = [];
+                    $allAvis = [];
+
+                    foreach ($sae['attributions'] ?? [] as $attrib) {
+                        // Étudiants
+                        foreach ($attrib['etudiants'] ?? [] as $etu) {
+                            $allEtudiants[$etu['id']] = htmlspecialchars(trim(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')));
                         }
 
-                        // --- Date de rendu ---
-                        $dateRendu = htmlspecialchars($firstAttrib['date_rendu'] ?? '');
-                        $html .= "<p><strong>Date de rendu :</strong> {$dateRendu}</p>";
-
-                        // --- To-Do list et barre de progression ---
-                        $todos = $firstAttrib['todos'] ?? [];
-                        if (!empty($todos)) {
-                            $totalTasks = count($todos);
-                            $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
-                            $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
-
-                            $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                            $html .= "<div class='progress-bar'>";
-                            $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
-                            $html .= "</div>";
-
-                            $html .= "<ul class='todo-list'>";
-                            foreach ($todos as $task) {
-                                $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
-                                $fait = !empty($task['fait']);
-                                $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
-                            }
-                            $html .= "</ul>";
-                        } else {
-                            $html .= "<p>Aucune tâche pour cette attribution.</p>";
+                        // Date de rendu : on prend la date de la première attribution
+                        if (!isset($dateRendu)) {
+                            $dateRendu = htmlspecialchars($attrib['date_rendu'] ?? '');
                         }
 
-                        // --- Remarques / avis ---
-                        if (!empty($firstAttrib['avis'])) {
-                            $html .= "<h4>Remarques</h4>";
-                            foreach ($firstAttrib['avis'] as $avis) {
-                                $emetteur = htmlspecialchars(ucfirst($avis['emetteur'] ?? ''));
-                                $message = htmlspecialchars($avis['message'] ?? '');
-                                $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                        // To-Do
+                        foreach ($attrib['todos'] ?? [] as $todo) {
+                            $allTodos[] = $todo;
+                        }
 
-                                $html .= "<div class='avis-card'>";
-                                $html .= "<p><strong>{$emetteur} :</strong> {$message}</p>";
-                                $html .= "<small>{$dateAvis}</small>";
-                                $html .= "</div>";
-                            }
+                        // Avis
+                        foreach ($attrib['avis'] ?? [] as $avis) {
+                            $allAvis[] = $avis;
                         }
                     }
 
-                    $html .= "</div>"; // dashboard-card
+                    // --- Étudiants ---
+                    $html .= "<p><strong>Étudiants :</strong> ";
+                    if (!empty($allEtudiants)) {
+                        $html .= implode(', ', $allEtudiants);
+                    } else {
+                        $html .= "Aucun";
+                    }
+                    $html .= "</p>";
+
+                    // --- Date de rendu ---
+                    $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ?? '') . "</p>";
+
+                    // --- To-Do et progression ---
+                    if (!empty($allTodos)) {
+                        $totalTasks = count($allTodos);
+                        $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
+                        $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
+
+                        $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
+                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
+
+                        $html .= "<ul class='todo-list'>";
+                        foreach ($allTodos as $task) {
+                            $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
+                            $fait = !empty($task['fait']);
+                            $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
+                        }
+                        $html .= "</ul>";
+                    } else {
+                        $html .= "<p>Aucune tâche pour cette SAE.</p>";
+                    }
+
+                    // --- Avis / Remarques ---
+                    if (!empty($allAvis)) {
+                        $html .= "<h4>Remarques</h4>";
+                        foreach ($allAvis as $avis) {
+                            $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                            $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                            $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
+                            $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
+                            $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                            $avisId = $avis['id'] ?? 0;
+                            $currentUserId = $_SESSION['user']['id'] ?? 0;
+
+                            $html .= "<div class='avis-card'>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<small>{$dateAvis}</small>";
+
+                            if (($avis['user_id'] ?? 0) === $currentUserId) {
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "</form>";
+                            }
+
+                            $html .= "</div>";
+                        }
+                    } else {
+                        $html .= "<p>Aucun avis pour cette SAE.</p>";
+                    }
+
+                    // --- Formulaire Ajouter un avis ---
+                    $html .= "<h4>Ajouter un avis</h4>";
+                    $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    // On prend la première attribution pour lier le formulaire
+                    $firstAttribId = $sae['attributions'][0]['sae_attribution_id'] ?? 0;
+                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$firstAttribId}'>";
+                    $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                    $html .= "<button type='submit'>Envoyer</button>";
+                    $html .= "</form>";
+
+                    $html .= "</div>"; // fin dashboard-card
                 }
                 break;
-
 
 
 
@@ -252,45 +309,42 @@ class DashboardView extends BaseView
                 foreach ($this->data['saes'] ?? [] as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    // --- Titre de la SAE ---
+                    // Titre SAE
                     $titreSae = htmlspecialchars($sae['sae_titre'] ?? 'Titre inconnu');
                     $html .= "<h3>{$titreSae}</h3>";
 
-                    // --- Étudiants associés ---
+                    // Étudiants associés
                     $etudiants = $sae['etudiants'] ?? [];
                     if (!empty($etudiants)) {
-                        $etudiantsList = [];
-                        foreach ($etudiants as $etu) {
-                            $etudiantsList[] = htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? ''));
-                        }
+                        $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')), $etudiants);
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                     } else {
                         $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
                     }
 
-                    // --- Date de rendu modifiable ---
+                    // Date de rendu modifiable pour responsable
                     $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
                     $dateRendu = htmlspecialchars($sae['date_rendu'] ?? '');
-                    $html .= "<form method='POST' action='/sae/update_date' class='update-date-form'>";
+
+                    $html .= "<div class='date-rendu-wrapper'>";
+                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin:0;'>";
                     $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
                     $html .= "<input type='date' name='date_rendu' value='{$dateRendu}'>";
-                    $html .= "<button type='submit'>Modifier la date de rendu</button>";
+                    $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
                     $html .= "</form>";
+                    $html .= "</div>";
 
-                    // --- To-Do list et barre de progression ---
+
+                    // To-Do list et progression
                     $todos = $sae['todos'] ?? [];
                     if (!empty($todos)) {
                         $totalTasks = count($todos);
                         $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
-                        // Barre de progression
                         $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                        $html .= "<div class='progress-bar'>";
-                        $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
-                        $html .= "</div>";
+                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
 
-                        // Liste des tâches (lecture seule)
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
                             $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
@@ -302,11 +356,53 @@ class DashboardView extends BaseView
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
 
+                    // Avis / remarques
+                    $avisList = $sae['avis'] ?? [];
+                    if (!empty($avisList)) {
+                        $html .= "<h4>Remarques</h4>";
+                        foreach ($avisList as $avis) {
+                            $userIdAuteur = $avis['user_id'] ?? 0;
+                            $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
+                            $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                            $avisId = $avis['id'] ?? 0;
+                            $currentUserId = $_SESSION['user']['id'] ?? 0;
+
+                            // On prend le nom, prénom et rôle directement depuis l'avis
+                            $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                            $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                            $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
+
+                            $html .= "<div class='avis-card'>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<small>{$dateAvis}</small>";
+
+                            // Bouton supprimer si même utilisateur
+                            if ($userIdAuteur === $currentUserId) {
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "</form>";
+                            }
+
+                            $html .= "</div>";
+                        }
+                    } else {
+                        $html .= "<p>Aucun avis pour cette SAE.</p>";
+                    }
+
+
+                    // Formulaire ajouter un avis
+                    $html .= "<h4>Ajouter un avis</h4>";
+                    $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
+                    $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                    $html .= "<button type='submit'>Envoyer</button>";
+                    $html .= "</form>";
+
                     $html .= "</div>"; // dashboard-card
                 }
                 break;
-
-
 
 
 
