@@ -28,28 +28,18 @@ class SaeView extends BaseView
         $this->data = $data;
         $this->username = $username;
         $this->role = $role;
+
+        $this->data[self::TITLE_KEY] = $this->title;
+        $this->data[self::USERNAME_KEY] = $this->username;
+        $this->data[self::ROLE_KEY] = $this->role;
+        $this->data[self::CONTENT_KEY] = $this->buildContentHtml();
     }
 
     public function templatePath(): string
     {
-        return __DIR__ . '/sae.html';
+        return __DIR__ . '/sae.php';
     }
 
-    public function templateKeys(): array
-    {
-        $contentHtml = $this->buildContentHtml();
-
-        // On récupère le header
-        $headerView = new \Views\Base\HeaderView();
-        $headerKeys = $headerView->templateKeys();
-
-        return array_merge($headerKeys, [
-            self::TITLE_KEY => $this->title,
-            self::CONTENT_KEY => $contentHtml,
-            self::USERNAME_KEY => $this->username,
-            self::ROLE_KEY => $this->role,
-        ]);
-    }
 
     /**
      * Génère le HTML du contenu selon le rôle

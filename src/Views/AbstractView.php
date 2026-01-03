@@ -23,26 +23,11 @@ abstract class AbstractView implements View
 
     function renderBody(): string
     {
-        $template = file_get_contents($this->templatePath());
+        $templatePath = $this->templatePath();
 
-        foreach ($this->templateKeys() as $key => $value) {
-            // Valeur attendue par templateKeys():
-            // - souvent une valeur littérale (ex: URL ou texte) => on l'utilise directement
-            // - parfois le nom d'une clé de données (ex: 'ERROR_MESSAGE') => on remplace par la valeur fournie via setData()
-            $replacement = '';
-            if (is_string($value)) {
-                if (array_key_exists($value, $this->data)) {
-                    // priorité à la donnée fournie dynamiquement
-                    $replacement = (string)$this->data[$value];
-                } else {
-                    // sinon on utilise la valeur littérale fournie par templateKeys()
-                    $replacement = $value;
-                }
-            }
-
-            $template = str_replace("{{{$key}}}", $replacement, $template);
-        }
-
-        return $template;
+        ob_start();
+        extract($this->data);
+        include $templatePath;
+        return ob_get_clean();
     }
 }

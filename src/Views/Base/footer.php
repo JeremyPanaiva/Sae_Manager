@@ -6,8 +6,8 @@
         </section>
 
         <section class="footer-right" aria-label="Liens utiles">
-            <a href="{{LEGAL_LINK_KEY}}">Mentions légales</a>
-            <a href="{{PLAN_LINK_KEY}}">Plan du site</a>
+            <a href="<?php echo $LEGAL_LINK_KEY; ?>">Mentions légales</a>
+            <a href="<?php echo $PLAN_LINK_KEY; ?>">Plan du site</a>
             <a href="/contact">Contact</a>
         </section>
     </section>

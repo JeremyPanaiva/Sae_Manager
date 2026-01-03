@@ -29,10 +29,6 @@ class RegisterView extends BaseView
         return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys(): array
-    {
-        return []; // Pas utilisé
-    }
 
     public function renderBody(): string
     {

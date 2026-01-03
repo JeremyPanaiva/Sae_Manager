@@ -26,10 +26,6 @@ class UserListView extends BaseView
         return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys(): array
-    {
-        return [];
-    }
 
     public function renderBody(): string
     {

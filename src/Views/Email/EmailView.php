@@ -21,7 +21,7 @@ class EmailView extends BaseView
 
     public function templatePath(): string
     {
-        return __DIR__ . '/' . $this->templateName . '.html';
+        return __DIR__ . '/' . $this->templateName . '.php';
     }
 
     protected function templateVariables(): array
@@ -41,20 +41,9 @@ class EmailView extends BaseView
             throw new \Exception("Template email non trouvé : {$this->templateName}");
         }
 
-        $template = file_get_contents($templatePath);
-
-        // Remplacer les variables {{KEY}} par leurs valeurs
-        foreach ($this->data as $key => $value) {
-            // Sécuriser les valeurs pour éviter les injections XSS
-            $safeValue = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-            $template = str_replace('{{' . $key . '}}', $safeValue, $template);
-        }
-
-        return $template;
-    }
-
-    function templateKeys(): array
-    {
-        // TODO: Implement templateKeys() method.
+        ob_start();
+        extract($this->data);
+        include $templatePath;
+        return ob_get_clean();
     }
 }

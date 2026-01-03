@@ -6,7 +6,7 @@ use Views\Base\BaseView;
 
 class ContactView extends BaseView
 {
-    private const TEMPLATE_HTML = __DIR__ . '/contact.html';
+    private const TEMPLATE_HTML = __DIR__ . '/contact.php';
 
     public function __construct()
     {
@@ -18,13 +18,6 @@ class ContactView extends BaseView
         return self::TEMPLATE_HTML;
     }
 
-    public function templateKeys(): array
-    {
-        // Le bloc message est injecté dynamiquement dans render()
-        return [
-            'MESSAGE_BLOCK' => 'MESSAGE_BLOCK',
-        ];
-    }
 
     public function render(): string
     {

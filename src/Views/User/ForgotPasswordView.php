@@ -17,10 +17,6 @@ class ForgotPasswordView extends BaseView
         return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys(): array
-    {
-        return [];
-    }
 
     public function render(): string
     {

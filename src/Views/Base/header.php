@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" >
     <meta name="description" content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <!-- Canonical -->
-    <link rel="canonical" href="{{CANONICAL_URL}}">
+    <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
     <!-- JSON-LD -->
     <script type="application/ld+json">
@@ -43,31 +43,31 @@
             </h2>
         </section>
     <section class="user-info" aria-label="Informations utilisateur">
-            <div class="user-meta" style="{{USER_META_STYLE}}">
+            <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
                 <p>
-                    👤 <a href="/user/profile" class="user-profile-link">{{USERNAME_KEY}}</a>
-                    <span class="role-badge role-{{ROLE_CLASS}}">{{ROLE_KEY}}</span>
+                    👤 <a href="/user/profile" class="user-profile-link"><?php echo $USERNAME_KEY; ?></a>
+                    <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
                 </p>
 
             </div>
             <div class="user-actions">
-                <a href="{{LINK_KEY}}" class="btn btn-outline">{{CONNECTION_LINK_KEY}}</a>
-                <a href="{{INSCRIPTION_LINK_KEY}}" class="btn btn-outline" style="{{INSCRIPTION_STYLE_KEY}}">S'inscrire</a>
+                <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline"><?php echo $CONNECTION_LINK_KEY; ?></a>
+                <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
             </div>
     </section>
     </section>
 </header>
 
-<nav class="nav" style="{{NAV_STYLE}}" aria-label="Contenu principal">
+<nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
     <ul class="nav-content">
-        <li class="nav-item {{ACTIVE_DASHBOARD}}">
-            <a href="{{DASHBOARD_LINK_KEY}}">Tableau de bord</a>
+        <li class="nav-item <?php echo $ACTIVE_DASHBOARD; ?>">
+            <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
         </li>
-        <li class="nav-item {{ACTIVE_SAE}}">
-            <a href="{{SAE_LINK_KEY}}">SAEs</a>
+        <li class="nav-item <?php echo $ACTIVE_SAE; ?>">
+            <a href="<?php echo $SAE_LINK_KEY; ?>">SAEs</a>
         </li>
-        <li class="nav-item {{ACTIVE_USERS}}">
-            <a href="{{USERS_LINK_KEY}}">Utilisateurs</a>
+        <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
+            <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
         </li>
         <li class="nav-item">Notifications</li>
     </ul>

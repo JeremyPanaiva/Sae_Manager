@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/_assets/css/error.css">
 
 <ul class="errors-list">
-  {{ERRORS_KEY}}
+  <?php echo $ERRORS_KEY; ?>
 </ul>
