@@ -7,17 +7,21 @@ use Models\User\User;
 use Views\User\ProfileView;
 use Shared\Exceptions\DataBaseException;
 
-class ProfileController implements ControllerInterface {
+class ProfileController implements ControllerInterface
+{
     public const PATH = '/user/profile';
     public const PATH_DELETE = '/user/profile/delete';
 
-    public static function support(string $uri, string $method): bool {
-        return ($uri === self:: PATH && in_array($method, ['GET','POST']))
-            || ($uri === self:: PATH_DELETE && $method === 'POST');
+    public static function support(string $uri, string $method): bool
+    {
+        return ($uri === self::PATH && in_array($method, ['GET', 'POST']))
+            || ($uri === self::PATH_DELETE && $method === 'POST');
     }
 
-    public function control(): void {
-        if (session_status() === PHP_SESSION_NONE) session_start();
+    public function control(): void
+    {
+        if (session_status() === PHP_SESSION_NONE)
+            session_start();
 
         if (!isset($_SESSION['user']['id'])) {
             header("Location: /login");
@@ -42,7 +46,7 @@ class ProfileController implements ControllerInterface {
 
         try {
             $userModel::checkDatabaseConnection();
-            $userData = $userModel:: getById($userId) ?? [];
+            $userData = $userModel::getById($userId) ?? [];
         } catch (DataBaseException $e) {
             $errors[] = $e;
         } catch (\Throwable $e) {
@@ -51,11 +55,11 @@ class ProfileController implements ControllerInterface {
 
         // Traitement POST pour update du profil
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
-            $nom = trim($_POST['nom'] ??  '');
-            $prenom = trim($_POST['prenom'] ??  '');
+            $nom = trim($_POST['nom'] ?? '');
+            $prenom = trim($_POST['prenom'] ?? '');
             $mail = trim($_POST['mail'] ?? '');
 
-            if (!$nom || ! $prenom || !$mail) {
+            if (!$nom || !$prenom || !$mail) {
                 $errors[] = new \Exception("Tous les champs sont obligatoires.");
             }
 
@@ -74,17 +78,44 @@ class ProfileController implements ControllerInterface {
 
                     // Update du profil
                     if (empty($errors)) {
-                        $stmt = $conn->prepare("UPDATE users SET nom=?, prenom=?, mail=? WHERE id=?");
-                        $stmt->bind_param("sssi", $nom, $prenom, $mail, $userId);
-                        $stmt->execute();
-                        $stmt->close();
+                        $currentEmail = $_SESSION['user']['mail'];
 
-                        $_SESSION['user']['nom'] = $nom;
-                        $_SESSION['user']['prenom'] = $prenom;
-                        $_SESSION['user']['mail'] = $mail;
+                        // Si l'email a changé
+                        if ($mail !== $currentEmail) {
+                            $verificationToken = bin2hex(random_bytes(32));
 
-                        $success = "Profil mis à jour avec succès. ";
-                        $userData = $userModel::getById($userId) ?? [];
+                            // Met à jour l'email et reset la vérification
+                            $userModel->updateEmail($userId, $mail, $verificationToken);
+
+                            // Met à jour les autres champs (Nom/Prénom)
+                            // On réutilise une requête simple pour les autres champs pour ne pas écraser l'email 2 fois
+                            $stmt = $conn->prepare("UPDATE users SET nom=?, prenom=? WHERE id=?");
+                            $stmt->bind_param("ssi", $nom, $prenom, $userId);
+                            $stmt->execute();
+                            $stmt->close();
+
+                            // Envoie l'email de vérification à la NOUVELLE adresse
+                            $emailService = new \Models\User\EmailService();
+                            $emailService->sendAccountVerificationEmail($mail, $verificationToken);
+
+                            // Déconnecte l'utilisateur
+                            session_destroy();
+
+                            header("Location: /user/login?success=email_changed");
+                            exit;
+                        } else {
+                            // Mise à jour classique sans changement d'email
+                            $stmt = $conn->prepare("UPDATE users SET nom=?, prenom=? WHERE id=?");
+                            $stmt->bind_param("ssi", $nom, $prenom, $userId);
+                            $stmt->execute();
+                            $stmt->close();
+
+                            $_SESSION['user']['nom'] = $nom;
+                            $_SESSION['user']['prenom'] = $prenom;
+
+                            $success = "Profil mis à jour avec succès.";
+                            $userData = $userModel::getById($userId) ?? [];
+                        }
                     }
 
                 } catch (DataBaseException $e) {
@@ -109,7 +140,7 @@ class ProfileController implements ControllerInterface {
 
         try {
             User::checkDatabaseConnection();
-            User:: deleteAccount($userId);
+            User::deleteAccount($userId);
 
             // Détruit la session
             session_destroy();

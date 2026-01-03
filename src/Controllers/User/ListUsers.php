@@ -4,7 +4,7 @@ namespace Controllers\User;
 
 use Models\User\User;
 use Views\User\UserListView;
-use Views\Base\HeaderView;
+
 
 class ListUsers
 {
@@ -18,7 +18,7 @@ class ListUsers
     public function control(): void
     {
         $userModel = new User();
-        $header = new HeaderView();
+
 
         $limit = 10; // a modifier plus tard pour choisir sa limite voir un variable ^pur laisser le choix l'user 
         $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
@@ -35,11 +35,8 @@ class ListUsers
             $paginationHtml .= "<a href='/user/list?page=$i' $active>$i</a>";
         }
 
-        // Données d’en-tête
-        $headerData = $header->templateKeys();
-
         // Afficher la vue
-        $view = new UserListView($users, $paginationHtml, $headerData);
+        $view = new UserListView($users, $paginationHtml);
         echo $view->render();
     }
 }
