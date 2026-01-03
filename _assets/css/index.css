@@ -39,7 +39,6 @@ body {
 /* ================================
    🧭 Header
 ================================ */
-/* Contrainte globale de largeur pour le contenu principal (aligné avec le header) */
 main,
 section.main,
 .dashboard-page,
@@ -55,7 +54,7 @@ section.main,
 .header {
     background: linear-gradient(135deg, var(--amu-blue), var(--amu-light-blue));
     color: var(--white);
-    padding: 30px 0;
+    padding: 10px 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -68,16 +67,22 @@ section.main,
     align-items: center;
 }
 
-.logo a {
-    color: var(--white);
-    font-size: 1.6rem;
-    font-weight: 600;
+.logo-link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
     transition: opacity 0.3s ease;
 }
 
-.logo a:hover {
+.logo-link:hover {
     opacity: 0.85;
+}
+
+.logo-img {
+    height: 60px;
+    /* Taille ajustée : un peu plus petit après rognage */
+    width: auto;
+    display: block;
 }
 
 /* ================================

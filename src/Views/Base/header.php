@@ -32,8 +32,14 @@
         }
     </script>
     <link rel="stylesheet" href="/_assets/css/index.css">
-    <link rel="icon" href="https://sae-manager.alwaysdata.net/_assets/img/favicon.ico" type="image/x-icon">
-    <link rel="shortcut icon" href="https://sae-manager.alwaysdata.net/_assets/img/favicon.ico" type="image/x-icon">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/_assets/img/favicon/site.webmanifest" />
+
     <title>SAE Manager</title>
 </head>
 
@@ -41,9 +47,9 @@
     <header class="header">
         <section class="header-content" aria-label="En-tête de la page">
             <section class="logo">
-                <h2 class="logo">
-                    <a href="/">📚 SAE Manager</a>
-                </h2>
+                <a href="/" class="logo-link">
+                    <img src="/_assets/img/SM_logo.png" alt="SAE Manager" class="logo-img">
+                </a>
             </section>
             <section class="user-info" aria-label="Informations utilisateur">
                 <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
