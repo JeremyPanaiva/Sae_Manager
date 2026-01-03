@@ -2,7 +2,7 @@
 namespace Controllers\User;
 use Controllers\ControllerInterface;
 use Models\User\UserDTO;
-use Views\User\ConnectionView;
+use Views\User\LoginView;
 
 class Login implements ControllerInterface
 {
@@ -29,7 +29,7 @@ class Login implements ControllerInterface
             }
         }
 
-        $view = new ConnectionView($errors, $successMessage);
+        $view = new LoginView($errors, $successMessage);
         echo $view->render();
 
     }

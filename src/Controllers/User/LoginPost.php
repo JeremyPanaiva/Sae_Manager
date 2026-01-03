@@ -8,7 +8,7 @@ use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\EmailNotFoundException;
 use Shared\Exceptions\InvalidPasswordException;
 use Shared\Exceptions\DataBaseException;
-use Views\User\ConnectionView;
+use Views\User\LoginView;
 
 class LoginPost implements ControllerInterface
 {
@@ -83,7 +83,7 @@ class LoginPost implements ControllerInterface
 
         } catch (ArrayException $exceptions) {
             // Affiche les erreurs sur la vue
-            $view = new ConnectionView($exceptions->getExceptions());
+            $view = new LoginView($exceptions->getExceptions());
             echo $view->render();
             return;
         }
