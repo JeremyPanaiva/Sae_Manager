@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
-    <meta name="description" content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <!-- Canonical -->
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
@@ -34,41 +36,45 @@
     <link rel="shortcut icon" href="https://sae-manager.alwaysdata.net/_assets/img/favicon.ico" type="image/x-icon">
     <title>SAE Manager</title>
 </head>
+
 <body>
-<header class="header">
-    <section class="header-content" aria-label="En-tête de la page">
-        <section class="logo">
-            <h2 class="logo">
-                <a href="/">📚 SAE Manager</a>
-            </h2>
+    <header class="header">
+        <section class="header-content" aria-label="En-tête de la page">
+            <section class="logo">
+                <h2 class="logo">
+                    <a href="/">📚 SAE Manager</a>
+                </h2>
+            </section>
+            <section class="user-info" aria-label="Informations utilisateur">
+                <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
+                    <p>
+                        👤 <?php echo $USERNAME_KEY; ?>
+                        <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
+                    </p>
+
+                </div>
+                <div class="user-actions">
+                    <a href="/user/profile" class="btn btn-outline" style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
+                        profil</a>
+                    <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline"><?php echo $CONNECTION_LINK_KEY; ?></a>
+                    <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
+                        style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
+                </div>
+            </section>
         </section>
-    <section class="user-info" aria-label="Informations utilisateur">
-            <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
-                <p>
-                    👤 <a href="/user/profile" class="user-profile-link"><?php echo $USERNAME_KEY; ?></a>
-                    <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
-                </p>
+    </header>
 
-            </div>
-            <div class="user-actions">
-                <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline"><?php echo $CONNECTION_LINK_KEY; ?></a>
-                <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
-            </div>
-    </section>
-    </section>
-</header>
-
-<nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
-    <ul class="nav-content">
-        <li class="nav-item <?php echo $ACTIVE_DASHBOARD; ?>">
-            <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
-        </li>
-        <li class="nav-item <?php echo $ACTIVE_SAE; ?>">
-            <a href="<?php echo $SAE_LINK_KEY; ?>">SAEs</a>
-        </li>
-        <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
-            <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
-        </li>
-        <li class="nav-item">Notifications</li>
-    </ul>
-</nav>
+    <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
+        <ul class="nav-content">
+            <li class="nav-item <?php echo $ACTIVE_DASHBOARD; ?>">
+                <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
+            </li>
+            <li class="nav-item <?php echo $ACTIVE_SAE; ?>">
+                <a href="<?php echo $SAE_LINK_KEY; ?>">SAEs</a>
+            </li>
+            <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
+                <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
+            </li>
+            <li class="nav-item">Notifications</li>
+        </ul>
+    </nav>

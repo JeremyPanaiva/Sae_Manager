@@ -15,6 +15,11 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 30px 40px;
     background-color: var(--amu-gray);
+    max-width: 1200px;
+    /* Aligne avec le header */
+    margin: 0 auto;
+    /* Centre la page */
+    width: 100%;
 }
 
 /* Section principale */
@@ -22,7 +27,7 @@
     background-color: var(--white);
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
 /* Informations utilisateur */
@@ -38,13 +43,13 @@
     padding: 20px;
     margin-bottom: 25px;
     border-left: 6px solid var(--amu-blue);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
     transition: transform 0.2s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .dashboard-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(0,0,0,0.18);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
 }
 
 .dashboard-card h3 {
@@ -150,6 +155,7 @@
     border: 1px solid #ccc;
     font-size: 0.9rem;
 }
+
 /* Wrapper date + bouton sur la même ligne */
 .date-rendu-wrapper {
     display: flex;
@@ -299,7 +305,7 @@ form button:hover {
 }
 
 /* Liste To-Do */
-ul. todo-list {
+ul.todo-list {
     list-style-type: none;
     padding-left: 0;
 }
@@ -311,7 +317,7 @@ ul.todo-list li {
     justify-content: space-between;
     gap: 12px;
     padding: 8px 12px;
-    border-radius:  8px;
+    border-radius: 8px;
     transition: background-color 0.2s ease;
 }
 
@@ -343,8 +349,8 @@ ul.todo-list li:hover {
 .btn-delete-task {
     background: none;
     border: none;
-    cursor:  pointer;
-    font-size:  1.4rem;
+    cursor: pointer;
+    font-size: 1.4rem;
     padding: 0;
     width: 28px;
     height: 28px;

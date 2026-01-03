@@ -57,6 +57,9 @@ class HeaderView extends AbstractView
             // Connecté: afficher le menu et le bloc nom/prénom
             $navStyle = '';
             $userMetaStyle = '';
+            $profileBtnStyle = '';
+        } else {
+            $profileBtnStyle = 'display:none;';
         }
 
         $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -89,6 +92,7 @@ class HeaderView extends AbstractView
 
         $this->data[self::NAV_STYLE_KEY] = $navStyle;
         $this->data[self::USER_META_STYLE_KEY] = $userMetaStyle;
+        $this->data['PROFILE_BTN_STYLE'] = $profileBtnStyle;
 
         $this->data['ACTIVE_DASHBOARD'] = $this->getActiveClass($dashboardLink);
         $this->data['ACTIVE_SAE'] = $this->getActiveClass($saeLink);

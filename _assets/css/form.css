@@ -20,8 +20,8 @@ form {
     border: 1px solid var(--amu-dark-gray);
     border-radius: 10px;
     background-color: var(--amu-gray);
-    font-family: Arial, sans-serif;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    /* font-family inherited */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     animation: fadeIn 0.5s ease-in-out;
 }
 
@@ -47,7 +47,8 @@ form input[type="text"],
 form input[type="email"],
 form input[type="password"] {
     width: 100%;
-    padding: 10px 40px 10px 10px; /* espace pour icône si nécessaire */
+    padding: 10px 40px 10px 10px;
+    /* espace pour icône si nécessaire */
     margin-bottom: 15px;
     border: 1px solid var(--amu-dark-gray);
     border-radius: 5px;
@@ -96,7 +97,8 @@ form input[type="submit"]:hover {
 
 .password-wrapper input {
     flex: 1;
-    padding-right: 40px; /* espace pour l'icône */
+    padding-right: 40px;
+    /* espace pour l'icône */
 }
 
 .toggle-password {
@@ -131,8 +133,15 @@ form input[type="submit"]:hover {
 
 /* ===== Animation ===== */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== Responsive ===== */

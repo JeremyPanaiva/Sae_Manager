@@ -1,23 +1,7 @@
 /* =========================
-   Palette de couleurs AMU
-========================= */
-:root {
-    --amu-blue: #003366;
-    --amu-light-blue: #0066cc;
-    --amu-gray: #f8f9fa;
-    --amu-dark-gray: #6c757d;
-    --white: #ffffff;
-}
-
-/* =========================
-   Structure générale
-========================= */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
-    background-color: var(--amu-gray);
-}
+   Palette de couleurs AMU & Structure
+   (Hérité de index.css)
+   ========================= */
 
 section.main {
     display: flex;
@@ -34,12 +18,13 @@ form {
     max-width: 420px;
     background-color: var(--white);
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     padding: 35px 25px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 12px; /* moins d’espace pour un rendu plus épuré */
+    gap: 12px;
+    /* moins d’espace pour un rendu plus épuré */
 }
 
 fieldset {
@@ -57,6 +42,7 @@ legend {
     text-align: center;
     color: var(--amu-blue);
 }
+
 /* =========================
    Labels et champs
 ========================= */
@@ -77,7 +63,8 @@ select {
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 0.95em;
-    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif; /* <- nouvelle fonte */
+    font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+    /* <- nouvelle fonte */
     box-sizing: border-box;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
@@ -85,7 +72,7 @@ select {
 input:focus,
 select:focus {
     border-color: var(--amu-light-blue);
-    box-shadow: 0 0 5px rgba(0,102,204,0.2);
+    box-shadow: 0 0 5px rgba(0, 102, 204, 0.2);
     outline: none;
 }
 
@@ -99,7 +86,8 @@ input::placeholder {
 .password-wrapper {
     position: relative;
     display: flex;
-    align-items: center; /* centre verticalement le contenu */
+    align-items: center;
+    /* centre verticalement le contenu */
 }
 
 .password-wrapper input {
@@ -133,7 +121,8 @@ input[type="submit"] {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.1s ease;
-    margin-top: 8px; /* petit espace au-dessus du bouton */
+    margin-top: 8px;
+    /* petit espace au-dessus du bouton */
 }
 
 input[type="submit"]:hover {
@@ -171,7 +160,8 @@ input[type="submit"]:hover {
     text-align: right;
     font-size: 0.9em;
     margin-top: 4px;
-    margin-bottom: 8px; /* légèrement réduit */
+    margin-bottom: 8px;
+    /* légèrement réduit */
 }
 
 .forgot-password-link a {
