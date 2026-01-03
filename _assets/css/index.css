@@ -139,13 +139,14 @@ section.main,
 }
 
 /* (Se connecter / Se déconnecter) */
-.header .user-actions .btn-outline:first-child {
+/* (Se connecter / Se déconnecter : Style Transparent) */
+.header .user-actions .header-btn-transparent {
     border: none;
     background: transparent;
     color: var(--white);
 }
 
-.header .user-actions .btn-outline:first-child:hover {
+.header .user-actions .header-btn-transparent:hover {
     background: rgba(255, 255, 255, 0.12);
     color: var(--white);
 }
