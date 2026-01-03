@@ -31,10 +31,7 @@
 }
 
 /* Informations utilisateur */
-.user-info p {
-    margin: 6px 0;
-    font-size: 1rem;
-}
+/* Informations utilisateur - voir index.css */
 
 /* Cartes SAE */
 .dashboard-card {

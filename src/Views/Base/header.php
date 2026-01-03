@@ -54,10 +54,10 @@
 
                 </div>
                 <div class="user-actions">
-                    <a href="/user/profile" class="btn btn-outline" style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
+                    <a href="/user/profile" class="btn btn-outline header-btn-transparent"
+                        style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
                         profil</a>
-                    <a href="<?php echo $LINK_KEY; ?>"
-                        class="btn btn-outline header-btn-transparent"><?php echo $CONNECTION_LINK_KEY; ?></a>
+                    <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline"><?php echo $CONNECTION_LINK_KEY; ?></a>
                     <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
                         style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
                 </div>

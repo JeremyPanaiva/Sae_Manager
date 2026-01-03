@@ -92,6 +92,8 @@ section.main,
 .user-meta p {
     font-size: 1rem;
     color: var(--white);
+    margin: 0;
+    /* Force 0 margin everywhere for height consistency */
 }
 
 .user-actions {
@@ -167,7 +169,8 @@ section.main,
     padding: 0 2rem;
     display: flex;
     list-style: none;
-    justify-content: flex-start;
+    justify-content: center;
+    /* Centrer les éléments du menu */
     align-items: center;
     flex-wrap: wrap;
 }

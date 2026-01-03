@@ -63,7 +63,7 @@
    Boutons
    (Styles hérités de index.css, sauf spécificités)
    ===================================== */
-.btn {
+.dashboard-page .btn {
     margin-top: 1rem;
 }
 
@@ -151,6 +151,8 @@
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+    /* Empêche le tableau d'élargir la page */
 }
 
 .users h2 {
