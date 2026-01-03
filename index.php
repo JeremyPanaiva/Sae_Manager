@@ -34,6 +34,8 @@ use Controllers\Dashboard\DashboardController;
 use Controllers\Sae\CreateSaeController;
 use Controllers\Legal\ContactPost;
 use Controllers\Sae\AvisController;
+use Controllers\User\ChangePassword;
+use Controllers\User\ChangePasswordPost;
 
 
 // Démarrer la session dès le départ
@@ -75,7 +77,9 @@ $controllers = [
     new ContactPost(),
     new AvisController(),
     new UpdateContentSaeController(),
-    new ProfileController()
+    new ProfileController(),
+    new ChangePassword(),
+    new ChangePasswordPost()
 
 ];
 
