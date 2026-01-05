@@ -2,97 +2,66 @@
 namespace Models\Sae;
 
 use Models\Database;
-use mysqli_sql_exception;
-use Shared\Exceptions\DataBaseException;
+use mysqli;
 
 class TodoList
 {
-    public static function addTask(int $saeAttributionId, string $titre): void
+    /**
+     * Ajouter une tâche pour une SAE
+     */
+    public static function addTask(int $saeId, string $titre): bool
     {
-        self::checkDatabaseConnection();
         $db = Database::getConnection();
-
-        try {
-            $stmt = $db->prepare("INSERT INTO todo_list (sae_attribution_id, titre, fait) VALUES (?, ?, 0)");
-            $stmt->bind_param("is", $saeAttributionId, $titre);
-            $stmt->execute();
-            $stmt->close();
-        } catch (mysqli_sql_exception $e) {
-            error_log("Erreur TodoList::addTask : " . $e->getMessage());
-        }
-    }
-
-    public static function toggleTask(int $taskId, bool $fait): void
-    {
-        self::checkDatabaseConnection();
-        $db = Database::getConnection();
-        $stmt = $db->prepare("UPDATE todo_list SET fait = ? WHERE id = ?");
-        $faitInt = $fait ? 1 : 0;
-        $stmt->bind_param("ii", $faitInt, $taskId);
-        $stmt->execute();
+        $stmt = $db->prepare("INSERT INTO todo_list (sae_id, titre, fait) VALUES (?, ?, 0)");
+        $stmt->bind_param("is", $saeId, $titre);
+        $result = $stmt->execute();
         $stmt->close();
+        return $result;
     }
 
-    public static function getBySaeAttribution(int $saeAttributionId): array
-    {
-        $db = Database::getConnection();
-        // ✅ Table corrigée
-        $stmt = $db->prepare("SELECT id, titre, fait FROM todo_list WHERE sae_attribution_id = ?");
-        $stmt->bind_param("i", $saeAttributionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $todos = $result->fetch_all(MYSQLI_ASSOC);
-        $stmt->close();
-
-        return $todos;
-    }
-
+    /**
+     * Récupérer toutes les tâches d'une SAE
+     */
     public static function getBySae(int $saeId): array
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-        SELECT t.id, t.titre, t.fait, sa.student_id
-        FROM todo_list t
-        JOIN sae_attributions sa ON t.sae_attribution_id = sa.id
-        WHERE sa.sae_id = ?
-        ORDER BY t.id ASC
-    ");
+            SELECT id, titre, fait, date_creation 
+            FROM todo_list 
+            WHERE sae_id = ?  
+            ORDER BY id ASC
+        ");
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
         $result = $stmt->get_result();
         $todos = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
-
         return $todos;
     }
 
-    public static function checkDatabaseConnection(): void
+    /**
+     * Marquer une tâche comme faite/non faite
+     */
+    public static function toggleTask(int $taskId): bool
     {
-        try {
-            $db = Database::getConnection();
-            // simple ping pour tester la connexion
-            if (!$db->ping()) {
-                throw new DataBaseException("Unable to connect to the database");
-            }
-        } catch (\Exception $e) {
-            throw new DataBaseException("Unable to connect to the database");
-        }
+        $db = Database::getConnection();
+        $stmt = $db->prepare("UPDATE todo_list SET fait = NOT fait WHERE id = ?");
+        $stmt->bind_param("i", $taskId);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
 
-    public static function deleteTask(int $taskId): void
+    /**
+     * Supprimer une tâche
+     */
+    public static function deleteTask(int $taskId): bool
     {
-        self::checkDatabaseConnection();
         $db = Database:: getConnection();
-
-        try {
-            $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
-            $stmt->bind_param("i", $taskId);
-            $stmt->execute();
-            $stmt->close();
-        } catch (mysqli_sql_exception $e) {
-            error_log("Erreur TodoList::deleteTask : " . $e->getMessage());
-        }
+        $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
+        $stmt->bind_param("i", $taskId);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
-
-
 }

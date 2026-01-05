@@ -25,7 +25,7 @@ class AvisController implements ControllerInterface
             // Stocke le message d'erreur dans la session pour le dashboard
             $_SESSION['error_message'] = $e->getMessage();
         } catch (\Exception $e) {
-            $_SESSION['error_message'] = "Erreur inattendue : " . $e->getMessage();
+            $_SESSION['error_message'] = "Erreur inattendue :  " . $e->getMessage();
         }
 
         // Redirection vers le dashboard
@@ -36,7 +36,7 @@ class AvisController implements ControllerInterface
     private function handleAdd(): void
     {
         if (!isset($_SESSION['user'])) {
-            header("Location: /login");
+            header("Location:  /login");
             exit();
         }
 
@@ -46,12 +46,12 @@ class AvisController implements ControllerInterface
             exit();
         }
 
-        $saeAttributionId = (int)($_POST['sae_attribution_id'] ?? 0);
+        $saeId = (int)($_POST['sae_id'] ?? 0);
         $userId = (int)($_SESSION['user']['id'] ?? 0);
-        $message = trim($_POST['message'] ?? '');
+        $message = trim($_POST['message'] ??  '');
 
-        if ($saeAttributionId > 0 && $userId > 0 && $message !== '') {
-            SaeAvis::add($saeAttributionId, $userId, $message);
+        if ($saeId > 0 && $userId > 0 && $message !== '') {
+            SaeAvis::add($saeId, $userId, $message);
         }
     }
 

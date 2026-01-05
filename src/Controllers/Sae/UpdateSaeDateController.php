@@ -16,7 +16,7 @@ class UpdateSaeDateController implements ControllerInterface
             exit();
         }
 
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
+        if (! isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
             header('HTTP/1.1 403 Forbidden');
             echo "Accès refusé";
             exit();
@@ -24,31 +24,14 @@ class UpdateSaeDateController implements ControllerInterface
 
         try {
             $responsableId = $_SESSION['user']['id'];
-            $saeAttributionId = intval($_POST['sae_attribution_id'] ?? 0);
+            $saeId = intval($_POST['sae_id'] ?? 0);
             $newDate = $_POST['date_rendu'] ?? '';
 
-            if ($saeAttributionId <= 0 || !$newDate) {
+            if ($saeId <= 0 || !$newDate) {
                 $_SESSION['error_message'] = "Tous les champs sont obligatoires.";
                 header('Location: /dashboard');
                 exit();
             }
-
-            // Récupérer le SAE ID correspondant à cette attribution
-            $db = \Models\Database::getConnection();
-            $stmt = $db->prepare("SELECT sae_id FROM sae_attributions WHERE id = ? AND responsable_id = ?");
-            $stmt->bind_param("ii", $saeAttributionId, $responsableId);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $row = $result->fetch_assoc();
-            $stmt->close();
-
-            if (!$row) {
-                $_SESSION['error_message'] = "SAE invalide ou non attribuée.";
-                header('Location: /dashboard');
-                exit();
-            }
-
-            $saeId = $row['sae_id'];
 
             // Mettre à jour la date pour tous les étudiants de cette SAE
             SaeAttribution::updateDateRendu($saeId, $responsableId, $newDate);

@@ -32,7 +32,7 @@ class DashboardController implements ControllerInterface
 
         $view = new DashboardView(
             title: 'Tableau de bord',
-            username: $username,
+            username:  $username,
             role: ucfirst($role),
             data: $data
         );
@@ -47,23 +47,21 @@ class DashboardController implements ControllerInterface
         if ($role === 'etudiant') {
             $saes = SaeAttribution::getSaeForStudent($userId);
             foreach ($saes as &$sae) {
-                $attribId = $sae['sae_attribution_id'] ?? null;
                 $saeId = $sae['sae_id'] ?? null;
 
-                $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
-                $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
-                $sae['avis'] = $attribId ? SaeAvis::getBySaeAttribution($attribId) : [];
+                $sae['todos'] = $saeId ? TodoList:: getBySae($saeId) : [];
+                $sae['etudiants'] = $saeId ?  SaeAttribution::getStudentsBySae($saeId) : [];
+                $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
             }
 
         } elseif ($role === 'responsable') {
             $saes = SaeAttribution::getSaeForResponsable($userId);
             foreach ($saes as &$sae) {
-                $attribId = $sae['sae_attribution_id'] ?? null;
                 $saeId = $sae['sae_id'] ?? null;
 
-                $sae['todos'] = $attribId ? TodoList::getBySaeAttribution($attribId) : [];
+                $sae['todos'] = $saeId ? TodoList::getBySae($saeId) : [];
                 $sae['etudiants'] = $saeId ? SaeAttribution::getStudentsBySae($saeId) : [];
-                $sae['avis'] = $attribId ? SaeAvis::getBySaeAttribution($attribId) : [];
+                $sae['avis'] = $saeId ? SaeAvis:: getBySae($saeId) : [];
             }
 
         } elseif ($role === 'client') {
@@ -73,26 +71,17 @@ class DashboardController implements ControllerInterface
                 $saeId = $sae['id'];
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
 
+                $sae['todos'] = TodoList::getBySae($saeId);
+                $sae['avis'] = SaeAvis:: getBySae($saeId);
+
                 foreach ($attributions as &$attrib) {
-                    $attribId = $attrib['id'];
-
-                    // ⚡ Étudiants uniquement pour cette attribution
-                    $attrib['etudiants'] = SaeAttribution::getStudentsByAttribution($attribId);
-
-                    // Todos et avis
-                    $attrib['todos'] = TodoList::getBySaeAttribution($attribId);
-                    $attrib['avis'] = SaeAvis::getBySaeAttribution($attribId);
-
-                    // Id pour le front
-                    $attrib['sae_attribution_id'] = $attribId;
+                    $attrib['student'] = \Models\User::getById($attrib['student_id']);
                 }
 
                 $sae['attributions'] = $attributions;
                 $saes[] = $sae;
             }
-
         }
-
 
         return ['saes' => $saes];
     }

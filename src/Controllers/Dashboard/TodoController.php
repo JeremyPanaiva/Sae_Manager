@@ -47,11 +47,11 @@ class TodoController implements ControllerInterface
             exit();
         }
 
-        $saeAttributionId = (int)($_POST['sae_attribution_id'] ?? 0);
+        $saeId = (int)($_POST['sae_id'] ?? 0);
         $titre = trim($_POST['titre'] ?? '');
 
-        if ($saeAttributionId > 0 && $titre !== '') {
-            TodoList::addTask($saeAttributionId, $titre);
+        if ($saeId > 0 && $titre !== '') {
+            TodoList::addTask($saeId, $titre);
         }
 
         header('Location: /dashboard');
