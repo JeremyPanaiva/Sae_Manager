@@ -152,7 +152,7 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
-        $stmt = $conn->prepare("SELECT id, nom, prenom, mail FROM users ORDER BY date_creation ASC LIMIT ? OFFSET ?");
+        $stmt = $conn->prepare("SELECT id, nom, prenom, mail, role FROM users ORDER BY date_creation ASC LIMIT ?  OFFSET ?");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in getUsersPaginated.");
         }

@@ -19,8 +19,18 @@ class UserList
     {
         $rowsHtml = '';
         foreach ($this->users as $user) {
-            $rowsHtml .= "<tr><td>{$user['nom']}</td><td>{$user['prenom']}</td></tr>";
-        }
+            $prenom = htmlspecialchars($user['prenom'] ?? '');
+            $nom = htmlspecialchars($user['nom'] ?? '');
+            $mail = htmlspecialchars($user['mail'] ?? '');
+            $role = htmlspecialchars(ucfirst($user['role'] ?? ''));
+
+            $rowsHtml .= "<tr>";
+            $rowsHtml .= "<td>{$prenom}</td>";
+            $rowsHtml .= "<td>{$nom}</td>";
+            $rowsHtml .= "<td>{$mail}</td>";
+            $rowsHtml .= "<td>{$role}</td>";
+            $rowsHtml .= "</tr>";
+    }
         return $rowsHtml;
     }
 

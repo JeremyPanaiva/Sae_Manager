@@ -183,9 +183,82 @@
 }
 
 /* =====================================
-   Pagination
+   Pagination professionnelle
    ===================================== */
 .pagination {
-    margin-top: 1.5rem;
-    text-align: center;
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 0.75rem;
+    text-decoration:  none;
+    color: var(--amu-blue);
+    background-color: var(--white);
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.pagination a:hover {
+    background-color: var(--amu-gray);
+    border-color: var(--amu-light-blue);
+    color: var(--amu-blue);
+}
+
+.pagination a.active {
+    background-color:  var(--amu-blue);
+    color: var(--white);
+    border-color: var(--amu-blue);
+    font-weight: 600;
+    cursor: default;
+    pointer-events: none;
+}
+
+. pagination span {
+    border:  none;
+    background:  transparent;
+    color: var(--amu-dark-gray);
+    cursor: default;
+    min-width: auto;
+    padding: 0 0.3rem;
+}
+
+.pagination a:first-child,
+.pagination a:last-child {
+    font-weight: 600;
+}
+
+.pagination a:first-child:hover,
+.pagination a:last-child:hover {
+    background-color: var(--amu-light-blue);
+    color: var(--white);
+    border-color: var(--amu-light-blue);
+}
+
+/* Responsive pagination */
+@media (max-width: 768px) {
+    .pagination {
+        gap: 0.3rem;
+    }
+
+    .pagination a,
+    .pagination span {
+        min-width: 34px;
+        height: 34px;
+        font-size:  0.85rem;
+        padding: 0 0.5rem;
+    }
 }
