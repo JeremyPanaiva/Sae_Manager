@@ -7,6 +7,7 @@ use Models\Sae\SaeAttribution;
 use Models\Sae\TodoList;
 use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
+use Models\User;
 
 class DashboardController implements ControllerInterface
 {
@@ -75,7 +76,7 @@ class DashboardController implements ControllerInterface
                 $sae['avis'] = SaeAvis:: getBySae($saeId);
 
                 foreach ($attributions as &$attrib) {
-                    $attrib['student'] = \Models\User::getById($attrib['student_id']);
+                    $attrib['student'] = User::getById($attrib['student_id']);
                 }
 
                 $sae['attributions'] = $attributions;
