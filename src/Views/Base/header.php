@@ -82,6 +82,5 @@
             <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
                 <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
             </li>
-            <li class="nav-item">Notifications</li>
         </ul>
     </nav>
