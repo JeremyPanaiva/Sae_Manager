@@ -7,7 +7,7 @@ use Models\Sae\SaeAttribution;
 use Models\Sae\TodoList;
 use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
-use Models\User;
+use Models\User\User;
 
 class DashboardController implements ControllerInterface
 {
