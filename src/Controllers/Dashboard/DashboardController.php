@@ -7,7 +7,7 @@ use Models\Sae\SaeAttribution;
 use Models\Sae\TodoList;
 use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
-use Models\User;
+use Models\User\User;
 
 class DashboardController implements ControllerInterface
 {
@@ -66,7 +66,7 @@ class DashboardController implements ControllerInterface
             }
 
         } elseif ($role === 'client') {
-            $clientSaes = \Models\Sae\Sae::getByClient($userId);
+            $clientSaes = \Models\Sae\Sae::getAssignedSaeByClient($userId);
 
             foreach ($clientSaes as $sae) {
                 $saeId = $sae['id'];
