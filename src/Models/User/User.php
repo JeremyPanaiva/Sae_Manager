@@ -262,6 +262,25 @@ class User
     }
 
     /**
+     * Met à jour l'email et demande une nouvelle vérification
+     */
+    public function updateEmail(int $userId, string $newEmail, string $token): void
+    {
+        try {
+            $conn = Database::getConnection();
+            $stmt = $conn->prepare("UPDATE users SET mail = ?, verification_token = ?, is_verified = 0 WHERE id = ?");
+            if (!$stmt)
+                throw new DataBaseException("Erreur de préparation SQL updateEmail");
+
+            $stmt->bind_param("ssi", $newEmail, $token, $userId);
+            $stmt->execute();
+            $stmt->close();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Erreur lors de la mise à jour de l'email : " . $e->getMessage());
+        }
+    }
+
+    /**
      * Vérifie le compte de l'utilisateur via le token
      *
      * @return bool True si vérification réussie, False sinon

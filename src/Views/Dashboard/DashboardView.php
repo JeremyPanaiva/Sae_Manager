@@ -28,33 +28,24 @@ class DashboardView extends BaseView
         $this->data = $data;
         $this->username = $username;
         $this->role = $role;
+
+        $this->data[self::TITLE_KEY] = $this->title;
+        $this->data[self::USERNAME_KEY] = $this->username;
+        $this->data[self::ROLE_KEY] = $this->role;
+        $this->data[self::CONTENT_KEY] = $this->buildContentHtml();
     }
 
-    function rendreLiensCliquables($texte) {
+    function rendreLiensCliquables($texte)
+    {
         $pattern = '/(https?:\/\/[^\s]+)/i'; // détecte les URLs commençant par http(s)
         $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
         return preg_replace($pattern, $remplacement, $texte);
     }
     public function templatePath(): string
     {
-        return __DIR__ . '/dashboard.html';
+        return __DIR__ . '/dashboard.php';
     }
 
-    public function templateKeys(): array
-    {
-        $contentHtml = $this->buildContentHtml();
-
-        // Récupère le header
-        $headerView = new \Views\Base\HeaderView();
-        $headerKeys = $headerView->templateKeys();
-
-        return array_merge($headerKeys, [
-            self::TITLE_KEY => $this->title,
-            self::CONTENT_KEY => $contentHtml,
-            self::USERNAME_KEY => $this->username,
-            self::ROLE_KEY => $this->role,
-        ]);
-    }
 
     /**
      * Génère le HTML du contenu selon le rôle
@@ -106,82 +97,82 @@ class DashboardView extends BaseView
                     $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
                     $html .= "</div>";
 
-                // --- Formulaire pour ajouter une tâche ---
-                $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
-                $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
-                $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
-                $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche.. .' required>";
-                $html .= "<button type='submit'>Ajouter</button>";
-                $html .= "</form>";
-
-                // --- Liste des tâches ---
-                if ($totalTasks > 0) {
-                    $html .= "<ul class='todo-list'>";
-                foreach ($todos as $task) {
-                $taskId = $task['id'] ?? 0;
-                $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
-                $fait = !empty($task['fait']);
-                $checked = $fait ? 'checked' : '';
-
-                $html .= "<li>";
-
-                // Formulaire toggle (checkbox)
-                $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'>";
-                $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
-                $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
-                $html .= "<label>";
-                $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' {$checked}> ";
-                $html .= $taskTitre;
-                $html .= "</label>";
-                $html .= "</form>";
-
-                    // ✅ Bouton de suppression avec croix
-                    $html .= "<form method='POST' action='/todo/delete' class='todo-delete'>";
-                    $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
-                    $html .= "<button type='submit' class='btn-delete-task' onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
+                    // --- Formulaire pour ajouter une tâche ---
+                    $saeAttributionId = $sae['sae_attribution_id'] ?? 0;
+                    $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
+                    $html .= "<input type='hidden' name='sae_attribution_id' value='{$saeAttributionId}'>";
+                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche.. .' required>";
+                    $html .= "<button type='submit'>Ajouter</button>";
                     $html .= "</form>";
 
-                $html .= "</li>";
-            }
-            $html .= "</ul>";
-        } else {
-            $html .= "<p>Aucune tâche pour cette SAE. </p>";
-        }
+                    // --- Liste des tâches ---
+                    if ($totalTasks > 0) {
+                        $html .= "<ul class='todo-list'>";
+                        foreach ($todos as $task) {
+                            $taskId = $task['id'] ?? 0;
+                            $taskTitre = htmlspecialchars($task['titre'] ?? 'Tâche');
+                            $fait = !empty($task['fait']);
+                            $checked = $fait ? 'checked' : '';
 
-        // --- Étudiants associés ---
-        $etudiants = $sae['etudiants'] ??  [];
-        if (!empty($etudiants)) {
-            $html .= "<h4>Autres étudiants associés :</h4>";
-            $html .= "<ul class='student-list'>";
-            foreach ($etudiants as $etudiant) {
-                $nomComplet = htmlspecialchars($etudiant['nom'] . ' ' . $etudiant['prenom']);
-                $html .= "<li>{$nomComplet}</li>";
-            }
-            $html .= "</ul>";
-        }
+                            $html .= "<li>";
 
-        // --- Remarques / avis pour RESPONSABLE ---
-        if (! empty($sae['avis'])) {
-            $html .= "<h4>Remarques</h4>";
-            foreach ($sae['avis'] as $avis) {
-                $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
-                $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
-                $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
-                $message = htmlspecialchars($avis['message'] ?? '');
-                $message = $this->rendreLiensCliquables($message);
-                $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+                            // Formulaire toggle (checkbox)
+                            $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'>";
+                            $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
+                            $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
+                            $html .= "<label>";
+                            $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' {$checked}> ";
+                            $html .= $taskTitre;
+                            $html .= "</label>";
+                            $html .= "</form>";
 
-                $html .= "<div class='avis-card'>";
-                $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
-                $html .= "<small>{$dateAvis}</small>";
-                $html .= "</div>";
-            }
-        } else {
-            $html .= "<p>Aucun avis pour cette SAE.</p>";
-        }
+                            // ✅ Bouton de suppression avec croix
+                            $html .= "<form method='POST' action='/todo/delete' class='todo-delete'>";
+                            $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
+                            $html .= "<button type='submit' class='btn-delete-task' onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
+                            $html .= "</form>";
 
-        $html .= "</div>"; // dashboard-card
-    }
+                            $html .= "</li>";
+                        }
+                        $html .= "</ul>";
+                    } else {
+                        $html .= "<p>Aucune tâche pour cette SAE. </p>";
+                    }
+
+                    // --- Étudiants associés ---
+                    $etudiants = $sae['etudiants'] ?? [];
+                    if (!empty($etudiants)) {
+                        $html .= "<h4>Autres étudiants associés :</h4>";
+                        $html .= "<ul class='student-list'>";
+                        foreach ($etudiants as $etudiant) {
+                            $nomComplet = htmlspecialchars($etudiant['nom'] . ' ' . $etudiant['prenom']);
+                            $html .= "<li>{$nomComplet}</li>";
+                        }
+                        $html .= "</ul>";
+                    }
+
+                    // --- Remarques / avis pour RESPONSABLE ---
+                    if (!empty($sae['avis'])) {
+                        $html .= "<h4>Remarques</h4>";
+                        foreach ($sae['avis'] as $avis) {
+                            $nomAuteur = htmlspecialchars($avis['nom'] ?? 'Inconnu');
+                            $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
+                            $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
+                            $message = htmlspecialchars($avis['message'] ?? '');
+                            $message = $this->rendreLiensCliquables($message);
+                            $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
+
+                            $html .= "<div class='avis-card'>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<small>{$dateAvis}</small>";
+                            $html .= "</div>";
+                        }
+                    } else {
+                        $html .= "<p>Aucun avis pour cette SAE.</p>";
+                    }
+
+                    $html .= "</div>"; // dashboard-card
+                }
                 break;
 
 

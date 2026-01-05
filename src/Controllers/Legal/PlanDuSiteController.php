@@ -3,7 +3,7 @@
 namespace Controllers\Legal;
 
 use Controllers\ControllerInterface;
-use Views\Legal\PlanDuSiteView;
+use Views\Legal\SitemapView;
 
 class PlanDuSiteController implements ControllerInterface
 {
@@ -16,7 +16,7 @@ class PlanDuSiteController implements ControllerInterface
 
     public function control(): void
     {
-        $view = new PlanDuSiteView();
+        $view = new SitemapView();
         echo $view->render();
     }
 }

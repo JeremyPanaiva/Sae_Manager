@@ -11,16 +11,15 @@ class FooterView extends AbstractView
     public const LEGAL_LINK_KEY = 'LEGAL_LINK_KEY';
     public const PLAN_LINK_KEY = 'PLAN_LINK_KEY';
 
-    function templatePath(): string
+    public function __construct()
     {
-        return __DIR__ . '/footer.html';
+        $this->data[self::PLAN_LINK_KEY] = PlanDuSiteController::PATH;
+        $this->data[self::LEGAL_LINK_KEY] = MentionsLegalesController::PATH;
     }
 
-    function templateKeys(): array
+    function templatePath(): string
     {
-        return [
-            self::PLAN_LINK_KEY => PlanDuSiteController::PATH,
-            self::LEGAL_LINK_KEY => MentionsLegalesController::PATH,
-        ];
+        return __DIR__ . '/footer.php';
     }
+
 }

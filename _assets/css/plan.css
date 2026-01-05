@@ -2,13 +2,7 @@
    Plan du site – SAE Manager
    ================================ */
 
-body {
-    background-color: #f9f9f9;
-    font-family: "Segoe UI", Roboto, sans-serif;
-    color: #222;
-    margin: 0;
-    padding: 0;
-}
+/* Body style inherited from index.css */
 
 .plan-main {
     max-width: 900px;
@@ -16,7 +10,7 @@ body {
     padding: 2rem;
     background-color: #fff;
     border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .plan-header {

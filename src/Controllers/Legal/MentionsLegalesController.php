@@ -3,7 +3,7 @@
 namespace Controllers\Legal;
 
 use Controllers\ControllerInterface;
-use Views\Legal\MentionsLegalesView;
+use Views\Legal\LegalNoticeView;
 
 class MentionsLegalesController implements ControllerInterface
 {
@@ -22,7 +22,7 @@ class MentionsLegalesController implements ControllerInterface
      */
     public function control(): void
     {
-        $view = new MentionsLegalesView();
+        $view = new LegalNoticeView();
         echo $view->render();
     }
 }

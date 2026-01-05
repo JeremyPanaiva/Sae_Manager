@@ -2,20 +2,25 @@
 
 /* Conteneur de toutes les erreurs */
 ul.errors-list {
-    list-style: none;        /* supprime les puces */
+    list-style: none;
+    /* supprime les puces */
     padding: 0;
     margin: 0 0 1em 0;
 }
 
 /* Chaque message d'erreur */
 ul.errors-list li {
-    background-color: #ffe6e6;   /* fond rouge très clair */
-    border: 1px solid #ff4d4d;   /* bordure rouge */
-    color: #b30000;              /* texte rouge foncé */
+    background-color: #ffe6e6;
+    /* fond rouge très clair */
+    border: 1px solid #ff4d4d;
+    /* bordure rouge */
+    color: #b30000;
+    /* texte rouge foncé */
     padding: 10px 15px;
     margin-bottom: 8px;
+    margin-bottom: 8px;
     border-radius: 5px;
-    font-family: Arial, sans-serif;
+    /* font-family inherited */
     font-size: 14px;
 }
 

@@ -3,14 +3,14 @@
 
 <section class="main dashboard-page" aria-label="Tableau de bord">
   <fieldset class="dashboard-section">
-    <legend>Tableau de bord - {{ROLE_KEY}}</legend>
+    <legend>Tableau de bord - <?php echo $ROLE_KEY; ?></legend>
     <div class="user-info">
-      <p><strong>Nom :</strong> {{USERNAME_KEY}}</p>
-      <p><strong>Rôle :</strong> {{ROLE_KEY}}</p>
+      <p><strong>Nom :</strong> <?php echo $USERNAME_KEY; ?></p>
+      <p><strong>Rôle :</strong> <?php echo $ROLE_KEY; ?></p>
     </div>
     <hr>
     <div class="dashboard-content">
-      {{CONTENT_KEY}}
+      <?php echo $CONTENT_KEY; ?>
     </div>
   </fieldset>
 </section>

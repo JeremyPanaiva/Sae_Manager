@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/_assets/css/error.css">
 
 <li class="error-message">
-  {{MESSAGE_KEY}}
+  <?php echo $MESSAGE_KEY; ?>
 </li>

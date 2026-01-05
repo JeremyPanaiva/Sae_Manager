@@ -3,41 +3,24 @@
    Version nettoyée et harmonisée
    ===================================== */
 
-:root {
-    --amu-blue: #003366;
-    --amu-light-blue: #0066cc;
-    --amu-gray: #f8f9fa;
-    --amu-dark-gray: #6c757d;
-    --white: #ffffff;
-    --success: #28a745;
-    --warning: #ffc107;
-    --danger: #dc3545;
-}
-
-/* =====================================
-   Global
-   ===================================== */
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--amu-gray);
-    color: #333;
-}
-
-main {
-    padding: 2rem;
-}
+/* Les variables et styles globaux (body, main) sont hérités de index.css */
 
 /* =====================================
    Profil / Dashboard
    ===================================== */
 .dashboard-page {
-    max-width: 700px;
+    /* Largeur standardisée pour s'aligner avec le header */
+    max-width: 1200px;
     margin: 2rem auto;
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
 }
 
 .dashboard-section {
+    max-width: 700px;
+    /* On garde le contenu centré et lisible */
+    margin: 0 auto;
     background-color: var(--white);
     padding: 2rem;
     border-radius: 12px;
@@ -78,37 +61,10 @@ main {
 
 /* =====================================
    Boutons
+   (Styles hérités de index.css, sauf spécificités)
    ===================================== */
-.btn {
-    display: inline-block;
+.dashboard-page .btn {
     margin-top: 1rem;
-    padding: 0.6rem 1.4rem;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    border: none;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-primary {
-    background-color: var(--amu-blue);
-    color: var(--white);
-}
-
-.btn-primary:hover {
-    background-color: var(--amu-light-blue);
-}
-
-.btn-outline {
-    background-color: transparent;
-    color: var(--amu-blue);
-    border: 2px solid var(--amu-blue);
-}
-
-.btn-outline:hover {
-    background-color: var(--amu-blue);
-    color: var(--white);
 }
 
 .btn-danger {
@@ -195,6 +151,8 @@ main {
     padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    overflow-x: auto;
+    /* Empêche le tableau d'élargir la page */
 }
 
 .users h2 {

@@ -4,9 +4,9 @@ namespace Views\Legal;
 
 use Views\Base\BaseView;
 
-class PlanDuSiteView extends BaseView
+class SitemapView extends BaseView
 {
-    private const TEMPLATE_HTML = __DIR__ . '/plan-du-site.html';
+    private const TEMPLATE_HTML = __DIR__ . '/sitemap.php';
 
     public function __construct()
     {
@@ -18,8 +18,4 @@ class PlanDuSiteView extends BaseView
         return self::TEMPLATE_HTML;
     }
 
-    public function templateKeys(): array
-    {
-        return [];
-    }
 }

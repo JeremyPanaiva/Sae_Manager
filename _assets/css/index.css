@@ -21,7 +21,8 @@
     box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     scroll-behavior: smooth;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -31,16 +32,30 @@ html, body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-y: scroll;
+    /* Force always showing scrollbar to avoid jumps */
 }
 
 /* ================================
    🧭 Header
 ================================ */
+main,
+section.main,
+.dashboard-page,
+.main-home {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 2rem;
+    /* Marges internes par défaut comme le header */
+    box-sizing: border-box;
+}
+
 .header {
     background: linear-gradient(135deg, var(--amu-blue), var(--amu-light-blue));
     color: var(--white);
-    padding: 30px 0;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    padding: 10px 0;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .header-content {
@@ -52,16 +67,22 @@ html, body {
     align-items: center;
 }
 
-.logo a {
-    color: var(--white);
-    font-size: 1.6rem;
-    font-weight: 600;
+.logo-link {
+    display: flex;
+    align-items: center;
     text-decoration: none;
     transition: opacity 0.3s ease;
 }
 
-.logo a:hover {
+.logo-link:hover {
     opacity: 0.85;
+}
+
+.logo-img {
+    height: 60px;
+    /* Taille ajustée : un peu plus petit après rognage */
+    width: auto;
+    display: block;
 }
 
 /* ================================
@@ -76,6 +97,8 @@ html, body {
 .user-meta p {
     font-size: 1rem;
     color: var(--white);
+    margin: 0;
+    /* Force 0 margin everywhere for height consistency */
 }
 
 .user-actions {
@@ -123,13 +146,14 @@ html, body {
 }
 
 /* (Se connecter / Se déconnecter) */
-.header .user-actions .btn-outline:first-child {
+/* (Se connecter / Se déconnecter : Style Transparent) */
+.header .user-actions .header-btn-transparent {
     border: none;
     background: transparent;
     color: var(--white);
 }
 
-.header .user-actions .btn-outline:first-child:hover {
+.header .user-actions .header-btn-transparent:hover {
     background: rgba(255, 255, 255, 0.12);
     color: var(--white);
 }
@@ -141,7 +165,7 @@ html, body {
 .nav {
     background: var(--white);
     border-bottom: 1px solid #e5e5e5;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .nav-content {
@@ -150,7 +174,8 @@ html, body {
     padding: 0 2rem;
     display: flex;
     list-style: none;
-    justify-content: flex-start;
+    justify-content: center;
+    /* Centrer les éléments du menu */
     align-items: center;
     flex-wrap: wrap;
 }
@@ -188,9 +213,18 @@ html, body {
     margin-left: 6px;
 }
 
-.role-etudiant { background-color: #007bff; }
-.role-responsable { background-color: #28a745; }
-.role-client { background-color: #ffc107; color: #000; }
+.role-etudiant {
+    background-color: #007bff;
+}
+
+.role-responsable {
+    background-color: #28a745;
+}
+
+.role-client {
+    background-color: #ffc107;
+    color: #000;
+}
 
 .role-badge:hover {
     opacity: 0.85;
@@ -298,4 +332,3 @@ html, body {
 .user-profile-link:hover {
     text-decoration: underline;
 }
-

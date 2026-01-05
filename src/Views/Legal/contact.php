@@ -7,7 +7,7 @@
     </header>
 
     <section class="legal-content">
-        {{MESSAGE_BLOCK}}
+        <?php echo $MESSAGE_BLOCK; ?>
 
         <article class="legal-section">
             <h2 class="legal-subtitle">Nous écrire</h2>

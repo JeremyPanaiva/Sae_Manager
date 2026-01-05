@@ -5,10 +5,10 @@ namespace Views\Legal;
 
 use Views\Base\BaseView;
 
-class MentionsLegalesView extends BaseView
+class LegalNoticeView extends BaseView
 {
 
-    private const TEMPLATE_HTML = __DIR__ . '/mentions-legales.html';
+    private const TEMPLATE_HTML = __DIR__ . '/legal-notice.php';
 
     public function __construct()
     {
@@ -20,8 +20,4 @@ class MentionsLegalesView extends BaseView
         return self::TEMPLATE_HTML;
     }
 
-    public function templateKeys(): array
-    {
-        return [];
-    }
 }

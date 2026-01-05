@@ -13,10 +13,6 @@ class ResetPasswordView extends BaseView
         return self::TEMPLATE_FILE;
     }
 
-    public function templateKeys(): array
-    {
-        return [];
-    }
 
     public function renderBody(): string
     {

@@ -2,7 +2,7 @@
 namespace Controllers\User;
 use Controllers\ControllerInterface;
 use Models\User\UserDTO;
-use Views\User\ConnectionView;
+use Views\User\LoginView;
 
 class Login implements ControllerInterface
 {
@@ -17,6 +17,8 @@ class Login implements ControllerInterface
                 $successMessage = "Votre compte a été vérifié avec succès. Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'registered') {
                 $successMessage = "Inscription réussie. Veuillez vérifier votre email pour activer votre compte.";
+            } elseif ($_GET['success'] === 'email_changed') {
+                $successMessage = "Votre email a été mis à jour. Veuillez vérifier votre nouvelle adresse pour réactiver votre compte.";
             }
         }
 
@@ -29,7 +31,7 @@ class Login implements ControllerInterface
             }
         }
 
-        $view = new ConnectionView($errors, $successMessage);
+        $view = new LoginView($errors, $successMessage);
         echo $view->render();
 
     }

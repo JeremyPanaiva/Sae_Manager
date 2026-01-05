@@ -28,23 +28,7 @@ class HeaderView extends AbstractView
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-    }
 
-    function templatePath(): string
-    {
-        return __DIR__ . '/header.html';
-    }
-
-    private function getActiveClass(string $link): string {
-        $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (!isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
-            return '';
-        }
-        return ($currentPath === $link) ? 'active' : '';
-    }
-
-    function templateKeys(): array
-    {
         $username = 'Nom Prénom';
         $roleDisplay = '';
         $roleClass = 'inconnu';
@@ -73,6 +57,9 @@ class HeaderView extends AbstractView
             // Connecté: afficher le menu et le bloc nom/prénom
             $navStyle = '';
             $userMetaStyle = '';
+            $profileBtnStyle = '';
+        } else {
+            $profileBtnStyle = 'display:none;';
         }
 
         $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -91,25 +78,39 @@ class HeaderView extends AbstractView
             $inscriptionStyle = 'display:none;';
         }
 
-        return [
-            self::USERNAME_KEY => $username,
-            self::ROLE_KEY => $roleDisplay,
-            'ROLE_CLASS' => $roleClass,
-            self::LINK_KEY => $link,
-            self::CONNECTION_LINK_KEY => $connectionText,
-            self::INSCRIPTION_LINK_KEY => $inscriptionLink,
-            'INSCRIPTION_STYLE_KEY' => $inscriptionStyle,
-            self::USERS_LINK_KEY => $usersLink,
-            self::DASHBOARD_LINK_KEY => $dashboardLink,
-            self::SAE_LINK_KEY => $saeLink,
-            'CANONICAL_URL' => $canonical,
+        $this->data[self::USERNAME_KEY] = $username;
+        $this->data[self::ROLE_KEY] = $roleDisplay;
+        $this->data['ROLE_CLASS'] = $roleClass;
+        $this->data[self::LINK_KEY] = $link;
+        $this->data[self::CONNECTION_LINK_KEY] = $connectionText;
+        $this->data[self::INSCRIPTION_LINK_KEY] = $inscriptionLink;
+        $this->data['INSCRIPTION_STYLE_KEY'] = $inscriptionStyle;
+        $this->data[self::USERS_LINK_KEY] = $usersLink;
+        $this->data[self::DASHBOARD_LINK_KEY] = $dashboardLink;
+        $this->data[self::SAE_LINK_KEY] = $saeLink;
+        $this->data['CANONICAL_URL'] = $canonical;
 
-            self::NAV_STYLE_KEY => $navStyle,
-            self::USER_META_STYLE_KEY => $userMetaStyle,
+        $this->data[self::NAV_STYLE_KEY] = $navStyle;
+        $this->data[self::USER_META_STYLE_KEY] = $userMetaStyle;
+        $this->data['PROFILE_BTN_STYLE'] = $profileBtnStyle;
 
-            'ACTIVE_DASHBOARD' => $this->getActiveClass($dashboardLink),
-            'ACTIVE_SAE' => $this->getActiveClass($saeLink),
-            'ACTIVE_USERS' => $this->getActiveClass($usersLink),
-        ];
+        $this->data['ACTIVE_DASHBOARD'] = $this->getActiveClass($dashboardLink);
+        $this->data['ACTIVE_SAE'] = $this->getActiveClass($saeLink);
+        $this->data['ACTIVE_USERS'] = $this->getActiveClass($usersLink);
     }
+
+    function templatePath(): string
+    {
+        return __DIR__ . '/header.php';
+    }
+
+    private function getActiveClass(string $link): string
+    {
+        $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        if (!isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
+            return '';
+        }
+        return ($currentPath === $link) ? 'active' : '';
+    }
+
 }

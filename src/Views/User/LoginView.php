@@ -4,43 +4,36 @@ namespace Views\User;
 
 use Views\Base\BaseView;
 use Views\Base\ErrorsView;
-use Views\Base\ErrorView;
 
-class InscriptionView extends BaseView
+class LoginView extends BaseView
 {
-
     // Champs du formulaire
-    public const NOM_KEY = 'NOM_KEY';
-    public const PRENOM_KEY = 'PRENOM_KEY';
-    public const MAIL_KEY = 'MAIL_KEY';
+    public const USERNAME_KEY = 'USERNAME_KEY';
     public const PASSWORD_KEY = 'PASSWORD_KEY';
     public const ERRORS_KEY = 'ERRORS_KEY';
+    public const SUCCESS_MESSAGE_KEY = 'SUCCESS_MESSAGE_KEY';
 
-    // Chemin du template
-    private const TEMPLATE_PATH = __DIR__ . '/inscription.php';
+    // Chemin du template PHP
+    private const TEMPLATE_PATH = __DIR__ . '/login.php';
 
-    function __construct(
+    public function __construct(
         private array $errors = [],
+        private string $successMessage = ''
     ) {
-
     }
+
     public function templatePath(): string
     {
         return self::TEMPLATE_PATH;
     }
 
-    public function templateKeys(): array
-    {
-        return []; // Pas utilisé
-    }
 
     public function renderBody(): string
     {
         ob_start();
+        $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">' . $this->successMessage . '</div>' : '';
         $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
-        $nom = $this->data['nom'] ?? '';
-        $prenom = $this->data['prenom'] ?? '';
-        $mail = $this->data['mail'] ?? '';
+        $uname = '';
 
         include $this->templatePath();
         return ob_get_clean();

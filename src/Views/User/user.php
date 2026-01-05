@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/_assets/css/user.css">
 
-<main>
+<main class="dashboard-page">
     <section class="users">
         <h2>Liste des utilisateurs</h2>
         <table>

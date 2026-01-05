@@ -8,7 +8,7 @@ use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\EmailAlreadyExistsException;
 use Shared\Exceptions\DataBaseException;
-use Views\User\InscriptionView;
+use Views\User\RegisterView;
 
 class RegisterPost implements ControllerInterface
 {
@@ -70,7 +70,7 @@ class RegisterPost implements ControllerInterface
             exit();
 
         } catch (ArrayException $exceptions) {
-            $view = new InscriptionView($exceptions->getExceptions());
+            $view = new \Views\User\RegisterView($exceptions->getExceptions());
             echo $view->render();
         }
     }

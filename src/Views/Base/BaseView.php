@@ -50,28 +50,9 @@ abstract class BaseView implements View
     {
         $templatePath = $this->templatePath();
 
-        if (str_ends_with($templatePath, '.php')) {
-            ob_start();
-
-            extract($this->data);
-            include $templatePath;
-            return ob_get_clean();
-        }
-
-        $template = file_get_contents($templatePath);
-
-        foreach ($this->templateKeys() as $key => $value) {
-            $replacement = '';
-            if (is_string($value)) {
-                if (array_key_exists($value, $this->data)) {
-                    $replacement = (string) $this->data[$value];
-                } else {
-                    $replacement = $value;
-                }
-            }
-            $template = str_replace("{{{$key}}}", $replacement, $template);
-        }
-
-        return $template;
+        ob_start();
+        extract($this->data);
+        include $templatePath;
+        return ob_get_clean();
     }
 }
