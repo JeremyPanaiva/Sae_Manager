@@ -12,7 +12,7 @@ class ArrayException extends \RuntimeException
     public function __construct(array $validationException)
     {
         $this->validationException = $validationException;
-        parent::__construct("probleme de validation");
+        parent::__construct("Probleme de validation");
 
 
     }

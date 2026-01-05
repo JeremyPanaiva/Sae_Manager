@@ -39,6 +39,22 @@ class ResetPasswordPost implements ControllerInterface
             exit;
         }
 
+        // Vérifie la complexité du mot de passe
+        if (!preg_match('/[A-Z]/', $password)) {
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_uppercase');
+            exit;
+        }
+
+        if (!preg_match('/[a-z]/', $password)) {
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_lowercase');
+            exit;
+        }
+
+        if (!preg_match('/[0-9]/', $password)) {
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_digit');
+            exit;
+        }
+
         try {
             $tokenModel = new PasswordResetToken();
             $email = $tokenModel->validateToken($token);
