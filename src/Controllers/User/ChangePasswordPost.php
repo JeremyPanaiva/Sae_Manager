@@ -46,6 +46,22 @@ class ChangePasswordPost implements ControllerInterface
             exit;
         }
 
+        // Vérifie la complexité du mot de passe
+        if (!preg_match('/[A-Z]/', $newPassword)) {
+            header('Location: /user/change-password?error=password_no_uppercase');
+            exit;
+        }
+
+        if (!preg_match('/[a-z]/', $newPassword)) {
+            header('Location: /user/change-password?error=password_no_lowercase');
+            exit;
+        }
+
+        if (!preg_match('/[0-9]/', $newPassword)) {
+            header('Location: /user/change-password?error=password_no_digit');
+            exit;
+        }
+
         try {
             $conn = Database::getConnection();
 

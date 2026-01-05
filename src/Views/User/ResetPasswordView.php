@@ -47,6 +47,15 @@ class ResetPasswordView extends BaseView
                 case 'password_too_short':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le mot de passe doit contenir au moins 8 caractères.</div>';
                     break;
+                case 'password_no_uppercase':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le mot de passe doit contenir au moins une lettre majuscule.</div>';
+                    break;
+                case 'password_no_lowercase':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le mot de passe doit contenir au moins une lettre minuscule.</div>';
+                    break;
+                case 'password_no_digit':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le mot de passe doit contenir au moins un chiffre.</div>';
+                    break;
                 case 'invalid_token':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;

@@ -33,6 +33,25 @@ class RegisterPost implements ControllerInterface
             );
         }
 
+        // Vérifie la complexité du mot de passe
+        if (!preg_match('/[A-Z]/', $mdp)) {
+            $validationExceptions[] = new ValidationException(
+                "Le mot de passe doit contenir au moins une lettre majuscule."
+            );
+        }
+
+        if (!preg_match('/[a-z]/', $mdp)) {
+            $validationExceptions[] = new ValidationException(
+                "Le mot de passe doit contenir au moins une lettre minuscule."
+            );
+        }
+
+        if (!preg_match('/[0-9]/', $mdp)) {
+            $validationExceptions[] = new ValidationException(
+                "Le mot de passe doit contenir au moins un chiffre."
+            );
+        }
+
         // Vérifie le format de l'email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $validationExceptions[] = new ValidationException(

@@ -26,6 +26,9 @@ class ChangePasswordView extends BaseView
                 'wrong_password' => "L'ancien mot de passe est incorrect.",
                 'passwords_dont_match' => "Les nouveaux mots de passe ne correspondent pas.",
                 'password_too_short' => "Le nouveau mot de passe doit faire au moins 8 caractères.",
+                'password_no_uppercase' => "Le mot de passe doit contenir au moins une lettre majuscule.",
+                'password_no_lowercase' => "Le mot de passe doit contenir au moins une lettre minuscule.",
+                'password_no_digit' => "Le mot de passe doit contenir au moins un chiffre.",
                 'same_password' => "Le nouveau mot de passe doit être différent de l'ancien.",
                 'database_error' => "Une erreur technique est survenue.",
                 default => "Une erreur est survenue."
