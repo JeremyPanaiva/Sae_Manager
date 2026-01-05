@@ -7,7 +7,7 @@ use Views\Base\BaseView;
 class UserListView extends BaseView
 {
 
-    private const TEMPLATE_PATH = __DIR__ . '/user.php';  // ✅ Sans espace
+    private const TEMPLATE_PATH = __DIR__ . '/user.php';
 
     public const USERS_ROWS_KEY = 'USERS_ROWS';
     public const PAGINATION_KEY = 'PAGINATION';
@@ -16,12 +16,16 @@ class UserListView extends BaseView
     private array $users;
     private string $paginationHtml;
     private string $errorMessage;
+    private string $sort;
+    private string $order;
 
-    public function __construct(array $users, string $paginationHtml = '', string $errorMessage = '')
+    public function __construct(array $users, string $paginationHtml = '', string $errorMessage = '', string $sort = 'date_creation', string $order = 'ASC')
     {
         $this->users = $users;
         $this->paginationHtml = $paginationHtml;
         $this->errorMessage = $errorMessage;
+        $this->sort = $sort;
+        $this->order = $order;
     }
 
     public function templatePath(): string
@@ -34,6 +38,8 @@ class UserListView extends BaseView
     {
         ob_start();
         $PAGINATION = $this->paginationHtml;
+        $SORT = $this->sort;
+        $ORDER = $this->order;
         $ERROR_MESSAGE = '';
 
         if ($this->errorMessage) {
@@ -45,7 +51,7 @@ class UserListView extends BaseView
             $prenom = htmlspecialchars($user['prenom'] ?? '');
             $nom = htmlspecialchars($user['nom'] ?? '');
             $mail = htmlspecialchars($user['mail'] ?? '');
-            $role = strtolower($user['role'] ??  'inconnu');
+            $role = strtolower($user['role'] ?? 'inconnu');
             $roleDisplay = htmlspecialchars(ucfirst($role));
 
             // Créer la pastille de rôle

@@ -144,7 +144,7 @@ class User
         return $responsables;
     }
 
-    public function getUsersPaginated(int $limit, int $offset): array
+    public function getUsersPaginated(int $limit, int $offset, string $sort = 'date_creation', string $order = 'ASC'): array
     {
         try {
             $conn = Database::getConnection();
@@ -152,7 +152,20 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
-        $stmt = $conn->prepare("SELECT id, nom, prenom, mail, role FROM users ORDER BY date_creation ASC LIMIT ?  OFFSET ?");
+        // Liste blanche des colonnes autorisées pour le tri
+        $allowedSortColumns = ['nom', 'prenom', 'mail', 'role', 'date_creation'];
+        if (!in_array($sort, $allowedSortColumns)) {
+            $sort = 'date_creation';
+        }
+
+        // Validation de l'ordre
+        $order = strtoupper($order);
+        if (!in_array($order, ['ASC', 'DESC'])) {
+            $order = 'ASC';
+        }
+
+        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?  OFFSET ?";
+        $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in getUsersPaginated.");
         }
