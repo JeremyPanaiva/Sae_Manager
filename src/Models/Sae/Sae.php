@@ -102,16 +102,19 @@ class Sae
     public static function getByClient(int $clientId): array
     {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM sae WHERE client_id = ?");
-        $stmt->bind_param('i', $clientId);
+        $stmt = $db->prepare("
+        SELECT id, titre, description, date_creation
+        FROM sae
+        WHERE client_id = ?  
+        ORDER BY date_creation DESC
+    ");
+        $stmt->bind_param("i", $clientId);
         $stmt->execute();
-
-        $result = $stmt->get_result();
-        $saes = $result->fetch_all(MYSQLI_ASSOC);
-
+        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
     }
+
 
 
 
@@ -223,6 +226,26 @@ class Sae
         } catch (\Exception $e) {
             throw new DataBaseException("Unable to connect to the database");
         }
+    }
+
+    /**
+     * Récupère uniquement les SAE attribuées d'un client
+     */
+    public static function getAssignedSaeByClient(int $clientId): array
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+        SELECT DISTINCT s. id, s.titre, s. description, s.date_creation
+        FROM sae s
+        INNER JOIN sae_attributions sa ON s.id = sa.sae_id
+        WHERE s. client_id = ? 
+        ORDER BY s.date_creation DESC
+    ");
+        $stmt->bind_param("i", $clientId);
+        $stmt->execute();
+        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+        return $saes;
     }
 
 }

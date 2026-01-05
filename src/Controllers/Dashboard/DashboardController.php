@@ -66,7 +66,7 @@ class DashboardController implements ControllerInterface
             }
 
         } elseif ($role === 'client') {
-            $clientSaes = \Models\Sae\Sae::getByClient($userId);
+            $clientSaes = \Models\Sae\Sae::getAssignedSaeByClient($userId);
 
             foreach ($clientSaes as $sae) {
                 $saeId = $sae['id'];
