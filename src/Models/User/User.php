@@ -6,13 +6,27 @@ use Models\Database;
 use Shared\Exceptions\EmailAlreadyExistsException;
 use Shared\Exceptions\DataBaseException;
 
+/**
+ * User model
+ *
+ * Manages user data and operations including registration, authentication, profile updates,
+ * and account verification.  Handles interactions with the users table in the database.
+ *
+ * Supported user roles:
+ * - etudiant (student)
+ * - responsable (supervisor)
+ * - client
+ *
+ * @package Models\User
+ */
 class User
 {
     /**
-     * Vérifie si un email existe déjà
+     * Checks if an email address is already registered
      *
-     * @throws EmailAlreadyExistsException
-     * @throws DataBaseException
+     * @param string $email The email address to check
+     * @throws EmailAlreadyExistsException If the email already exists
+     * @throws DataBaseException If database connection or query fails
      */
     public function emailExists(string $email): void
     {
@@ -37,13 +51,21 @@ class User
         }
 
         $stmt->close();
-        // ❌ Ne pas fermer $conn ici
     }
 
     /**
-     * Enregistre un nouvel utilisateur
+     * Registers a new user
      *
-     * @throws DataBaseException
+     * Creates a new user account with the provided information.  The account is initially
+     * unverified and requires email verification via the verification token.
+     *
+     * @param string $firstName User's first name
+     * @param string $lastName User's last name
+     * @param string $email User's email address
+     * @param string $password Plain text password (will be hashed)
+     * @param string $role User's role (etudiant, responsable, client)
+     * @param string $verificationToken Email verification token
+     * @throws DataBaseException If database connection or query fails
      */
     public function register(string $firstName, string $lastName, string $email, string $password, string $role, string $verificationToken): void
     {
@@ -53,26 +75,27 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
+        // Hash password using bcrypt
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-        // On ajoute la colonne "role" et "verification_token" dans la requête
+        // Insert new user with verification token and unverified status
         $stmt = $conn->prepare("INSERT INTO users (nom, prenom, mail, mdp, role, verification_token, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in register.");
         }
 
-        // On lie les 6 paramètres
         $stmt->bind_param("ssssss", $lastName, $firstName, $email, $hashedPassword, $role, $verificationToken);
 
         $stmt->execute();
         $stmt->close();
-        // Ne pas fermer $conn ici
     }
 
     /**
-     * Récupère un utilisateur par email
+     * Retrieves a user by email address
      *
-     * @throws DataBaseException
+     * @param string $email The email address to search for
+     * @return array|null User data array or null if not found
+     * @throws DataBaseException If database connection or query fails
      */
     public function findByEmail(string $email): ?array
     {
@@ -94,20 +117,20 @@ class User
         $user = $result->fetch_assoc() ?: null;
 
         $stmt->close();
-        // Ne pas fermer $conn ici
 
         return $user;
     }
 
     /**
-     * Récupère une liste d'utilisateurs paginée
+     * Retrieves all users with a specific role
      *
-     * @throws DataBaseException
+     * @param string $role The role to filter by
+     * @return array Array of users with id, nom, prenom
+     * @throws DataBaseException If database connection or query fails
      */
-
     public static function getAllByRole(string $role): array
     {
-        $db = Database::getConnection();
+        $db = Database:: getConnection();
         $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE role = ?");
         $stmt->bind_param("s", $role);
         $stmt->execute();
@@ -118,10 +141,10 @@ class User
     }
 
     /**
-     * Récupère tous les responsables
+     * Retrieves all supervisors (responsables)
      *
-     * @return array Liste des responsables avec leurs informations
-     * @throws DataBaseException
+     * @return array Array of supervisors with id, nom, prenom, mail
+     * @throws DataBaseException If database connection or query fails
      */
     public static function getAllResponsables(): array
     {
@@ -144,6 +167,16 @@ class User
         return $responsables;
     }
 
+    /**
+     * Retrieves a paginated list of users with sorting
+     *
+     * @param int $limit Maximum number of results to return
+     * @param int $offset Number of results to skip
+     * @param string $sort Column to sort by (nom, prenom, mail, role, date_creation)
+     * @param string $order Sort order (ASC or DESC)
+     * @return array Array of users
+     * @throws DataBaseException If database connection or query fails
+     */
     public function getUsersPaginated(int $limit, int $offset, string $sort = 'date_creation', string $order = 'ASC'): array
     {
         try {
@@ -152,19 +185,19 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
-        // Liste blanche des colonnes autorisées pour le tri
+        // Whitelist of allowed sort columns to prevent SQL injection
         $allowedSortColumns = ['nom', 'prenom', 'mail', 'role', 'date_creation'];
         if (!in_array($sort, $allowedSortColumns)) {
             $sort = 'date_creation';
         }
 
-        // Validation de l'ordre
+        // Validate sort order
         $order = strtoupper($order);
         if (!in_array($order, ['ASC', 'DESC'])) {
             $order = 'ASC';
         }
 
-        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?  OFFSET ?";
+        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?   OFFSET ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in getUsersPaginated.");
@@ -184,9 +217,10 @@ class User
     }
 
     /**
-     * Compte le nombre total d'utilisateurs
+     * Counts the total number of users
      *
-     * @throws DataBaseException
+     * @return int Total number of users in the database
+     * @throws DataBaseException If database connection or query fails
      */
     public function countUsers(): int
     {
@@ -205,6 +239,11 @@ class User
         return $count;
     }
 
+    /**
+     * Retrieves all students
+     *
+     * @return array Array of students with id, nom, prenom
+     */
     public static function getAllStudents(): array
     {
         $db = Database::getConnection();
@@ -219,11 +258,14 @@ class User
     }
 
     /**
-     * Récupère un utilisateur par son ID
+     * Retrieves a user by their ID
+     *
+     * @param int $id The user's ID
+     * @return array|null User data or null if not found
      */
     public static function getById(int $id): ?array
     {
-        $db = \Models\Database::getConnection();
+        $db = Database::getConnection();
         $stmt = $db->prepare("SELECT id, nom, prenom, mail, role, date_creation FROM users WHERE id = ? LIMIT 1");
         $stmt->bind_param("i", $id);
         $stmt->execute();
@@ -233,15 +275,22 @@ class User
         return $user ?: null;
     }
 
-
-
+    /**
+     * Deletes a user account
+     *
+     * Permanently removes a user and all associated data from the database.
+     * Related data is automatically deleted via ON DELETE CASCADE constraints.
+     *
+     * @param int $userId The ID of the user to delete
+     * @throws DataBaseException If deletion fails or user not found
+     */
     public static function deleteAccount(int $userId): void
     {
         Database::checkConnection();
         $db = Database::getConnection();
 
         try {
-            // ✅ Une seule requête suffit grâce à ON DELETE CASCADE !
+            // Single query is sufficient thanks to ON DELETE CASCADE
             $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
             $stmt->bind_param("i", $userId);
             $stmt->execute();
@@ -253,13 +302,21 @@ class User
             $stmt->close();
 
         } catch (\Exception $e) {
-            error_log("Erreur User::deleteAccount : " . $e->getMessage());
+            error_log("Erreur User::deleteAccount :   " . $e->getMessage());
             throw new DataBaseException("Impossible de supprimer le compte.");
         }
     }
 
     /**
-     * Met à jour l'email et demande une nouvelle vérification
+     * Updates a user's email address and requests re-verification
+     *
+     * Changes the user's email address, generates a new verification token,
+     * and sets the account to unverified status.  User must verify the new email.
+     *
+     * @param int $userId The user's ID
+     * @param string $newEmail The new email address
+     * @param string $token The new verification token
+     * @throws DataBaseException If update fails
      */
     public function updateEmail(int $userId, string $newEmail, string $token): void
     {
@@ -273,15 +330,19 @@ class User
             $stmt->execute();
             $stmt->close();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Erreur lors de la mise à jour de l'email : " . $e->getMessage());
+            throw new DataBaseException("Erreur lors de la mise à jour de l'email :   " . $e->getMessage());
         }
     }
 
     /**
-     * Vérifie le compte de l'utilisateur via le token
+     * Verifies a user account using a verification token
      *
-     * @return bool True si vérification réussie, False sinon
-     * @throws DataBaseException
+     * Marks the user account as verified if the token is valid and the account
+     * is currently unverified.  Removes the token after successful verification.
+     *
+     * @param string $token The verification token from the email
+     * @return bool True if verification was successful, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public function verifyAccount(string $token): bool
     {
@@ -291,7 +352,8 @@ class User
             throw new DataBaseException("Unable to connect to the database.");
         }
 
-        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_token = ? AND is_verified = 0");
+        // Check if token exists and account is unverified
+        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_token = ?  AND is_verified = 0");
         if (!$stmt) {
             return false;
         }
@@ -307,6 +369,7 @@ class User
 
         $stmt->close();
 
+        // Mark account as verified and remove token
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in verifyAccount update.");
@@ -319,8 +382,13 @@ class User
         return $result;
     }
 
-
-
-
-
+    /**
+     * Checks database connection
+     *
+     * @throws DataBaseException If connection check fails
+     */
+    public static function checkDatabaseConnection(): void
+    {
+        Database::checkConnection();
+    }
 }
