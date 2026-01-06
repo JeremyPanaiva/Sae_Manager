@@ -5,11 +5,44 @@ namespace Views\Base;
 use Models\User\User;
 use Views\View;
 
+/**
+ * Base View
+ *
+ * Abstract base class for all application views.  Provides common functionality
+ * for rendering views with header and footer, user context, and template data
+ * injection.
+ *
+ * All concrete views should extend this class and implement the templatePath()
+ * method to specify their template file location.
+ *
+ * Template System:
+ * - Uses PHP templates with output buffering
+ * - Data is extracted into template scope via extract()
+ * - Templates can access $data array keys as variables
+ *
+ * @package Views\Base
+ */
 abstract class BaseView implements View
 {
+    /**
+     * Header view instance
+     *
+     * @var HeaderView
+     */
     private HeaderView $header;
+
+    /**
+     * Footer view instance
+     *
+     * @var FooterView
+     */
     private FooterView $footer;
 
+    /**
+     * Current user (null if not authenticated)
+     *
+     * @var User|null
+     */
     protected ?User $user;
 
     /**
@@ -18,11 +51,19 @@ abstract class BaseView implements View
      */
     protected array $data = [];
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->user = null;
     }
 
+    /**
+     * Renders the complete view (header + body + footer)
+     *
+     * @return string Complete HTML output
+     */
     function render(): string
     {
         $this->header = new HeaderView();
@@ -32,6 +73,11 @@ abstract class BaseView implements View
             . $this->footer->renderBody();
     }
 
+    /**
+     * Sets the current user context
+     *
+     * @param User|null $user The authenticated user or null
+     */
     function setUser(?User $user)
     {
         $this->user = $user;
@@ -46,6 +92,14 @@ abstract class BaseView implements View
         $this->data = array_merge($this->data, $data);
     }
 
+    /**
+     * Renders the view body from the template
+     *
+     * Loads the template file specified by templatePath(), extracts data variables
+     * into the template scope, and captures the output using output buffering.
+     *
+     * @return string Rendered HTML body content
+     */
     function renderBody(): string
     {
         $templatePath = $this->templatePath();

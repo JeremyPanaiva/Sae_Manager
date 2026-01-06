@@ -4,14 +4,40 @@ namespace Views\Email;
 
 use Views\Base\BaseView;
 
+/**
+ * Email View
+ *
+ * Renders email templates with dynamic data injection.
+ * Used for generating HTML email content for password reset, notifications, etc.
+ *
+ * Unlike standard views, this class:
+ * - Does not include header/footer (emails are standalone)
+ * - Overrides render() to skip BaseView's header/footer wrapping
+ * - Uses dynamic template selection based on email type
+ *
+ * @package Views\Email
+ */
 class EmailView extends BaseView
 {
+    /**
+     * Template filename (without . php extension)
+     *
+     * @var string
+     */
     private string $templateName;
+
+    /**
+     * Template data for variable injection
+     *
+     * @var array
+     */
     protected array $data;
 
     /**
-     * @param string $templateName - nom du template (sans .html)
-     * @param array $data - données à injecter dans le template
+     * Constructor
+     *
+     * @param string $templateName Template filename without extension (e.g., 'password_reset')
+     * @param array $data Associative array of variables to inject into the template
      */
     public function __construct(string $templateName, array $data = [])
     {
@@ -19,18 +45,34 @@ class EmailView extends BaseView
         $this->data = $data;
     }
 
+    /**
+     * Returns the path to the email template file
+     *
+     * @return string Absolute path to the template file
+     */
     public function templatePath(): string
     {
-        return __DIR__ . '/' . $this->templateName . '.php';
+        return __DIR__ . '/' .  $this->templateName . '.php';
     }
 
+    /**
+     * Returns template variables for injection
+     *
+     * @return array Template data array
+     */
     protected function templateVariables(): array
     {
         return $this->data;
     }
 
     /**
-     * Render le template email avec les variables
+     * Renders the email template with variables
+     *
+     * Overrides BaseView:: render() to skip header/footer inclusion.
+     * Loads the template file, extracts variables, and captures output.
+     *
+     * @return string Rendered HTML email content
+     * @throws \Exception If the template file does not exist
      */
     public function render(): string
     {
