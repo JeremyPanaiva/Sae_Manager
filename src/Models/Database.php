@@ -56,4 +56,16 @@ class Database {
 
         return $env[$envVar] ?? $val;
     }
+
+    public static function checkConnection(): void
+    {
+        try {
+            $db = self::getConnection();
+            if (!$db->ping()) {
+                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+            }
+        } catch (\Exception $e) {
+            throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+        }
+    }
 }

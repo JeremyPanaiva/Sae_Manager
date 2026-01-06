@@ -13,7 +13,7 @@ class SaeAttribution
      */
     public static function assignStudentsToSae(int $saeId, array $studentIds, int $responsableId): void
     {
-        self::checkDatabaseConnection();
+        Database::checkConnection();
 
         $db = Database::getConnection();
 
@@ -232,7 +232,7 @@ class SaeAttribution
     public static function updateDateRendu(int $saeId, int $responsableId, string $newDate): void
     {
         try {
-            self::checkDatabaseConnection();
+            Database::checkConnection();
 
             $db = \Models\Database::getConnection();
 
@@ -449,21 +449,6 @@ class SaeAttribution
         return $students;
     }
 
-
-
-
-    public static function checkDatabaseConnection(): void
-    {
-        try {
-            $db = Database::getConnection();
-            // simple ping pour tester la connexion
-            if (!$db->ping()) {
-                throw new DataBaseException("Unable to connect to the database");
-            }
-        } catch (\Exception $e) {
-            throw new DataBaseException("Unable to connect to the database");
-        }
-    }
 
 
 }

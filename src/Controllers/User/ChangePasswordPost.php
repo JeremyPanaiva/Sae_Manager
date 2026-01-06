@@ -6,57 +6,101 @@ use Controllers\ControllerInterface;
 use Models\Database;
 use Shared\Exceptions\DataBaseException;
 
+/**
+ * Change password submission controller
+ *
+ * Handles POST requests for authenticated users to change their password.
+ * Validates the current password, checks new password complexity requirements,
+ * and ensures the new password differs from the current one.
+ *
+ * @package Controllers\User
+ */
 class ChangePasswordPost implements ControllerInterface
 {
+    /**
+     * Change password route path
+     *
+     * @var string
+     */
     public const PATH = '/user/change-password';
 
+    /**
+     * Checks if this controller supports the given route and HTTP method
+     *
+     * @param string $path The requested route path
+     * @param string $method The HTTP method (GET, POST, etc.)
+     * @return bool True if path is '/user/change-password' and method is POST
+     */
     public static function support(string $path, string $method): bool
     {
-        return $path === self::PATH && $method === 'POST';
+        return $path === self:: PATH && $method === 'POST';
     }
 
+    /**
+     * Main controller method
+     *
+     * Validates password change request, verifies current password, checks new
+     * password meets complexity requirements, ensures new password is different,
+     * and updates the password in the database.
+     *
+     * Password requirements:
+     * - Minimum 8 characters
+     * - At least one uppercase letter
+     * - At least one lowercase letter
+     * - At least one digit
+     * - Must differ from current password
+     *
+     * @return void
+     */
     public function control(): void
     {
+        // Ensure session is started
         if (session_status() === PHP_SESSION_NONE)
             session_start();
 
+        // Verify user is authenticated
         if (!isset($_SESSION['user']['id'])) {
             header('Location: /login');
             exit;
         }
 
+        // Extract user ID and form data
         $userId = $_SESSION['user']['id'];
         $oldPassword = $_POST['old_password'] ?? '';
         $newPassword = $_POST['new_password'] ?? '';
         $confirmPassword = $_POST['confirm_password'] ?? '';
 
-        // Validation basique
+        // Validate required fields
         if (empty($oldPassword) || empty($newPassword) || empty($confirmPassword)) {
             header('Location: /user/change-password?error=missing_fields');
             exit;
         }
 
+        // Verify passwords match
         if ($newPassword !== $confirmPassword) {
             header('Location: /user/change-password?error=passwords_dont_match');
             exit;
         }
 
+        // Validate minimum password length
         if (strlen($newPassword) < 8) {
             header('Location: /user/change-password?error=password_too_short');
             exit;
         }
 
-        // Vérifie la complexité du mot de passe
+        // Validate password contains uppercase letter
         if (!preg_match('/[A-Z]/', $newPassword)) {
             header('Location: /user/change-password?error=password_no_uppercase');
             exit;
         }
 
+        // Validate password contains lowercase letter
         if (!preg_match('/[a-z]/', $newPassword)) {
             header('Location: /user/change-password?error=password_no_lowercase');
             exit;
         }
 
+        // Validate password contains digit
         if (!preg_match('/[0-9]/', $newPassword)) {
             header('Location: /user/change-password?error=password_no_digit');
             exit;
@@ -65,7 +109,7 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // 1. Récupérer le mot de passe actuel
+            // Retrieve current password hash from database
             $stmt = $conn->prepare("SELECT mdp FROM users WHERE id = ?");
             if (!$stmt)
                 throw new DataBaseException("Erreur de préparation SQL");
@@ -76,18 +120,19 @@ class ChangePasswordPost implements ControllerInterface
             $user = $result->fetch_assoc();
             $stmt->close();
 
+            // Verify current password is correct
             if (!$user || !password_verify($oldPassword, $user['mdp'])) {
-                header('Location: /user/change-password?error=wrong_password');
+                header('Location:  /user/change-password?error=wrong_password');
                 exit;
             }
 
-            // 2. Vérifier que le nouveau mot de passe est différent
+            // Ensure new password is different from current password
             if (password_verify($newPassword, $user['mdp'])) {
-                header('Location: /user/change-password?error=same_password');
+                header('Location: /user/change-password? error=same_password');
                 exit;
             }
 
-            // 3. Mettre à jour le mot de passe
+            // Hash and update the new password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $updateStmt = $conn->prepare("UPDATE users SET mdp = ? WHERE id = ?");
             if (!$updateStmt)
@@ -97,12 +142,14 @@ class ChangePasswordPost implements ControllerInterface
             $updateStmt->execute();
             $updateStmt->close();
 
-            header('Location: /user/change-password?success=password_updated');
+            // Redirect with success message
+            header('Location:  /user/change-password?success=password_updated');
             exit;
 
         } catch (\Exception $e) {
+            // Log error and redirect with error message
             error_log("Erreur changement mot de passe: " . $e->getMessage());
-            header('Location: /user/change-password?error=database_error');
+            header('Location: /user/change-password? error=database_error');
             exit;
         }
     }

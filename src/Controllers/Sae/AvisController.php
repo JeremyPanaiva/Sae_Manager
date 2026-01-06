@@ -1,73 +1,134 @@
 <?php
+
 namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAvis;
 use Shared\Exceptions\DataBaseException;
 
+/**
+ * SAE feedback controller
+ *
+ * Handles adding and deleting feedback (avis) on SAE assignments.
+ * Accessible to clients and supervisors (responsables) for providing
+ * comments and updates on SAE progress.
+ *
+ * @package Controllers\Sae
+ */
 class AvisController implements ControllerInterface
 {
+    /**
+     * Route path for adding feedback
+     *
+     * @var string
+     */
     public const PATH_ADD = '/sae/avis/add';
+
+    /**
+     * Route path for deleting feedback
+     *
+     * @var string
+     */
     public const PATH_DELETE = '/sae/avis/delete';
 
+    /**
+     * Main controller method
+     *
+     * Routes POST requests to appropriate handler methods for adding or deleting feedback.
+     * Handles exceptions and redirects to dashboard with error messages if operations fail.
+     *
+     * @return void
+     */
     public function control()
     {
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
         try {
+            // Route to appropriate handler based on path
             if ($path === self::PATH_ADD && $method === 'POST') {
                 $this->handleAdd();
             } elseif ($path === self::PATH_DELETE && $method === 'POST') {
                 $this->handleDelete();
             }
         } catch (DataBaseException $e) {
-            // Stocke le message d'erreur dans la session pour le dashboard
+            // Store database error message in session
             $_SESSION['error_message'] = $e->getMessage();
         } catch (\Exception $e) {
+            // Store generic error message in session
             $_SESSION['error_message'] = "Erreur inattendue :  " . $e->getMessage();
         }
 
-        // Redirection vers le dashboard
+        // Redirect to dashboard
         header("Location: /dashboard");
         exit();
     }
 
+    /**
+     * Handles adding new feedback to a SAE
+     *
+     * Validates user authentication and role (client or supervisor),
+     * then creates a new feedback entry for the specified SAE.
+     *
+     * @return void
+     */
     private function handleAdd(): void
     {
+        // Verify user authentication
         if (!isset($_SESSION['user'])) {
-            header("Location:  /login");
+            header("Location: /login");
             exit();
         }
 
+        // Verify user has permission to add feedback (client or responsable)
         $role = strtolower($_SESSION['user']['role']);
         if (!in_array($role, ['client', 'responsable'])) {
             header("Location: /dashboard");
             exit();
         }
 
+        // Extract and validate form data
         $saeId = (int)($_POST['sae_id'] ?? 0);
         $userId = (int)($_SESSION['user']['id'] ?? 0);
         $message = trim($_POST['message'] ??  '');
 
+        // Create feedback if all required data is valid
         if ($saeId > 0 && $userId > 0 && $message !== '') {
             SaeAvis::add($saeId, $userId, $message);
         }
     }
 
+    /**
+     * Handles deleting feedback from a SAE
+     *
+     * Validates user authentication and deletes the specified feedback entry.
+     * Note: Authorization checks should be performed in the model layer
+     * to ensure users can only delete their own feedback.
+     *
+     * @return void
+     */
     private function handleDelete(): void
     {
+        // Verify user authentication
         if (!isset($_SESSION['user'])) {
             header("Location: /login");
             exit();
         }
 
+        // Extract feedback ID and delete if valid
         $avisId = (int)($_POST['avis_id'] ?? 0);
         if ($avisId > 0) {
             SaeAvis::delete($avisId);
         }
     }
 
+    /**
+     * Checks if this controller supports the given route and HTTP method
+     *
+     * @param string $path The requested route path
+     * @param string $method The HTTP method (GET, POST, etc.)
+     * @return bool True if path matches feedback routes and method is POST
+     */
     public static function support(string $path, string $method): bool
     {
         return ($path === self::PATH_ADD && $method === 'POST')

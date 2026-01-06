@@ -233,27 +233,11 @@ class User
         return $user ?: null;
     }
 
-    public static function checkDatabaseConnection(): void
-    {
-        try {
-            $db = \Models\Database::getConnection();
-            if (!$db->ping()) {
-                throw new \Shared\Exceptions\DataBaseException(
-                    "Unable to connect to the database please contact sae-manager@alwaysdata.net"
-                );
-            }
-        } catch (\Throwable $e) {
-            // 🔹 Message user-friendly pour toutes les exceptions
-            throw new \Shared\Exceptions\DataBaseException(
-                "Unable to connect to the database please contact sae-manager@alwaysdata.net"
-            );
-        }
-    }
 
 
     public static function deleteAccount(int $userId): void
     {
-        self::checkDatabaseConnection();
+        Database::checkConnection();
         $db = Database::getConnection();
 
         try {

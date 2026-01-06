@@ -18,7 +18,7 @@ class Sae
     public static function create(int $clientId, string $titre, string $description): int
     {
         try {
-            self::checkDatabaseConnection();
+            Database::checkConnection();
 
             $db = Database::getConnection();
             $stmt = $db->prepare("INSERT INTO sae (titre, description, client_id, date_creation) VALUES (?, ?, ?, NOW())");
@@ -46,7 +46,7 @@ class Sae
     public static function delete(int $clientId, int $saeId): bool
     {
         try {
-            self::checkDatabaseConnection();
+            Database::checkConnection();
 
             $db = Database::getConnection();
 
@@ -189,7 +189,7 @@ class Sae
     public static function update(int $clientId, int $saeId, string $titre, string $description): bool
     {
         try {
-            self::checkDatabaseConnection();
+            Database::checkConnection();
 
             $db = Database::getConnection();
             $stmt = $db->prepare("
@@ -215,18 +215,7 @@ class Sae
         }
     }
 
-    public static function checkDatabaseConnection(): void
-    {
-        try {
-            $db = Database::getConnection();
-            // simple ping pour tester la connexion
-            if (!$db->ping()) {
-                throw new DataBaseException("Unable to connect to the database");
-            }
-        } catch (\Exception $e) {
-            throw new DataBaseException("Unable to connect to the database");
-        }
-    }
+
 
     /**
      * Récupère uniquement les SAE attribuées d'un client
