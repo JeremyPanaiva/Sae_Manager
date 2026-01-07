@@ -92,6 +92,7 @@ class DashboardController implements ControllerInterface
                 $sae['todos'] = $saeId ? TodoList::getBySae($saeId) : [];
                 $sae['etudiants'] = $saeId ?  SaeAttribution::getStudentsBySae($saeId) : [];
                 $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
+                $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
             }
 
         } elseif ($role === 'responsable') {
@@ -104,6 +105,8 @@ class DashboardController implements ControllerInterface
                 $sae['todos'] = $saeId ? TodoList:: getBySae($saeId) : [];
                 $sae['etudiants'] = $saeId ? SaeAttribution:: getStudentsBySae($saeId) : [];
                 $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
+                $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
+
             }
 
         } elseif ($role === 'client') {
@@ -126,12 +129,95 @@ class DashboardController implements ControllerInterface
                 }
 
                 $sae['attributions'] = $attributions;
+                $dateRendu = '';
+                if (! empty($attributions)) {
+                    $dateRendu = $attributions[0]['date_rendu'] ?? '';
+                }
+                $sae['countdown'] = $this->calculateCountdown($dateRendu);
+
                 $saes[] = $sae;
             }
         }
 
         return ['saes' => $saes];
     }
+
+
+    /**
+     * Calculates countdown data for a given deadline
+     *
+     * @param string $dateRendu Deadline date in Y-m-d or Y-m-d H:i: s format
+     * @return array|null Array with countdown information or null if invalid
+     */
+    private function calculateCountdown(string $dateRendu): ?array
+    {
+        if (empty($dateRendu)) {
+            return null;
+        }
+
+        try {
+            $now = new \DateTime();
+            $deadline = new \DateTime($dateRendu);
+
+            if ($deadline < $now) {
+                return ['expired' => true];
+            }
+
+            $interval = $now->diff($deadline);
+
+            return [
+                'expired' => false,
+                'jours' => $interval->days,
+                'heures' => $interval->h,
+                'minutes' => $interval->i,
+                'timestamp' => $deadline->getTimestamp(),
+                'urgent' => ($interval->days === 0) // Moins de 24h
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Generates HTML for countdown display
+     *
+     * @param array|null $countdown Countdown data from calculateCountdown()
+     * @param string $uniqueId Unique identifier for the countdown element
+     * @return string HTML markup for the countdown
+     */
+    public static function generateCountdownHTML(? array $countdown, string $uniqueId): string
+    {
+        if ($countdown === null) {
+            return "<span class='countdown-error'>Date invalide</span>";
+        }
+
+        if ($countdown['expired']) {
+            return "<span class='countdown-expired'>Délai expiré</span>";
+        }
+
+        $urgentClass = $countdown['urgent'] ? ' urgent' : '';
+
+        $html = "<div class='countdown-container{$urgentClass}' data-deadline='{$countdown['timestamp']}' id='countdown-{$uniqueId}'>";
+        $html .= "<div class='countdown-box'>";
+        $html .= "<span class='countdown-value' data-type='jours'>{$countdown['jours']}</span>";
+        $html .= "<span class='countdown-label'>jours</span>";
+        $html .= "</div>";
+        $html .= "<div class='countdown-box'>";
+        $html .= "<span class='countdown-value' data-type='heures'>{$countdown['heures']}</span>";
+        $html .= "<span class='countdown-label'>heures</span>";
+        $html .= "</div>";
+        $html .= "<div class='countdown-box'>";
+        $html .= "<span class='countdown-value' data-type='minutes'>{$countdown['minutes']}</span>";
+        $html .= "<span class='countdown-label'>minutes</span>";
+        $html .= "</div>";
+        $html .= "<div class='countdown-box'>";
+        $html .= "<span class='countdown-value' data-type='secondes'>0</span>";
+        $html .= "<span class='countdown-label'>secondes</span>";
+    $html .= "</div>";
+    $html .= "</div>";
+
+    return $html;
+}
 
     /**
      * Checks if this controller supports the given route and HTTP method
