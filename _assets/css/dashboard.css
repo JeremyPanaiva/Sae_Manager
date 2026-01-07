@@ -376,3 +376,109 @@ ul.todo-list li:hover {
 .btn-delete-task:active {
     transform: rotate(90deg) scale(0.9);
 }
+
+/* Compte à rebours */
+.countdown-container {
+    display: flex;
+    gap: 15px;
+    margin: 15px 0;
+    padding: 20px;
+    background:  linear-gradient(135deg, var(--amu-blue) 0%, var(--amu-light-blue) 100%);
+    border-radius: 10px;
+    justify-content:  center;
+    box-shadow:  0 4px 15px rgba(0, 51, 102, 0.25);
+}
+
+.countdown-box {
+    background-color: var(--white);
+    padding: 15px 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 80px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.countdown-box:hover {
+    transform: translateY(-2px);
+}
+
+.countdown-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--amu-blue);
+    line-height: 1;
+}
+
+.countdown-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--amu-dark-gray);
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.countdown-expired {
+    display: inline-block;
+    background-color: var(--danger);
+    color: var(--white);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight:  bold;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+}
+
+.countdown-error {
+    color:  var(--danger);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* Animation pulsante quand il reste moins de 24h */
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+    }
+}
+
+.countdown-container. urgent {
+    animation: pulse 2s infinite;
+    background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
+    border:  2px solid var(--danger);
+}
+
+.countdown-container.urgent .countdown-value {
+    color: var(--danger);
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+    .countdown-container {
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .countdown-box {
+        min-width:  60px;
+        padding: 10px 15px;
+    }
+
+    . countdown-value {
+        font-size: 1.5rem;
+    }
+
+    .countdown-label {
+        font-size: 0.75rem;
+    }
+}
+
+

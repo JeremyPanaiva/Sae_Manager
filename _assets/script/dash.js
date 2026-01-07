@@ -1,22 +1,68 @@
-document.querySelectorAll('.countdown').forEach(el => {
-    const endDate = new Date(el.dataset.date).getTime();
-    const updateCountdown = () => {
-        const now = new Date().getTime();
-        let distance = endDate - now;
+/**
+ * Initialise tous les comptes à rebours de la page
+ */
+function initCountdowns() {
+    const countdowns = document.querySelectorAll('.countdown-container');
 
-        if (distance < 0) {
-            el.innerText = "Délai dépassé";
+    console.log('Countdowns trouvés:', countdowns.length);
+
+    countdowns.forEach(countdown => {
+        const deadline = parseInt(countdown. dataset.deadline);
+        console.log('Deadline timestamp:', deadline);
+
+        if (isNaN(deadline)) {
+            console.error('Deadline invalide! ');
             return;
         }
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        // Mise à jour immédiate
+        updateCountdown(countdown, deadline);
 
-        el.innerText = `${days}j ${hours}h ${minutes}m ${seconds}s`;
-    };
+        // Mise à jour toutes les secondes
+        setInterval(() => updateCountdown(countdown, deadline), 1000);
+    });
+}
 
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
+/**
+ * Met à jour un compte à rebours spécifique
+ */
+function updateCountdown(element, deadlineTimestamp) {
+    const now = Math.floor(Date. now() / 1000);
+    const remaining = deadlineTimestamp - now;
+
+    // Si le délai est dépassé
+    if (remaining <= 0) {
+        element.innerHTML = "<span class='countdown-expired'>⏰ Délai expiré</span>";
+        return;
+    }
+
+    // Calculer jours, heures, minutes, secondes
+    const jours = Math.floor(remaining / (24 * 3600));
+    const heures = Math.floor((remaining % (24 * 3600)) / 3600);
+    const minutes = Math.floor((remaining % 3600) / 60);
+    const secondes = remaining % 60;
+
+    // Ajouter classe "urgent" si moins de 24h
+    if (jours === 0) {
+        element.classList. add('urgent');
+    } else {
+        element.classList.remove('urgent');
+    }
+
+    // Mettre à jour les valeurs dans le DOM
+    const joursEl = element.querySelector('[data-type="jours"]');
+    const heuresEl = element.querySelector('[data-type="heures"]');
+    const minutesEl = element.querySelector('[data-type="minutes"]');
+    const secondesEl = element.querySelector('[data-type="secondes"]');
+
+    if (joursEl) joursEl.textContent = jours;
+    if (heuresEl) heuresEl.textContent = heures;
+    if (minutesEl) minutesEl.textContent = minutes;
+    if (secondesEl) secondesEl.textContent = secondes;
+}
+
+// Lancer les comptes à rebours au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM chargé, lancement des countdowns...');
+    initCountdowns();
 });
