@@ -1,8 +1,53 @@
 # .htaccess pour SAE Manager
-# Configuration minimale pour AlwaysData
 
-# Sécurité : Empêcher l'affichage de la liste des fichiers dans les répertoires
+# Activer le moteur de réécriture
+RewriteEngine On
+
+# Forcer HTTPS
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Redirection www
+# RewriteCond %{HTTP_HOST} ^www\.sae-manager\.alwaysdata\.net [NC]
+# RewriteRule ^(.*)$ https://sae-manager.alwaysdata.net/$1 [L,R=301]
+
+# Permettre l'accès au favicon à la racine
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_URI} ^/favicon\.ico$
+RewriteRule ^favicon\.ico$ /favicon.ico [L]
+
+# Compression GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# Cache des ressources statiques
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/x-icon "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+</IfModule>
+
+# Headers de sécurité
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Types MIME
+AddType image/svg+xml .svg
+AddType image/x-icon .ico
+AddType application/manifest+json .webmanifest
+
+# Interdire l'affichage des répertoires
 Options -Indexes
 
-# Type MIME pour le web manifest (PWA)
-AddType application/manifest+json .webmanifest
+# Page d'erreur personnalisée
+# ErrorDocument 404 /index.php
