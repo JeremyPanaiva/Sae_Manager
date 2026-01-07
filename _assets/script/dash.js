@@ -7,11 +7,11 @@ function initCountdowns() {
     console.log('Countdowns trouvés:', countdowns.length);
 
     countdowns.forEach(countdown => {
-        const deadline = parseInt(countdown. dataset.deadline);
+        const deadline = parseInt(countdown.dataset.deadline);
         console.log('Deadline timestamp:', deadline);
 
         if (isNaN(deadline)) {
-            console.error('Deadline invalide! ');
+            console.error('Deadline invalide!');
             return;
         }
 
@@ -27,7 +27,7 @@ function initCountdowns() {
  * Met à jour un compte à rebours spécifique
  */
 function updateCountdown(element, deadlineTimestamp) {
-    const now = Math.floor(Date. now() / 1000);
+    const now = Math.floor(Date.now() / 1000);
     const remaining = deadlineTimestamp - now;
 
     // Si le délai est dépassé
@@ -44,7 +44,7 @@ function updateCountdown(element, deadlineTimestamp) {
 
     // Ajouter classe "urgent" si moins de 24h
     if (jours === 0) {
-        element.classList. add('urgent');
+        element.classList.add('urgent');
     } else {
         element.classList.remove('urgent');
     }
@@ -66,3 +66,26 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM chargé, lancement des countdowns...');
     initCountdowns();
 });
+
+/**
+ * Bascule entre le mode affichage et le mode édition des remarques
+ * @param {number} avisId - ID de l'avis à éditer
+ * @param {boolean} isEditing - true pour passer en mode édition, false pour revenir en mode affichage
+ */
+function toggleEdit(avisId, isEditing) {
+    const textSpan = document.getElementById('avis-text-' + avisId);
+    const editForm = document.getElementById('edit-form-' + avisId);
+    const actionsDiv = document.getElementById('avis-actions-' + avisId);
+
+    if (isEditing) {
+        // Passer en mode édition
+        if (textSpan) textSpan.style.display = 'none';
+        if (editForm) editForm.style.display = 'block';
+        if (actionsDiv) actionsDiv.style.display = 'none';
+    } else {
+        // Revenir en mode affichage
+        if (textSpan) textSpan.style.display = 'inline';
+        if (editForm) editForm.style.display = 'none';
+        if (actionsDiv) actionsDiv.style.display = 'block';
+    }
+}

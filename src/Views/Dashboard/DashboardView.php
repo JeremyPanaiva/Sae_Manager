@@ -142,6 +142,15 @@ class DashboardView extends BaseView
             unset($_SESSION['error_message']);
         }
 
+        $successMessage = $this->data['success_message'] ?? $_SESSION['success_message'] ?? null;
+        if ($successMessage) {
+            $html .= "<div class='success-message' style='background-color: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= htmlspecialchars($successMessage);
+            $html .= "</div>";
+
+            unset($_SESSION['success_message']);
+        }
+
         switch (strtolower($this->role)) {
 
             case 'etudiant':
@@ -317,20 +326,32 @@ class DashboardView extends BaseView
                             $prenomAuteur = htmlspecialchars($avis['prenom'] ?? '');
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
                             $message = htmlspecialchars($avis['message'] ??  '');
-                            $message = $this->rendreLiensCliquables($message);
+                            $messageRendu = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> <span id='avis-text-{$avisId}'>{$messageRendu}</span></p>";
                             $html .= "<small>{$dateAvis}</small>";
 
                             if (($avis['user_id'] ?? 0) === $currentUserId) {
-                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                // Formulaire de modification (caché par défaut)
+                                $html .= "<form id='edit-form-{$avisId}' method='POST' action='/sae/avis/update' style='display:none; margin-top:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "<textarea name='message' required style='width:100%; min-height:60px;'>{$message}</textarea>";
+                                $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; color:white; border:none; padding:5px 10px; cursor:pointer;'>Sauvegarder</button> ";
+                                $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' style='margin-top:5px; background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>Annuler</button>";
                                 $html .= "</form>";
+
+                                // Boutons modifier et supprimer
+                                $html .= "<div id='avis-actions-{$avisId}' style='margin-top:10px;'>";
+                                $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; background:none; border:none; cursor:pointer; margin-right:10px;'>Modifier</button>";
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
+                                $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "</form>";
+                                $html .= "</div>";
                             }
 
                             $html .= "</div>";
@@ -410,7 +431,7 @@ class DashboardView extends BaseView
                         foreach ($avisList as $avis) {
                             $userIdAuteur = $avis['user_id'] ?? 0;
                             $message = htmlspecialchars($avis['message'] ?? '');
-                            $message = $this->rendreLiensCliquables($message);
+                            $messageRendu = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ?? '');
                             $avisId = $avis['id'] ?? 0;
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
@@ -420,13 +441,14 @@ class DashboardView extends BaseView
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$messageRendu}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
+                            // Responsables peuvent seulement supprimer leurs remarques (pas de modification)
                             if ($userIdAuteur === $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
                                 $html .= "</form>";
                             }
 
