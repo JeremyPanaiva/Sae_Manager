@@ -84,4 +84,5 @@
             </li>
             <li class="nav-item">Notifications</li>
         </ul>
+
     </nav>
