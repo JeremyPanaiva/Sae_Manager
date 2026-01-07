@@ -156,6 +156,12 @@ class DashboardView extends BaseView
                     $dateRendu = $sae['date_rendu'] ?? '';
                     $html .= "<p><strong>Date de rendu :</strong> {$dateRendu} ";
                     $html .= "<span class='countdown' data-date='{$dateRendu}'></span></p>";
+                    if (isset($sae['countdown'])) {
+                        $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
+                            $sae['countdown'],
+                            "etudiant-{$sae['sae_id']}"
+                        );
+                    }
 
                     $todos = $sae['todos'] ??  [];
                     $totalTasks = count($todos);
@@ -278,6 +284,12 @@ class DashboardView extends BaseView
                     $html .= "</p>";
 
                     $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ??  'Non définie') . "</p>";
+                    if (isset($sae['countdown'])) {
+                        $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
+                            $sae['countdown'],
+                            "client-{$saeId}"
+                        );
+                    }
 
                     if (!empty($allTodos)) {
                         $totalTasks = count($allTodos);
@@ -357,6 +369,12 @@ class DashboardView extends BaseView
                     }
 
                     $dateRendu = htmlspecialchars($sae['date_rendu'] ?? '');
+                    if (isset($sae['countdown'])) {
+                        $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
+                            $sae['countdown'],
+                            "responsable-{$saeId}"
+                        );
+                    }
 
                     $html .= "<div class='date-rendu-wrapper'>";
                     $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin: 0;'>";
