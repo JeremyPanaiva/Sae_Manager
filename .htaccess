@@ -1,0 +1,8 @@
+# .htaccess pour SAE Manager
+# Configuration minimale pour AlwaysData
+
+# Sécurité : Empêcher l'affichage de la liste des fichiers dans les répertoires
+Options -Indexes
+
+# Type MIME pour le web manifest (PWA)
+AddType application/manifest+json .webmanifest

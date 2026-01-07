@@ -7,40 +7,88 @@
 
     <!--  Created for SAE Manager | AlwaysData  -->
     <!--  Sitemap generated manually and structured following best SEO practices  -->
+    <!--  Last updated: 2026-01-07  -->
 
+    <!-- Page d'accueil -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.00</priority>
+    </url>
+
+    <!-- Pages d'authentification -->
     <url>
         <loc>https://sae-manager.alwaysdata.net/user/login</loc>
-        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <lastmod>2026-01-07</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.90</priority>
     </url>
 
     <url>
         <loc>https://sae-manager.alwaysdata.net/user/register</loc>
-        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <lastmod>2026-01-07</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.90</priority>
     </url>
 
     <url>
-        <loc>https://sae-manager.alwaysdata.net/</loc>
-        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <loc>https://sae-manager.alwaysdata.net/user/forgot-password</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.70</priority>
+    </url>
+
+    <!-- Pages utilisateur -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/user/profile</loc>
+        <lastmod>2026-01-07</lastmod>
         <changefreq>weekly</changefreq>
-        <priority>1.00</priority>
+        <priority>0.80</priority>
+    </url>
+
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/user/list</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.70</priority>
+    </url>
+
+    <!-- Pages principales -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/sae</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.95</priority>
+    </url>
+
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/dashboard</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.90</priority>
+    </url>
+
+    <!-- Pages de contact et légales -->
+    <url>
+        <loc>https://sae-manager.alwaysdata.net/contact</loc>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.60</priority>
     </url>
 
     <url>
         <loc>https://sae-manager.alwaysdata.net/mentions-legales</loc>
-        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
+        <lastmod>2026-01-07</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.50</priority>
     </url>
 
     <url>
         <loc>https://sae-manager.alwaysdata.net/plan-du-site</loc>
-        <lastmod>2025-10-09T20:12:42+00:00</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.50</priority>
+        <lastmod>2026-01-07</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.60</priority>
     </url>
 
 </urlset>

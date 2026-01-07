@@ -5,8 +5,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#003366">
+    
+    <!-- SEO Meta Tags -->
     <meta name="description"
         content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+    <meta name="keywords" content="SAE Manager, saemanager, sae-manager, SAE, Aix-Marseille Université, AMU, gestion SAE, étudiants, enseignants, BUT, IUT">
+    <meta name="author" content="SAE Manager Team">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sae-manager.alwaysdata.net/">
+    <meta property="og:title" content="SAE Manager - Gestion des SAE pour AMU">
+    <meta property="og:description" content="Plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'Aix-Marseille Université">
+    <meta property="og:image" content="https://sae-manager.alwaysdata.net/_assets/img/SM_logo.png">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="SAE Manager">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://sae-manager.alwaysdata.net/">
+    <meta name="twitter:title" content="SAE Manager - Gestion des SAE pour AMU">
+    <meta name="twitter:description" content="Plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'Aix-Marseille Université">
+    <meta name="twitter:image" content="https://sae-manager.alwaysdata.net/_assets/img/SM_logo.png">
+    
     <!-- Canonical -->
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
@@ -34,11 +57,12 @@
     <link rel="stylesheet" href="/_assets/css/index.css">
 
     <!-- Favicons -->
-    <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
-    <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png" />
-    <link rel="manifest" href="/_assets/img/favicon/site.webmanifest" />
+    <link rel="icon" type="image/x-icon" href="/_assets/img/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="96x96" href="/_assets/img/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg">
+    <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="/_assets/img/favicon/site.webmanifest">
 
     <title>SAE Manager</title>
 </head>
