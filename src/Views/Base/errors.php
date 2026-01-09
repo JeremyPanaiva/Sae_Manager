@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Errors List Template
  *
@@ -8,6 +9,7 @@
  * Expected Variables:
  * - $ERRORS_KEY:  HTML string containing <li> error message elements
  */
+
 ?>
 
 <link rel="stylesheet" href="/_assets/css/error.css">

@@ -100,7 +100,7 @@ class DashboardView extends BaseView
      * @param string $texte Text potentially containing URLs
      * @return string Text with URLs converted to HTML links
      */
-    function rendreLiensCliquables($texte)
+    private function rendreLiensCliquables($texte)
     {
         $pattern = '/(https?:\/\/[^\s]+)/i';
         $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
@@ -152,7 +152,6 @@ class DashboardView extends BaseView
         }
 
         switch (strtolower($this->role)) {
-
             case 'etudiant':
                 $html .= "<h2>Vos SAE attribuées</h2>";
 

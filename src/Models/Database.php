@@ -71,7 +71,7 @@ class Database
      * @param string $envVar The environment variable name to retrieve
      * @return string|false The variable value, or false if not found
      */
-    static function parseEnvVar(string $envVar)
+    private static function parseEnvVar(string $envVar)
     {
         // Try system environment variable first
         $val = getenv($envVar);
@@ -92,8 +92,12 @@ class Database
             $line = trim($line);
 
             // Skip empty lines and comments
-            if ($line === '' || $line[0] === '#' || $line[0] === ';') continue;
-            if (strpos($line, '=') === false) continue;
+            if ($line === '' || $line[0] === '#' || $line[0] === ';') {
+                continue;
+            }
+            if (strpos($line, '=') === false) {
+                continue;
+            }
 
             // Parse key=value pairs
             [$key, $value] = explode('=', $line, 2);
@@ -101,8 +105,10 @@ class Database
             $value = trim($value);
 
             // Remove quotes from values
-            if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
-                (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+            if (
+                (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                (str_starts_with($value, "'") && str_ends_with($value, "'"))
+            ) {
                 $value = substr($value, 1, -1);
             }
             $env[$key] = $value;

@@ -25,7 +25,7 @@ class ErrorsView extends BaseView
      *
      * @param \Throwable[] $exceptions Array of exceptions to display as error messages
      */
-    function __construct(private array $exceptions)
+    public function __construct(private array $exceptions)
     {
         $errors = array();
         foreach ($this->exceptions as $exception) {
@@ -39,7 +39,7 @@ class ErrorsView extends BaseView
      *
      * @return string Absolute path to the template file
      */
-    function templatePath(): string
+    public function templatePath(): string
     {
         return __DIR__ . '/errors.php';
     }

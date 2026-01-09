@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Error Message Template
  *
  * Template variables:
  * - $MESSAGE_KEY: The error message text to display
  */
+
 ?>
 
 <link rel="stylesheet" href="/_assets/css/error.css">

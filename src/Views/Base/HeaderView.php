@@ -159,7 +159,7 @@ class HeaderView extends AbstractView
      *
      * @return string Absolute path to the template file
      */
-    function templatePath(): string
+    public function templatePath(): string
     {
         return __DIR__ . '/header.php';
     }

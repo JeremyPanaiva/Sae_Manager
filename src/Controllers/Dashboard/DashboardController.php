@@ -94,7 +94,6 @@ class DashboardController implements ControllerInterface
                 $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
                 $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
             }
-
         } elseif ($role === 'responsable') {
             // Get SAE assignments managed by supervisor
             $saes = SaeAttribution::getSaeForResponsable($userId);
@@ -106,9 +105,7 @@ class DashboardController implements ControllerInterface
                 $sae['etudiants'] = $saeId ? SaeAttribution:: getStudentsBySae($saeId) : [];
                 $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
                 $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
-
             }
-
         } elseif ($role === 'client') {
             // Get SAE created by client that have been assigned
             $clientSaes = \Models\Sae\Sae::getAssignedSaeByClient($userId);
@@ -185,7 +182,7 @@ class DashboardController implements ControllerInterface
      * @param string $uniqueId Unique identifier for the countdown element
      * @return string HTML markup for the countdown
      */
-    public static function generateCountdownHTML(? array $countdown, string $uniqueId): string
+    public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
     {
         if ($countdown === null) {
             return "<span class='countdown-error'>Date invalide</span>";
@@ -213,11 +210,11 @@ class DashboardController implements ControllerInterface
         $html .= "<div class='countdown-box'>";
         $html .= "<span class='countdown-value' data-type='secondes'>0</span>";
         $html .= "<span class='countdown-label'>secondes</span>";
-    $html .= "</div>";
-    $html .= "</div>";
+        $html .= "</div>";
+        $html .= "</div>";
 
-    return $html;
-}
+        return $html;
+    }
 
     /**
      * Checks if this controller supports the given route and HTTP method
