@@ -106,18 +106,18 @@ class SaeAvis
     public static function update(int $avisId, int $userId, string $message): bool
     {
         $db = Database::getConnection();
-        
+
         // Verify that the user is the author before updating
         $stmt = $db->prepare("UPDATE sae_avis SET message = ? WHERE id = ? AND user_id = ?");
         $stmt->bind_param("sii", $message, $avisId, $userId);
         $result = $stmt->execute();
-        
+
         // Check if any row was affected
         if ($stmt->affected_rows === 0) {
             $stmt->close();
             throw new \Exception("Impossible de modifier cet avis. Vous n'êtes pas l'auteur ou l'avis n'existe pas.");
         }
-        
+
         $stmt->close();
         return $result;
     }

@@ -121,7 +121,6 @@ class SaeView extends BaseView
         }
 
         switch (strtolower($this->role)) {
-
             case 'etudiant':
                 $html .= "<h2>Vos SAE attribuées</h2>";
                 foreach ($this->data['saes'] ?? [] as $sae) {
@@ -166,7 +165,6 @@ class SaeView extends BaseView
                 }
 
                 foreach ($this->data['saes'] ?? [] as $sae) {
-
                     if (!empty($sae['etudiants_attribues'])) {
                         $cardClass = "sae-card my-attr";
                     } elseif (empty($sae['responsable_attribution'])) {
@@ -226,7 +224,6 @@ class SaeView extends BaseView
                 break;
 
             case 'client':
-
                 $html .= "<h2>Créer une nouvelle SAE</h2>";
                 $html .= "<form method='POST' action='/creer_sae'>";
                 $html .= "<label>Titre :</label><input type='text' name='titre' required>";
@@ -237,7 +234,6 @@ class SaeView extends BaseView
                 $html .= "<h2>Vos SAE existantes</h2>";
 
                 foreach ($this->data['saes'] ??  [] as $sae) {
-
                     if (!empty($sae['responsable_attribution'])) {
                         $cardClass = "sae-card attribuee";
                     } else {

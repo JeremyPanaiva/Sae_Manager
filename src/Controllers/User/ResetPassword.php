@@ -61,7 +61,6 @@ class ResetPassword implements ControllerInterface
             $view = new \Views\User\ResetPasswordView();
             $view->setData(['token' => $token, 'email' => $email]);
             echo $view->render();
-
         } catch (DataBaseException $e) {
             // Database error during token validation
             error_log("Erreur base de données dans ResetPassword: " . $e->getMessage());
@@ -79,7 +78,7 @@ class ResetPassword implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path matches reset password route and method is GET
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'reset-password'))

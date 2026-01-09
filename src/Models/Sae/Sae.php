@@ -270,7 +270,6 @@ class Sae
 
             $stmt->close();
             return true;
-
         } catch (\Exception $e) {
             throw new DataBaseException("Impossible de modifier la SAE :  " . $e->getMessage());
         }

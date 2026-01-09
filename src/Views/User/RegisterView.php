@@ -57,7 +57,7 @@ class RegisterView extends BaseView
      *
      * @param array $errors Array of Throwable exceptions representing registration validation errors
      */
-    function __construct(
+    public function __construct(
         private array $errors = [],
     ) {
     }

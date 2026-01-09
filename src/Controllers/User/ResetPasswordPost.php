@@ -141,7 +141,6 @@ class ResetPasswordPost implements ControllerInterface
             // Redirect to login with success message
             header('Location: /user/login?success=password_reset');
             exit;
-
         } catch (SamePasswordException $e) {
             // New password is identical to current password
             header('Location: /user/reset-password? token=' . urlencode($token) . '&error=same_password');
@@ -168,7 +167,7 @@ class ResetPasswordPost implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path matches reset password route and method is POST
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'reset-password'))
