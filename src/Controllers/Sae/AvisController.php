@@ -176,6 +176,8 @@ class AvisController implements ControllerInterface
      */
     public static function support(string $path, string $method): bool
     {
-        return (($path === self::PATH_ADD || $path === self::PATH_DELETE || $path === self::PATH_UPDATE) && $method === 'POST');
+        return (($path === self::PATH_ADD
+                || $path === self::PATH_DELETE ||
+                $path === self::PATH_UPDATE) && $method === 'POST');
     }
 }
