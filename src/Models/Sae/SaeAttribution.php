@@ -43,7 +43,10 @@ class SaeAttribution
         self::checkIfSaeAlreadyAssignedToAnotherResponsable($saeId, $responsableId);
 
         // Retrieve existing submission deadline for this supervisor and SAE
-        $stmt = $db->prepare("SELECT date_rendu FROM sae_attributions WHERE sae_id = ? AND responsable_id = ?  LIMIT 1");
+        $stmt = $db->prepare(
+            "SELECT date_rendu FROM sae_attributions " .
+            "WHERE sae_id = ? AND responsable_id = ? LIMIT 1"
+        );
         $stmt->bind_param("ii", $saeId, $responsableId);
         $stmt->execute();
         $result = $stmt->get_result();

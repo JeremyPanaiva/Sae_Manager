@@ -85,7 +85,8 @@ class CreateSaeController implements ControllerInterface
                         );
                     } catch (\Exception $e) {
                         // Log error but don't block SAE creation
-                        error_log("Erreur lors de l'envoi de la notification au responsable {$responsable['mail']}:  " . $e->getMessage());
+                        error_log("Erreur lors de l'envoi de la notification au responsable 
+                        {$responsable['mail']}:  " . $e->getMessage());
                     }
                 }
             }

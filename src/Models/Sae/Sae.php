@@ -31,7 +31,10 @@ class Sae
             Database::checkConnection();
 
             $db = Database::getConnection();
-            $stmt = $db->prepare("INSERT INTO sae (titre, description, client_id, date_creation) VALUES (?, ?, ?, NOW())");
+            $stmt = $db->prepare(
+                "INSERT INTO sae (titre, description, client_id, date_creation) " .
+                "VALUES (?, ?, ?, NOW())"
+            );
             if (!$stmt) {
                 throw new \Exception("Erreur prepare: " . $db->error);
             }

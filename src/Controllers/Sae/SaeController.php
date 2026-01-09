@@ -100,9 +100,11 @@ class SaeController implements ControllerInterface
 
                 // Format submission deadlines
                 foreach ($saes as &$sae) {
-                    $sae['date_rendu_formatee'] = !empty($sae['date_rendu'])
-                        ? date('d/m/Y', strtotime($sae['date_rendu']))
-                        : 'Non définie';
+                    if (!empty($sae['date_rendu'])) {
+                        $sae['date_rendu_formatee'] = date('d/m/Y', strtotime($sae['date_rendu']));
+                    } else {
+                        $sae['date_rendu_formatee'] = 'Non définie';
+                    }
                 }
                 return ['saes' => $saes];
 
@@ -119,10 +121,17 @@ class SaeController implements ControllerInterface
                     // Filter students assigned by current supervisor
                     $etudiantsAttribuesParMoi = [];
                     foreach ($assignedStudents as $assignedStudent) {
-                        if (SaeAttribution::isStudentAssignedByResponsable($sae['id'], $assignedStudent['id'], $responsableId)) {
+                        if (
+                            SaeAttribution::isStudentAssignedByResponsable(
+                                $sae['id'],
+                                $assignedStudent['id'],
+                                $responsableId
+                            )
+                        ) {
                             $etudiantsAttribuesParMoi[] = $assignedStudent;
                         }
                     }
+
 
                     // Filter available students (not assigned to this SAE)
                     $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
