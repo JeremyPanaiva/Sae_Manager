@@ -56,7 +56,10 @@ class Database
                 self::$conn->set_charset('utf8mb4');
             } catch (\mysqli_sql_exception $e) {
                 // Throw custom exception with user-friendly message
-                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+                throw new DataBaseException(
+                    "Unable to connect to the database " .
+                    "please contact sae-manager@alwaysdata. net"
+                );
             }
         }
         return self::$conn;
@@ -130,10 +133,16 @@ class Database
         try {
             $db = self::getConnection();
             if (!$db->ping()) {
-                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+                throw new DataBaseException(
+                    "Unable to connect to the database " .
+                    "please contact sae-manager@alwaysdata. net"
+                );
             }
         } catch (\Exception $e) {
-            throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+            throw new DataBaseException(
+                "Unable to connect to the database " .
+                "please contact sae-manager@alwaysdata. net"
+            );
         }
     }
 }

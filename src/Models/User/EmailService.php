@@ -82,7 +82,9 @@ class EmailService
 
             $this->mailer->SMTPAuth = ! empty($smtpUser) && !empty($smtpPass);
 
-            $this->mailer->SMTPSecure = $smtpSecure === 'tls' ?  PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
+            $this->mailer->SMTPSecure = $smtpSecure === 'tls'
+                ? PHPMailer:: ENCRYPTION_STARTTLS
+                : PHPMailer:: ENCRYPTION_SMTPS;
             $this->mailer->Port = (int) (Database::parseEnvVar('SMTP_PORT') ?: 587);
             $this->mailer->CharSet = 'UTF-8';
 
@@ -211,7 +213,10 @@ class EmailService
                 return true;
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception: ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
+                error_log(
+                    'PHPMailer fallback exception: ' . $e2->getMessage() .
+                    ' | PHPMailer ErrorInfo: ' . $phpmailerError2
+                );
                 throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
             }
         }
@@ -249,7 +254,10 @@ class EmailService
             return true;
         } catch (Exception $e) {
             $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
-            error_log('PHPMailer SMTP exception (account verification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+            error_log(
+                'PHPMailer SMTP exception (account verification): ' . $e->getMessage() .
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError
+            );
 
             // Fallback to local mail() function
             try {
@@ -274,7 +282,10 @@ class EmailService
                 return true;
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (account verification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
+                error_log(
+                    'PHPMailer fallback exception (account verification): ' . $e2->getMessage() .
+                    ' | PHPMailer ErrorInfo: ' . $phpmailerError2
+                );
                 throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
             }
         }
@@ -319,14 +330,22 @@ class EmailService
             ]);
 
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody($responsableNom, $clientNom, $saeTitle, $saeDescription);
+            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody(
+                $responsableNom,
+                $clientNom,
+                $saeTitle,
+                $saeDescription
+            );
 
             $this->mailer->send();
             error_log("Email de notification SAE envoyé à {$responsableEmail}");
             return true;
         } catch (Exception $e) {
             $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
-            error_log('PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+            error_log(
+                'PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() .
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError
+            );
 
             // Fallback to local mail() function
             try {
@@ -352,7 +371,10 @@ class EmailService
                 return true;
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (SAE notification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
+                error_log(
+                    'PHPMailer fallback exception (SAE notification): ' . $e2->getMessage() .
+                    ' | PHPMailer ErrorInfo: ' . $phpmailerError2
+                );
                 throw new DataBaseException("Erreur d'envoi d'email de notification SAE: " . $e2->getMessage());
             }
         }
@@ -595,7 +617,10 @@ class EmailService
                 return true;
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (contact): ' . $e2->getMessage() . ' | ErrorInfo: ' . $phpmailerError2);
+                error_log(
+                    'PHPMailer fallback exception (contact): ' . $e2->getMessage() .
+                    ' | ErrorInfo: ' . $phpmailerError2
+                );
                 throw new DataBaseException("Erreur d'envoi d'email de contact: " . $e2->getMessage());
             }
         }
@@ -614,7 +639,11 @@ class EmailService
     private function getBaseUrl(): string
     {
         // For local development, always use detected host
-        if (isset($_SERVER['HTTP_HOST']) && (str_contains($_SERVER['HTTP_HOST'], 'localhost') || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1'))) {
+        if (
+            isset($_SERVER['HTTP_HOST']) &&
+            (str_contains($_SERVER['HTTP_HOST'], 'localhost') ||
+                str_contains($_SERVER['HTTP_HOST'], '127.0.0.1'))
+        ) {
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
             return $protocol . '://' . $_SERVER['HTTP_HOST'];
         }
@@ -642,7 +671,12 @@ class EmailService
      */
     private function getPasswordResetEmailTextBody(string $resetLink): string
     {
-        return "Réinitialisation de votre mot de passe - SAE Manager\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nLien :  {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nCordialement,\nL'équipe SAE Manager";
+        return "Réinitialisation de votre mot de passe - SAE Manager\n\n" .
+            "Vous avez demandé la réinitialisation de votre mot de passe.\n\n" .
+            "Lien : {$resetLink}\n\n" .
+            "Ce lien est valide pendant 1 heure.\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -653,7 +687,12 @@ class EmailService
      */
     private function getAccountVerificationEmailTextBody(string $verificationLink): string
     {
-        return "Vérification de votre compte - SAE Manager\n\nMerci de vous être inscrit.  Pour activer votre compte, veuillez copier et coller le lien suivant dans votre navigateur :\n\nLien : {$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Vérification de votre compte - SAE Manager\n\n" .
+            "Merci de vous être inscrit. Pour activer votre compte, " .
+            "veuillez copier et coller le lien suivant dans votre navigateur :\n\n" .
+            "Lien : {$verificationLink}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -665,10 +704,21 @@ class EmailService
      * @param string $saeDescription SAE description
      * @return string Plain text email body
      */
-    private function getSaeCreationEmailTextBody(string $responsableNom, string $clientNom, string $saeTitle, string $saeDescription): string
-    {
+    private function getSaeCreationEmailTextBody(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$responsableNom},\n\nUne nouvelle SAE a été créée par {$clientNom}.\n\nTITRE : {$saeTitle}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\n\n{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Bonjour {$responsableNom},\n\n" .
+            "Une nouvelle SAE a été créée par {$clientNom}.\n\n" .
+            "TITRE : {$saeTitle}\n" .
+            "DESCRIPTION : {$saeDescription}\n" .
+            "CLIENT : {$clientNom}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -682,10 +732,25 @@ class EmailService
      * @param string $dateRendu Submission deadline
      * @return string Plain text email body
      */
-    private function getStudentAssignmentEmailTextBody(string $studentNom, string $saeTitre, string $saeDescription, string $responsableNom, string $clientNom, string $dateRendu): string
-    {
+    private function getStudentAssignmentEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$studentNom},\n\nVous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\nTITRE : {$saeTitre}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\nRESPONSABLE :  {$responsableNom}\nDATE DE RENDU : {$dateRendu}\n\n{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
+        return "Bonjour {$studentNom},\n\n" .
+            "Vous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\n" .
+            "TITRE : {$saeTitre}\n" .
+            "DESCRIPTION : {$saeDescription}\n" .
+            "CLIENT : {$clientNom}\n" .
+            "RESPONSABLE : {$responsableNom}\n" .
+            "DATE DE RENDU : {$dateRendu}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Bon courage !\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -697,9 +762,20 @@ class EmailService
      * @param string $responsableNom Supervisor's name
      * @return string Plain text email body
      */
-    private function getClientAssignmentEmailTextBody(string $clientNom, string $saeTitre, string $studentNom, string $responsableNom): string
-    {
+    private function getClientAssignmentEmailTextBody(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNom,
+        string $responsableNom
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$clientNom},\n\nUn étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\nSAE : {$saeTitre}\nÉTUDIANT AFFECTÉ : {$studentNom}\nRESPONSABLE : {$responsableNom}\n\n{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Bonjour {$clientNom},\n\n" .
+            "Un étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\n" .
+            "SAE : {$saeTitre}\n" .
+            "ÉTUDIANT AFFECTÉ : {$studentNom}\n" .
+            "RESPONSABLE : {$responsableNom}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 }

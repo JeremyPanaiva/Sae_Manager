@@ -64,7 +64,10 @@ class PasswordResetToken
         $stmt->close();
 
         // Insert new token with 1-hour expiration
-        $stmt = $conn->prepare("INSERT INTO password_reset_tokens (user_id, token, expiry, used) VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), 0)");
+        $stmt = $conn->prepare(
+            "INSERT INTO password_reset_tokens (user_id, token, expiry, used) " .
+            "VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), 0)"
+        );
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in createToken (insert).");
         }
