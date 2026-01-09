@@ -71,7 +71,7 @@ class Database
      * @param string $envVar The environment variable name to retrieve
      * @return string|false The variable value, or false if not found
      */
-    private static function parseEnvVar(string $envVar)
+    public static function parseEnvVar(string $envVar)
     {
         // Try system environment variable first
         $val = getenv($envVar);

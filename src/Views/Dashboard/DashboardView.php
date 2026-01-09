@@ -100,7 +100,7 @@ class DashboardView extends BaseView
      * @param string $texte Text potentially containing URLs
      * @return string Text with URLs converted to HTML links
      */
-    private function rendreLiensCliquables($texte)
+    public function rendreLiensCliquables($texte)
     {
         $pattern = '/(https?:\/\/[^\s]+)/i';
         $remplacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';

@@ -324,7 +324,6 @@ class EmailService
             $this->mailer->send();
             error_log("Email de notification SAE envoyé à {$responsableEmail}");
             return true;
-
         } catch (Exception $e) {
             $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
             error_log('PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
@@ -351,7 +350,6 @@ class EmailService
                 $mail->send();
                 error_log('Email SAE notification sent via local mail() fallback to ' . $responsableEmail);
                 return true;
-
             } catch (Exception $e2) {
                 $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
                 error_log('PHPMailer fallback exception (SAE notification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
@@ -417,7 +415,6 @@ class EmailService
 
             $this->mailer->send();
             return true;
-
         } catch (Exception $e) {
             error_log('PHPMailer SMTP exception (student assignment): ' . $e->getMessage());
 
@@ -497,7 +494,6 @@ class EmailService
 
             $this->mailer->send();
             return true;
-
         } catch (Exception $e) {
             error_log('PHPMailer SMTP exception (client assignment): ' . $e->getMessage());
 
