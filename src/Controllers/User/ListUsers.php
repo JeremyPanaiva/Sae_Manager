@@ -116,7 +116,6 @@ class ListUsers implements ControllerInterface
             // Render user list view
             $view = new UserListView($users, $paginationHtml, '', $sort, $order);
             echo $view->render();
-
         } catch (DataBaseException $e) {
             // Display empty list with database error message
             $view = new UserListView([], '', $e->getMessage());

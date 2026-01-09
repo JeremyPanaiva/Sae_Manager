@@ -31,11 +31,12 @@ class LoginPost implements ControllerInterface
      *
      * @return void
      */
-    function control()
+    public function control()
     {
         // Check if form was submitted
-        if (!isset($_POST['ok']))
+        if (!isset($_POST['ok'])) {
             return;
+        }
 
         // Extract form data
         $email = $_POST['uname'] ?? '';
@@ -103,7 +104,6 @@ class LoginPost implements ControllerInterface
             // Redirect to home page
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
             // Display login form with error messages
             $view = new LoginView($exceptions->getExceptions());
@@ -119,7 +119,7 @@ class LoginPost implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path is '/user/login' and method is POST
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === "/user/login" && $method === "POST";
     }

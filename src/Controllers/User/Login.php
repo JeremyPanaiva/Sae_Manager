@@ -33,7 +33,7 @@ class Login implements ControllerInterface
      *
      * @return void
      */
-    function control()
+    public function control()
     {
         $successMessage = '';
 
@@ -73,7 +73,7 @@ class Login implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path is '/user/login' and method is GET
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === self:: PATH && $method === "GET";
     }

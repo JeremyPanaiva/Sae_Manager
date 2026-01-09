@@ -85,7 +85,6 @@ class ForgotPasswordPost implements ControllerInterface
             // Redirect with success message
             header('Location:  ?page=forgot-password&success=email_sent');
             exit;
-
         } catch (DataBaseException $e) {
             // Database error
             error_log("Erreur base de données dans ForgotPasswordPost: " . $e->getMessage());
@@ -108,7 +107,7 @@ class ForgotPasswordPost implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path matches forgot password route and method is POST
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'forgot-password'))

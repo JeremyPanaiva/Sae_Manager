@@ -57,8 +57,9 @@ class ProfileController implements ControllerInterface
     public function control(): void
     {
         // Ensure session is started
-        if (session_status() === PHP_SESSION_NONE)
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
 
         // Verify user is authenticated
         if (!isset($_SESSION['user']['id'])) {
@@ -158,7 +159,6 @@ class ProfileController implements ControllerInterface
                             $userData = $userModel::getById($userId) ?? [];
                         }
                     }
-
                 } catch (DataBaseException $e) {
                     $errors[] = $e;
                 } catch (\Throwable $e) {
@@ -197,7 +197,6 @@ class ProfileController implements ControllerInterface
             // Redirect to home page with deletion confirmation
             header("Location: /?deleted=1");
             exit;
-
         } catch (DataBaseException $e) {
             // Database error
             $_SESSION['error_message'] = "Erreur :  " . $e->getMessage();

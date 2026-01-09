@@ -45,7 +45,7 @@ class ForgotPassword implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path matches forgot password route and method is GET
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'forgot-password'))
