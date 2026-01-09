@@ -64,7 +64,6 @@ class UnassignSaeController implements ControllerInterface
 
                 // Set success message in session
                 $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
-
             } catch (UnauthorizedSaeUnassignmentException $e) {
                 // Supervisor is not authorized to unassign these students
                 $_SESSION['error_message'] = $e->getMessage();

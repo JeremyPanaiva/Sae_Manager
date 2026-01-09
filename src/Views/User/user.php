@@ -1,4 +1,5 @@
 <?php
+
 // Définir les variables par défaut si elles n'existent pas
 $SORT = $SORT ?? 'date_creation';
 $ORDER = $ORDER ?? 'ASC';

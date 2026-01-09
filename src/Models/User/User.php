@@ -300,7 +300,6 @@ class User
             }
 
             $stmt->close();
-
         } catch (\Exception $e) {
             error_log("Erreur User::deleteAccount :   " . $e->getMessage());
             throw new DataBaseException("Impossible de supprimer le compte.");
@@ -323,8 +322,9 @@ class User
         try {
             $conn = Database::getConnection();
             $stmt = $conn->prepare("UPDATE users SET mail = ?, verification_token = ?, is_verified = 0 WHERE id = ?");
-            if (!$stmt)
+            if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL updateEmail");
+            }
 
             $stmt->bind_param("ssi", $newEmail, $token, $userId);
             $stmt->execute();

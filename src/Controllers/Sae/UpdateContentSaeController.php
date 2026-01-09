@@ -52,7 +52,6 @@ class UpdateContentSaeController implements ControllerInterface
 
                 // Set success message in session
                 $_SESSION['success_message'] = "SAE mise à jour avec succès ! ";
-
             } catch (DataBaseException $e) {
                 // Database error
                 $_SESSION['error_message'] = $e->getMessage();

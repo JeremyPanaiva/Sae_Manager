@@ -14,5 +14,8 @@
             "Views\\": "src/Views/",
             "Shared\\": "src/Shared/"
         }
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^4.0"
     }
 }

@@ -67,7 +67,6 @@ class UpdateSaeDateController implements ControllerInterface
             $_SESSION['success_message'] = "Date de rendu mise à jour avec succès. ";
             header('Location: /dashboard');
             exit();
-
         } catch (DataBaseException $e) {
             // Database error
             $_SESSION['error_message'] = $e->getMessage();
