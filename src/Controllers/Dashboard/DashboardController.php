@@ -194,7 +194,8 @@ class DashboardController implements ControllerInterface
 
         $urgentClass = $countdown['urgent'] ? ' urgent' : '';
 
-        $html = "<div class='countdown-container{$urgentClass}' data-deadline='{$countdown['timestamp']}' id='countdown-{$uniqueId}'>";
+        $html = "<div class='countdown-container{$urgentClass}'
+                data-deadline='{$countdown['timestamp']}' id='countdown-{$uniqueId}'>";
         $html .= "<div class='countdown-box'>";
         $html .= "<span class='countdown-value' data-type='jours'>{$countdown['jours']}</span>";
         $html .= "<span class='countdown-label'>jours</span>";
