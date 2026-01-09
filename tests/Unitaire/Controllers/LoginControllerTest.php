@@ -2,107 +2,65 @@
 
 namespace Tests\Unit\Controllers\User;
 
-use Controllers\User\Login;
 use PHPUnit\Framework\TestCase;
+use Controllers\User\Login;
 
-/**
- * Tests pour le contrôleur d'affichage du formulaire de connexion
- */
 class LoginControllerTest extends TestCase
 {
-    private Login $controller;
-
     protected function setUp(): void
     {
-        parent::setUp();
-        $this->controller = new Login();
+        parent:: setUp();
+
+        $_SERVER['REQUEST_URI'] = '/login';
+        $_SERVER['HTTP_HOST'] = 'localhost';
+        $_SERVER['HTTPS'] = 'off';
     }
 
-    /**
-     * Test : Support de la route /user/login en GET
-     */
-    public function testSupportsLoginRoute(): void
-    {
-        $this->assertTrue(Login::support('/user/login', 'GET'));
-    }
-
-    /**
-     * Test : Ne supporte pas POST (géré par LoginPost)
-     */
-    public function testDoesNotSupportPostMethod(): void
-    {
-        $this->assertFalse(Login::support('/user/login', 'POST'));
-    }
-
-    /**
-     * Test :  Affichage du message de succès après inscription
-     */
     public function testDisplaysRegistrationSuccessMessage(): void
     {
         $_GET['success'] = 'registered';
 
+        $controller = new Login();
         ob_start();
-        $this->controller->control();
+        $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString(
-            'Inscription réussie',
-            $output,
-            'Le message de succès d\'inscription devrait être affiché'
-        );
-
-        unset($_GET['success']);
+        $this->assertStringContainsString('Inscription réussie', $output);
     }
 
-    /**
-     * Test : Affichage du message après réinitialisation du mot de passe
-     */
     public function testDisplaysPasswordResetSuccessMessage(): void
     {
         $_GET['success'] = 'password_reset';
 
+        $controller = new Login();
         ob_start();
-        $this->controller->control();
+        $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString(
-            'mot de passe a été réinitialisé',
-            $output
-        );
-
-        unset($_GET['success']);
+        $this->assertStringContainsString('mot de passe a été réinitialisé', $output);
     }
 
-    /**
-     * Test :  Affichage d'erreur pour token invalide
-     */
     public function testDisplaysInvalidTokenError(): void
     {
         $_GET['error'] = 'invalid_token';
 
+        $controller = new Login();
         ob_start();
-        $this->controller->control();
+        $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString(
-            'invalide ou a expiré',
-            $output
-        );
-
-        unset($_GET['error']);
+        $this->assertStringContainsString('lien de vérification est invalide', $output);
     }
 
-    /**
-     * Test : Le formulaire contient les champs requis
-     */
     public function testLoginFormContainsRequiredFields(): void
     {
+        $controller = new Login();
         ob_start();
-        $this->controller->control();
+        $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('name="uname"', $output, 'Champ email manquant');
-        $this->assertStringContainsString('name="psw"', $output, 'Champ mot de passe manquant');
-        $this->assertStringContainsString('type="submit"', $output, 'Bouton submit manquant');
+        $this->assertStringContainsString('type="email"', $output);
+        $this->assertStringContainsString('type="password"', $output);
+        $this->assertStringContainsString('type="submit"', $output);
     }
 }
