@@ -64,7 +64,7 @@ abstract class BaseView implements View
      *
      * @return string Complete HTML output
      */
-    function render(): string
+    public function render(): string
     {
         $this->header = new HeaderView();
         $this->footer = new FooterView();
@@ -78,7 +78,7 @@ abstract class BaseView implements View
      *
      * @param User|null $user The authenticated user or null
      */
-    function setUser(?User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
     }
@@ -100,7 +100,7 @@ abstract class BaseView implements View
      *
      * @return string Rendered HTML body content
      */
-    function renderBody(): string
+    public function renderBody(): string
     {
         $templatePath = $this->templatePath();
 

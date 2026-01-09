@@ -55,8 +55,9 @@ class ChangePasswordPost implements ControllerInterface
     public function control(): void
     {
         // Ensure session is started
-        if (session_status() === PHP_SESSION_NONE)
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
 
         // Verify user is authenticated
         if (!isset($_SESSION['user']['id'])) {
@@ -111,8 +112,9 @@ class ChangePasswordPost implements ControllerInterface
 
             // Retrieve current password hash from database
             $stmt = $conn->prepare("SELECT mdp FROM users WHERE id = ?");
-            if (!$stmt)
+            if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
+            }
 
             $stmt->bind_param("i", $userId);
             $stmt->execute();
@@ -135,8 +137,9 @@ class ChangePasswordPost implements ControllerInterface
             // Hash and update the new password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
             $updateStmt = $conn->prepare("UPDATE users SET mdp = ? WHERE id = ?");
-            if (!$updateStmt)
+            if (!$updateStmt) {
                 throw new DataBaseException("Erreur de préparation SQL update");
+            }
 
             $updateStmt->bind_param("si", $hashedPassword, $userId);
             $updateStmt->execute();
@@ -145,7 +148,6 @@ class ChangePasswordPost implements ControllerInterface
             // Redirect with success message
             header('Location:  /user/change-password?success=password_updated');
             exit;
-
         } catch (\Exception $e) {
             // Log error and redirect with error message
             error_log("Erreur changement mot de passe: " . $e->getMessage());

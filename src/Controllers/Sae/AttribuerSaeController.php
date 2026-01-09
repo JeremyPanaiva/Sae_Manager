@@ -140,7 +140,6 @@ class AttribuerSaeController implements ControllerInterface
 
                             // Free memory
                             unset($emailServiceStudent);
-
                         } catch (\Exception $e) {
                             error_log("Erreur lors de l'envoi de l'email à l'étudiant {$studentEmail}: " .  $e->getMessage());
                             error_log("Stack trace: " . $e->getTraceAsString());
@@ -170,7 +169,6 @@ class AttribuerSaeController implements ControllerInterface
 
                             // Free memory
                             unset($emailServiceClient);
-
                         } catch (\Exception $e) {
                             error_log("ERREUR lors de l'envoi de l'email au client {$clientEmail}: " . $e->getMessage());
                             error_log("Stack trace: " . $e->getTraceAsString());
@@ -195,7 +193,6 @@ class AttribuerSaeController implements ControllerInterface
 
             header('Location: /sae');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
             // Database connection error
             $_SESSION['error_message'] = $e->getMessage();
