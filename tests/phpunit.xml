@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="vendor/autoload.php" colors="true">
+    <testsuites>
+        <!-- Si ton dossier s'appelle "test", laisse test. Si tu le renomme en "tests", change la balise directory -->
+        <testsuite name="SAE Manager Test Suite">
+            <directory>test</directory>
+        </testsuite>
+    </testsuites>
+
+    <coverage>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </coverage>
+</phpunit>
