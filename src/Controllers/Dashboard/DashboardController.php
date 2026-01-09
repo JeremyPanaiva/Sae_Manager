@@ -9,32 +9,10 @@ use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
 use Models\User\User;
 
-/**
- * Dashboard controller
- *
- * Handles the display of role-based dashboard views for students, supervisors, and clients.
- * Aggregates SAE (Situation d'Apprentissage et d'Évaluation) data including todos,
- * student assignments, and feedback.
- *
- * @package Controllers\Dashboard
- */
 class DashboardController implements ControllerInterface
 {
-    /**
-     * Dashboard route path
-     *
-     * @var string
-     */
     public const PATH = '/dashboard';
 
-    /**
-     * Main controller method
-     *
-     * Checks user authentication, retrieves role-specific dashboard data,
-     * and renders the dashboard view.
-     *
-     * @return void
-     */
     public function control()
     {
         // Redirect to login if user is not authenticated
@@ -43,6 +21,7 @@ class DashboardController implements ControllerInterface
             exit();
         }
 
+        /** @var array{id: int, role: string, nom: string, prenom: string} $user */
         $user = $_SESSION['user'];
         $role = strtolower($user['role']);
         $username = $user['nom'] .  ' ' . $user['prenom'];
@@ -68,15 +47,10 @@ class DashboardController implements ControllerInterface
     }
 
     /**
-     * Prepares dashboard data based on user role
-     *
-     * Retrieves SAE assignments, todos, students, and feedback depending on
-     * whether the user is a student, supervisor (responsable), or client.
-     *
-     * @param int $userId The ID of the current user
-     * @param string $role The role of the user (etudiant, responsable, client)
-     * @return array Dashboard data containing SAE information and related entities
-     * @throws \Shared\Exceptions\DataBaseException If database operations fail
+     * @param int $userId
+     * @param string $role
+     * @return array{saes: array<int, array<string, mixed>>}
+     * @throws \Shared\Exceptions\DataBaseException
      */
     private function prepareDashboardData(int $userId, string $role): array
     {
@@ -139,12 +113,9 @@ class DashboardController implements ControllerInterface
         return ['saes' => $saes];
     }
 
-
     /**
-     * Calculates countdown data for a given deadline
-     *
-     * @param string $dateRendu Deadline date in Y-m-d or Y-m-d H:i: s format
-     * @return array|null Array with countdown information or null if invalid
+     * @param string $dateRendu
+     * @return array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool}|null
      */
     private function calculateCountdown(string $dateRendu): ?array
     {
@@ -164,11 +135,11 @@ class DashboardController implements ControllerInterface
 
             return [
                 'expired' => false,
-                'jours' => $interval->days,
+                'jours' => $interval->days === false ? 0 : $interval->days,
                 'heures' => $interval->h,
                 'minutes' => $interval->i,
                 'timestamp' => $deadline->getTimestamp(),
-                'urgent' => ($interval->days === 0) // Moins de 24h
+                'urgent' => ($interval->days === 0)
             ];
         } catch (\Exception $e) {
             return null;
@@ -176,11 +147,9 @@ class DashboardController implements ControllerInterface
     }
 
     /**
-     * Generates HTML for countdown display
-     *
-     * @param array|null $countdown Countdown data from calculateCountdown()
-     * @param string $uniqueId Unique identifier for the countdown element
-     * @return string HTML markup for the countdown
+     * @param array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool}|null $countdown
+     * @param string $uniqueId
+     * @return string
      */
     public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
     {
@@ -192,20 +161,25 @@ class DashboardController implements ControllerInterface
             return "<span class='countdown-expired'>Délai expiré</span>";
         }
 
-        $urgentClass = $countdown['urgent'] ? ' urgent' : '';
+        $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
+
+        $jours = $countdown['jours'] ?? 0;
+        $heures = $countdown['heures'] ?? 0;
+        $minutes = $countdown['minutes'] ?? 0;
+        $timestamp = $countdown['timestamp'] ?? 0;
 
         $html = "<div class='countdown-container{$urgentClass}'
-                data-deadline='{$countdown['timestamp']}' id='countdown-{$uniqueId}'>";
+                data-deadline='{$timestamp}' id='countdown-{$uniqueId}'>";
         $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='jours'>{$countdown['jours']}</span>";
+        $html .= "<span class='countdown-value' data-type='jours'>{$jours}</span>";
         $html .= "<span class='countdown-label'>jours</span>";
         $html .= "</div>";
         $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='heures'>{$countdown['heures']}</span>";
+        $html .= "<span class='countdown-value' data-type='heures'>{$heures}</span>";
         $html .= "<span class='countdown-label'>heures</span>";
         $html .= "</div>";
         $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='minutes'>{$countdown['minutes']}</span>";
+        $html .= "<span class='countdown-value' data-type='minutes'>{$minutes}</span>";
         $html .= "<span class='countdown-label'>minutes</span>";
         $html .= "</div>";
         $html .= "<div class='countdown-box'>";
@@ -217,13 +191,6 @@ class DashboardController implements ControllerInterface
         return $html;
     }
 
-    /**
-     * Checks if this controller supports the given route and HTTP method
-     *
-     * @param string $path The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if this controller handles the request, false otherwise
-     */
     public static function support(string $path, string $method): bool
     {
         return $path === self::PATH && $method === 'GET';
