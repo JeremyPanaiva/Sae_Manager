@@ -113,7 +113,8 @@ class ForgotPasswordView extends BaseView
                     Un email de réinitialisation a été envoyé à votre adresse email.</div>';
                     break;
                 case 'password_reset':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    border: 1px solid #c3e6cb; border-radius: 4px;">
                     Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.</div>';
                     break;
             }
@@ -132,11 +133,13 @@ class ForgotPasswordView extends BaseView
                     Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;
                 case 'database_error':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue. Veuillez réessayer plus tard. </div>';
                     break;
                 case 'general_error':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border:  1px solid #f5c6cb; border-radius: 4px;">
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border:  1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue. Veuillez réessayer plus tard.</div>';
                     break;
             }
