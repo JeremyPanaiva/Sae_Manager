@@ -100,7 +100,9 @@ class AttribuerSaeController implements ControllerInterface
 
             // Retrieve supervisor information
             $responsableInfo = User::getById($responsableId);
-            $responsableNom = $responsableInfo ? trim(($responsableInfo['prenom'] ?? '') . ' ' . ($responsableInfo['nom'] ?? '')) : 'Responsable';
+            $responsableNom = $responsableInfo ? trim(
+                ($responsableInfo['prenom'] ?? '') . ' ' . ($responsableInfo['nom'] ?? '')
+            ) : 'Responsable';
 
             // Retrieve submission deadline
             $dateRendu = '';
@@ -141,7 +143,8 @@ class AttribuerSaeController implements ControllerInterface
                             // Free memory
                             unset($emailServiceStudent);
                         } catch (\Exception $e) {
-                            error_log("Erreur lors de l'envoi de l'email à l'étudiant {$studentEmail}: " .  $e->getMessage());
+                            error_log("Erreur lors de l'envoi de l'email à l'étudiant 
+                            {$studentEmail}: " .  $e->getMessage());
                             error_log("Stack trace: " . $e->getTraceAsString());
                         }
                     } else {
@@ -152,7 +155,8 @@ class AttribuerSaeController implements ControllerInterface
                     if (!empty($clientEmail)) {
                         try {
                             error_log("Création d'une nouvelle instance EmailService pour le client");
-                            error_log("Tentative d'envoi email au client: {$clientEmail} pour étudiant:  {$studentFullName}");
+                            error_log("Tentative d'envoi email au client: 
+                            {$clientEmail} pour étudiant:  {$studentFullName}");
 
                             // Create new instance for each email
                             $emailServiceClient = new EmailService();
@@ -170,7 +174,8 @@ class AttribuerSaeController implements ControllerInterface
                             // Free memory
                             unset($emailServiceClient);
                         } catch (\Exception $e) {
-                            error_log("ERREUR lors de l'envoi de l'email au client {$clientEmail}: " . $e->getMessage());
+                            error_log("ERREUR lors de 
+                            l'envoi de l'email au client {$clientEmail}: " . $e->getMessage());
                             error_log("Stack trace: " . $e->getTraceAsString());
                         }
                     } else {
@@ -185,10 +190,13 @@ class AttribuerSaeController implements ControllerInterface
             // Build success message
             $nbEtudiants = count($studentNames);
             if ($nbEtudiants === 1) {
-                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » a été attribué avec succès à la SAE « $saeTitre ». Des notifications par email ont été envoyées.";
+                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » 
+                a été attribué avec succès à la SAE « $saeTitre ». Des notifications par email ont été envoyées.";
             } else {
                 $listeEtudiants = implode(', ', array_slice($studentNames, 0, -1)) . ' et ' . end($studentNames);
-                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « $saeTitre » : $listeEtudiants. Des notifications par email ont été envoyées.";
+                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été 
+                attribués avec succès à la SAE « $saeTitre » : 
+                $listeEtudiants. Des notifications par email ont été envoyées.";
             }
 
             header('Location: /sae');
@@ -198,10 +206,12 @@ class AttribuerSaeController implements ControllerInterface
             $_SESSION['error_message'] = $e->getMessage();
         } catch (SaeAlreadyAssignedException $e) {
             // SAE already assigned to another supervisor
-            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
+            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » :
+             elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
         } catch (StudentAlreadyAssignedException $e) {
             // Student already assigned to this SAE
-            $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
+            $_SESSION['error_message'] = "L'étudiant 
+            « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
         } catch (\Exception $e) {
             // Generic error handling
             error_log("❌ Erreur générale dans AttribuerSaeController: " .  $e->getMessage());

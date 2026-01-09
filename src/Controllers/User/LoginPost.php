@@ -76,7 +76,8 @@ class LoginPost implements ControllerInterface
 
             // Check if account is verified
             if (isset($userData['is_verified']) && (int) $userData['is_verified'] === 0) {
-                throw new ArrayException([new ValidationException("Votre compte n'est pas vérifié.  Veuillez cliquer sur le lien reçu par email.")]);
+                throw new ArrayException([new ValidationException("Votre compte n'est pas vérifié.
+                  Veuillez cliquer sur le lien reçu par email.")]);
             }
 
             // Verify password
