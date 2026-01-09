@@ -83,7 +83,6 @@ class DeleteSaeController implements ControllerInterface
             // Redirect with success message
             header('Location: /sae?success=sae_deleted');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
             // Database error - display view with error message and empty SAE list
             $data = [
@@ -93,7 +92,6 @@ class DeleteSaeController implements ControllerInterface
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (SaeAttribueException $e) {
             // SAE already assigned - retrieve client's SAE list and display with error
             $saes = [];
@@ -115,7 +113,6 @@ class DeleteSaeController implements ControllerInterface
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (\Throwable $e) {
             // Generic error handling - attempt to retrieve SAE list
             $saes = [];

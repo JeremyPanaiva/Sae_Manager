@@ -23,7 +23,7 @@ class HomeController implements ControllerInterface
      *
      * @return void
      */
-    function control()
+    public function control()
     {
         $view = new HomeView();
         echo $view->render();
@@ -36,7 +36,7 @@ class HomeController implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path is root "/" and method is GET
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === "/" && $method === "GET";
     }

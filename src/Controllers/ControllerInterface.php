@@ -23,7 +23,7 @@ interface ControllerInterface
      *
      * @return void
      */
-    function control();
+    public function control();
 
     /**
      * Determines if this controller supports the given route and HTTP method
@@ -35,5 +35,5 @@ interface ControllerInterface
      * @param string $method The HTTP method (e.g., 'GET', 'POST', 'PUT', 'DELETE')
      * @return bool True if this controller handles the request, false otherwise
      */
-    static function support(string $chemin, string $method): bool;
+    public static function support(string $chemin, string $method): bool;
 }
