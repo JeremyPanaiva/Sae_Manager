@@ -23,7 +23,7 @@ class ContactView extends BaseView
     /**
      * Path to the contact template file
      */
-    private const TEMPLATE_HTML = __DIR__ . '/contact. php';
+    private const TEMPLATE_HTML = __DIR__ . '/contact.php';
 
     /**
      * Constructor
