@@ -87,8 +87,13 @@ class UserListView extends BaseView
      * @param string $sort Current sort column (default: 'date_creation')
      * @param string $order Current sort order (default: 'ASC')
      */
-    public function __construct(array $users, string $paginationHtml = '', string $errorMessage = '', string $sort = 'date_creation', string $order = 'ASC')
-    {
+    public function __construct(
+        array $users,
+        string $paginationHtml = '',
+        string $errorMessage = '',
+        string $sort = 'date_creation',
+        string $order = 'ASC'
+    ) {
         $this->users = $users;
         $this->paginationHtml = $paginationHtml;
         $this->errorMessage = $errorMessage;

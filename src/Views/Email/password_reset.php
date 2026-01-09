@@ -16,7 +16,8 @@
 
     <div style='text-align: center; margin: 30px 0;'>
         <a href='<?php echo $RESET_LINK; ?>'
-           style='background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>
+           style='background-color: #3498db; color: white; padding: 12px 24px;
+           text-decoration: none; border-radius: 5px; display: inline-block;'>
             Réinitialiser mon mot de passe
         </a>
     </div>

@@ -21,12 +21,14 @@
 
                 <div class="legal-form-group">
                     <label for="contact-subject">Sujet</label>
-                    <input type="text" id="contact-subject" name="subject" required placeholder="Sujet de votre message">
+                    <input type="text" id="contact-subject" name="subject"
+                           required placeholder="Sujet de votre message">
                 </div>
 
                 <div class="legal-form-group">
                     <label for="contact-message">Votre message</label>
-                    <textarea id="contact-message" name="message" rows="8" required placeholder="Écrivez votre message ici..."></textarea>
+                    <textarea id="contact-message" name="message" rows="8" required
+                              placeholder="Écrivez votre message ici..."></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Envoyer</button>

@@ -135,7 +135,8 @@ class DashboardView extends BaseView
 
         $errorMessage = $this->data['error_message'] ?? $_SESSION['error_message'] ?? null;
         if ($errorMessage) {
-            $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= "<div class='error-message' style='background-color: #fee; border: 1px solid #f88; color: #c00; 
+            padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
             $html .= htmlspecialchars($errorMessage);
             $html .= "</div>";
 
@@ -144,7 +145,8 @@ class DashboardView extends BaseView
 
         $successMessage = $this->data['success_message'] ?? $_SESSION['success_message'] ?? null;
         if ($successMessage) {
-            $html .= "<div class='success-message' style='background-color: #e8f5e9; border: 1px solid #4caf50; color: #2e7d32; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            $html .= "<div class='success-message' style='background-color: #e8f5e9; border: 1px solid #4caf50; 
+            color: #2e7d32; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
             $html .= htmlspecialchars($successMessage);
             $html .= "</div>";
 
@@ -203,14 +205,16 @@ class DashboardView extends BaseView
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
                             $html .= "<label>";
-                            $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' {$checked}> ";
+                            $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' 
+                            {$checked}> ";
                             $html .= $taskTitre;
                             $html .= "</label>";
                             $html .= "</form>";
 
                             $html .= "<form method='POST' action='/todo/delete' class='todo-delete'>";
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
-                            $html .= "<button type='submit' class='btn-delete-task' onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
+                            $html .= "<button type='submit' class='btn-delete-task' 
+                            onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
                             $html .= "</form>";
 
                             $html .= "</li>";
@@ -242,7 +246,8 @@ class DashboardView extends BaseView
                             $dateAvis = htmlspecialchars($avis['date_envoi'] ??  '');
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$message}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :
+                            </strong> {$message}</p>";
                             $html .= "<small>{$dateAvis}</small>";
                             $html .= "</div>";
                         }
@@ -272,7 +277,8 @@ class DashboardView extends BaseView
                     foreach ($sae['attributions'] ??  [] as $attrib) {
                         $student = $attrib['student'] ??  null;
                         if ($student) {
-                            $allEtudiants[$student['id']] = htmlspecialchars(trim(($student['nom'] ?? '') . ' ' . ($student['prenom'] ?? '')));
+                            $allEtudiants[$student['id']] = htmlspecialchars(trim(($student['nom'] ?? '')
+                                . ' ' . ($student['prenom'] ?? '')));
                         }
 
                         if (! isset($dateRendu)) {
@@ -305,7 +311,8 @@ class DashboardView extends BaseView
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                         $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
+                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'>
+                        </div></div>";
 
                         $html .= "<ul class='todo-list'>";
                         foreach ($allTodos as $task) {
@@ -331,24 +338,31 @@ class DashboardView extends BaseView
                             $currentUserId = $_SESSION['user']['id'] ?? 0;
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> <span id='avis-text-{$avisId}'>{$messageRendu}</span></p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :
+                            </strong> <span id='avis-text-{$avisId}'>{$messageRendu}</span></p>";
                             $html .= "<small>{$dateAvis}</small>";
 
                             if (($avis['user_id'] ?? 0) === $currentUserId) {
                                 // Formulaire de modification (caché par défaut)
-                                $html .= "<form id='edit-form-{$avisId}' method='POST' action='/sae/avis/update' style='display:none; margin-top:10px;'>";
+                                $html .= "<form id='edit-form-{$avisId}' method='POST' action='/sae/avis/update' 
+                                style='display:none; margin-top:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<textarea name='message' required style='width:100%; min-height:60px;'>{$message}</textarea>";
-                                $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; color:white; border:none; padding:5px 10px; cursor:pointer;'>Sauvegarder</button> ";
-                                $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' style='margin-top:5px; background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>Annuler</button>";
+                                $html .= "<textarea name='message' required style='width:100%; 
+                                min-height:60px;'>{$message}</textarea>";
+                                $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; color:white; 
+                                border:none; padding:5px 10px; cursor:pointer;'>Sauvegarder</button> ";
+                                $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' style='margin-top:5px; 
+                                background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>Annuler</button>";
                                 $html .= "</form>";
 
                                 // Boutons modifier et supprimer
                                 $html .= "<div id='avis-actions-{$avisId}' style='margin-top:10px;'>";
-                                $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; background:none; border:none; cursor:pointer; margin-right:10px;'>Modifier</button>";
+                                $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; background:none; 
+                                border:none; cursor:pointer; margin-right:10px;'>Modifier</button>";
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;
+                                ' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
                                 $html .= "</form>";
                                 $html .= "</div>";
                             }
@@ -382,7 +396,8 @@ class DashboardView extends BaseView
 
                     $etudiants = $sae['etudiants'] ?? [];
                     if (!empty($etudiants)) {
-                        $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '') . ' ' . ($etu['prenom'] ?? '')), $etudiants);
+                        $etudiantsList = array_map(fn($etu) => htmlspecialchars(($etu['nom'] ?? '')
+                            . ' ' . ($etu['prenom'] ?? '')), $etudiants);
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                     } else {
                         $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
@@ -397,7 +412,8 @@ class DashboardView extends BaseView
                     }
 
                     $html .= "<div class='date-rendu-wrapper'>";
-                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; gap:5px; align-items:center; margin: 0;'>";
+                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; 
+                    gap:5px; align-items:center; margin: 0;'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<input type='date' name='date_rendu' value='{$dateRendu}'>";
                     $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
@@ -411,7 +427,8 @@ class DashboardView extends BaseView
                         $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                         $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
-                        $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'></div></div>";
+                        $html .= "<div class='progress-bar'><div class='progress-fill' 
+                        style='width: {$percent}%;'></div></div>";
 
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
@@ -440,14 +457,17 @@ class DashboardView extends BaseView
                             $roleAuteur = htmlspecialchars(ucfirst($avis['role'] ?? ''));
 
                             $html .= "<div class='avis-card'>";
-                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> {$messageRendu}</p>";
+                            $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) 
+                            :</strong> {$messageRendu}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
                             // Responsables peuvent seulement supprimer leurs remarques (pas de modification)
                             if ($userIdAuteur === $currentUserId) {
-                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline; margin-left:10px;'>";
+                                $html .= "<form method='POST' action='/sae/avis/delete' 
+                                style='display:inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' 
+                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
                                 $html .= "</form>";
                             }
 

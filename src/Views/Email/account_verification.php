@@ -17,7 +17,8 @@
 
         <div style='text-align: center; margin: 30px 0;'>
             <a href='<?php echo $VERIFICATION_LINK; ?>'
-                style='background-color: #27ae60; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;'>
+                style='background-color: #27ae60; color: white; padding: 12px 24px;
+                text-decoration: none; border-radius: 5px; display: inline-block;'>
                 Vérifier mon compte
             </a>
         </div>

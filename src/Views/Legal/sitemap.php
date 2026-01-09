@@ -1,3 +1,15 @@
+<?php
+
+/**
+ * View:  Site map
+ *
+ * Displays the complete navigation structure and main pages of SAE Manager.
+ *
+ * @package SaeManager\Views\Legal
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
 <link rel="stylesheet" href="/_assets/css/plan.css">
 
 <main class="plan-main">

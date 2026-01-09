@@ -73,7 +73,8 @@ class ContactView extends BaseView
                     $messageHtml = "<div class='legal-notice error'>Adresse email invalide.</div>";
                     break;
                 case 'mail_failed':
-                    $messageHtml = "<div class='legal-notice error'>L'envoi de l'email a échoué. Réessayez plus tard.</div>";
+                    $messageHtml = "<div class='legal-notice error'>
+                    L'envoi de l'email a échoué. Réessayez plus tard.</div>";
                     break;
                 default:
                     $messageHtml = "<div class='legal-notice error'>Une erreur est survenue. </div>";

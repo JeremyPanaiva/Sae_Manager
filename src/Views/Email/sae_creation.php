@@ -9,7 +9,8 @@
     <div style='background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);'>
         <h2 style='color: #2c3e50; margin-top: 0;'>Bonjour <?php echo $RESPONSABLE_NAME; ?>,</h2>
 
-        <p>Une nouvelle SAE a été proposée par <strong><?php echo $CLIENT_NAME; ?></strong> et nécessite votre attention.</p>
+        <p>Une nouvelle SAE a été proposée par <strong><?php echo $CLIENT_NAME; ?>
+            </strong> et nécessite votre attention.</p>
 
         <div style='background-color: #ecf0f1; padding: 15px; border-radius: 5px; margin: 20px 0;'>
             <h3 style='color: #34495e; margin-top: 0;'>📋 <?php echo $SAE_TITLE; ?></h3>
@@ -21,7 +22,8 @@
         <p>Vous pouvez consulter cette SAE et l'attribuer à des étudiants en vous connectant à la plateforme.</p>
 
         <div style='text-align: center; margin: 30px 0;'>
-            <a href='<?php echo $SAE_URL; ?>' style='display: inline-block; padding: 12px 30px; background-color: #3498db; color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
+            <a href='<?php echo $SAE_URL; ?>' style='display: inline-block; padding: 12px 30px; background-color: #3498db;
+            color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
                 Voir les SAE
             </a>
         </div>

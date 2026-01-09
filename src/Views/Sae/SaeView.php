@@ -150,16 +150,20 @@ class SaeView extends BaseView
                 $html .= "<div class='color-legend'>";
                 $html .= "<div>Légende :</div>";
                 $html .= "<div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e3f2fd; border: 1px solid #2196f3; border-radius: 2px; margin-right: 6px;'></span>Libre</div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 2px; margin-right: 6px;'></span>Vous</div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height:  12px; background: #ffebee; border: 1px solid #f44336; border-radius: 2px; margin-right: 6px;'></span>Autre</div>";
+                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e3f2fd; 
+                    border: 1px solid #2196f3; border-radius: 2px; margin-right: 6px;'></span>Libre</div>";
+                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e8f5e9; 
+                    border: 1px solid #4caf50; border-radius: 2px; margin-right: 6px;'></span>Vous</div>";
+                $html .= "<div><span style='display: inline-block; width: 12px; height:  12px; background: #ffebee; 
+                    border: 1px solid #f44336; border-radius: 2px; margin-right: 6px;'></span>Autre</div>";
                 $html .= "</div>";
                 $html .= "</div>";
                 $html .= "</div>";
 
 
                 if (!empty($this->data['success_message'])) {
-                    $html .= "<div class='success-message' style='background-color: #efe; border:  1px solid #8f8; color: #070; padding:  15px; margin-bottom:  20px; border-radius:  5px;'>";
+                    $html .= "<div class='success-message' style='background-color: #efe; border:  1px solid #8f8; 
+                        color: #070; padding:  15px; margin-bottom:  20px; border-radius:  5px;'>";
                     $html .= htmlspecialchars($this->data['success_message']);
                     $html .= "</div>";
                 }
@@ -179,7 +183,8 @@ class SaeView extends BaseView
 
                     if (! empty($sae['responsable_attribution'])) {
                         $html .= "<p><strong>Attribué par :</strong> "
-                            . htmlspecialchars($sae['responsable_attribution']['nom'] . ' ' . $sae['responsable_attribution']['prenom'])
+                            . htmlspecialchars($sae['responsable_attribution']['nom'] . ' ' .
+                                $sae['responsable_attribution']['prenom'])
                             . "</p>";
                     } else {
                         $html .= "<p><strong>Attribué par :</strong> Pas attribué</p>";
@@ -193,7 +198,8 @@ class SaeView extends BaseView
                     } else {
                         $html .= "<select name='etudiants[]' multiple size='5' required>";
                         foreach ($sae['etudiants_disponibles'] as $etu) {
-                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                            $html .= "<option value='{$etu['id']}'>" .
+                                htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
                         }
                         $html .= "</select>";
                         $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
@@ -210,7 +216,8 @@ class SaeView extends BaseView
                     } else {
                         $html .= "<select name='etudiants[]' multiple size='5' required>";
                         foreach ($sae['etudiants_attribues'] as $etu) {
-                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' .  $etu['prenom']) . "</option>";
+                            $html .= "<option value='{$etu['id']}'>" .
+                                htmlspecialchars($etu['nom'] . ' ' .  $etu['prenom']) . "</option>";
                         }
                         $html .= "</select>";
                         $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
@@ -244,7 +251,8 @@ class SaeView extends BaseView
 
                     $html .= "<h3>" .  htmlspecialchars($sae['titre']) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
-                    $html .= "<p><strong>Date de création :</strong> " . htmlspecialchars($sae['date_creation']) . "</p>";
+                    $html .= "<p><strong>Date de création :</strong> " .
+                        htmlspecialchars($sae['date_creation']) . "</p>";
 
                     if (!empty($sae['responsable_attribution'])) {
                         $responsable = $sae['responsable_attribution'];
@@ -255,23 +263,27 @@ class SaeView extends BaseView
                         $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
                     }
 
-                    $html .= "<button class='btn-modifier' onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
+                    $html .= "<button class='btn-modifier' 
+                        onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
 
                     $html .= "<div id='edit-{$sae['id']}' class='edit-form' style='display:none; margin-top:10px;'>";
                     $html .= "<form method='POST' action='/update_sae'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
 
                     $html .= "<label>Nouveau titre :</label>";
-                    $html .= "<input type='text' name='titre' value='" . htmlspecialchars($sae['titre']) . "' required>";
+                    $html .= "<input type='text' name='titre' value='" .
+                        htmlspecialchars($sae['titre']) . "' required>";
 
                     $html .= "<label>Nouvelle description :</label>";
-                    $html .= "<textarea name='description' required>" . htmlspecialchars($sae['description']) . "</textarea>";
+                    $html .= "<textarea name='description' required>" .
+                        htmlspecialchars($sae['description']) . "</textarea>";
 
                     $html .= "<button type='submit' class='btn-valider'>Valider</button>";
                     $html .= "</form>";
                     $html .= "</div>";
 
-                    $html .= "<form method='POST' action='/delete_sae' onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
+                    $html .= "<form method='POST' action='/delete_sae'
+                        onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
                     $html .= "<button type='submit' class='btn-supprimer'>Supprimer</button>";
                     $html .= "</form>";
