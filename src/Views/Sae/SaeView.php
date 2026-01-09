@@ -264,7 +264,8 @@ class SaeView extends BaseView
                     }
 
                     $html .= "<button class='btn-modifier' 
-                        onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
+                        onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">
+                        Modifier</button>";
 
                     $html .= "<div id='edit-{$sae['id']}' class='edit-form' style='display:none; margin-top:10px;'>";
                     $html .= "<form method='POST' action='/update_sae'>";

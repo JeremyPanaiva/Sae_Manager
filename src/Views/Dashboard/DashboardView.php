@@ -351,18 +351,23 @@ class DashboardView extends BaseView
                                 min-height:60px;'>{$message}</textarea>";
                                 $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; color:white; 
                                 border:none; padding:5px 10px; cursor:pointer;'>Sauvegarder</button> ";
-                                $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' style='margin-top:5px; 
-                                background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>Annuler</button>";
+                                $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' 
+                                style='margin-top:5px; 
+                                background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>
+                                Annuler</button>";
                                 $html .= "</form>";
 
                                 // Boutons modifier et supprimer
                                 $html .= "<div id='avis-actions-{$avisId}' style='margin-top:10px;'>";
-                                $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; background:none; 
+                                $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; 
+                                background:none; 
                                 border:none; cursor:pointer; margin-right:10px;'>Modifier</button>";
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;
-                                ' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; 
+                                cursor:pointer;
+                                ' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
+                                Supprimer</button>";
                                 $html .= "</form>";
                                 $html .= "</div>";
                             }
@@ -466,8 +471,10 @@ class DashboardView extends BaseView
                                 $html .= "<form method='POST' action='/sae/avis/delete' 
                                 style='display:inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; cursor:pointer;' 
-                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' style='color:red; background:none; border:none; 
+                                cursor:pointer;' 
+                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
+                                Supprimer</button>";
                                 $html .= "</form>";
                             }
 

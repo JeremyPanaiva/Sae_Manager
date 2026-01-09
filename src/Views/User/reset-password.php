@@ -2,7 +2,8 @@
 <section class="main" aria-label="Contenu principal">
 
     <form method="POST" action="?page=reset-password"
-        onsubmit="document.querySelector('input[type=submit]').disabled = true; document.querySelector('input[type=submit]').value = 'Traitement...';">
+        onsubmit="document.querySelector('input[type=submit]').disabled = true;
+        document.querySelector('input[type=submit]').value = 'Traitement...';">
         <fieldset>
             <legend>Nouveau mot de passe</legend>
 
@@ -16,7 +17,8 @@
             <input type="password" id="password" name="password" 
                    minlength="8" maxlength="20"
                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-                   title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
+                   title="Le mot de passe doit contenir au moins 8 caractères, une majuscule,
+                   une minuscule et un chiffre"
                    required 
                    placeholder="Votre nouveau mot de passe">
             <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">

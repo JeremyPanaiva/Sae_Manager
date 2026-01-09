@@ -39,7 +39,8 @@
                         "Si vous confirmez :\n\n" +
                         "1. Vous serez immédiatement DÉCONNECTÉ.\n" +
                         "2. Un email de vérification sera envoyé à la nouvelle adresse (" + mailInput.value + ").\n" +
-                        "3. Si vous avez fait une erreur de saisie, vous risquez de PERDRE L'ACCÈS À VOTRE COMPTE.\n\n" +
+                        "3. Si vous avez fait une erreur de saisie, " +
+                        "vous risquez de PERDRE L'ACCÈS À VOTRE COMPTE.\n\n" +
                         "Êtes-vous sûr que la nouvelle adresse est correcte ?";
 
                     if (!confirm(confirmMessage)) {
@@ -57,7 +58,9 @@
 
             <form action="/user/profile/delete" method="POST" class="delete-form"
                 style="display: flex; justify-content: center;"
-                onsubmit="return confirm('⚠️ ATTENTION : Cette action est irréversible.\n\nÊtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\nToutes vos SAE, to-do lists, avis et données personnelles seront perdues.');">
+                onsubmit="return confirm('⚠️ ATTENTION : Cette action est irréversible.' +
+                 '\n\nÊtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\n' +
+                  'Toutes vos SAE, to-do lists, avis et données personnelles seront perdues.');">
                 <button type="submit" class="btn btn-danger" style="min-width: 200px;">Supprimer mon compte</button>
             </form>
         </div>

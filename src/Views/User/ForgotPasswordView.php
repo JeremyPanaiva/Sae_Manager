@@ -108,7 +108,8 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['success'])) {
             switch ($_GET['success']) {
                 case 'email_sent':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    border: 1px solid #c3e6cb; border-radius: 4px;">
                     Un email de réinitialisation a été envoyé à votre adresse email.</div>';
                     break;
                 case 'password_reset':
@@ -121,11 +122,13 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['error'])) {
             switch ($_GET['error']) {
                 case 'email_required':
-                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
                     Veuillez saisir votre adresse email.</div>';
                     break;
                 case 'invalid_token':
-                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;
                 case 'database_error':

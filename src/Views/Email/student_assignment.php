@@ -31,7 +31,8 @@
         <p>Vous pouvez consulter les détails de cette SAE et suivre votre progression sur la plateforme.</p>
 
         <div style='text-align: center; margin: 30px 0;'>
-            <a href='<?php echo $SAE_URL; ?>' style='display: inline-block; padding: 12px 30px; background-color: #4CAF50;
+            <a href='<?php echo $SAE_URL; ?>' style='display: inline-block; padding: 12px 30px;
+            background-color: #4CAF50;
             color: #fff; text-decoration: none; border-radius: 5px; font-weight: bold;'>
                 Voir mes SAE
             </a>

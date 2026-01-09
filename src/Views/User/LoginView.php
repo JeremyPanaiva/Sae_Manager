@@ -81,7 +81,8 @@ class LoginView extends BaseView
     public function renderBody(): string
     {
         ob_start();
-        $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius:  4px;">
+        $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; 
+        background: #d4edda; border: 1px solid #c3e6cb; border-radius:  4px;">
         ' . $this->successMessage . '</div>' :  '';
         $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
         $uname = '';
