@@ -5,9 +5,7 @@ namespace Tests\Unitaire\Models\User;
 use Models\User\UserList;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Tests de sécurité (XSS) pour UserList
- */
+
 class UserListSecurityTest extends TestCase
 {
     public function testGetRowsHtmlEscapesXssInPrenom(): void
