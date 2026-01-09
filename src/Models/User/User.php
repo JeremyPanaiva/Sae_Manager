@@ -67,8 +67,14 @@ class User
      * @param string $verificationToken Email verification token
      * @throws DataBaseException If database connection or query fails
      */
-    public function register(string $firstName, string $lastName, string $email, string $password, string $role, string $verificationToken): void
-    {
+    public function register(
+        string $firstName,
+        string $lastName,
+        string $email,
+        string $password,
+        string $role,
+        string $verificationToken
+    ): void {
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
@@ -79,7 +85,10 @@ class User
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // Insert new user with verification token and unverified status
-        $stmt = $conn->prepare("INSERT INTO users (nom, prenom, mail, mdp, role, verification_token, is_verified) VALUES (?, ?, ?, ?, ?, ?, 0)");
+        $stmt = $conn->prepare(
+            "INSERT INTO users (nom, prenom, mail, mdp, role, verification_token, is_verified) " .
+            "VALUES (?, ?, ?, ?, ?, ?, 0)"
+        );
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in register.");
         }
@@ -177,8 +186,12 @@ class User
      * @return array Array of users
      * @throws DataBaseException If database connection or query fails
      */
-    public function getUsersPaginated(int $limit, int $offset, string $sort = 'date_creation', string $order = 'ASC'): array
-    {
+    public function getUsersPaginated(
+        int $limit,
+        int $offset,
+        string $sort = 'date_creation',
+        string $order = 'ASC'
+    ): array {
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
@@ -353,7 +366,10 @@ class User
         }
 
         // Check if token exists and account is unverified
-        $stmt = $conn->prepare("SELECT id FROM users WHERE verification_token = ?  AND is_verified = 0");
+        $stmt = $conn->prepare(
+            "SELECT id FROM users " .
+            "WHERE verification_token = ? AND is_verified = 0"
+        );
         if (!$stmt) {
             return false;
         }
@@ -370,7 +386,10 @@ class User
         $stmt->close();
 
         // Mark account as verified and remove token
-        $stmt = $conn->prepare("UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?");
+        $stmt = $conn->prepare(
+            "UPDATE users SET is_verified = 1, verification_token = NULL " .
+            "WHERE verification_token = ?"
+        );
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in verifyAccount update.");
         }
