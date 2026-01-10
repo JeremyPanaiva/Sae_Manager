@@ -27,7 +27,7 @@ class SaeAttribution
      * deadline if the supervisor has already made assignments to this SAE.
      *
      * @param int $saeId The ID of the SAE to assign
-     * @param array $studentIds Array of student IDs to assign
+     * @param array<int, int> $studentIds Array of student IDs to assign
      * @param int $responsableId The ID of the supervisor making the assignment
      * @throws SaeAlreadyAssignedException If SAE is already assigned to another supervisor
      * @throws StudentAlreadyAssignedException If a student is already assigned to this SAE
@@ -37,7 +37,7 @@ class SaeAttribution
     {
         Database::checkConnection();
 
-        $db = Database::getConnection();
+        $db = Database:: getConnection();
 
         // Check if SAE is already assigned to another supervisor
         self::checkIfSaeAlreadyAssignedToAnotherResponsable($saeId, $responsableId);
@@ -45,12 +45,20 @@ class SaeAttribution
         // Retrieve existing submission deadline for this supervisor and SAE
         $stmt = $db->prepare(
             "SELECT date_rendu FROM sae_attributions " .
-            "WHERE sae_id = ? AND responsable_id = ? LIMIT 1"
+            "WHERE sae_id = ? AND responsable_id = ?  LIMIT 1"
         );
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans assignStudentsToSae.");
+        }
+
         $stmt->bind_param("ii", $saeId, $responsableId);
         $stmt->execute();
         $result = $stmt->get_result();
-        $dateRendu = $result->fetch_assoc()['date_rendu'] ?? date('Y-m-d');
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans assignStudentsToSae.");
+        }
+        $row = $result->fetch_assoc();
+        $dateRendu = $row['date_rendu'] ?? date('Y-m-d');
         $stmt->close();
 
         // Assign each student
@@ -60,18 +68,29 @@ class SaeAttribution
                 $stmt = $db->prepare("
                     SELECT s.titre AS sae_titre, u.nom, u.prenom
                     FROM sae_attributions sa
-                    JOIN sae s ON sa.sae_id = s. id
-                    JOIN users u ON sa.student_id = u. id
-                    WHERE sa.sae_id = ? AND sa. student_id = ?
+                    JOIN sae s ON sa.sae_id = s.id
+                    JOIN users u ON sa.student_id = u.id
+                    WHERE sa.sae_id = ? AND sa.student_id = ? 
                     LIMIT 1
                 ");
+                if (!$stmt) {
+                    throw new DataBaseException("Erreur de préparation SQL dans assignStudentsToSae check.");
+                }
+
                 $stmt->bind_param("ii", $saeId, $studentId);
                 $stmt->execute();
-                $row = $stmt->get_result()->fetch_assoc();
+                $result = $stmt->get_result();
+                if ($result === false) {
+                    throw new DataBaseException("Échec de récupération du résultat dans assignStudentsToSae check.");
+                }
+                $row = $result->fetch_assoc();
                 $stmt->close();
 
-                $saeTitre = $row['sae_titre'] ?? 'N/A';
-                $studentNom = trim(($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? 'N/A'));
+                $saeTitre = isset($row['sae_titre']) ? (string)$row['sae_titre'] : 'N/A';
+                $studentNom = trim(
+                    (isset($row['nom']) ? (string)$row['nom'] : '') . ' ' .
+                    (isset($row['prenom']) ? (string)$row['prenom'] : 'N/A')
+                );
 
                 throw new StudentAlreadyAssignedException($saeTitre, $studentNom);
             }
@@ -81,6 +100,10 @@ class SaeAttribution
                 INSERT INTO sae_attributions (sae_id, student_id, responsable_id, date_rendu)
                 VALUES (?, ?, ?, ?)
             ");
+            if (!$stmtInsert) {
+                throw new DataBaseException("Erreur de préparation SQL dans assignStudentsToSae insert.");
+            }
+
             $stmtInsert->bind_param("iiis", $saeId, $studentId, $responsableId, $dateRendu);
             $stmtInsert->execute();
             $stmtInsert->close();
@@ -93,6 +116,7 @@ class SaeAttribution
      * @param int $saeId The ID of the SAE to check
      * @param int $responsableId The ID of the current supervisor
      * @throws SaeAlreadyAssignedException If SAE is assigned to another supervisor
+     * @throws DataBaseException If database operation fails
      */
     public static function checkIfSaeAlreadyAssignedToAnotherResponsable(int $saeId, int $responsableId): void
     {
@@ -102,26 +126,56 @@ class SaeAttribution
             SELECT s.titre, sa.responsable_id
             FROM sae_attributions sa
             JOIN sae s ON sa.sae_id = s.id
-            WHERE sa.sae_id = ? AND sa.responsable_id != ?
+            WHERE sa. sae_id = ? AND sa.responsable_id != ? 
             LIMIT 1
         ");
+        if (!$stmt) {
+            throw new DataBaseException(
+                "Erreur de préparation SQL dans checkIfSaeAlreadyAssignedToAnotherResponsable."
+            );
+        }
+
         $stmt->bind_param("ii", $saeId, $responsableId);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException(
+                "Échec de récupération du résultat dans checkIfSaeAlreadyAssignedToAnotherResponsable."
+            );
+        }
 
         if ($row = $result->fetch_assoc()) {
-            $otherResponsableId = $row['responsable_id'];
+            $otherResponsableId = (int)$row['responsable_id'];
 
             // Retrieve other supervisor's name
             $stmtResp = $db->prepare("SELECT nom, prenom FROM users WHERE id = ?");
+            if (!$stmtResp) {
+                $stmt->close();
+                throw new DataBaseException(
+                    "Erreur de préparation SQL dans checkIfSaeAlreadyAssignedToAnotherResponsable resp."
+                );
+            }
+
             $stmtResp->bind_param("i", $otherResponsableId);
             $stmtResp->execute();
-            $resp = $stmtResp->get_result()->fetch_assoc();
+            $resultResp = $stmtResp->get_result();
+            if ($resultResp === false) {
+                $stmt->close();
+                $stmtResp->close();
+                throw new DataBaseException(
+                    "Échec de récupération du résultat dans checkIfSaeAlreadyAssignedToAnotherResponsable resp."
+                );
+            }
+            $resp = $resultResp->fetch_assoc();
             $stmtResp->close();
 
-            $fullName = trim(($resp['nom'] ?? 'N/A') . ' ' . ($resp['prenom'] ??  ''));
+            $fullName = trim(
+                (isset($resp['nom']) ? (string)$resp['nom'] : 'N/A') . ' ' .
+                (isset($resp['prenom']) ? (string)$resp['prenom'] : '')
+            );
+            $saeTitre = isset($row['titre']) ? (string)$row['titre'] : 'N/A';
             $stmt->close();
-            throw new SaeAlreadyAssignedException($row['titre'], $fullName);
+            throw new SaeAlreadyAssignedException($saeTitre, $fullName);
         }
 
         $stmt->close();
@@ -133,14 +187,22 @@ class SaeAttribution
      * @param int $saeId The ID of the SAE
      * @param int $studentId The ID of the student
      * @return bool True if student is already assigned
+     * @throws DataBaseException If database operation fails
      */
     public static function isStudentAssignedToSae(int $saeId, int $studentId): bool
     {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT id FROM sae_attributions WHERE sae_id = ? AND student_id = ? LIMIT 1");
+        $stmt = $db->prepare("SELECT id FROM sae_attributions WHERE sae_id = ? AND student_id = ?  LIMIT 1");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans isStudentAssignedToSae.");
+        }
+
         $stmt->bind_param("ii", $saeId, $studentId);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans isStudentAssignedToSae.");
+        }
         $assigned = (bool) $result->fetch_assoc();
         $stmt->close();
         return $assigned;
@@ -150,7 +212,8 @@ class SaeAttribution
      * Retrieves all students assigned to a specific SAE
      *
      * @param int $saeId The ID of the SAE
-     * @return array Array of students with id, nom, prenom
+     * @return array<int, array<string, mixed>> Array of students with id, nom, prenom
+     * @throws DataBaseException If database operation fails
      */
     public static function getStudentsForSae(int $saeId): array
     {
@@ -164,29 +227,37 @@ class SaeAttribution
         $stmt = $db->prepare($query);
 
         if ($stmt === false) {
-            die('Erreur de préparation de la requête : ' . $db->error);
+            throw new DataBaseException('Erreur de préparation de la requête :  ' . $db->error);
         }
 
         $stmt->bind_param('i', $saeId);
 
         if (!$stmt->execute()) {
-            die('Erreur lors de l\'exécution de la requête : ' . $stmt->error);
+            throw new DataBaseException('Erreur lors de l\'exécution de la requête :  ' . $stmt->error);
         }
 
         $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException('Erreur lors de la récupération du résultat.');
+        }
 
         if ($result->num_rows === 0) {
             return [];
         }
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $students = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $students;
     }
 
     /**
      * Retrieves students assigned to a SAE (alias method)
      *
      * @param int $saeId The ID of the SAE
-     * @return array Array of students with nom, prenom
+     * @return array<int, array<string, mixed>> Array of students with nom, prenom
+     * @throws DataBaseException If database operation fails
      */
     public static function getStudentsBySae(int $saeId): array
     {
@@ -197,9 +268,17 @@ class SaeAttribution
             JOIN sae_attributions sa ON sa.student_id = u.id
             WHERE sa.sae_id = ?
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getStudentsBySae.");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
-        $students = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getStudentsBySae.");
+        }
+        $students = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $students;
     }
@@ -210,7 +289,8 @@ class SaeAttribution
      * Returns aggregated data with student names concatenated.
      *
      * @param int $responsableId The ID of the supervisor
-     * @return array Array of SAE with assignment details
+     * @return array<int, array<string, mixed>> Array of SAE with assignment details
+     * @throws DataBaseException If database operation fails
      */
     public static function getSaeForResponsable(int $responsableId): array
     {
@@ -229,9 +309,17 @@ class SaeAttribution
             WHERE sa.responsable_id = ?
             GROUP BY sa.sae_id, s.titre, s.description, sa.date_rendu
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getSaeForResponsable.");
+        }
+
         $stmt->bind_param("i", $responsableId);
         $stmt->execute();
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getSaeForResponsable.");
+        }
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
     }
@@ -240,7 +328,8 @@ class SaeAttribution
      * Retrieves all attributions for a specific SAE (client view)
      *
      * @param int $saeId The ID of the SAE
-     * @return array Array of attributions with student, supervisor, and deadline information
+     * @return array<int, array<string, mixed>> Array of attributions with student, supervisor, and deadline information
+     * @throws DataBaseException If database operation fails
      */
     public static function getAttributionsBySae(int $saeId): array
     {
@@ -251,9 +340,17 @@ class SaeAttribution
             JOIN sae s ON sa.sae_id = s. id
             WHERE sa.sae_id = ?
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAttributionsBySae.");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
-        $attributions = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAttributionsBySae.");
+        }
+        $attributions = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $attributions;
     }
@@ -262,15 +359,24 @@ class SaeAttribution
      * Retrieves all feedback (avis) for a specific SAE attribution
      *
      * @param int $saeAttributionId The ID of the SAE attribution
-     * @return array Array of feedback entries
+     * @return array<int, array<string, mixed>> Array of feedback entries
+     * @throws DataBaseException If database operation fails
      */
     public static function getAvisBySaeAttribution(int $saeAttributionId): array
     {
         $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT * FROM sae_avis WHERE sae_attribution_id = ?");
+        $stmt = $db->prepare("SELECT * FROM sae_avis WHERE sae_attribution_id = ? ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAvisBySaeAttribution.");
+        }
+
         $stmt->bind_param("i", $saeAttributionId);
         $stmt->execute();
-        $avis = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAvisBySaeAttribution.");
+        }
+        $avis = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $avis;
     }
@@ -337,7 +443,7 @@ class SaeAttribution
             }
             $stmt->close();
         } catch (\mysqli_sql_exception $e) {
-            throw new DataBaseException("Erreur SQL : " . $e->getMessage());
+            throw new DataBaseException("Erreur SQL :  " . $e->getMessage());
         }
     }
 
@@ -346,18 +452,32 @@ class SaeAttribution
      *
      * @deprecated Use getStudentsForSae() instead
      * @param int $saeId The ID of the SAE
-     * @return array Array of students
+     * @return array<int, array<string, mixed>> Array of students
+     * @throws DataBaseException If database operation fails
      */
     public static function getAssignedStudents(int $saeId): array
     {
-        $query = "SELECT u.id, u.nom, u.prenom FROM users u
-                  JOIN sae_attribution sa ON u.id = sa. student_id
-                  WHERE sa.sae_id = : sae_id";
-        $stmt = Database::getConnection()->prepare($query);
-        $stmt->bindValue(':sae_id', $saeId, \PDO::PARAM_INT);
-        $stmt->execute();
+        $db = Database::getConnection();
+        $stmt = $db->prepare("
+            SELECT u. id, u.nom, u.prenom 
+            FROM users u
+            JOIN sae_attributions sa ON u.id = sa.student_id
+            WHERE sa.sae_id = ?
+        ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAssignedStudents.");
+        }
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt->bind_param("i", $saeId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAssignedStudents.");
+        }
+        $students = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $students;
     }
 
     /**
@@ -370,6 +490,7 @@ class SaeAttribution
      * @param int $responsableId The ID of the supervisor requesting unassignment
      * @param int $studentId The ID of the student to unassign
      * @throws \Shared\Exceptions\UnauthorizedSaeUnassignmentException If supervisor is not authorized
+     * @throws DataBaseException If database operation fails
      */
     public static function checkResponsableOwnership(int $saeId, int $responsableId, int $studentId): void
     {
@@ -380,21 +501,34 @@ class SaeAttribution
             FROM sae_attributions sa
             JOIN sae s ON sa.sae_id = s.id
             JOIN users u ON sa.student_id = u.id
-            JOIN users resp ON sa.responsable_id = resp.id
-            WHERE sa.sae_id = ? AND sa. student_id = ?
+            JOIN users resp ON sa. responsable_id = resp.id
+            WHERE sa.sae_id = ? AND sa.student_id = ?  
             LIMIT 1
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans checkResponsableOwnership.");
+        }
+
         $stmt->bind_param("ii", $saeId, $studentId);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans checkResponsableOwnership.");
+        }
 
         if ($row = $result->fetch_assoc()) {
             $actualResponsableId = (int)$row['responsable_id'];
 
             if ($actualResponsableId !== $responsableId) {
-                $saeTitre = $row['titre'] ?? 'N/A';
-                $studentName = trim(($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? 'N/A'));
-                $actualResponsableName = trim(($row['resp_nom'] ?? '') . ' ' . ($row['resp_prenom'] ?? 'N/A'));
+                $saeTitre = isset($row['titre']) ? (string)$row['titre'] : 'N/A';
+                $studentName = trim(
+                    (isset($row['nom']) ? (string)$row['nom'] : '') . ' ' .
+                    (isset($row['prenom']) ? (string)$row['prenom'] : 'N/A')
+                );
+                $actualResponsableName = trim(
+                    (isset($row['resp_nom']) ? (string)$row['resp_nom'] : '') . ' ' .
+                    (isset($row['resp_prenom']) ? (string)$row['resp_prenom'] : 'N/A')
+                );
 
                 $stmt->close();
                 throw new \Shared\Exceptions\UnauthorizedSaeUnassignmentException(
@@ -415,19 +549,27 @@ class SaeAttribution
      * @param int $studentId The ID of the student
      * @param int $responsableId The ID of the supervisor
      * @return bool True if the student was assigned by this supervisor
+     * @throws DataBaseException If database operation fails
      */
     public static function isStudentAssignedByResponsable(int $saeId, int $studentId, int $responsableId): bool
     {
-        $db = Database:: getConnection();
+        $db = Database::getConnection();
         $stmt = $db->prepare("
             SELECT id 
             FROM sae_attributions 
             WHERE sae_id = ? AND student_id = ?  AND responsable_id = ?  
             LIMIT 1
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans isStudentAssignedByResponsable.");
+        }
+
         $stmt->bind_param("iii", $saeId, $studentId, $responsableId);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans isStudentAssignedByResponsable.");
+        }
         $assigned = (bool) $result->fetch_assoc();
         $stmt->close();
         return $assigned;
@@ -439,7 +581,8 @@ class SaeAttribution
      * Includes information about the supervisor, client, and submission deadline.
      *
      * @param int $studentId The ID of the student
-     * @return array Array of SAE with complete assignment details
+     * @return array<int, array<string, mixed>> Array of SAE with complete assignment details
+     * @throws DataBaseException If database operation fails
      */
     public static function getSaeForStudent(int $studentId): array
     {
@@ -463,9 +606,17 @@ class SaeAttribution
             LEFT JOIN users u_client ON s.client_id = u_client.id
             WHERE sa.student_id = ?
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getSaeForStudent.");
+        }
+
         $stmt->bind_param("i", $studentId);
         $stmt->execute();
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getSaeForStudent.");
+        }
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
     }
@@ -474,7 +625,8 @@ class SaeAttribution
      * Retrieves the supervisor who assigned a SAE
      *
      * @param int $saeId The ID of the SAE
-     * @return array|null Supervisor information (id, nom, prenom) or null if unassigned
+     * @return array<string, mixed>|null Supervisor information (id, nom, prenom) or null if unassigned
+     * @throws DataBaseException If database operation fails
      */
     public static function getResponsableForSae(int $saeId): ?array
     {
@@ -483,12 +635,20 @@ class SaeAttribution
             SELECT DISTINCT u.id, u.nom, u.prenom
             FROM sae_attributions sa
             JOIN users u ON sa.responsable_id = u.id
-            WHERE sa.sae_id = ? 
+            WHERE sa.sae_id = ?  
             LIMIT 1
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getResponsableForSae.");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
-        $resp = $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getResponsableForSae.");
+        }
+        $resp = $result->fetch_assoc();
         $stmt->close();
 
         return $resp ?: null;
@@ -500,7 +660,7 @@ class SaeAttribution
      * Returns the student associated with a given attribution ID.
      *
      * @param int $attribId The ID of the attribution
-     * @return array Array containing student information
+     * @return array<int, array<string, mixed>> Array containing student information
      * @throws DataBaseException If database operation fails
      */
     public static function getStudentsByAttribution(int $attribId): array
@@ -514,17 +674,22 @@ class SaeAttribution
             WHERE sa.id = ?
         ");
 
-        if (! $stmt) {
+        if (!$stmt) {
             throw new DataBaseException("Erreur de préparation de la requête :  " . $db->error);
         }
 
         $stmt->bind_param("i", $attribId);
 
         if (!$stmt->execute()) {
-            throw new DataBaseException("Erreur lors de l'exécution de la requête :  " . $stmt->error);
+            throw new DataBaseException("Erreur lors de l'exécution de la requête : " . $stmt->error);
         }
 
         $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Erreur lors de la récupération du résultat.");
+        }
+
         $students = $result->fetch_all(MYSQLI_ASSOC);
 
         $stmt->close();

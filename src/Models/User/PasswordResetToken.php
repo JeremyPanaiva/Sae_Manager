@@ -31,13 +31,13 @@ class PasswordResetToken
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Retrieve user ID by email
         $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ? ");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in createToken (get user id).");
+            throw new DataBaseException("Erreur de préparation SQL dans createToken (get user id).");
         }
         $stmt->bind_param("s", $email);
         $stmt->execute();
@@ -45,7 +45,7 @@ class PasswordResetToken
 
         if ($result === false) {
             $stmt->close();
-            throw new DataBaseException("Failed to get result in createToken.");
+            throw new DataBaseException("Échec de récupération du résultat dans createToken.");
         }
 
         $user = $result->fetch_assoc();
@@ -63,7 +63,7 @@ class PasswordResetToken
         // Delete old tokens for this user to ensure only one active token
         $stmt = $conn->prepare("DELETE FROM password_reset_tokens WHERE user_id = ?");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in createToken (delete).");
+            throw new DataBaseException("Erreur de préparation SQL dans createToken (delete).");
         }
         $stmt->bind_param("i", $userId);
         $stmt->execute();
@@ -75,7 +75,7 @@ class PasswordResetToken
             "VALUES (?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 1 HOUR), 0)"
         );
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in createToken (insert).");
+            throw new DataBaseException("Erreur de préparation SQL dans createToken (insert).");
         }
         $stmt->bind_param("is", $userId, $token);
         $stmt->execute();
@@ -99,7 +99,7 @@ class PasswordResetToken
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Check token is valid, not expired, and not used
@@ -107,7 +107,7 @@ class PasswordResetToken
                                 JOIN users u ON prt.user_id = u.id 
                                 WHERE prt.token = ? AND prt.expiry > UTC_TIMESTAMP() AND prt.used = 0");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in validateToken.");
+            throw new DataBaseException("Erreur de préparation SQL dans validateToken.");
         }
         $stmt->bind_param("s", $token);
         $stmt->execute();
@@ -115,7 +115,7 @@ class PasswordResetToken
 
         if ($result === false) {
             $stmt->close();
-            throw new DataBaseException("Failed to get result in validateToken.");
+            throw new DataBaseException("Échec de récupération du résultat dans validateToken.");
         }
 
         $row = $result->fetch_assoc();
@@ -139,13 +139,13 @@ class PasswordResetToken
         try {
             $conn = Database:: getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Mark token as used instead of deleting for audit trail
         $stmt = $conn->prepare("UPDATE password_reset_tokens SET used = 1 WHERE token = ?");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in deleteToken.");
+            throw new DataBaseException("Erreur de préparation SQL dans deleteToken.");
         }
         $stmt->bind_param("s", $token);
         $stmt->execute();

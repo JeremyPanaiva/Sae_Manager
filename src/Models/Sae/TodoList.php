@@ -73,7 +73,7 @@ class TodoList
 
         if ($result === false) {
             $stmt->close();
-            throw new DataBaseException("Failed to get result in getBySae");
+            throw new DataBaseException("Échec de récupération du résultat dans getBySae");
         }
 
         $todos = $result->fetch_all(MYSQLI_ASSOC);

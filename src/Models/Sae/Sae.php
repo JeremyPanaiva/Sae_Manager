@@ -36,7 +36,7 @@ class Sae
                 "VALUES (?, ?, ?, NOW())"
             );
             if (!$stmt) {
-                throw new \Exception("Erreur prepare: " . $db->error);
+                throw new \Exception("Erreur prepare:  " . $db->error);
             }
 
             $stmt->bind_param("ssi", $titre, $description, $clientId);
@@ -45,7 +45,7 @@ class Sae
                 throw new \Exception("Erreur execute:  " . $stmt->error);
             }
 
-            $saeId = $db->insert_id;
+            $saeId = (int) $db->insert_id;
             $stmt->close();
 
             return $saeId;
@@ -73,9 +73,9 @@ class Sae
 
             $db = Database::getConnection();
 
-            $stmt = $db->prepare("DELETE FROM sae WHERE id = ? AND client_id = ?");
+            $stmt = $db->prepare("DELETE FROM sae WHERE id = ? AND client_id = ? ");
             if (!$stmt) {
-                throw new \Exception("Erreur prepare: " .  $db->error);
+                throw new \Exception("Erreur prepare: " .   $db->error);
             }
 
             $stmt->bind_param("ii", $saeId, $clientId);
@@ -100,30 +100,37 @@ class Sae
      * Returns all SAE available in the system, typically used by supervisors
      * to view SAE they can assign to students.
      *
-     * @return array Array of SAE with id, titre, description, client_id, date_creation
+     * @return array<int, array<string, mixed>> Array of SAE with id, titre, description, client_id, date_creation
      * @throws DataBaseException If database operation fails
      */
     public static function getAllProposed(): array
     {
-        $db = Database:: getConnection();
+        $db = Database::  getConnection();
 
         $stmt = $db->prepare("
             SELECT 
                 s.id,
                 s.titre,
                 s.description,
-                s. client_id,
-                s. date_creation
+                s.  client_id,
+                s.  date_creation
             FROM sae s
         ");
 
-        if (!$stmt->execute()) {
-            throw new DataBaseException(
-                "Impossible de récupérer les SAE."
-            );
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAllProposed.");
         }
 
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        if (!$stmt->execute()) {
+            throw new DataBaseException("Impossible de récupérer les SAE.");
+        }
+
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAllProposed.");
+        }
+
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
         return $saes;
@@ -133,7 +140,8 @@ class Sae
      * Retrieves all SAE created by a specific client
      *
      * @param int $clientId The ID of the client
-     * @return array Array of SAE ordered by creation date (newest first)
+     * @return array<int, array<string, mixed>> Array of SAE ordered by creation date (newest first)
+     * @throws DataBaseException If database operation fails
      */
     public static function getByClient(int $clientId): array
     {
@@ -144,9 +152,18 @@ class Sae
             WHERE client_id = ?  
             ORDER BY date_creation DESC
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getByClient.");
+        }
+
         $stmt->bind_param("i", $clientId);
         $stmt->execute();
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getByClient.");
+        }
+
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
     }
@@ -156,16 +173,27 @@ class Sae
      *
      * @param int $saeId The ID of the SAE to check
      * @return bool True if the SAE has at least one student assignment
+     * @throws DataBaseException If database operation fails
      */
     public static function isAttribuee(int $saeId): bool
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("SELECT COUNT(*) as count FROM sae_attributions WHERE sae_id = ?");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans isAttribuee.");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans isAttribuee.");
+        }
+
+        $row = $result->fetch_assoc();
         $stmt->close();
-        return $result['count'] > 0;
+
+        return isset($row['count']) && $row['count'] > 0;
     }
 
     /**
@@ -175,30 +203,39 @@ class Sae
      * (name, first name, email) in the result.
      *
      * @param int $saeId The ID of the SAE to retrieve
-     * @return array|null The SAE data with client information, or null if not found
+     * @return array<string, mixed>|null The SAE data with client information, or null if not found
+     * @throws DataBaseException If database operation fails
      */
     public static function getById(int $saeId): ?array
     {
-        $db = Database::getConnection();
+        $db = Database:: getConnection();
 
         // JOIN with users table to retrieve client information
         $stmt = $db->prepare("
             SELECT 
-                s.id,
+                s. id,
                 s. titre,
                 s.description,
                 s.client_id,
                 s.date_creation,
                 u.nom AS client_nom,
                 u.prenom AS client_prenom,
-                u.mail AS client_mail
+                u. mail AS client_mail
             FROM sae s
             LEFT JOIN users u ON s.client_id = u.id
-            WHERE s.id = ?
+            WHERE s. id = ?
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getById.");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getById.");
+        }
+
         $sae = $result->fetch_assoc();
         $stmt->close();
 
@@ -211,7 +248,8 @@ class Sae
      * Returns all SAE in the system with associated client details,
      * ordered by creation date (newest first).
      *
-     * @return array Array of SAE with client information
+     * @return array<int, array<string, mixed>> Array of SAE with client information
+     * @throws DataBaseException If database operation fails
      */
     public static function getAll(): array
     {
@@ -222,16 +260,24 @@ class Sae
                 s.id,
                 s. titre,
                 s.description,
-                s.date_creation,
-                u.nom AS client_nom,
+                s. date_creation,
+                u. nom AS client_nom,
                 u.prenom AS client_prenom,
                 u.mail AS client_mail
             FROM sae s
             JOIN users u ON s. client_id = u.id
             ORDER BY s.date_creation DESC
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAll.");
+        }
+
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAll.");
+        }
+
         $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
@@ -258,7 +304,7 @@ class Sae
             $db = Database::getConnection();
             $stmt = $db->prepare("
                 UPDATE sae 
-                SET titre = ?, description = ?
+                SET titre = ?, description = ? 
                 WHERE id = ? AND client_id = ?
             ");
             if (!$stmt) {
@@ -274,7 +320,7 @@ class Sae
             $stmt->close();
             return true;
         } catch (\Exception $e) {
-            throw new DataBaseException("Impossible de modifier la SAE :  " . $e->getMessage());
+            throw new DataBaseException("Impossible de modifier la SAE :   " . $e->getMessage());
         }
     }
 
@@ -285,7 +331,8 @@ class Sae
      * filtered by client ID.
      *
      * @param int $clientId The ID of the client
-     * @return array Array of assigned SAE ordered by creation date (newest first)
+     * @return array<int, array<string, mixed>> Array of assigned SAE ordered by creation date (newest first)
+     * @throws DataBaseException If database operation fails
      */
     public static function getAssignedSaeByClient(int $clientId): array
     {
@@ -297,9 +344,18 @@ class Sae
             WHERE s. client_id = ? 
             ORDER BY s.date_creation DESC
         ");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAssignedSaeByClient.");
+        }
+
         $stmt->bind_param("i", $clientId);
         $stmt->execute();
-        $saes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAssignedSaeByClient.");
+        }
+
+        $saes = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $saes;
     }
