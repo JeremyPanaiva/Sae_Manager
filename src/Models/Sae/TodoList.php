@@ -4,6 +4,7 @@ namespace Models\Sae;
 
 use Models\Database;
 use mysqli;
+use Shared\Exceptions\DataBaseException;
 
 /**
  * TodoList model
@@ -19,17 +20,23 @@ class TodoList
     /**
      * Adds a task for a SAE
      *
-     * Creates a new task entry associated with a SAE.  Tasks are initially
+     * Creates a new task entry associated with a SAE.   Tasks are initially
      * marked as incomplete (fait = 0).
      *
      * @param int $saeId The ID of the SAE to add the task to
      * @param string $titre The title/description of the task
      * @return bool True if task was successfully added, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public static function addTask(int $saeId, string $titre): bool
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("INSERT INTO todo_list (sae_id, titre, fait) VALUES (?, ?, 0)");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in addTask");
+        }
+
         $stmt->bind_param("is", $saeId, $titre);
         $result = $stmt->execute();
         $stmt->close();
@@ -42,7 +49,9 @@ class TodoList
      * Returns all tasks associated with a SAE ordered by task ID (creation order).
      *
      * @param int $saeId The ID of the SAE
-     * @return array Array of tasks with id, titre, fait (completion status), date_creation
+     * @return list<array<string, mixed>>
+     *         Array of tasks with id, titre, fait (completion status), date_creation
+     * @throws DataBaseException If database operation fails
      */
     public static function getBySae(int $saeId): array
     {
@@ -53,9 +62,20 @@ class TodoList
             WHERE sae_id = ?  
             ORDER BY id ASC
         ");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in getBySae");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        if ($result === false) {
+            $stmt->close();
+            throw new DataBaseException("Failed to get result in getBySae");
+        }
+
         $todos = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $todos;
@@ -69,11 +89,17 @@ class TodoList
      *
      * @param int $taskId The ID of the task to toggle
      * @return bool True if toggle was successful, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public static function toggleTask(int $taskId): bool
     {
-        $db = Database:: getConnection();
+        $db = Database::getConnection();
         $stmt = $db->prepare("UPDATE todo_list SET fait = NOT fait WHERE id = ?");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in toggleTask");
+        }
+
         $stmt->bind_param("i", $taskId);
         $result = $stmt->execute();
         $stmt->close();
@@ -87,11 +113,17 @@ class TodoList
      *
      * @param int $taskId The ID of the task to delete
      * @return bool True if deletion was successful, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public static function deleteTask(int $taskId): bool
     {
         $db = Database:: getConnection();
         $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in deleteTask");
+        }
+
         $stmt->bind_param("i", $taskId);
         $result = $stmt->execute();
         $stmt->close();

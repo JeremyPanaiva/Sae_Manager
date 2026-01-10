@@ -8,7 +8,7 @@ use Shared\Exceptions\DataBaseException;
 /**
  * Password Reset Token model
  *
- * Manages password reset tokens for user password recovery.   Handles token generation,
+ * Manages password reset tokens for user password recovery.    Handles token generation,
  * validation, and expiration.  Tokens are valid for 1 hour and can only be used once.
  *
  * @package Models\User
@@ -35,13 +35,19 @@ class PasswordResetToken
         }
 
         // Retrieve user ID by email
-        $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ?");
+        $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ? ");
         if (!$stmt) {
             throw new DataBaseException("SQL prepare failed in createToken (get user id).");
         }
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        if ($result === false) {
+            $stmt->close();
+            throw new DataBaseException("Failed to get result in createToken.");
+        }
+
         $user = $result->fetch_assoc();
         $stmt->close();
 
@@ -91,13 +97,13 @@ class PasswordResetToken
     public function validateToken(string $token): ?string
     {
         try {
-            $conn = Database:: getConnection();
+            $conn = Database::getConnection();
         } catch (\Throwable $e) {
             throw new DataBaseException("Unable to connect to the database.");
         }
 
         // Check token is valid, not expired, and not used
-        $stmt = $conn->prepare("SELECT u.mail FROM password_reset_tokens prt 
+        $stmt = $conn->prepare("SELECT u. mail FROM password_reset_tokens prt 
                                 JOIN users u ON prt.user_id = u.id 
                                 WHERE prt.token = ? AND prt.expiry > UTC_TIMESTAMP() AND prt.used = 0");
         if (!$stmt) {
@@ -107,10 +113,16 @@ class PasswordResetToken
         $stmt->execute();
         $result = $stmt->get_result();
 
+        if ($result === false) {
+            $stmt->close();
+            throw new DataBaseException("Failed to get result in validateToken.");
+        }
+
         $row = $result->fetch_assoc();
         $stmt->close();
 
-        return $row ? $row['mail'] : null;
+        // Cast to string to match return type
+        return $row && isset($row['mail']) ? (string)$row['mail'] : null;
     }
 
     /**
@@ -125,7 +137,7 @@ class PasswordResetToken
     public function deleteToken(string $token): void
     {
         try {
-            $conn = Database::getConnection();
+            $conn = Database:: getConnection();
         } catch (\Throwable $e) {
             throw new DataBaseException("Unable to connect to the database.");
         }
