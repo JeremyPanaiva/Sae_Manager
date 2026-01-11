@@ -30,7 +30,7 @@
             </div>
 
             <div class="forgot-password-link">
-                <a href="/user/forgot-password">Mot de passe oublié ?</a>
+                <a href="/user/forgot-password">Mot de passe oublié ? </a>
             </div>
 
             <input type="submit" value="Se connecter" name="ok">

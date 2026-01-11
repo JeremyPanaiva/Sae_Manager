@@ -17,20 +17,6 @@ use Views\View;
 abstract class BaseView implements View
 {
     /**
-     * Header view instance
-     *
-     * @var HeaderView
-     */
-    private HeaderView $header;
-
-    /**
-     * Footer view instance
-     *
-     * @var FooterView
-     */
-    private FooterView $footer;
-
-    /**
      * Current user (null if not authenticated)
      *
      * @var User|null
@@ -59,11 +45,11 @@ abstract class BaseView implements View
      */
     public function render(): string
     {
-        $this->header = new HeaderView();
-        $this->footer = new FooterView();
-        return $this->header->renderBody()
+        $header = new HeaderView();
+        $footer = new FooterView();
+        return $header->renderBody()
             . $this->renderBody()
-            . $this->footer->renderBody();
+            . $footer->renderBody();
     }
 
     /**
@@ -102,6 +88,6 @@ abstract class BaseView implements View
         include $templatePath;
         $output = ob_get_clean();
 
-        return $output !== false ? $output : '';
+        return $output !== false ? $output :  '';
     }
 }

@@ -17,13 +17,16 @@
  * @var string $INSCRIPTION_LINK_KEY URL for registration link
  * @var string $INSCRIPTION_STYLE_KEY Inline CSS for registration button visibility
  * @var string $NAV_STYLE Inline CSS for navigation visibility
+ * @var string $DASHBOARD_LINK_KEY URL for the dashboard page
+ * @var string $SAE_LINK_KEY URL for the SAE list page
+ * @var string $USERS_LINK_KEY URL for the users management page
  *
  * @package SaeManager\Views\Base
  * @author JeremyPanaiva & mohamedDriouchi
  */
 
 ?>
-<! DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -31,14 +34,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU. ">
-    <!-- Canonical -->
+        content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
-    <!-- JSON-LD -->
     <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
+            "@context":  "https://schema.org",
             "@graph": [
                 {
                     "@type": "WebSite",
@@ -58,7 +59,6 @@
     </script>
     <link rel="stylesheet" href="/_assets/css/index.css">
 
-    <!-- Favicons -->
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon. svg" />
     <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
@@ -97,4 +97,18 @@
         </section>
     </header>
 
-    <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
+    <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Navigation principale">
+        <ul class="nav-content">
+            <li class="nav-item">
+                <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
+            </li>
+            <li class="nav-item">
+                <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
+            </li>
+            <?php if ($ROLE_KEY === 'Responsable'): ?>
+                <li class="nav-item">
+                    <a href="<?php echo $USERS_LINK_KEY; ?>">Gérer les utilisateurs</a>
+                </li>
+            <?php endif; ?>
+        </ul>
+    </nav>

@@ -1,77 +1,58 @@
 <?php
 
 /** @var string $ERRORS_KEY */
-/** @var string $SUCCESS_KEY */
-/** @var string $date_creation */
-/** @var string $prenom */
-/** @var string $nom */
-/** @var string $mail */
 
 ?>
-<link rel="stylesheet" href="/_assets/css/user.css">
+<link rel="stylesheet" href="/_assets/css/inscription. css">
+<script src="/_assets/script/showPassword.js"></script>
 
-<main class="dashboard-page">
-    <section class="dashboard-section">
-        <h2>Mon profil</h2>
-
-        <?= $ERRORS_KEY ?>
-        <?= $SUCCESS_KEY ?>
-
-        <p><strong>Date de création du compte :  </strong> <?= $date_creation ?></p>
-
-        <form action="/user/profile" method="POST" class="profile-form">
-            <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom" name="prenom" value="<?= $prenom ?>" required>
+<section class="main" aria-label="Contenu principal">
+    <form action="/user/register" method="post">
+        <fieldset>
+            <?= $ERRORS_KEY ?>
+            <legend>Inscription</legend>
 
             <label for="nom">Nom :</label>
-            <input type="text" id="nom" name="nom" value="<?= $nom ?>" required>
+            <input type="text" id="nom" name="nom" required placeholder="Votre nom">
+
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
 
             <label for="mail">Email :</label>
-            <input type="email" id="mail" name="mail" value="<?= $mail ?>" required
-                   data-original-email="<?= $mail ?>">
+            <input type="email" id="mail" name="mail" required placeholder="exemple@etu.univ-amu.fr">
 
-            <div class="profile-actions"
-                 style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                <a href="/user/change-password" class="btn btn-outline"
-                   style="min-width: 200px; text-align: center;">Modifier le mot de passe</a>
-                <input type="submit" value="Mettre à jour" class="btn btn-primary" style="min-width: 200px;">
+            <label for="mdp">Mot de passe :</label>
+            <div class="password-wrapper">
+                <input type="password" id="mdp" name="mdp" required
+                       minlength="8" maxlength="20"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
+                       placeholder="Votre mot de passe">
+                <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </span>
             </div>
-        </form>
+            <small style="color:  #6c757d; font-size:  0.85rem; margin-top: -0.5rem;">
+                Le mot de passe doit contenir au moins 8 caractères avec une majuscule, une minuscule et un chiffre.
+            </small>
 
-        <script>
-            document.querySelector('.profile-form').addEventListener('submit', function (e) {
-                const mailInput = document.getElementById('mail');
-                const originalMail = mailInput.dataset.originalEmail;
+            <label for="role">Rôle :</label>
+            <select id="role" name="role" required>
+                <option value="">-- Sélectionnez votre rôle --</option>
+                <option value="etudiant">Étudiant</option>
+                <option value="responsable">Responsable</option>
+                <option value="client">Client</option>
+            </select>
 
-                if (mailInput.value !== originalMail) {
-                    const confirmMessage = "⚠️ ATTENTION :  CHANGEMENT D'EMAIL\n\n" +
-                        "Vous êtes sur le point de modifier votre adresse email.\n" +
-                        "Si vous confirmez :\n\n" +
-                        "1. Vous serez immédiatement DÉCONNECTÉ.\n" +
-                        "2. Un email de vérification sera envoyé à la nouvelle adresse (" + mailInput.value + ").\n" +
-                        "3. Si vous avez fait une erreur de saisie, " +
-                        "vous risquez de PERDRE L'ACCÈS À VOTRE COMPTE.\n\n" +
-                        "Êtes-vous sûr que la nouvelle adresse est correcte ? ";
+            <input type="submit" value="S'inscrire" name="ok">
+        </fieldset>
 
-                    if (! confirm(confirmMessage)) {
-                        e.preventDefault();
-                    }
-                }
-            });
-        </script>
-
-        <div class="danger-zone">
-            <h3>Supprimer votre compte SAE Manager</h3>
-            <p>La suppression de votre compte est <strong>définitive et irréversible</strong>.  Toutes vos données seront
-                supprimées.</p>
-
-            <form action="/user/profile/delete" method="POST" class="delete-form"
-                  style="display: flex; justify-content: center;"
-                  onsubmit="return confirm('⚠️ ATTENTION : Cette action est irréversible.' +
-                 '\n\nÊtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\n' +
-                  'Toutes vos SAE, to-do lists, avis et données personnelles seront perdues.');">
-                <button type="submit" class="btn btn-danger" style="min-width: 200px;">Supprimer mon compte</button>
-            </form>
-        </div>
-    </section>
-</main>
+        <p class="form-footer">
+            Déjà membre ? <a href="/user/login">Se connecter</a>
+        </p>
+    </form>
+</section>

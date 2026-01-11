@@ -40,21 +40,6 @@ class DashboardView extends BaseView
     }
 
     /**
-     * Converts URLs in text to clickable links
-     *
-     * @param string $text
-     * @return string
-     */
-    private function rendreLiensCliquables(string $text): string
-    {
-        $pattern = '/(https?:\/\/[^\s]+)/i';
-        $replacement = '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>';
-        $result = preg_replace($pattern, $replacement, $text);
-
-        return $result !== null ? $result : $text;
-    }
-
-    /**
      * Renders the dashboard body
      *
      * @return string
@@ -71,17 +56,15 @@ class DashboardView extends BaseView
             is_array($_SESSION['user']) &&
             isset($_SESSION['user']['id'])
         ) {
-            $userId = (int) $_SESSION['user']['id'];
+            $userIdRaw = $_SESSION['user']['id'];
+            $userId = is_int($userIdRaw) ? $userIdRaw : (is_numeric($userIdRaw) ? (int) $userIdRaw : null);
         }
-
-        // Rest of your dashboard rendering logic...
-        // Using $userId safely now
 
         ob_start();
         extract($this->data);
         include $this->templatePath();
         $output = ob_get_clean();
 
-        return $output !== false ? $output :  '';
+        return $output !== false ? $output : '';
     }
 }

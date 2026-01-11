@@ -13,7 +13,7 @@
         <fieldset>
             <legend>Nouveau mot de passe</legend>
 
-            <p>Entrez votre nouveau mot de passe ci-dessous. </p>
+            <p>Entrez votre nouveau mot de passe ci-dessous.</p>
 
             <?= $ERROR_MESSAGE ?>
 

@@ -10,7 +10,7 @@
  */
 
 ?>
-<link rel="stylesheet" href="/_assets/css/legal. css">
+<link rel="stylesheet" href="/_assets/css/legal.css">
 
 <main class="legal-main">
     <header class="legal-header">
@@ -62,7 +62,7 @@
         <article class="legal-section">
             <h2 class="legal-subtitle">5. Propriété intellectuelle</h2>
             <p>Le code source, les éléments graphiques et le contenu sont la propriété du
-                groupe 4 – BUT Informatique AMU.  Toute réutilisation sans autorisation écrite est interdite.</p>
+                groupe 4 – BUT Informatique AMU. Toute réutilisation sans autorisation écrite est interdite.</p>
         </article>
 
         <article class="legal-section">
@@ -74,14 +74,15 @@
         <article class="legal-section">
             <h2 class="legal-subtitle">7. Contact</h2>
             <p>Pour toute question relative au site ou à son contenu, contactez :
-                <a href="mailto:sae-manager@alwaysdata. net">sae-manager@alwaysdata.net</a>
+                <a href="mailto:sae-manager@alwaysdata.net">sae-manager@alwaysdata.net</a>
             </p>
         </article>
 
         <article class="legal-section">
             <h2 class="legal-subtitle">8. Crédits</h2>
             <p>Projet réalisé dans le cadre du <strong>BUT Informatique – IUT Aix-Marseille</strong> par le
-                <strong>Groupe 4</strong> (promotion 2025-2026).</p>
+                <strong>Groupe 4</strong> (promotion 2025-2026).
+            </p>
         </article>
     </section>
 </main>

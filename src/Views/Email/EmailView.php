@@ -9,7 +9,7 @@ use Views\Base\BaseView;
  *
  * @package Views\Email
  */
-class EmailView extends BaseView
+abstract class EmailView extends BaseView
 {
     /**
      * Template data

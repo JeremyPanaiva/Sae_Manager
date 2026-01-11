@@ -44,13 +44,12 @@ class HeaderView extends AbstractView
         $connectionText = 'Se connecter';
         $usersLink = Login::PATH;
         $dashboardLink = Login::PATH;
-        $saeLink = Login::PATH;
+        $saeLink = Login:: PATH;
 
-        $navStyle = 'display: none;';
-        $userMetaStyle = 'display:  none;';
-        $profileBtnStyle = 'display: none;';
+        $navStyle = 'display:none;';
+        $userMetaStyle = 'display: none;';
+        $profileBtnStyle = 'display:none;';
 
-        // ✅ FIX:  Proper type checking for session variables
         if (
             isset($_SESSION['user']) &&
             is_array($_SESSION['user']) &&
@@ -58,9 +57,10 @@ class HeaderView extends AbstractView
             isset($_SESSION['user']['prenom']) &&
             isset($_SESSION['user']['role'])
         ) {
-            $nom = (string) $_SESSION['user']['nom'];
-            $prenom = (string) $_SESSION['user']['prenom'];
-            $role = strtolower((string) $_SESSION['user']['role']);
+            $nom = is_string($_SESSION['user']['nom']) ? $_SESSION['user']['nom'] :  '';
+            $prenom = is_string($_SESSION['user']['prenom']) ? $_SESSION['user']['prenom'] : '';
+            $roleRaw = is_string($_SESSION['user']['role']) ? $_SESSION['user']['role'] : '';
+            $role = strtolower($roleRaw);
 
             $username = $nom . ' ' . $prenom;
             $roleDisplay = ucfirst($role);
@@ -77,21 +77,21 @@ class HeaderView extends AbstractView
             $profileBtnStyle = '';
         }
 
-        // ✅ FIX:  Proper URL handling with type safety
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-        $parsedUrl = parse_url((string) $requestUri);
+        $requestUriRaw = $_SERVER['REQUEST_URI'] ?? '/';
+        $requestUri = is_string($requestUriRaw) ? $requestUriRaw : '/';
+        $parsedUrl = parse_url($requestUri);
         $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $hostRaw = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $host = is_string($hostRaw) ? $hostRaw : 'localhost';
 
         if (isset($parsedUrl['path'])) {
-            $canonicalUrl = $scheme . $host . $parsedUrl['path'];
+            $canonicalUrl = $scheme . $host .  $parsedUrl['path'];
         } else {
-            $canonicalUrl = $scheme . $host .  '/';
+            $canonicalUrl = $scheme . $host . '/';
         }
 
         $inscriptionStyle = '';
 
-        // ✅ FIX: Proper session variable checking
         if (
             isset($_SESSION['user']) &&
             is_array($_SESSION['user']) &&
@@ -99,7 +99,7 @@ class HeaderView extends AbstractView
             isset($_SESSION['user']['prenom']) &&
             isset($_SESSION['user']['role'])
         ) {
-            $inscriptionStyle = 'display:none;';
+            $inscriptionStyle = 'display: none;';
         }
 
         $this->data = [
@@ -128,29 +128,5 @@ class HeaderView extends AbstractView
     public function templatePath(): string
     {
         return __DIR__ . '/header.php';
-    }
-
-    /**
-     * Checks if current page matches given path
-     *
-     * @param string $path
-     * @return bool
-     */
-    private function isActive(string $path): bool
-    {
-        $requestUri = $_SERVER['REQUEST_URI'] ?? '/';
-        $parsedUrl = parse_url((string) $requestUri);
-
-        if (
-            isset($_SESSION['user']) &&
-            is_array($_SESSION['user']) &&
-            isset($_SESSION['user']['nom']) &&
-            isset($_SESSION['user']['prenom']) &&
-            isset($_SESSION['user']['role'])
-        ) {
-            return isset($parsedUrl['path']) && $parsedUrl['path'] === $path;
-        }
-
-        return false;
     }
 }

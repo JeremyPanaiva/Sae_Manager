@@ -4,35 +4,25 @@ namespace Views\User;
 
 use Views\Base\BaseView;
 
-/**
- * User List View
- *
- * @package Views\User
- */
 class UserListView extends BaseView
 {
-    private const TEMPLATE_PATH = __DIR__ . '/user. php';
+    private const TEMPLATE_PATH = __DIR__ . '/user.php';
 
     public const USERS_ROWS_KEY = 'USERS_ROWS';
     public const PAGINATION_KEY = 'PAGINATION';
     public const ERROR_MESSAGE_KEY = 'ERROR_MESSAGE';
 
     /**
-     * Array of user data
-     *
-     * @var array<int, array<string, mixed>>
+     * @var array<int, array<string, string|null>>
      */
     private array $users;
-
     private string $paginationHtml;
     private string $errorMessage;
     private string $sort;
     private string $order;
 
     /**
-     * Constructor
-     *
-     * @param array<int, array<string, mixed>> $users
+     * @param array<int, array<string, string|null>> $users
      * @param string $paginationHtml
      * @param string $errorMessage
      * @param string $sort
@@ -53,21 +43,11 @@ class UserListView extends BaseView
         $this->order = $order;
     }
 
-    /**
-     * Returns template path
-     *
-     * @return string
-     */
     public function templatePath(): string
     {
         return self::TEMPLATE_PATH;
     }
 
-    /**
-     * Renders user list body
-     *
-     * @return string
-     */
     public function renderBody(): string
     {
         ob_start();
@@ -76,10 +56,19 @@ class UserListView extends BaseView
         $SORT = $this->sort;
         $ORDER = $this->order;
 
-        // Generate user rows
         $USERS_ROWS = '';
         foreach ($this->users as $user) {
-            // Build rows HTML
+            $prenom = htmlspecialchars($user['prenom'] ?? '');
+            $nom = htmlspecialchars($user['nom'] ?? '');
+            $mail = htmlspecialchars($user['mail'] ?? '');
+            $role = htmlspecialchars($user['role'] ?? '');
+
+            $USERS_ROWS .= "<tr>
+                <td>{$prenom}</td>
+                <td>{$nom}</td>
+                <td>{$mail}</td>
+                <td><span class='role-badge role-{$role}'>{$role}</span></td>
+            </tr>";
         }
 
         include $this->templatePath();

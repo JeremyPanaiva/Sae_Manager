@@ -26,12 +26,10 @@ class ForgotPasswordView extends BaseView
      * Template data key for email address
      */
     public const EMAIL_KEY = 'EMAIL_KEY';
-
     /**
      * Template data key for success message HTML
      */
     public const SUCCESS_MESSAGE_KEY = 'SUCCESS_MESSAGE';
-
     /**
      * Template data key for error message HTML
      */
@@ -110,12 +108,12 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['success'])) {
             switch ($_GET['success']) {
                 case 'email_sent':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    $successMessage = '<div style="color:  green; margin: 10px 0; padding: 10px; background: #d4edda; 
                     border: 1px solid #c3e6cb; border-radius: 4px;">
-                    Un email de réinitialisation a été envoyé à votre adresse email. </div>';
+                    Un email de réinitialisation a été envoyé à votre adresse email.</div>';
                     break;
                 case 'password_reset':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    $successMessage = '<div style="color:  green; margin: 10px 0; padding: 10px; background: #d4edda; 
                     border: 1px solid #c3e6cb; border-radius: 4px;">
                     Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.</div>';
                     break;
@@ -125,9 +123,9 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['error'])) {
             switch ($_GET['error']) {
                 case 'email_required':
-                    $errorMessage = '<div style="color:  red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
-                    Veuillez saisir votre adresse email. </div>';
+                    Veuillez saisir votre adresse email.</div>';
                     break;
                 case 'invalid_token':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
