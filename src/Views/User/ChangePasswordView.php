@@ -7,31 +7,16 @@ use Views\Base\BaseView;
 /**
  * Change Password View
  *
- * Renders the password change form for authenticated users.
- * Displays validation errors and success messages based on form submission results.
- *
- * Handles various password validation states:
- * - Wrong current password
- * - Password mismatch
- * - Password complexity requirements (length, uppercase, lowercase, digit)
- * - Same password as current
- * - Database errors
- *
- * Messages are passed via URL query parameters and rendered as styled alerts.
- *
  * @package Views\User
  */
 class ChangePasswordView extends BaseView
 {
-    /**
-     * Path to the change password template file
-     */
-    private const TEMPLATE_PATH = __DIR__ .  '/change-password.php';
+    private const TEMPLATE_PATH = __DIR__ . '/change-password.php';
 
     /**
-     * Returns the path to the change password template file
+     * Returns template path
      *
-     * @return string Absolute path to the template file
+     * @return string
      */
     public function templatePath(): string
     {
@@ -39,25 +24,9 @@ class ChangePasswordView extends BaseView
     }
 
     /**
-     * Renders the password change form with status messages
+     * Renders change password body
      *
-     * Checks URL query parameters for error/success states and generates
-     * appropriate alert messages to display to the user.
-     *
-     * Error states:
-     * - wrong_password: Current password is incorrect
-     * - passwords_dont_match: New passwords don't match
-     * - password_too_short: Password must be at least 8 characters
-     * - password_no_uppercase: Password must contain uppercase letter
-     * - password_no_lowercase: Password must contain lowercase letter
-     * - password_no_digit: Password must contain digit
-     * - same_password: New password must differ from old
-     * - database_error: Technical error occurred
-     *
-     * Success states:
-     * - password_updated: Password successfully changed
-     *
-     * @return string Rendered HTML output with messages
+     * @return string
      */
     public function renderBody(): string
     {
@@ -88,6 +57,8 @@ class ChangePasswordView extends BaseView
         }
 
         include $this->templatePath();
-        return ob_get_clean();
+        $output = ob_get_clean();
+
+        return $output !== false ? $output : '';
     }
 }

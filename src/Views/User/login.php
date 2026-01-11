@@ -1,28 +1,17 @@
 <?php
 
-/**
- * Login Template
- *
- * Displays the user login form with email and password fields.
- *
- * Template variables:
- * @var string $SUCCESS_MESSAGE_KEY HTML success message to display (optional)
- * @var string $ERRORS_KEY HTML error messages to display (optional)
- *
- * @package SaeManager\Views\User
- * @author JeremyPanaiva & mohamedDriouchi
- */
+/** @var string $SUCCESS_MESSAGE_KEY */
+/** @var string $ERRORS_KEY */
 
 ?>
-
 <link rel="stylesheet" href="/_assets/css/inscription.css">
 <script src="/_assets/script/showPassword.js"></script>
 
 <section class="main" aria-label="Contenu principal">
     <form method="POST" action="/user/login">
         <fieldset>
-            <?= $SUCCESS_MESSAGE_KEY ?? '' ?>
-            <?= $ERRORS_KEY ?? '' ?>
+            <?= $SUCCESS_MESSAGE_KEY ?>
+            <?= $ERRORS_KEY ?>
             <legend>Connexion</legend>
 
             <label for="uname">Email :</label>
@@ -33,7 +22,7 @@
                 <input type="password" id="psw" name="psw" required placeholder="Votre mot de passe">
                 <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                         stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
                         <circle cx="12" cy="12" r="3" />
                     </svg>
@@ -47,7 +36,6 @@
             <input type="submit" value="Se connecter" name="ok">
         </fieldset>
 
-        <!-- Redirection -->
         <p class="form-footer">
             Pas encore de compte ? <a href="/user/register">Créer un compte</a>
         </p>
