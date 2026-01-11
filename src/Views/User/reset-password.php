@@ -1,3 +1,20 @@
+<?php
+
+/**
+ * Reset Password Template
+ *
+ * Displays the password reset form with new password fields.
+ *
+ * Template variables:
+ * @var string $ERROR_MESSAGE HTML error message to display (optional)
+ * @var string $token Password reset token from URL parameter
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/inscription.css">
 <section class="main" aria-label="Contenu principal">
 

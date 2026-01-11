@@ -1,3 +1,20 @@
+<?php
+
+/**
+ * Forgot Password Template
+ *
+ * Displays the password reset request form where users enter their email.
+ *
+ * Template variables:
+ * @var string $SUCCESS_MESSAGE HTML success message to display (optional)
+ * @var string $ERROR_MESSAGE HTML error message to display (optional)
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 

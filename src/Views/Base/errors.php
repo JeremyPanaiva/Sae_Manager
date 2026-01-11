@@ -6,8 +6,11 @@
  * Displays a list of error messages in a styled unordered list.
  * Used to render multiple validation or error messages together in the UI.
  *
- * Expected Variables:
- * - $ERRORS_KEY:  HTML string containing <li> error message elements
+ * Template variables:
+ * @var string $ERRORS_KEY HTML string containing <li> error message elements
+ *
+ * @package SaeManager\Views\Base
+ * @author JeremyPanaiva & mohamedDriouchi
  */
 
 ?>

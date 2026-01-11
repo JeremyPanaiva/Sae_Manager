@@ -1,3 +1,24 @@
+<?php
+
+/**
+ * User Profile Template
+ *
+ * Displays and allows editing of the user's profile information.
+ *
+ * Template variables:
+ * @var string $ERRORS_KEY HTML error messages to display (optional)
+ * @var string $SUCCESS_KEY HTML success message to display (optional)
+ * @var string $date_creation Account creation date
+ * @var string $prenom User's first name
+ * @var string $nom User's last name
+ * @var string $mail User's email address
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/user.css">
 
 <main class="dashboard-page">

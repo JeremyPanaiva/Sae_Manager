@@ -1,4 +1,29 @@
-<!DOCTYPE html>
+<?php
+
+/**
+ * Header Template
+ *
+ * Displays the main header with navigation and user information.
+ *
+ * Template variables:
+ * @var string $CANONICAL_URL Canonical URL of the current page
+ * @var string $USERNAME_KEY Display name of the logged-in user
+ * @var string $ROLE_KEY User role (e.g., "Étudiant", "Enseignant", "Admin")
+ * @var string $ROLE_CLASS CSS class for role badge styling
+ * @var string $USER_META_STYLE Inline CSS for user meta section visibility
+ * @var string $PROFILE_BTN_STYLE Inline CSS for profile button visibility
+ * @var string $LINK_KEY URL for login/logout link
+ * @var string $CONNECTION_LINK_KEY Text for connection link (e.g., "Se connecter" or "Se déconnecter")
+ * @var string $INSCRIPTION_LINK_KEY URL for registration link
+ * @var string $INSCRIPTION_STYLE_KEY Inline CSS for registration button visibility
+ * @var string $NAV_STYLE Inline CSS for navigation visibility
+ *
+ * @package SaeManager\Views\Base
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+<! DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -6,7 +31,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+        content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU. ">
     <!-- Canonical -->
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
@@ -35,7 +60,7 @@
 
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon. svg" />
     <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/_assets/img/favicon/site.webmanifest" />
@@ -73,15 +98,3 @@
     </header>
 
     <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
-        <ul class="nav-content">
-            <li class="nav-item <?php echo $ACTIVE_DASHBOARD; ?>">
-                <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
-            </li>
-            <li class="nav-item <?php echo $ACTIVE_SAE; ?>">
-                <a href="<?php echo $SAE_LINK_KEY; ?>">SAEs</a>
-            </li>
-            <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
-                <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
-            </li>
-        </ul>
-    </nav>

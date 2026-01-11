@@ -1,3 +1,19 @@
+<?php
+
+/**
+ * Footer Template
+ *
+ * Displays the main footer with legal links and site navigation.
+ *
+ * Template variables:
+ * @var string $LEGAL_LINK_KEY URL to the legal notices page
+ * @var string $PLAN_LINK_KEY URL to the sitemap page
+ *
+ * @package SaeManager\Views\Base
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
 
 <footer class="footer">
     <section class="footer-content" aria-label="Pied de page">

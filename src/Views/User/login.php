@@ -1,3 +1,20 @@
+<?php
+
+/**
+ * Login Template
+ *
+ * Displays the user login form with email and password fields.
+ *
+ * Template variables:
+ * @var string $SUCCESS_MESSAGE_KEY HTML success message to display (optional)
+ * @var string $ERRORS_KEY HTML error messages to display (optional)
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/inscription.css">
 <script src="/_assets/script/showPassword.js"></script>
 
