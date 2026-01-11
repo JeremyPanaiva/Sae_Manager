@@ -12,14 +12,6 @@ use Views\View;
  * for rendering views with header and footer, user context, and template data
  * injection.
  *
- * All concrete views should extend this class and implement the templatePath()
- * method to specify their template file location.
- *
- * Template System:
- * - Uses PHP templates with output buffering
- * - Data is extracted into template scope via extract()
- * - Templates can access $data array keys as variables
- *
  * @package Views\Base
  */
 abstract class BaseView implements View
@@ -43,11 +35,12 @@ abstract class BaseView implements View
      *
      * @var User|null
      */
-    protected ?User $user;
+    protected ? User $user;
 
     /**
-     * Données dynamiques fournies aux templates (clé => valeur)
-     * @var array<string,string>
+     * Dynamic data for templates
+     *
+     * @var array<string, mixed>
      */
     protected array $data = [];
 
@@ -77,15 +70,18 @@ abstract class BaseView implements View
      * Sets the current user context
      *
      * @param User|null $user The authenticated user or null
+     * @return void
      */
-    public function setUser(?User $user)
+    public function setUser(? User $user): void
     {
         $this->user = $user;
     }
 
     /**
-     * Injecte des données pour le template
-     * @param array<string,string> $data
+     * Injects data for the template
+     *
+     * @param array<string, mixed> $data
+     * @return void
      */
     public function setData(array $data): void
     {
@@ -94,9 +90,6 @@ abstract class BaseView implements View
 
     /**
      * Renders the view body from the template
-     *
-     * Loads the template file specified by templatePath(), extracts data variables
-     * into the template scope, and captures the output using output buffering.
      *
      * @return string Rendered HTML body content
      */
@@ -107,6 +100,8 @@ abstract class BaseView implements View
         ob_start();
         extract($this->data);
         include $templatePath;
-        return ob_get_clean();
+        $output = ob_get_clean();
+
+        return $output !== false ? $output : '';
     }
 }

@@ -4,8 +4,10 @@
  * Error Message Template
  *
  * Template variables:
- * - $MESSAGE_KEY: The error message text to display
+ * @var string $MESSAGE_KEY The error message text to display
  */
+
+/** @var string $MESSAGE_KEY */
 
 ?>
 
