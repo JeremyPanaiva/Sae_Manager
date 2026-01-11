@@ -57,9 +57,10 @@ class ContactPost implements ControllerInterface
         }
 
         // Extract and sanitize form data
-        $email   = trim($_POST['email']   ?? '');
-        $subject = trim($_POST['subject'] ?? '');
-        $message = trim($_POST['message'] ?? '');
+        $email   = isset($_POST['email']) && is_string($_POST['email']) ? trim($_POST['email']) : '';
+        $subject = isset($_POST['subject']) && is_string($_POST['subject']) ? trim($_POST['subject']) : '';
+        $message = isset($_POST['message']) && is_string($_POST['message']) ? trim($_POST['message']) : '';
+
 
         // Validate required fields
         if ($email === '' || $subject === '' || $message === '') {
