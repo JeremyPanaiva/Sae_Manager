@@ -33,7 +33,7 @@ class ChangePasswordPost implements ControllerInterface
      */
     public static function support(string $path, string $method): bool
     {
-        return $path === self:: PATH && $method === 'POST';
+        return $path === self::PATH && $method === 'POST';
     }
 
     /**
@@ -60,16 +60,20 @@ class ChangePasswordPost implements ControllerInterface
         }
 
         // Verify user is authenticated
-        if (!isset($_SESSION['user']['id'])) {
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             header('Location: /login');
             exit;
         }
 
         // Extract user ID and form data
-        $userId = $_SESSION['user']['id'];
-        $oldPassword = $_POST['old_password'] ?? '';
-        $newPassword = $_POST['new_password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ?? '';
+        $userIdRaw = $_SESSION['user']['id'];
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $oldPasswordRaw = $_POST['old_password'] ?? '';
+        $oldPassword = is_string($oldPasswordRaw) ? $oldPasswordRaw : '';
+        $newPasswordRaw = $_POST['new_password'] ?? '';
+        $newPassword = is_string($newPasswordRaw) ? $newPasswordRaw : '';
+        $confirmPasswordRaw = $_POST['confirm_password'] ?? '';
+        $confirmPassword = is_string($confirmPasswordRaw) ? $confirmPasswordRaw : '';
 
         // Validate required fields
         if (empty($oldPassword) || empty($newPassword) || empty($confirmPassword)) {
@@ -119,23 +123,36 @@ class ChangePasswordPost implements ControllerInterface
             $stmt->bind_param("i", $userId);
             $stmt->execute();
             $result = $stmt->get_result();
+
+            if ($result === false) {
+                throw new DataBaseException("Erreur lors de la récupération du résultat");
+            }
+
             $user = $result->fetch_assoc();
             $stmt->close();
 
             // Verify current password is correct
-            if (!$user || !password_verify($oldPassword, $user['mdp'])) {
+            if ($user === null) {
+                header('Location:  /user/change-password?error=wrong_password');
+                exit;
+            }
+
+            $currentPasswordHash = isset($user['mdp']) && is_string($user['mdp']) ? $user['mdp'] : '';
+            if ($currentPasswordHash === '' || !password_verify($oldPassword, $currentPasswordHash)) {
                 header('Location:  /user/change-password?error=wrong_password');
                 exit;
             }
 
             // Ensure new password is different from current password
-            if (password_verify($newPassword, $user['mdp'])) {
+            if (password_verify($newPassword, $currentPasswordHash)) {
                 header('Location: /user/change-password? error=same_password');
                 exit;
             }
 
             // Hash and update the new password
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+
             $updateStmt = $conn->prepare("UPDATE users SET mdp = ? WHERE id = ?");
             if (!$updateStmt) {
                 throw new DataBaseException("Erreur de préparation SQL update");
