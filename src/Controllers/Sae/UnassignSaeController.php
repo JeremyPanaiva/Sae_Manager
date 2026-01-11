@@ -37,16 +37,25 @@ class UnassignSaeController implements ControllerInterface
     public function control()
     {
         // Verify user is authenticated as a supervisor
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'responsable'
+        ) {
             header('Location: /login');
             exit();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Extract form data
-            $saeId = (int)($_POST['sae_id'] ?? 0);
-            $students = $_POST['etudiants'] ?? [];
-            $responsableId = (int)$_SESSION['user']['id'];
+            $saeIdRaw = $_POST['sae_id'] ?? 0;
+            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $studentsRaw = $_POST['etudiants'] ?? [];
+            $students = is_array($studentsRaw) ? $studentsRaw : [];
+            $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
+            $responsableId = is_numeric($responsableIdRaw) ? (int)$responsableIdRaw : 0;
 
             try {
                 // Check database connection
@@ -54,12 +63,14 @@ class UnassignSaeController implements ControllerInterface
 
                 // Process each student unassignment
                 foreach ($students as $studentId) {
+                    $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+
                     // Verify that the current supervisor is the one who assigned this student
-                    SaeAttribution:: checkResponsableOwnership($saeId, $responsableId, (int)$studentId);
+                    SaeAttribution::checkResponsableOwnership($saeId, $responsableId, $studentIdInt);
 
                     // Remove student assignment from SAE
                     // Associated entries in todo_list and sae_avis will be automatically deleted via ON DELETE CASCADE
-                    SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+                    SaeAttribution::removeFromStudent($saeId, $studentIdInt);
                 }
 
                 // Set success message in session
@@ -90,6 +101,6 @@ class UnassignSaeController implements ControllerInterface
      */
     public static function support(string $path, string $method): bool
     {
-        return $path === self:: PATH && $method === 'POST';
+        return $path === self::PATH && $method === 'POST';
     }
 }
