@@ -53,7 +53,7 @@ class SaeController implements ControllerInterface
         $prenom = is_string($prenomRaw) ? $prenomRaw : '';
         $username = $nom . ' ' . $prenom;
         $userIdRaw = $currentUser['id'] ?? 0;
-        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
 
         // Initialize content data
         $contentData = [
@@ -67,19 +67,18 @@ class SaeController implements ControllerInterface
             $contentData = array_merge($contentData, $this->prepareSaeContent($userId, $role));
         } catch (\Shared\Exceptions\DataBaseException $e) {
             // Store database error message
-            $contentData['error_message'] =  $e->getMessage();
+            $contentData['error_message'] = $e->getMessage();
         } catch (\Exception $e) {
             // Store generic error message
-            $contentData['error_message'] = "Erreur inattendue : " .  $e->getMessage();
+            $contentData['error_message'] = "Erreur inattendue : " . $e->getMessage();
         }
 
         // Create and render view
-        $view = new SaeView(
-            'Gestion des SAE',
-            $contentData,
-            $username,
-            ucfirst($role)
-        );
+        $contentData['username'] = $username;
+        $contentData['role'] = ucfirst($role);
+        $contentData['page_title'] = 'Gestion des SAE';
+
+        $view = new SaeView($contentData);
 
         echo $view->render();
     }
@@ -125,14 +124,14 @@ class SaeController implements ControllerInterface
                 foreach ($saes as &$sae) {
                     // Get all students assigned to this SAE
                     $saeIdRaw = $sae['id'] ?? 0;
-                    $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+                    $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
                     $assignedStudents = SaeAttribution::getStudentsForSae($saeId);
 
                     // Filter students assigned by current supervisor
                     $etudiantsAttribuesParMoi = [];
                     foreach ($assignedStudents as $assignedStudent) {
                         $assignedStudentIdRaw = $assignedStudent['id'] ?? 0;
-                        $assignedStudentId = is_numeric($assignedStudentIdRaw) ? (int)$assignedStudentIdRaw : 0;
+                        $assignedStudentId = is_numeric($assignedStudentIdRaw) ? (int) $assignedStudentIdRaw : 0;
 
                         if (
                             SaeAttribution::isStudentAssignedByResponsable(
@@ -158,7 +157,7 @@ class SaeController implements ControllerInterface
 
                     // Attach student data to SAE
                     $sae['etudiants_disponibles'] = $etudiantsDisponibles;
-                    $sae['etudiants_attribues']   = $etudiantsAttribuesParMoi;
+                    $sae['etudiants_attribues'] = $etudiantsAttribuesParMoi;
 
                     // Attach supervisor who assigned the SAE (null if unassigned)
                     $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($saeId);
@@ -166,14 +165,14 @@ class SaeController implements ControllerInterface
 
                 // Sort SAE by priority:  my assignments → free → assigned by others
                 usort($saes, function ($a, $b) {
-                    $aIsMine  = !empty($a['etudiants_attribues']);
-                    $bIsMine  = !empty($b['etudiants_attribues']);
+                    $aIsMine = !empty($a['etudiants_attribues']);
+                    $bIsMine = !empty($b['etudiants_attribues']);
 
-                    $aIsFree  = empty($a['responsable_attribution']);
-                    $bIsFree  = empty($b['responsable_attribution']);
+                    $aIsFree = empty($a['responsable_attribution']);
+                    $bIsFree = empty($b['responsable_attribution']);
 
                     // Priority:  0 = mine, 1 = free, 2 = others
-                    $priorityA = $aIsMine ? 0 : ($aIsFree ? 1 :  2);
+                    $priorityA = $aIsMine ? 0 : ($aIsFree ? 1 : 2);
                     $priorityB = $bIsMine ? 0 : ($bIsFree ? 1 : 2);
 
                     return $priorityA - $priorityB;
@@ -197,7 +196,7 @@ class SaeController implements ControllerInterface
                 foreach ($saes as &$sae) {
                     // Add supervisor assignment information
                     $saeIdRaw = $sae['id'] ?? 0;
-                    $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+                    $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
                     $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($saeId);
                 }
 
@@ -237,7 +236,7 @@ class SaeController implements ControllerInterface
             $descriptionRaw = $_POST['description'] ?? '';
             $description = is_string($descriptionRaw) ? trim($descriptionRaw) : '';
             $clientIdRaw = $_SESSION['user']['id'] ?? 0;
-            $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
+            $clientId = is_numeric($clientIdRaw) ? (int) $clientIdRaw : 0;
 
             if ($titre !== '' && $description !== '') {
                 try {
@@ -278,7 +277,7 @@ class SaeController implements ControllerInterface
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $saeIdRaw = $_POST['sae_id'] ?? 0;
-            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
             $dateRendu = $_POST['date_rendu'] ?? '';
             $etudiantsRaw = $_POST['etudiants'] ?? [];
             $etudiants = is_array($etudiantsRaw) ? $etudiantsRaw : [];
@@ -287,7 +286,7 @@ class SaeController implements ControllerInterface
                 try {
                     \Models\Database::checkConnection();
                     foreach ($etudiants as $studentId) {
-                        $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+                        $studentIdInt = is_numeric($studentId) ? (int) $studentId : 0;
                         // Note: assignToStudent method doesn't exist, this code is deprecated
                         // SaeAttribution::assignToStudent($saeId, $studentIdInt, $dateRendu);
                     }
@@ -328,7 +327,7 @@ class SaeController implements ControllerInterface
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $saeIdRaw = $_POST['sae_id'] ?? 0;
-            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
             $etudiantsRaw = $_POST['etudiants'] ?? [];
             $etudiants = is_array($etudiantsRaw) ? $etudiantsRaw : [];
 
@@ -336,7 +335,7 @@ class SaeController implements ControllerInterface
                 try {
                     \Models\Database::checkConnection();
                     foreach ($etudiants as $studentId) {
-                        $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+                        $studentIdInt = is_numeric($studentId) ? (int) $studentId : 0;
                         SaeAttribution::removeFromStudent($saeId, $studentIdInt);
                     }
                 } catch (\Shared\Exceptions\DataBaseException $e) {

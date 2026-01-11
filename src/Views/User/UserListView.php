@@ -13,7 +13,7 @@ class UserListView extends BaseView
     public const ERROR_MESSAGE_KEY = 'ERROR_MESSAGE';
 
     /**
-     * @var array<int, array<string, string|null>>
+     * @var array<int, array<string, mixed>>
      */
     private array $users;
     private string $paginationHtml;
@@ -22,7 +22,7 @@ class UserListView extends BaseView
     private string $order;
 
     /**
-     * @param array<int, array<string, string|null>> $users
+     * @param array<int, array<string, mixed>> $users
      * @param string $paginationHtml
      * @param string $errorMessage
      * @param string $sort
@@ -58,10 +58,17 @@ class UserListView extends BaseView
 
         $USERS_ROWS = '';
         foreach ($this->users as $user) {
-            $prenom = htmlspecialchars($user['prenom'] ?? '');
-            $nom = htmlspecialchars($user['nom'] ?? '');
-            $mail = htmlspecialchars($user['mail'] ?? '');
-            $role = htmlspecialchars($user['role'] ?? '');
+            $rawPrenom = $user['prenom'] ?? '';
+            $prenom = htmlspecialchars(is_scalar($rawPrenom) ? (string) $rawPrenom : '');
+
+            $rawNom = $user['nom'] ?? '';
+            $nom = htmlspecialchars(is_scalar($rawNom) ? (string) $rawNom : '');
+
+            $rawMail = $user['mail'] ?? '';
+            $mail = htmlspecialchars(is_scalar($rawMail) ? (string) $rawMail : '');
+
+            $rawRole = $user['role'] ?? '';
+            $role = htmlspecialchars(is_scalar($rawRole) ? (string) $rawRole : '');
 
             $USERS_ROWS .= "<tr>
                 <td>{$prenom}</td>

@@ -21,7 +21,7 @@ abstract class BaseView implements View
      *
      * @var User|null
      */
-    protected ? User $user;
+    protected ?User $user;
 
     /**
      * Dynamic data for templates
@@ -58,7 +58,7 @@ abstract class BaseView implements View
      * @param User|null $user The authenticated user or null
      * @return void
      */
-    public function setUser(? User $user): void
+    public function setUser(?User $user): void
     {
         $this->user = $user;
     }

@@ -9,7 +9,7 @@ use Views\Base\BaseView;
  *
  * @package Views\Email
  */
-abstract class EmailView extends BaseView
+class EmailView extends BaseView
 {
     /**
      * Template data
@@ -19,13 +19,20 @@ abstract class EmailView extends BaseView
     protected array $data;
 
     /**
+     * @var string
+     */
+    private string $templateName;
+
+    /**
      * Constructor
      *
+     * @param string $templateName
      * @param array<string, mixed> $data
      */
-    public function __construct(array $data = [])
+    public function __construct(string $templateName, array $data = [])
     {
         parent::__construct();
+        $this->templateName = $templateName;
         $this->data = $data;
     }
 
@@ -37,6 +44,16 @@ abstract class EmailView extends BaseView
     protected function templateVariables(): array
     {
         return $this->data;
+    }
+
+    /**
+     * Returns template path
+     *
+     * @return string
+     */
+    public function templatePath(): string
+    {
+        return __DIR__ . '/' . $this->templateName . '.php';
     }
 
     /**

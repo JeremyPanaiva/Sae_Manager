@@ -23,10 +23,16 @@
 
             <label for="mdp">Mot de passe :</label>
             <div class="password-wrapper">
-                <input type="password" id="mdp" name="mdp" required minlength="8" maxlength="20"
-                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-                    title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
-                    placeholder="Votre mot de passe">
+                <input type="password"
+                       id="mdp"
+                       name="mdp"
+                       required
+                       minlength="8"
+                       maxlength="20"
+                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                       title="Le mot de passe doit contenir au moins 8 caractères,
+                       une majuscule, une minuscule et un chiffre"
+                       placeholder="Votre mot de passe">
                 <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                         stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
