@@ -185,12 +185,36 @@ class DashboardController implements ControllerInterface
         $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
 
         return
-            "<div class='countdown-container{$urgentClass}' data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
+            "<div class='countdown-container{$urgentClass}' " .
+            "data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
             "id='countdown-{$uniqueId}'>" .
-            "<div class='countdown-box'><span>" . ($countdown['jours'] ?? 0) . "</span><span>jours</span></div>" .
-            "<div class='countdown-box'><span>" . ($countdown['heures'] ?? 0) . "</span><span>heures</span></div>" .
-            "<div class='countdown-box'><span>" . ($countdown['minutes'] ?? 0) . "</span><span>minutes</span></div>" .
-            "<div class='countdown-box'><span>0</span><span>secondes</span></div>" .
+
+            "<div class='countdown-box'>" .
+            "<span class='countdown-value' data-type='jours'>" .
+            ($countdown['jours'] ?? 0) .
+            "</span>" .
+            "<span class='countdown-label'>jours</span>" .
+            "</div>" .
+
+            "<div class='countdown-box'>" .
+            "<span class='countdown-value' data-type='heures'>" .
+            ($countdown['heures'] ?? 0) .
+            "</span>" .
+            "<span class='countdown-label'>heures</span>" .
+            "</div>" .
+
+            "<div class='countdown-box'>" .
+            "<span class='countdown-value' data-type='minutes'>" .
+            ($countdown['minutes'] ?? 0) .
+            "</span>" .
+            "<span class='countdown-label'>minutes</span>" .
+            "</div>" .
+
+            "<div class='countdown-box'>" .
+            "<span class='countdown-value' data-type='secondes'>0</span>" .
+            "<span class='countdown-label'>secondes</span>" .
+            "</div>" .
+
             "</div>";
     }
 
