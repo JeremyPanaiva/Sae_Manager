@@ -1,3 +1,21 @@
+<?php
+
+/**
+ * SAE Page Template
+ *
+ * Displays the SAE management page with user information and dynamic content.
+ *
+ * Template variables:
+ * @var string $ROLE_KEY User role (e.g., "Étudiant", "Enseignant", "Admin")
+ * @var string $USERNAME_KEY Display name of the logged-in user
+ * @var string $CONTENT_KEY Dynamic HTML content for the SAE page
+ *
+ * @package SaeManager\Views\Sae
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/sae.css">
 
 <section class="main sae-page" aria-label="Gestion des SAE">

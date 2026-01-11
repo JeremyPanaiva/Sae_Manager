@@ -1,3 +1,19 @@
+<?php
+
+/**
+ * Registration Form Template
+ *
+ * Displays the user registration form with validation errors.
+ *
+ * Template variables:
+ * @var string $ERRORS_KEY HTML error messages to display (optional)
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/inscription.css">
 <script src="/_assets/script/showPassword.js"></script>
 
