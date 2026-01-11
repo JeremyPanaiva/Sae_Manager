@@ -1,13 +1,12 @@
 <?php
-
 /**
  * Error Message Template
  *
+ * @var string $MESSAGE_KEY
+ *
  * Template variables:
- * @var string $MESSAGE_KEY The error message text to display
+ * - $MESSAGE_KEY: The error message text to display
  */
-
-/** @var string $MESSAGE_KEY */
 
 ?>
 

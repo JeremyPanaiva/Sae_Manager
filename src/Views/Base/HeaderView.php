@@ -12,24 +12,73 @@ use Views\AbstractView;
  * Header View
  *
  * Renders the application header with dynamic content based on user authentication state.
+ * Handles navigation visibility, user information display, and active menu highlighting.
+ *
+ * Behavior:
+ * - Logged out:  Hides navigation menu and user info, shows login/register links
+ * - Logged in: Shows navigation menu, user info with role badge, and logout link
+ *
+ * Also generates the canonical URL for SEO purposes based on the current request.
  *
  * @package Views\Base
  */
 class HeaderView extends AbstractView
 {
+    /**
+     * Template data key for username display
+     */
     public const USERNAME_KEY = 'USERNAME_KEY';
+
+    /**
+     * Template data key for login/logout link URL
+     */
     public const LINK_KEY = 'LINK_KEY';
+
+    /**
+     * Template data key for registration link URL
+     */
     public const INSCRIPTION_LINK_KEY = 'INSCRIPTION_LINK_KEY';
+
+    /**
+     * Template data key for login/logout link text
+     */
     public const CONNECTION_LINK_KEY = 'CONNECTION_LINK_KEY';
+
+    /**
+     * Template data key for users page link URL
+     */
     public const USERS_LINK_KEY = 'USERS_LINK_KEY';
+
+    /**
+     * Template data key for user role display text
+     */
     public const ROLE_KEY = 'ROLE_KEY';
+
+    /**
+     * Template data key for dashboard link URL
+     */
     public const DASHBOARD_LINK_KEY = 'DASHBOARD_LINK_KEY';
+
+    /**
+     * Template data key for SAE page link URL
+     */
     public const SAE_LINK_KEY = 'SAE_LINK_KEY';
+
+    /**
+     * Template data key for navigation menu inline style
+     */
     public const NAV_STYLE_KEY = 'NAV_STYLE';
+
+    /**
+     * Template data key for user metadata section inline style
+     */
     public const USER_META_STYLE_KEY = 'USER_META_STYLE';
 
     /**
      * Constructor
+     *
+     * Initializes header data based on user session state.  Sets up navigation links,
+     * user information, visibility styles, and canonical URL for the current page.
      */
     public function __construct()
     {
@@ -44,25 +93,21 @@ class HeaderView extends AbstractView
         $connectionText = 'Se connecter';
         $usersLink = Login::PATH;
         $dashboardLink = Login::PATH;
-        $saeLink = Login:: PATH;
+        $saeLink = Login::PATH;
 
         $navStyle = 'display:none;';
         $userMetaStyle = 'display: none;';
-        $profileBtnStyle = 'display:none;';
 
         if (
             isset($_SESSION['user']) &&
             is_array($_SESSION['user']) &&
-            isset($_SESSION['user']['nom']) &&
-            isset($_SESSION['user']['prenom']) &&
-            isset($_SESSION['user']['role'])
+            isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
         ) {
-            $nom = is_string($_SESSION['user']['nom']) ? $_SESSION['user']['nom'] :  '';
-            $prenom = is_string($_SESSION['user']['prenom']) ? $_SESSION['user']['prenom'] : '';
-            $roleRaw = is_string($_SESSION['user']['role']) ? $_SESSION['user']['role'] : '';
-            $role = strtolower($roleRaw);
-
-            $username = $nom . ' ' . $prenom;
+            $roleRaw = $_SESSION['user']['role'];
+            $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
+            $nomRaw = $_SESSION['user']['nom'];
+            $prenomRaw = $_SESSION['user']['prenom'];
+            $username = (is_string($nomRaw) ? $nomRaw : '') . ' ' . (is_string($prenomRaw) ? $prenomRaw : '');
             $roleDisplay = ucfirst($role);
             $roleClass = $role;
 
@@ -75,58 +120,87 @@ class HeaderView extends AbstractView
             $navStyle = '';
             $userMetaStyle = '';
             $profileBtnStyle = '';
-        }
-
-        $requestUriRaw = $_SERVER['REQUEST_URI'] ?? '/';
-        $requestUri = is_string($requestUriRaw) ? $requestUriRaw : '/';
-        $parsedUrl = parse_url($requestUri);
-        $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https://' : 'http://';
-        $hostRaw = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $host = is_string($hostRaw) ? $hostRaw : 'localhost';
-
-        if (isset($parsedUrl['path'])) {
-            $canonicalUrl = $scheme . $host .  $parsedUrl['path'];
         } else {
-            $canonicalUrl = $scheme . $host . '/';
+            $profileBtnStyle = 'display:none;';
         }
 
-        $inscriptionStyle = '';
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $currentPath = parse_url(is_string($requestUri) ? $requestUri : '', PHP_URL_PATH);
+        $https = $_SERVER['HTTPS'] ?? '';
+        $scheme = (!empty($https) && $https !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'sae-manager.alwaysdata.net';
+        $host = is_string($host) ? $host : 'sae-manager.alwaysdata.net';
+        $path = is_string($currentPath) ? $currentPath : '/';
+        $path = $path ?: '/';
+        $canonical = rtrim($scheme . '://' . $host . $path, '/');
+        if ($canonical === '') {
+            $canonical = $scheme . '://' . $host . '/';
+        }
 
+        $inscriptionLink = '/user/register';
+        $inscriptionStyle = '';
+        $inscriptionLink = '/user/register';
+        $inscriptionStyle = '';
         if (
             isset($_SESSION['user']) &&
             is_array($_SESSION['user']) &&
-            isset($_SESSION['user']['nom']) &&
-            isset($_SESSION['user']['prenom']) &&
-            isset($_SESSION['user']['role'])
+            isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
         ) {
-            $inscriptionStyle = 'display: none;';
+            $inscriptionLink = '';
+            $inscriptionStyle = 'display:none;';
         }
 
-        $this->data = [
-            'USERNAME_KEY' => $username,
-            'ROLE_KEY' => $roleDisplay,
-            'ROLE_CLASS' => $roleClass,
-            'LINK_KEY' => $link,
-            'CONNECTION_LINK_KEY' => $connectionText,
-            'INSCRIPTION_LINK_KEY' => '/user/register',
-            'INSCRIPTION_STYLE_KEY' => $inscriptionStyle,
-            'USERS_LINK_KEY' => $usersLink,
-            'DASHBOARD_LINK_KEY' => $dashboardLink,
-            'SAE_LINK_KEY' => $saeLink,
-            'NAV_STYLE' => $navStyle,
-            'USER_META_STYLE' => $userMetaStyle,
-            'PROFILE_BTN_STYLE' => $profileBtnStyle,
-            'CANONICAL_URL' => $canonicalUrl,
-        ];
+        $this->data[self::USERNAME_KEY] = $username;
+        $this->data[self::ROLE_KEY] = $roleDisplay;
+        $this->data['ROLE_CLASS'] = $roleClass;
+        $this->data[self::LINK_KEY] = $link;
+        $this->data[self::CONNECTION_LINK_KEY] = $connectionText;
+        $this->data[self::INSCRIPTION_LINK_KEY] = $inscriptionLink;
+        $this->data['INSCRIPTION_STYLE_KEY'] = $inscriptionStyle;
+        $this->data[self::USERS_LINK_KEY] = $usersLink;
+        $this->data[self::DASHBOARD_LINK_KEY] = $dashboardLink;
+        $this->data[self::SAE_LINK_KEY] = $saeLink;
+        $this->data['CANONICAL_URL'] = $canonical;
+
+        $this->data[self::NAV_STYLE_KEY] = $navStyle;
+        $this->data[self::USER_META_STYLE_KEY] = $userMetaStyle;
+        $this->data['PROFILE_BTN_STYLE'] = $profileBtnStyle;
+
+        $this->data['ACTIVE_DASHBOARD'] = $this->getActiveClass($dashboardLink);
+        $this->data['ACTIVE_SAE'] = $this->getActiveClass($saeLink);
+        $this->data['ACTIVE_USERS'] = $this->getActiveClass($usersLink);
     }
 
     /**
      * Returns the path to the header template file
      *
-     * @return string
+     * @return string Absolute path to the template file
      */
     public function templatePath(): string
     {
         return __DIR__ . '/header.php';
+    }
+
+    /**
+     * Determines if a navigation link should have the 'active' CSS class
+     *
+     * Compares the current page path with the link path.  Only returns 'active'
+     * if the user is logged in and the paths match.
+     *
+     * @param string $link The navigation link path to check
+     * @return string 'active' if the link matches current page, empty string otherwise
+     */
+    private function getActiveClass(string $link): string
+    {
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $currentPath = parse_url(is_string($requestUri) ? $requestUri : '', PHP_URL_PATH);
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
+        ) {
+            return '';
+        }
+        return ($currentPath === $link) ? 'active' : '';
     }
 }
