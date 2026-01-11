@@ -58,9 +58,9 @@ class DeleteSaeController implements ControllerInterface
 
         // Extract client and SAE identifiers
         $clientIdRaw = $_SESSION['user']['id'] ?? 0;
-        $clientId = is_numeric($clientIdRaw) ? (int) $clientIdRaw : 0;
+        $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
         $saeIdRaw = $_POST['sae_id'] ?? 0;
-        $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
+        $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
 
         // Validate SAE ID
         if ($saeId <= 0) {
@@ -103,10 +103,7 @@ class DeleteSaeController implements ControllerInterface
                 'saes' => [],
                 'error_message' => $e->getMessage(),
             ];
-            $data['username'] = $username;
-            $data['role'] = $role;
-            $data['page_title'] = "Gestion des SAE";
-            $view = new SaeView($data);
+            $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
         } catch (SaeAttribueException $e) {
@@ -117,7 +114,7 @@ class DeleteSaeController implements ControllerInterface
                 // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
                     $sIdRaw = $s['id'] ?? 0;
-                    $sId = is_numeric($sIdRaw) ? (int) $sIdRaw : 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
                     $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
@@ -129,10 +126,7 @@ class DeleteSaeController implements ControllerInterface
                 'error_message' => $e->getMessage(),
             ];
 
-            $data['username'] = $username;
-            $data['role'] = $role;
-            $data['page_title'] = "Gestion des SAE";
-            $view = new SaeView($data);
+            $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
         } catch (\Throwable $e) {
@@ -143,7 +137,7 @@ class DeleteSaeController implements ControllerInterface
                 // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
                     $sIdRaw = $s['id'] ?? 0;
-                    $sId = is_numeric($sIdRaw) ? (int) $sIdRaw : 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
                     $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
@@ -155,10 +149,7 @@ class DeleteSaeController implements ControllerInterface
                 'error_message' => $e->getMessage(),
             ];
 
-            $data['username'] = $username;
-            $data['role'] = $role;
-            $data['page_title'] = "Gestion des SAE";
-            $view = new SaeView($data);
+            $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
         }
