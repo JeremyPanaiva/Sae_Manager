@@ -33,12 +33,12 @@ class DashboardController implements ControllerInterface
             $data = ['error_message' => $e->getMessage()];
         }
 
-        $view = new DashboardView([
-            'title' => 'Tableau de bord',
-            'username' => $username,
-            'role' => ucfirst($role),
-            'data' => $data
-        ]);
+        $view = new DashboardView(
+            'Tableau de bord',
+            $data,
+            $username,
+            ucfirst($role)
+        );
 
         echo $view->render();
     }
