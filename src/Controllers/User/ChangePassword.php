@@ -51,10 +51,11 @@ class ChangePassword implements ControllerInterface
         }
 
         // Verify user is authenticated
-        if (! isset($_SESSION['user']['id'])) {
-            header('Location:  /login');
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            header('Location: /login');
             exit;
         }
+
 
         // Render password change form
         $view = new ChangePasswordView();
