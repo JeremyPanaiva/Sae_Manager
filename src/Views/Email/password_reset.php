@@ -1,3 +1,8 @@
+<?php
+
+/** @var string $RESET_LINK */
+
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -15,7 +20,7 @@
     <p>Pour réinitialiser votre mot de passe, cliquez sur le lien ci-dessous :</p>
 
     <div style='text-align: center; margin: 30px 0;'>
-        <a href='<?php echo $RESET_LINK; ?>'
+        <a href='<?= $RESET_LINK ?>'
            style='background-color: #3498db; color: white; padding: 12px 24px;
            text-decoration: none; border-radius: 5px; display: inline-block;'>
             Réinitialiser mon mot de passe
@@ -30,7 +35,7 @@
 
     <p style='font-size: 12px; color: #666;'>
         Si le bouton ne fonctionne pas, copiez et collez ce lien dans votre navigateur :<br>
-        <a href='<?php echo $RESET_LINK; ?>'><?php echo $RESET_LINK; ?></a>
+        <a href='<?= $RESET_LINK ?>'><?= $RESET_LINK ?></a>
     </p>
 </div>
 </body>
