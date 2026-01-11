@@ -7,49 +7,48 @@ use Views\Base\BaseView;
 /**
  * Email View
  *
+ * Renders email templates with dynamic data injection.
+ * Used for generating HTML email content for password reset, notifications, etc.
+ *
+ * Unlike standard views, this class:
+ * - Does not include header/footer (emails are standalone)
+ * - Overrides render() to skip BaseView's header/footer wrapping
+ * - Uses dynamic template selection based on email type
+ *
  * @package Views\Email
  */
 class EmailView extends BaseView
 {
     /**
-     * Template data
+     * Template filename (without . php extension)
+     *
+     * @var string
+     */
+    private string $templateName;
+
+    /**
+     * Template data for variable injection
      *
      * @var array<string, mixed>
      */
     protected array $data;
 
     /**
-     * @var string
-     */
-    private string $templateName;
-
-    /**
      * Constructor
      *
-     * @param string $templateName
-     * @param array<string, mixed> $data
+     * @param string $templateName Template filename without extension (e.g., 'password_reset')
+     * @param array<string, mixed> $data Associative array of variables to inject into the template
      */
     public function __construct(string $templateName, array $data = [])
     {
-        parent::__construct();
         $this->templateName = $templateName;
         $this->data = $data;
     }
 
     /**
-     * Template variables
+     * Returns the path to the email template file
      *
-     * @return array<string, mixed>
-     */
-    protected function templateVariables(): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * Returns template path
-     *
-     * @return string
+     * @return string Absolute path to the template file
      */
     public function templatePath(): string
     {
@@ -57,17 +56,36 @@ class EmailView extends BaseView
     }
 
     /**
-     * Renders email HTML
+     * Returns template variables for injection
      *
-     * @return string
+     * @return array<string, mixed> Template data array
+     */
+    protected function templateVariables(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * Renders the email template with variables
+     *
+     * Overrides BaseView:: render() to skip header/footer inclusion.
+     * Loads the template file, extracts variables, and captures output.
+     *
+     * @return string Rendered HTML email content
+     * @throws \Exception If the template file does not exist
      */
     public function render(): string
     {
+        $templatePath = $this->templatePath();
+
+        if (!file_exists($templatePath)) {
+            error_log("Template email non trouvé : {$templatePath}");
+            throw new \Exception("Template email non trouvé : {$this->templateName}");
+        }
+
         ob_start();
         extract($this->data);
-        include $this->templatePath();
-        $output = ob_get_clean();
-
-        return $output !== false ? $output : '';
+        include $templatePath;
+        return (string) ob_get_clean();
     }
 }
