@@ -41,7 +41,13 @@ class UpdateSaeDateController implements ControllerInterface
         }
 
         // Verify user is authenticated as a supervisor
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'responsable'
+        ) {
             header('HTTP/1.1 403 Forbidden');
             echo "Accès refusé";
             exit();
@@ -49,9 +55,12 @@ class UpdateSaeDateController implements ControllerInterface
 
         try {
             // Extract supervisor ID and form data
-            $responsableId = $_SESSION['user']['id'];
-            $saeId = intval($_POST['sae_id'] ?? 0);
-            $newDate = $_POST['date_rendu'] ?? '';
+            $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
+            $responsableId = is_numeric($responsableIdRaw) ? (int)$responsableIdRaw : 0;
+            $saeIdRaw = $_POST['sae_id'] ?? 0;
+            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $newDateRaw = $_POST['date_rendu'] ?? '';
+            $newDate = is_string($newDateRaw) ? $newDateRaw : '';
 
             // Validate required fields
             if ($saeId <= 0 || !$newDate) {
@@ -61,7 +70,7 @@ class UpdateSaeDateController implements ControllerInterface
             }
 
             // Update submission deadline for all students assigned to this SAE by this supervisor
-            SaeAttribution:: updateDateRendu($saeId, $responsableId, $newDate);
+            SaeAttribution::updateDateRendu($saeId, $responsableId, $newDate);
 
             // Set success message in session
             $_SESSION['success_message'] = "Date de rendu mise à jour avec succès. ";

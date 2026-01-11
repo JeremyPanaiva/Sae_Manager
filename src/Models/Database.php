@@ -7,7 +7,7 @@ use Shared\Exceptions\DataBaseException;
 /**
  * Database connection manager
  *
- * Provides a singleton database connection using mysqli.   Handles connection
+ * Provides a singleton database connection using mysqli.  Handles connection
  * initialization, configuration loading from environment variables or . env file,
  * and connection health checks.
  *
@@ -44,10 +44,11 @@ class Database
     public static function getConnection()
     {
         if (self::$conn === null) {
-            $servername = self::parseEnvVar("DB_HOST");
-            $username = self::parseEnvVar("DB_USER");
-            $password = self::parseEnvVar("DB_PASSWORD");
-            $dbname = self:: parseEnvVar("DB_NAME");
+            // Convert false to null for mysqli constructor
+            $servername = self:: parseEnvVar("DB_HOST") ?: null;
+            $username = self::parseEnvVar("DB_USER") ?: null;
+            $password = self::parseEnvVar("DB_PASSWORD") ?: null;
+            $dbname = self::parseEnvVar("DB_NAME") ?: null;
 
             try {
                 // Enable strict error reporting - all errors become exceptions
@@ -62,7 +63,7 @@ class Database
                 );
             }
         }
-        return self::$conn;
+        return self:: $conn;
     }
 
     /**
@@ -90,6 +91,12 @@ class Database
 
         // Parse .env file
         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        // Check if file() succeeded
+        if ($lines === false) {
+            return $val;
+        }
+
         $env = [];
         foreach ($lines as $line) {
             $line = trim($line);
@@ -131,17 +138,17 @@ class Database
     public static function checkConnection(): void
     {
         try {
-            $db = self::getConnection();
+            $db = self:: getConnection();
             if (!$db->ping()) {
                 throw new DataBaseException(
                     "Unable to connect to the database " .
-                    "please contact sae-manager@alwaysdata. net"
+                    "please contact sae-manager@alwaysdata.net"
                 );
             }
         } catch (\Exception $e) {
             throw new DataBaseException(
                 "Unable to connect to the database " .
-                "please contact sae-manager@alwaysdata. net"
+                "please contact sae-manager@alwaysdata.net"
             );
         }
     }

@@ -42,19 +42,32 @@ class CreateSaeController implements ControllerInterface
         }
 
         // Verify user is authenticated as a client
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'client') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'client'
+        ) {
             header('HTTP/1.1 403 Forbidden');
             echo "Accès refusé";
             exit();
         }
 
         // Extract client information
-        $clientId = $_SESSION['user']['id'];
-        $clientNom = $_SESSION['user']['nom'] . ' ' . $_SESSION['user']['prenom'];
+        $clientIdRaw = $_SESSION['user']['id'] ?? 0;
+        $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
+        $nomRaw = $_SESSION['user']['nom'] ?? '';
+        $prenomRaw = $_SESSION['user']['prenom'] ?? '';
+        $nom = is_string($nomRaw) ? $nomRaw : '';
+        $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+        $clientNom = $nom . ' ' . $prenom;
 
         // Extract and sanitize form data
-        $titre = trim($_POST['titre'] ?? '');
-        $description = trim($_POST['description'] ?? '');
+        $titreRaw = $_POST['titre'] ?? '';
+        $titre = is_string($titreRaw) ? trim($titreRaw) : '';
+        $descriptionRaw = $_POST['description'] ?? '';
+        $description = is_string($descriptionRaw) ? trim($descriptionRaw) : '';
 
         // Validate required fields
         if (empty($titre) || empty($description)) {
@@ -75,9 +88,17 @@ class CreateSaeController implements ControllerInterface
 
                 foreach ($responsables as $responsable) {
                     try {
-                        $responsableNom = $responsable['prenom'] . ' ' .  $responsable['nom'];
+                        $prenomResponsableRaw = $responsable['prenom'] ?? '';
+                        $nomResponsableRaw = $responsable['nom'] ?? '';
+                        $prenomResponsable = is_string($prenomResponsableRaw) ? $prenomResponsableRaw : '';
+                        $nomResponsable = is_string($nomResponsableRaw) ? $nomResponsableRaw : '';
+                        $responsableNom = $prenomResponsable . ' ' . $nomResponsable;
+
+                        $responsableMailRaw = $responsable['mail'] ?? '';
+                        $responsableMail = is_string($responsableMailRaw) ? $responsableMailRaw : '';
+
                         $emailService->sendSaeCreationNotification(
-                            $responsable['mail'],
+                            $responsableMail,
                             $responsableNom,
                             $clientNom,
                             $titre,
@@ -85,8 +106,12 @@ class CreateSaeController implements ControllerInterface
                         );
                     } catch (\Exception $e) {
                         // Log error but don't block SAE creation
+                        $responsableMailLog = isset($responsable['mail']) && is_string($responsable['mail'])
+                            ? $responsable['mail']
+                            : 'unknown';
+
                         error_log("Erreur lors de l'envoi de la notification au responsable 
-                        {$responsable['mail']}:  " . $e->getMessage());
+                        {$responsableMailLog}:  " . $e->getMessage());
                     }
                 }
             }

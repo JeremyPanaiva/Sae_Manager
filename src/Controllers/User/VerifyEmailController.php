@@ -29,7 +29,8 @@ class VerifyEmailController implements ControllerInterface
     public function control()
     {
         // Extract verification token from URL parameter
-        $token = $_GET['token'] ?? '';
+        $tokenRaw = $_GET['token'] ?? '';
+        $token = is_string($tokenRaw) ? $tokenRaw : '';
 
         // Redirect to login if no token provided
         if (empty($token)) {

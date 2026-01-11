@@ -38,7 +38,8 @@ class ResetPassword implements ControllerInterface
     public function control()
     {
         // Extract reset token from URL parameter
-        $token = $_GET['token'] ?? '';
+        $tokenRaw = $_GET['token'] ?? '';
+        $token = is_string($tokenRaw) ? $tokenRaw : '';
 
         // Redirect if no token provided
         if (empty($token)) {
@@ -57,6 +58,7 @@ class ResetPassword implements ControllerInterface
                 exit;
             }
 
+            // At this point, $email is guaranteed to be a non-empty string
             // Render password reset form with token and email
             $view = new \Views\User\ResetPasswordView();
             $view->setData(['token' => $token, 'email' => $email]);

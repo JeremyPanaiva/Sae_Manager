@@ -33,12 +33,12 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ?");
+        $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ?  ");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in emailExists.");
+            throw new DataBaseException("Erreur de préparation SQL dans emailExists.");
         }
 
         $stmt->bind_param("s", $email);
@@ -78,7 +78,7 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Hash password using bcrypt
@@ -90,7 +90,7 @@ class User
             "VALUES (?, ?, ?, ?, ?, ?, 0)"
         );
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in register.");
+            throw new DataBaseException("Erreur de préparation SQL dans register.");
         }
 
         $stmt->bind_param("ssssss", $lastName, $firstName, $email, $hashedPassword, $role, $verificationToken);
@@ -103,7 +103,7 @@ class User
      * Retrieves a user by email address
      *
      * @param string $email The email address to search for
-     * @return array|null User data array or null if not found
+     * @return array<string, mixed>|null User data array or null if not found
      * @throws DataBaseException If database connection or query fails
      */
     public function findByEmail(string $email): ?array
@@ -111,17 +111,20 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $stmt = $conn->prepare("SELECT id, mdp, nom, prenom, mail, role, is_verified FROM users WHERE mail = ?");
+        $stmt = $conn->prepare("SELECT id, mdp, nom, prenom, mail, role, is_verified FROM users WHERE mail = ? ");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in findByEmail.");
+            throw new DataBaseException("Erreur de préparation SQL dans findByEmail.");
         }
 
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans findByEmail.");
+        }
 
         $user = $result->fetch_assoc() ?: null;
 
@@ -134,16 +137,29 @@ class User
      * Retrieves all users with a specific role
      *
      * @param string $role The role to filter by
-     * @return array Array of users with id, nom, prenom
+     * @return array<int, array<string, mixed>> Array of users with id, nom, prenom
      * @throws DataBaseException If database connection or query fails
      */
     public static function getAllByRole(string $role): array
     {
-        $db = Database:: getConnection();
+        try {
+            $db = Database::getConnection();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
+        }
+
         $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE role = ?");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAllByRole.");
+        }
+
         $stmt->bind_param("s", $role);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAllByRole.");
+        }
+
         $users = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $users;
@@ -152,7 +168,7 @@ class User
     /**
      * Retrieves all supervisors (responsables)
      *
-     * @return array Array of supervisors with id, nom, prenom, mail
+     * @return array<int, array<string, mixed>> Array of supervisors with id, nom, prenom, mail
      * @throws DataBaseException If database connection or query fails
      */
     public static function getAllResponsables(): array
@@ -160,16 +176,20 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         $stmt = $conn->prepare("SELECT id, nom, prenom, mail FROM users WHERE role = 'Responsable'");
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in getAllResponsables.");
+            throw new DataBaseException("Erreur de préparation SQL dans getAllResponsables.");
         }
 
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAllResponsables.");
+        }
+
         $responsables = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
@@ -183,7 +203,7 @@ class User
      * @param int $offset Number of results to skip
      * @param string $sort Column to sort by (nom, prenom, mail, role, date_creation)
      * @param string $order Sort order (ASC or DESC)
-     * @return array Array of users
+     * @return array<int, array<string, mixed>> Array of users
      * @throws DataBaseException If database connection or query fails
      */
     public function getUsersPaginated(
@@ -195,7 +215,7 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Whitelist of allowed sort columns to prevent SQL injection
@@ -206,19 +226,22 @@ class User
 
         // Validate sort order
         $order = strtoupper($order);
-        if (!in_array($order, ['ASC', 'DESC'])) {
+        if (!   in_array($order, ['ASC', 'DESC'])) {
             $order = 'ASC';
         }
 
-        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?   OFFSET ?";
+        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?    OFFSET ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in getUsersPaginated.");
+            throw new DataBaseException("Erreur de préparation SQL dans getUsersPaginated.");
         }
 
         $stmt->bind_param("ii", $limit, $offset);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getUsersPaginated.");
+        }
 
         $users = [];
         while ($row = $result->fetch_assoc()) {
@@ -240,30 +263,51 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         $result = $conn->query("SELECT COUNT(*) AS total FROM users");
-        if (!$result) {
-            throw new DataBaseException("SQL query failed in countUsers.");
+        if (!($result instanceof \mysqli_result)) {
+            throw new DataBaseException("Échec de la requête SQL dans countUsers.");
         }
 
-        $count = $result->fetch_assoc()['total'];
-        return $count;
+        $row = $result->fetch_assoc();
+        if ($row === null || $row === false) {
+            throw new DataBaseException("Échec de récupération du comptage dans countUsers.");
+        }
+
+        if (! isset($row['total'])) {
+            throw new DataBaseException("Colonne total introuvable dans countUsers.");
+        }
+
+        return (int)$row['total'];
     }
 
     /**
      * Retrieves all students
      *
-     * @return array Array of students with id, nom, prenom
+     * @return array<int, array<string, mixed>> Array of students with id, nom, prenom
+     * @throws DataBaseException If database connection or query fails
      */
     public static function getAllStudents(): array
     {
-        $db = Database::getConnection();
+        try {
+            $db = Database::getConnection();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
+        }
 
         $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE LOWER(role) = 'etudiant'");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAllStudents.");
+        }
+
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAllStudents.");
+        }
+
         $students = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
@@ -274,15 +318,29 @@ class User
      * Retrieves a user by their ID
      *
      * @param int $id The user's ID
-     * @return array|null User data or null if not found
+     * @return array<string, mixed>|null User data or null if not found
+     * @throws DataBaseException If database connection or query fails
      */
     public static function getById(int $id): ?array
     {
-        $db = Database::getConnection();
-        $stmt = $db->prepare("SELECT id, nom, prenom, mail, role, date_creation FROM users WHERE id = ? LIMIT 1");
+        try {
+            $db = Database::   getConnection();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
+        }
+
+        $stmt = $db->prepare("SELECT id, nom, prenom, mail, role, date_creation FROM users WHERE id = ?    LIMIT 1");
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getById.");
+        }
+
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getById.");
+        }
+
         $user = $result->fetch_assoc();
         $stmt->close();
         return $user ?: null;
@@ -299,12 +357,16 @@ class User
      */
     public static function deleteAccount(int $userId): void
     {
-        Database::checkConnection();
+        Database::  checkConnection();
         $db = Database::getConnection();
 
         try {
             // Single query is sufficient thanks to ON DELETE CASCADE
-            $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+            $stmt = $db->prepare("DELETE FROM users WHERE id = ?  ");
+            if (!$stmt) {
+                throw new DataBaseException("Erreur de préparation SQL dans deleteAccount.");
+            }
+
             $stmt->bind_param("i", $userId);
             $stmt->execute();
 
@@ -314,7 +376,7 @@ class User
 
             $stmt->close();
         } catch (\Exception $e) {
-            error_log("Erreur User::deleteAccount :   " . $e->getMessage());
+            error_log("Erreur User::deleteAccount : " . $e->getMessage());
             throw new DataBaseException("Impossible de supprimer le compte.");
         }
     }
@@ -333,7 +395,7 @@ class User
     public function updateEmail(int $userId, string $newEmail, string $token): void
     {
         try {
-            $conn = Database::getConnection();
+            $conn = Database::   getConnection();
             $stmt = $conn->prepare("UPDATE users SET mail = ?, verification_token = ?, is_verified = 0 WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL updateEmail");
@@ -343,7 +405,7 @@ class User
             $stmt->execute();
             $stmt->close();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Erreur lors de la mise à jour de l'email :   " . $e->getMessage());
+            throw new DataBaseException("Erreur lors de la mise à jour de l'email :    " . $e->getMessage());
         }
     }
 
@@ -362,7 +424,7 @@ class User
         try {
             $conn = Database::getConnection();
         } catch (\Throwable $e) {
-            throw new DataBaseException("Unable to connect to the database.");
+            throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
         // Check if token exists and account is unverified
@@ -391,7 +453,7 @@ class User
             "WHERE verification_token = ?"
         );
         if (!$stmt) {
-            throw new DataBaseException("SQL prepare failed in verifyAccount update.");
+            throw new DataBaseException("Erreur de préparation SQL dans verifyAccount update.");
         }
 
         $stmt->bind_param("s", $token);
