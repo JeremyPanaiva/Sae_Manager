@@ -1,63 +1,91 @@
 <?php
 
-/** @var string $ERRORS_KEY */
+/**
+ * User Profile Template
+ *
+ * Displays and allows editing of the user's profile information.
+ *
+ * Template variables:
+ * @var string $ERRORS_KEY HTML error messages to display (optional)
+ * @var string $SUCCESS_KEY HTML success message to display (optional)
+ * @var string $date_creation Account creation date
+ * @var string $prenom User's first name
+ * @var string $nom User's last name
+ * @var string $mail User's email address
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
 
 ?>
-<link rel="stylesheet" href="/_assets/css/inscription.css">
-<script src="/_assets/script/showPassword.js"></script>
 
-<section class="main" aria-label="Contenu principal">
-    <form action="/user/register" method="post">
-        <fieldset>
-            <?= $ERRORS_KEY ?>
-            <legend>Inscription</legend>
+<link rel="stylesheet" href="/_assets/css/user.css">
+
+<main class="dashboard-page">
+    <section class="dashboard-section">
+        <h2>Mon profil</h2>
+
+        <?= $ERRORS_KEY ?>
+        <?= $SUCCESS_KEY ?>
+
+        <p><strong>Date de création du compte : </strong> <?= $date_creation ?></p>
+
+        <form action="/user/profile" method="POST" class="profile-form">
+            <label for="prenom">Prénom :</label>
+            <input type="text" id="prenom" name="prenom" value="<?= $prenom ?>" required>
 
             <label for="nom">Nom :</label>
-            <input type="text" id="nom" name="nom" required placeholder="Votre nom">
-
-            <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom" name="prenom" required placeholder="Votre prénom">
+            <input type="text" id="nom" name="nom" value="<?= $nom ?>" required>
 
             <label for="mail">Email :</label>
-            <input type="email" id="mail" name="mail" required placeholder="exemple@etu.univ-amu.fr">
+            <input type="email" id="mail" name="mail" value="<?= $mail ?>" required data-original-email="<?= $mail ?>">
 
-            <label for="mdp">Mot de passe :</label>
-            <div class="password-wrapper">
-                <input type="password"
-                       id="mdp"
-                       name="mdp"
-                       required
-                       minlength="8"
-                       maxlength="20"
-                       pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-                       title="Le mot de passe doit contenir au moins 8 caractères,
-                       une majuscule, une minuscule et un chiffre"
-                       placeholder="Votre mot de passe">
-                <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
-                        stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                </span>
+            <div class="profile-actions"
+                style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                <a href="/user/change-password" class="btn btn-outline"
+                    style="min-width: 200px; text-align: center;">Modifier le mot de passe</a>
+                <input type="submit" value="Mettre à jour" class="btn btn-primary" style="min-width: 200px;">
             </div>
-            <small style="color:  #6c757d; font-size:  0.85rem; margin-top: -0.5rem;">
-                Le mot de passe doit contenir au moins 8 caractères avec une majuscule, une minuscule et un chiffre.
-            </small>
+        </form>
 
-            <label for="role">Rôle :</label>
-            <select id="role" name="role" required>
-                <option value="">-- Sélectionnez votre rôle --</option>
-                <option value="etudiant">Étudiant</option>
-                <option value="responsable">Responsable</option>
-                <option value="client">Client</option>
-            </select>
+        <script>
+            document.querySelector('.profile-form').addEventListener('submit', function (e) {
+                const mailInput = document.getElementById('mail');
+                const originalMail = mailInput.dataset.originalEmail;
 
-            <input type="submit" value="S'inscrire" name="ok">
-        </fieldset>
+                if (mailInput.value !== originalMail) {
+                    const confirmMessage = "⚠️ ATTENTION : CHANGEMENT D'EMAIL\n\n" +
+                        "Vous êtes sur le point de modifier votre adresse email.\n" +
+                        "Si vous confirmez :\n\n" +
+                        "1. Vous serez immédiatement DÉCONNECTÉ.\n" +
+                        "2. Un email de vérification sera envoyé à la nouvelle adresse (" + mailInput.value + ").\n" +
+                        "3. Si vous avez fait une erreur de saisie, " +
+                        "vous risquez de PERDRE L'ACCÈS À VOTRE COMPTE.\n\n" +
+                        "Êtes-vous sûr que la nouvelle adresse est correcte ?";
 
-        <p class="form-footer">
-            Déjà membre ? <a href="/user/login">Se connecter</a>
-        </p>
-    </form>
-</section>
+                    if (!confirm(confirmMessage)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+
+            function confirmDelete() {
+                return confirm('⚠️ ATTENTION : Cette action est irréversible.\n\n' +
+                    'Êtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\n' +
+                    'Toutes vos SAE, to-do lists, avis et données personnelles seront perdues.');
+            }
+        </script>
+
+        <!-- Zone de suppression du compte -->
+        <div class="danger-zone">
+            <h3>Supprimer votre compte SAE Manager</h3>
+            <p>La suppression de votre compte est <strong>définitive et irréversible</strong>. Toutes vos données seront
+                supprimées.</p>
+
+            <form action="/user/profile/delete" method="POST" class="delete-form"
+                style="display: flex; justify-content: center;" onsubmit="return confirmDelete();">
+                <button type="submit" class="btn btn-danger" style="min-width: 200px;">Supprimer mon compte</button>
+            </form>
+        </div>
+    </section>
+</main>

@@ -26,10 +26,12 @@ class ForgotPasswordView extends BaseView
      * Template data key for email address
      */
     public const EMAIL_KEY = 'EMAIL_KEY';
+
     /**
      * Template data key for success message HTML
      */
     public const SUCCESS_MESSAGE_KEY = 'SUCCESS_MESSAGE';
+
     /**
      * Template data key for error message HTML
      */
@@ -76,9 +78,7 @@ class ForgotPasswordView extends BaseView
         $SUCCESS_MESSAGE = $this->data['SUCCESS_MESSAGE'] ?? '';
         $ERROR_MESSAGE = $this->data['ERROR_MESSAGE'] ?? '';
         include $this->templatePath();
-        $output = ob_get_clean();
-
-        return $output !== false ? $output : '';
+        return (string) ob_get_clean();
     }
 
     /**
@@ -88,7 +88,7 @@ class ForgotPasswordView extends BaseView
      *
      * Success states:
      * - email_sent: Password reset email successfully sent
-     * - password_reset:  Password successfully reset
+     * - password_reset: Password successfully reset
      *
      * Error states:
      * - email_required: Email address not provided
@@ -108,12 +108,12 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['success'])) {
             switch ($_GET['success']) {
                 case 'email_sent':
-                    $successMessage = '<div style="color:  green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
                     border: 1px solid #c3e6cb; border-radius: 4px;">
                     Un email de réinitialisation a été envoyé à votre adresse email.</div>';
                     break;
                 case 'password_reset':
-                    $successMessage = '<div style="color:  green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
                     border: 1px solid #c3e6cb; border-radius: 4px;">
                     Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.</div>';
                     break;
@@ -123,23 +123,23 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['error'])) {
             switch ($_GET['error']) {
                 case 'email_required':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Veuillez saisir votre adresse email.</div>';
                     break;
                 case 'invalid_token':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;
                 case 'database_error':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
-                    border: 1px solid #f5c6cb; border-radius:  4px;">
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue. Veuillez réessayer plus tard. </div>';
                     break;
                 case 'general_error':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
-                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    border:  1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue. Veuillez réessayer plus tard.</div>';
                     break;
             }

@@ -51,9 +51,7 @@ class ResetPasswordView extends BaseView
 
         include $this->templatePath();
 
-        $output = ob_get_clean();
-
-        return $output !== false ? $output : '';
+        return (string) ob_get_clean();
     }
 
     /**
@@ -79,7 +77,7 @@ class ResetPasswordView extends BaseView
      * - password_no_uppercase: Password must contain uppercase letter
      * - password_no_lowercase: Password must contain lowercase letter
      * - password_no_digit: Password must contain digit
-     * - invalid_token:  Reset token is invalid or expired
+     * - invalid_token: Reset token is invalid or expired
      * - database_error: Database operation failed
      * - general_error: Generic error occurred
      * - same_password: New password same as current password
@@ -95,14 +93,14 @@ class ResetPasswordView extends BaseView
         if (isset($_GET['error'])) {
             switch ($_GET['error']) {
                 case 'missing_fields':
-                    $errorMessage = '<div style="color: red; margin:  10px 0; padding: 10px; background:  #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
 border: 1px solid #f5c6cb; border-radius: 4px;">
                     Tous les champs sont obligatoires.</div>';
                     break;
                 case 'passwords_dont_match':
                     $errorMessage = '<div style="color:  red; margin: 10px 0; padding: 10px; background: #f8d7da; 
 border: 1px solid #f5c6cb; border-radius: 4px;">
-                    Les mots de passe ne correspondent pas.</div>';
+                    Les mots de passe ne correspondent pas. </div>';
                     break;
                 case 'password_too_short':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
@@ -110,8 +108,8 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le mot de passe doit contenir au moins 8 caractères.</div>';
                     break;
                 case 'password_no_uppercase':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
-                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border:  1px solid #f5c6cb; border-radius: 4px;">
                     Le mot de passe doit contenir au moins une lettre majuscule.</div>';
                     break;
                 case 'password_no_lowercase':
@@ -120,22 +118,22 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le mot de passe doit contenir au moins une lettre minuscule.</div>';
                     break;
                 case 'password_no_digit':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le mot de passe doit contenir au moins un chiffre.</div>';
                     break;
                 case 'invalid_token':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
-                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    border: 1px solid #f5c6cb; border-radius:  4px;">
                     Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;
                 case 'database_error':
-                    $errorMessage = '<div style="color:  red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue.  Veuillez réessayer plus tard.</div>';
                     break;
                 case 'general_error':
-                    $errorMessage = '<div style="color:  red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Une erreur est survenue. Veuillez réessayer plus tard.</div>';
                     break;
