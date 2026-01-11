@@ -15,27 +15,24 @@ class DashboardController implements ControllerInterface
 
     public function control()
     {
-        // Redirect to login if user is not authenticated
         if (!isset($_SESSION['user'])) {
             header('Location: /login');
             exit();
         }
 
-        /** @var array{id: int, role: string, nom: string, prenom: string} $user */
+        /** @var array{id:int, role:string, nom:string, prenom:string} $user */
         $user = $_SESSION['user'];
+
         $role = strtolower($user['role']);
-        $username = $user['nom'] .  ' ' . $user['prenom'];
+        $username = $user['nom'] . ' ' . $user['prenom'];
         $userId = $user['id'];
 
         try {
-            // Fetch role-specific dashboard data
             $data = $this->prepareDashboardData($userId, $role);
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // Handle database errors gracefully
             $data = ['error_message' => $e->getMessage()];
         }
 
-        // Create and render dashboard view
         $view = new DashboardView(
             title: 'Tableau de bord',
             username: $username,
@@ -49,63 +46,74 @@ class DashboardController implements ControllerInterface
     /**
      * @param int $userId
      * @param string $role
-     * @return array{saes: array<int, array<string, mixed>>}
-     * @throws \Shared\Exceptions\DataBaseException
+     *
+     * @return array{
+     *     saes: array<int, array<string, mixed>>
+     * }
      */
     private function prepareDashboardData(int $userId, string $role): array
     {
         $saes = [];
 
         if ($role === 'etudiant') {
-            // Get SAE assignments for student
             $saes = SaeAttribution::getSaeForStudent($userId);
-            foreach ($saes as &$sae) {
-                $saeId = $sae['sae_id'] ?? null;
 
-                // Fetch related data for each SAE
-                $sae['todos'] = $saeId ? TodoList::getBySae($saeId) : [];
-                $sae['etudiants'] = $saeId ?  SaeAttribution::getStudentsBySae($saeId) : [];
-                $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
-                $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
+            foreach ($saes as &$sae) {
+                $saeId = (isset($sae['sae_id']) && is_int($sae['sae_id'])) ? $sae['sae_id'] : null;
+
+                $sae['todos'] = $saeId !== null ? TodoList::getBySae($saeId) : [];
+                $sae['etudiants'] = $saeId !== null ? SaeAttribution::getStudentsBySae($saeId) : [];
+                $sae['avis'] = $saeId !== null ? SaeAvis::getBySae($saeId) : [];
+
+                $dateRendu = (isset($sae['date_rendu']) && is_string($sae['date_rendu']))
+                    ? $sae['date_rendu']
+                    : '';
+
+                $sae['countdown'] = $this->calculateCountdown($dateRendu);
             }
         } elseif ($role === 'responsable') {
-            // Get SAE assignments managed by supervisor
             $saes = SaeAttribution::getSaeForResponsable($userId);
-            foreach ($saes as &$sae) {
-                $saeId = $sae['sae_id'] ?? null;
 
-                // Fetch related data for each SAE
-                $sae['todos'] = $saeId ? TodoList:: getBySae($saeId) : [];
-                $sae['etudiants'] = $saeId ? SaeAttribution:: getStudentsBySae($saeId) : [];
-                $sae['avis'] = $saeId ? SaeAvis::getBySae($saeId) : [];
-                $sae['countdown'] = $this->calculateCountdown($sae['date_rendu'] ?? '');
+            foreach ($saes as &$sae) {
+                $saeId = (isset($sae['sae_id']) && is_int($sae['sae_id'])) ? $sae['sae_id'] : null;
+
+                $sae['todos'] = $saeId !== null ? TodoList::getBySae($saeId) : [];
+                $sae['etudiants'] = $saeId !== null ? SaeAttribution::getStudentsBySae($saeId) : [];
+                $sae['avis'] = $saeId !== null ? SaeAvis::getBySae($saeId) : [];
+
+                $dateRendu = (isset($sae['date_rendu']) && is_string($sae['date_rendu']))
+                    ? $sae['date_rendu']
+                    : '';
+
+                $sae['countdown'] = $this->calculateCountdown($dateRendu);
             }
         } elseif ($role === 'client') {
-            // Get SAE created by client that have been assigned
             $clientSaes = \Models\Sae\Sae::getAssignedSaeByClient($userId);
 
             foreach ($clientSaes as $sae) {
-                $saeId = $sae['id'];
+                if (!isset($sae['id']) || !is_int($sae['id'])) {
+                    continue;
+                }
 
-                // Get all attributions for this SAE
+                $saeId = $sae['id'];
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
 
-                // Fetch todos and feedback
                 $sae['todos'] = TodoList::getBySae($saeId);
-                $sae['avis'] = SaeAvis:: getBySae($saeId);
+                $sae['avis'] = SaeAvis::getBySae($saeId);
 
-                // Enrich attributions with student details
                 foreach ($attributions as &$attrib) {
-                    $attrib['student'] = User::getById($attrib['student_id']);
+                    if (isset($attrib['student_id']) && is_int($attrib['student_id'])) {
+                        $attrib['student'] = User::getById($attrib['student_id']);
+                    }
                 }
 
                 $sae['attributions'] = $attributions;
-                $dateRendu = '';
-                if (! empty($attributions)) {
-                    $dateRendu = $attributions[0]['date_rendu'] ?? '';
-                }
-                $sae['countdown'] = $this->calculateCountdown($dateRendu);
 
+                $dateRendu = (isset($attributions[0]['date_rendu']) && is_string($attributions[0]['date_rendu']))
+                    ? $attributions[0]['date_rendu']
+                    : '';
+
+                $sae['countdown'] = $this->calculateCountdown($dateRendu);
                 $saes[] = $sae;
             }
         }
@@ -115,11 +123,19 @@ class DashboardController implements ControllerInterface
 
     /**
      * @param string $dateRendu
-     * @return array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool}|null
+     *
+     * @return array{
+     *     expired: bool,
+     *     jours?: int,
+     *     heures?: int,
+     *     minutes?: int,
+     *     timestamp?: int,
+     *     urgent?: bool
+     * }|null
      */
     private function calculateCountdown(string $dateRendu): ?array
     {
-        if (empty($dateRendu)) {
+        if ($dateRendu === '') {
             return null;
         }
 
@@ -139,18 +155,22 @@ class DashboardController implements ControllerInterface
                 'heures' => $interval->h,
                 'minutes' => $interval->i,
                 'timestamp' => $deadline->getTimestamp(),
-                'urgent' => ($interval->days === 0)
+                'urgent' => ($interval->days === 0),
             ];
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return null;
         }
     }
 
     /**
-     * @param array{expired: bool, jours?: int, heures?: int,
-     *      minutes?: int, timestamp?: int, urgent?: bool}|null $countdown
-     * @param string $uniqueId
-     * @return string
+     * @param array{
+     *     expired: bool,
+     *     jours?: int,
+     *     heures?: int,
+     *     minutes?: int,
+     *     timestamp?: int,
+     *     urgent?: bool
+     * }|null $countdown
      */
     public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
     {
@@ -164,32 +184,14 @@ class DashboardController implements ControllerInterface
 
         $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
 
-        $jours = $countdown['jours'] ?? 0;
-        $heures = $countdown['heures'] ?? 0;
-        $minutes = $countdown['minutes'] ?? 0;
-        $timestamp = $countdown['timestamp'] ?? 0;
-
-        $html = "<div class='countdown-container{$urgentClass}'
-                data-deadline='{$timestamp}' id='countdown-{$uniqueId}'>";
-        $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='jours'>{$jours}</span>";
-        $html .= "<span class='countdown-label'>jours</span>";
-        $html .= "</div>";
-        $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='heures'>{$heures}</span>";
-        $html .= "<span class='countdown-label'>heures</span>";
-        $html .= "</div>";
-        $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='minutes'>{$minutes}</span>";
-        $html .= "<span class='countdown-label'>minutes</span>";
-        $html .= "</div>";
-        $html .= "<div class='countdown-box'>";
-        $html .= "<span class='countdown-value' data-type='secondes'>0</span>";
-        $html .= "<span class='countdown-label'>secondes</span>";
-        $html .= "</div>";
-        $html .= "</div>";
-
-        return $html;
+        return
+            "<div class='countdown-container{$urgentClass}' data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
+            "id='countdown-{$uniqueId}'>" .
+            "<div class='countdown-box'><span>" . ($countdown['jours'] ?? 0) . "</span><span>jours</span></div>" .
+            "<div class='countdown-box'><span>" . ($countdown['heures'] ?? 0) . "</span><span>heures</span></div>" .
+            "<div class='countdown-box'><span>" . ($countdown['minutes'] ?? 0) . "</span><span>minutes</span></div>" .
+            "<div class='countdown-box'><span>0</span><span>secondes</span></div>" .
+            "</div>";
     }
 
     public static function support(string $path, string $method): bool
