@@ -107,7 +107,7 @@
             </li>
             <?php if ($ROLE_KEY === 'Responsable') : ?>
                 <li class="nav-item">
-                    <a href="<?php echo $USERS_LINK_KEY; ?>">Gérer les utilisateurs</a>
+                    <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
                 </li>
             <?php endif; ?>
         </ul>
