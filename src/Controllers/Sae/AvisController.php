@@ -48,7 +48,8 @@ class AvisController implements ControllerInterface
      */
     public function control()
     {
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $path = is_string($requestUri) ? parse_url($requestUri, PHP_URL_PATH) : null;
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
         try {
@@ -84,22 +85,26 @@ class AvisController implements ControllerInterface
     private function handleAdd(): void
     {
         // Verify user authentication
-        if (!isset($_SESSION['user'])) {
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             header("Location: /login");
             exit();
         }
 
         // Verify user has permission to add feedback (client or responsable)
-        $role = strtolower($_SESSION['user']['role']);
+        $roleRaw = $_SESSION['user']['role'] ?? '';
+        $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
         if (!in_array($role, ['client', 'responsable'])) {
             header("Location: /dashboard");
             exit();
         }
 
         // Extract and validate form data
-        $saeId = (int)($_POST['sae_id'] ?? 0);
-        $userId = (int)($_SESSION['user']['id'] ?? 0);
-        $message = trim($_POST['message'] ??  '');
+        $saeIdRaw = $_POST['sae_id'] ?? 0;
+        $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+        $userIdRaw = $_SESSION['user']['id'] ?? 0;
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $messageRaw = $_POST['message'] ?? '';
+        $message = is_string($messageRaw) ? trim($messageRaw) : '';
 
         // Create feedback if all required data is valid
         if ($saeId > 0 && $userId > 0 && $message !== '') {
@@ -125,7 +130,8 @@ class AvisController implements ControllerInterface
         }
 
         // Extract feedback ID and delete if valid
-        $avisId = (int)($_POST['avis_id'] ?? 0);
+        $avisIdRaw = $_POST['avis_id'] ?? 0;
+        $avisId = is_numeric($avisIdRaw) ? (int)$avisIdRaw : 0;
         if ($avisId > 0) {
             SaeAvis::delete($avisId);
         }
@@ -142,13 +148,14 @@ class AvisController implements ControllerInterface
     private function handleUpdate(): void
     {
         // Verify user authentication
-        if (!isset($_SESSION['user'])) {
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             header("Location: /login");
             exit();
         }
 
         // Only clients can update feedback (responsables can only delete)
-        $role = strtolower($_SESSION['user']['role']);
+        $roleRaw = $_SESSION['user']['role'] ?? '';
+        $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
         if ($role !== 'client') {
             $_SESSION['error_message'] = "Seuls les clients peuvent modifier leurs remarques.";
             header("Location: /dashboard");
@@ -156,9 +163,12 @@ class AvisController implements ControllerInterface
         }
 
         // Extract and validate form data
-        $avisId = (int)($_POST['avis_id'] ?? 0);
-        $userId = (int)($_SESSION['user']['id'] ?? 0);
-        $message = trim($_POST['message'] ?? '');
+        $avisIdRaw = $_POST['avis_id'] ?? 0;
+        $avisId = is_numeric($avisIdRaw) ? (int)$avisIdRaw : 0;
+        $userIdRaw = $_SESSION['user']['id'] ?? 0;
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $messageRaw = $_POST['message'] ?? '';
+        $message = is_string($messageRaw) ? trim($messageRaw) : '';
 
         // Update feedback if all required data is valid
         if ($avisId > 0 && $userId > 0 && $message !== '') {
