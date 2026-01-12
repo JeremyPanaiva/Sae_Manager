@@ -60,38 +60,64 @@ class UpdateSaeDateController implements ControllerInterface
         try {
             // Extract supervisor ID and form data
             $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
-            $responsableId = is_numeric($responsableIdRaw) ? (int)$responsableIdRaw : 0;
+            $responsableId = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
             $saeIdRaw = $_POST['sae_id'] ?? 0;
-            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
+
+            // Récupérer la date et l'heure séparément
             $newDateRaw = $_POST['date_rendu'] ?? '';
-            $newDate = is_string($newDateRaw) ? $newDateRaw : '';
+            $newTimeRaw = $_POST['heure_rendu'] ?? '20:00';
+
+            $newDate = is_string($newDateRaw) ? trim($newDateRaw) : '';
+            $newTime = is_string($newTimeRaw) ? trim($newTimeRaw) : '20:00';
+
+            // Combiner date et heure
+            $newDateTime = '';
+            if (!empty($newDate)) {
+                // Ajouter les secondes si nécessaire
+                if (!str_contains($newTime, ':')) {
+                    $newTime = '20:00';
+                }
+                $newDateTime = $newDate . ' ' . $newTime . ':00';
+            }
 
             // Validate required fields
-            if ($saeId <= 0 || !$newDate) {
-                $_SESSION['error_message'] = "Tous les champs sont obligatoires. ";
+            if ($saeId <= 0 || empty($newDateTime)) {
+                $_SESSION['error_message'] = "Tous les champs sont obligatoires.";
                 header('Location: /dashboard');
                 exit();
             }
 
-            // Update submission deadline for all students assigned to this SAE by this supervisor
-            SaeAttribution::updateDateRendu($saeId, $responsableId, $newDate);
+            // Valider le format datetime
+            $timestamp = strtotime($newDateTime);
+            if ($timestamp === false) {
+                $_SESSION['error_message'] = "Format de date ou d'heure invalide.";
+                header('Location: /dashboard');
+                exit();
+            }
 
-            // Set success message in session with formatted date
-            $timestamp = strtotime($newDate);
-            $formattedDate = $timestamp !== false ? date('d/m/Y', $timestamp) : $newDate;
-            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} !";
+            // Reformater pour s'assurer du bon format
+            $newDateTime = date('Y-m-d H:i:s', $timestamp);
+
+            // Update submission deadline for all students assigned to this SAE by this supervisor
+            SaeAttribution::updateDateRendu($saeId, $responsableId, $newDateTime);
+
+            // Set success message in session with formatted date and time
+            $formattedDate = date('d/m/Y', $timestamp);
+            $formattedTime = date('H:i', $timestamp);
+            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} à {$formattedTime} !";
 
             // Redirect to dashboard
             header('Location: /dashboard');
             exit();
         } catch (DataBaseException $e) {
             // Database error
-            $_SESSION['error_message'] = "Erreur de base de données :  " . $e->getMessage();
+            $_SESSION['error_message'] = "Erreur de base de données : " . $e->getMessage();
             header('Location: /dashboard');
             exit();
         } catch (\Exception $e) {
             // Generic error handling
-            $_SESSION['error_message'] = "Une erreur est survenue :  " . $e->getMessage();
+            $_SESSION['error_message'] = "Une erreur est survenue : " . $e->getMessage();
             header('Location: /dashboard');
             exit();
         }

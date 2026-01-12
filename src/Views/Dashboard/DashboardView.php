@@ -205,8 +205,8 @@ class DashboardView extends BaseView
                         foreach ($todos as $task) {
                             $taskId = $this->safeString($task['id'] ?? 0);
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
-                            $fait = ! empty($task['fait']);
-                            $checked = $fait ?  'checked' : '';
+                            $fait = !empty($task['fait']);
+                            $checked = $fait ? 'checked' : '';
 
                             $html .= "<li>";
 
@@ -234,8 +234,8 @@ class DashboardView extends BaseView
                     }
 
                     /** @var array<int, array<string, mixed>> $etudiants */
-                    $etudiants = $sae['etudiants'] ??  [];
-                    if (! empty($etudiants)) {
+                    $etudiants = $sae['etudiants'] ?? [];
+                    if (!empty($etudiants)) {
                         $html .= "<h4>Autres étudiants associés :</h4>";
                         $html .= "<ul class='student-list'>";
                         foreach ($etudiants as $etudiant) {
@@ -304,7 +304,7 @@ class DashboardView extends BaseView
                             );
                         }
 
-                        if (! isset($dateRendu)) {
+                        if (!isset($dateRendu)) {
                             $dateRendu = htmlspecialchars($this->safeString($attrib['date_rendu'] ?? ''));
                         }
                     }
@@ -359,7 +359,7 @@ class DashboardView extends BaseView
                             /** @var array<string, mixed> $avisData */
                             $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
                             $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
-                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ??  '')));
+                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
                             $messageRendu = $this->rendreLiensCliquables($message);
                             $dateAvis = htmlspecialchars($this->safeString($avisData['date_envoi'] ?? ''));
@@ -405,7 +405,7 @@ class DashboardView extends BaseView
                 $html .= "<h2>Vos SAE attribuées</h2>";
 
                 /** @var array<int, array<string, mixed>> $saes */
-                $saes = $this->data['saes'] ??  [];
+                $saes = $this->data['saes'] ?? [];
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
@@ -424,6 +424,26 @@ class DashboardView extends BaseView
                     }
 
                     $dateRendu = htmlspecialchars($this->safeString($sae['date_rendu'] ?? ''));
+
+                    // Extraire la date et l'heure séparément
+                    $dateOnly = '';
+                    $timeOnly = '20:00';
+                    if (!empty($dateRendu)) {
+                        $timestamp = strtotime($dateRendu);
+                        if ($timestamp !== false) {
+                            $dateOnly = date('Y-m-d', $timestamp);
+                            $timeOnly = date('H:i', $timestamp);
+                        }
+                    }
+
+                    $dateRenduFormatted = '';
+                    if (!empty($dateRendu)) {
+                        $timestamp = strtotime($dateRendu);
+                        if ($timestamp !== false) {
+                            $dateRenduFormatted = date('d/m/Y', $timestamp) . ' à ' . date('H:i', $timestamp);
+                        }
+                    }
+
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
                         /** @var array{expired: bool, jours?: int, heures?: int, minutes?: int,
                          * timestamp?: int, urgent?: bool} $countdown
@@ -437,7 +457,7 @@ class DashboardView extends BaseView
 
                     $html .= "<div class='date-rendu-wrapper'>";
                     $html .= "<p><strong>Date de rendu actuelle :</strong> <span class='date-value'>" .
-                        ($dateRendu ?: 'Non définie') . "</span></p>";
+                        ($dateRenduFormatted ?: 'Non définie') . "</span></p>";
                     $html .= "<button type='button' class='btn-open-date-modal' 
                         data-target='modal-date-{$saeId}'>
                         Modifier la date de rendu
@@ -447,14 +467,30 @@ class DashboardView extends BaseView
                     $html .= "<div id='modal-date-{$saeId}' class='date-modal'>";
                     $html .= "<div class='date-modal-content'>";
                     $html .= "<span class='date-modal-close'>&times;</span>";
-                    $html .= "<h3>Modifier la date de rendu</h3>";
+                    $html .= "<h3>Modifier la date et l'heure de rendu</h3>";
                     $html .= "<form method='POST' action='/sae/update_date'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
+
+                    $html .= "<div class='date-time-inputs'>";
+
+                    $html .= "<div class='input-wrapper'>";
                     $html .= "<div class='form-group'>";
-                    $html .= "<label for='date-input-{$saeId}'>Nouvelle date de rendu :</label>";
-                    $html .= "<input type='date' id='date-input-{$saeId}' name='date_rendu' value='{$dateRendu}' 
+                    $html .= "<label for='date-input-{$saeId}'>Date de rendu :</label>";
+                    $html .= "<input type='date' id='date-input-{$saeId}' name='date_rendu' value='{$dateOnly}' 
                         required>";
                     $html .= "</div>";
+                    $html .= "</div>";
+
+                    $html .= "<div class='input-wrapper'>";
+                    $html .= "<div class='form-group'>";
+                    $html .= "<label for='time-input-{$saeId}'>Heure de rendu :</label>";
+                    $html .= "<input type='time' id='time-input-{$saeId}' name='heure_rendu' value='{$timeOnly}' 
+                        required>";
+                    $html .= "</div>";
+                    $html .= "</div>";
+
+                    $html .= "</div>";
+
                     $html .= "<div class='modal-buttons'>";
                     $html .= "<button type='submit' class='btn-validate-date'>✓ Valider</button>";
                     $html .= "<button type='button' class='btn-cancel-modal'>
