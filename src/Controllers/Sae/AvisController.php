@@ -93,7 +93,7 @@ class AvisController implements ControllerInterface
         // Verify user has permission to add feedback (client or responsable)
         $roleRaw = $_SESSION['user']['role'] ?? '';
         $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
-        if (!in_array($role, ['client', 'responsable'])) {
+        if (! in_array($role, ['client', 'responsable'])) {
             header("Location: /dashboard");
             exit();
         }
@@ -125,7 +125,7 @@ class AvisController implements ControllerInterface
     {
         // Verify user authentication
         if (!isset($_SESSION['user'])) {
-            header("Location: /login");
+            header("Location:  /login");
             exit();
         }
 
@@ -133,48 +133,20 @@ class AvisController implements ControllerInterface
         $avisIdRaw = $_POST['avis_id'] ?? 0;
         $avisId = is_numeric($avisIdRaw) ? (int)$avisIdRaw : 0;
         if ($avisId > 0) {
-            SaeAvis::delete($avisId);
+            SaeAvis:: delete($avisId);
         }
     }
 
     /**
      * Handles updating feedback from a SAE
      *
-     * Validates user authentication and role (client only, not responsable),
-     * then updates the feedback message if the user is the author.
-     *
      * @return void
      */
     private function handleUpdate(): void
     {
-        // Verify user authentication
-        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
-            header("Location: /login");
-            exit();
-        }
-
-        // Only clients can update feedback (responsables can only delete)
-        $roleRaw = $_SESSION['user']['role'] ?? '';
-        $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
-        if ($role !== 'client') {
-            $_SESSION['error_message'] = "Seuls les clients peuvent modifier leurs remarques.";
-            header("Location: /dashboard");
-            exit();
-        }
-
-        // Extract and validate form data
-        $avisIdRaw = $_POST['avis_id'] ?? 0;
-        $avisId = is_numeric($avisIdRaw) ? (int)$avisIdRaw : 0;
-        $userIdRaw = $_SESSION['user']['id'] ?? 0;
-        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
-        $messageRaw = $_POST['message'] ?? '';
-        $message = is_string($messageRaw) ? trim($messageRaw) : '';
-
-        // Update feedback if all required data is valid
-        if ($avisId > 0 && $userId > 0 && $message !== '') {
-            SaeAvis::update($avisId, $userId, $message);
-            $_SESSION['success_message'] = "Remarque modifiée avec succès.";
-        }
+        $_SESSION['error_message'] = "La modification des remarques n'est plus autorisée. ";
+        header("Location: /dashboard");
+        exit();
     }
 
     /**
@@ -182,7 +154,7 @@ class AvisController implements ControllerInterface
      *
      * @param string $path The requested route path
      * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path matches feedback routes and method is POST
+     * @return bool True if a path matches feedback routes and method is POST
      */
     public static function support(string $path, string $method): bool
     {
