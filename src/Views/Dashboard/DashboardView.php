@@ -150,7 +150,7 @@ class DashboardView extends BaseView
         $successMessage = $this->data['success_message'] ?? $_SESSION['success_message'] ?? null;
         if ($successMessage) {
             $html .= "<div class='success-message' style='background-color: #e8f5e9; border: 1px solid #4caf50; 
-            color: #2e7d32; padding: 15px; margin-bottom: 20px; border-radius: 5px;'>";
+            color: #2e7d32; padding: 15px; margin-bottom: 20px; margin-top: 15px; border-radius: 5px;'>";
             $html .= htmlspecialchars($this->safeString($successMessage));
             $html .= "</div>";
 
@@ -490,7 +490,7 @@ class DashboardView extends BaseView
                     $html .= "<div class='form-group'>";
                     $html .= "<label for='time-input-{$saeId}'>Heure de rendu :</label>";
                     $html .= "<input type='time' id='time-input-{$saeId}' name='heure_rendu' value='{$timeOnly}' 
-                        required>";
+                        required onclick='this.showPicker()'>";
                     $html .= "</div>";
                     $html .= "</div>";
 

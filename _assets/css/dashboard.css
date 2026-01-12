@@ -10,19 +10,19 @@
     --red: #dc3545;
 }
 
-/* Page dashboard */
+/* Dashboard page */
 .dashboard-page {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 30px 40px;
     background-color: var(--amu-gray);
     max-width: 1200px;
-    /* Aligne avec le header */
+    /* Aligns with header */
     margin: 0 auto;
-    /* Centre la page */
+    /* Centers the page */
     width: 100%;
 }
 
-/* Section principale */
+/* Main section */
 .dashboard-section {
     background-color: var(--white);
     padding: 25px;
@@ -30,10 +30,10 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Informations utilisateur */
-/* Informations utilisateur - voir index.css */
+/* User information */
+/* User information - see index.css */
 
-/* Cartes SAE */
+/* SAE Cards */
 .dashboard-card {
     background-color: var(--white);
     border-radius: 12px;
@@ -77,7 +77,7 @@
     margin-bottom: 5px;
 }
 
-/* Avis / remarques */
+/* Reviews / remarks */
 .avis-card {
     background-color: #f8f9fa;
     border-left: 4px solid var(--amu-light-blue);
@@ -95,7 +95,7 @@
     font-size: 0.8rem;
 }
 
-/* Formulaire ajout avis */
+/* Add review form */
 .avis-add {
     margin-top: 10px;
 }
@@ -125,7 +125,7 @@
     background-color: var(--amu-light-blue);
 }
 
-/* Wrapper date + bouton */
+/* Date + button wrapper */
 .date-rendu-wrapper {
     display: flex;
     align-items: center;
@@ -133,13 +133,13 @@
     margin: 10px 0;
 }
 
-/* Date de rendu */
+/* Due date */
 .date-rendu {
     font-weight: bold;
     color: #444;
 }
 
-/* Formulaire modification date de rendu */
+/* Update due date form */
 .update-date-form {
     display: flex;
     align-items: center;
@@ -153,7 +153,7 @@
     font-size: 0.9rem;
 }
 
-/* Wrapper date + bouton sur la même ligne */
+/* Date + button wrapper on same line */
 .date-rendu-wrapper {
     display: flex;
     align-items: center;
@@ -162,7 +162,7 @@
     margin: 10px 0;
 }
 
-/* Date de rendu */
+/* Due date */
 .date-rendu {
     font-weight: bold;
     color: #444;
@@ -185,7 +185,7 @@
 }
 
 
-/* Liste To-Do */
+/* To-Do List */
 ul.todo-list {
     list-style-type: none;
     padding-left: 0;
@@ -197,7 +197,7 @@ ul.todo-list li {
     align-items: center;
 }
 
-/* Checkbox To-Do */
+/* To-Do Checkbox */
 .todo-checkbox {
     margin-right: 10px;
     cursor: pointer;
@@ -206,7 +206,7 @@ ul.todo-list li {
     accent-color: var(--amu-blue);
 }
 
-/* Formulaire ajout To-Do */
+/* Add To-Do form */
 .todo-add {
     display: flex;
     align-items: center;
@@ -235,7 +235,7 @@ ul.todo-list li {
     background-color: var(--amu-light-blue);
 }
 
-/* Barre de progression */
+/* Progress bar */
 .progress-bar {
     width: 100%;
     height: 22px;
@@ -258,7 +258,7 @@ ul.todo-list li {
     color: var(--danger);
 }
 
-/* Boutons supprimer avis */
+/* Delete review buttons */
 form button {
     cursor: pointer;
     border: none;
@@ -270,7 +270,7 @@ form button:hover {
     opacity: 0.8;
 }
 
-/* Message d'erreur */
+/* Error message */
 .error-message {
     background-color: #ffe6e6;
     color: var(--red);
@@ -301,7 +301,7 @@ form button:hover {
     }
 }
 
-/* Liste To-Do */
+/* To-Do List */
 ul.todo-list {
     list-style-type: none;
     padding-left: 0;
@@ -322,14 +322,14 @@ ul.todo-list li:hover {
     background-color: #f0f0f0;
 }
 
-/* Formulaire toggle (checkbox) */
+/* Toggle form (checkbox) */
 .todo-toggle {
     flex: 1;
     display: flex;
     align-items: center;
 }
 
-/* Checkbox To-Do */
+/* To-Do Checkbox */
 .todo-checkbox {
     margin-right: 10px;
     cursor: pointer;
@@ -338,7 +338,7 @@ ul.todo-list li:hover {
     accent-color: var(--amu-blue);
 }
 
-/* ✅ NOUVEAU : Bouton de suppression avec croix design */
+/* ✅ NEW: Delete button with design cross */
 .todo-delete {
     margin: 0;
 }
@@ -438,7 +438,7 @@ ul.todo-list li:hover {
     font-size: 0.9rem;
 }
 
-/* Animation pulsante quand il reste moins de 24h */
+/* Pulsing animation when less than 24h remains */
 @keyframes pulse {
 
     0%,
@@ -485,17 +485,17 @@ ul.todo-list li:hover {
 }
 
 /* ================================
-   Modal de modification de date
+   Date modification modal
 ================================ */
 
-/* Bloquer le scroll du body quand la modal est ouverte */
+/* Block body scroll when modal is open */
 body.modal-open {
     overflow: hidden;
     position: fixed;
     width: 100%;
 }
 
-/* Wrapper de la date */
+/* Date wrapper */
 .date-rendu-wrapper {
     margin: 15px 0;
     padding: 15px;
@@ -520,7 +520,7 @@ body.modal-open {
     font-size: 1.1rem;
 }
 
-/* Bouton ouvrir la modal */
+/* Open modal button */
 .btn-open-date-modal {
     padding: 10px 20px;
     background: linear-gradient(135deg, var(--amu-blue), var(--amu-light-blue));
@@ -543,7 +543,7 @@ body.modal-open {
     transform: translateY(0);
 }
 
-/* Modal overlay - Position absolu et local au conteneur */
+/* Modal overlay - Absolute position and local to container */
 .date-modal {
     display: none;
     position: absolute;
@@ -614,7 +614,7 @@ body.modal-open {
     }
 }
 
-/* Bouton de fermeture (X) */
+/* Close button (X) */
 .date-modal-close {
     position: absolute;
     top: 15px;
@@ -637,7 +637,7 @@ body.modal-open {
     transform: rotate(90deg);
 }
 
-/* Titre de la modal */
+/* Modal title */
 .date-modal-content h3 {
     margin: 0 0 20px 0;
     color: var(--amu-blue);
@@ -646,7 +646,7 @@ body.modal-open {
     padding-bottom: 10px;
 }
 
-/* Groupe de formulaire */
+/* Form group */
 .form-group {
     margin-bottom: 20px;
 }
@@ -701,7 +701,7 @@ body.modal-open {
     box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.15);
 }
 
-/* Style pour le calendrier natif */
+/* Native calendar style */
 .form-group input[type="date"]::-webkit-calendar-picker-indicator,
 .form-group input[type="time"]::-webkit-calendar-picker-indicator {
     cursor: pointer;
@@ -715,14 +715,14 @@ body.modal-open {
     background-color: rgba(0, 102, 204, 0.1);
 }
 
-/* Boutons de la modal */
+/* Modal buttons */
 .modal-buttons {
     display: flex;
     gap: 12px;
     margin-top: 25px;
 }
 
-/* Bouton Valider */
+/* Validate Button */
 .btn-validate-date {
     flex: 1;
     padding: 14px 20px;
@@ -747,7 +747,7 @@ body.modal-open {
     transform: translateY(0);
 }
 
-/* Bouton Annuler */
+/* Cancel Button */
 .btn-cancel-modal {
     flex: 1;
     padding: 14px 20px;
@@ -796,37 +796,71 @@ body.modal-open {
     .form-group input[type="date"],
     .form-group input[type="time"] {
         font-size: 16px;
-        /* Évite le zoom automatique sur iOS */
+        /* Prevents automatic zoom on iOS */
     }
 
-    /* Empiler les champs date et time sur mobile */
-    .date-time-inputs {
-        flex-direction: column;
-        gap: 0;
-    }
-
-    .date-time-inputs .form-group {
-        margin-bottom: 15px;
+    /* Custom Input Icons - Mobile */
+    .custom-input-icon {
+        width: 24px;
+        height: 24px;
+        right: 15px;
     }
 }
 
+/* Custom Input Icons - Global Styles */
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.custom-input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--amu-dark-gray);
+    cursor: pointer;
+    transition: color 0.2s;
+    background: transparent;
+    pointer-events: auto;
+    /* Ensure clicks are captured */
+    z-index: 10;
+}
+
+.custom-input-icon:hover {
+    color: var(--amu-light-blue);
+}
+
+/* Stack date and time fields on mobile */
+.date-time-inputs {
+    flex-direction: column;
+    gap: 0;
+}
+
+.date-time-inputs .form-group {
+    margin-bottom: 15px;
+}
+
+
 /* ================================
-   RESPONSIVE MOBILE COMPLET
+         RESPONSIVE MOBILE
 ================================ */
 
 @media (max-width: 768px) {
 
-    /* Page dashboard */
+    /* Dashboard Page */
     .dashboard-page {
         padding: 15px 10px;
     }
 
-    /* Section principale */
+    /* Main section */
     .dashboard-section {
         padding: 15px;
     }
 
-    /* Cartes SAE */
+    /* SAE Cards */
     .dashboard-card {
         padding: 15px;
         margin-bottom: 15px;
@@ -850,14 +884,14 @@ body.modal-open {
         margin-bottom: 6px;
     }
 
-    /* Boutons */
+    /* Buttons */
     .dashboard-card button,
     .btn-open-date-modal {
         font-size: 0.9rem;
         padding: 8px 16px;
     }
 
-    /* Date de rendu wrapper */
+    /* Due date wrapper */
     .date-rendu-wrapper {
         padding: 12px;
     }
@@ -925,7 +959,7 @@ body.modal-open {
 }
 
 /* ================================
-   Textes de bouton responsive
+   Responsive button texts
 ================================ */
 
 /* Default: show full text, hide short text */
@@ -937,7 +971,7 @@ body.modal-open {
     display: inline;
 }
 
-/* Sur mobile, afficher le texte court et cacher le texte complet */
+/* On mobile, show short text and hide full text */
 @media (max-width: 768px) {
     .btn-text-short {
         display: inline;
