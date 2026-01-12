@@ -425,7 +425,7 @@ class DashboardView extends BaseView
 
                     $dateRendu = htmlspecialchars($this->safeString($sae['date_rendu'] ?? ''));
 
-                    // Extraire la date et l'heure séparément
+                    // Extract date and time separately
                     $dateOnly = '';
                     $timeOnly = '20:00';
                     if (!empty($dateRendu)) {
@@ -458,9 +458,14 @@ class DashboardView extends BaseView
                     $html .= "<div class='date-rendu-wrapper'>";
                     $html .= "<p><strong>Date de rendu actuelle :</strong> <span class='date-value'>" .
                         ($dateRenduFormatted ?: 'Non définie') . "</span></p>";
+
+                    // Combine date and time for the modal
+                    $currentDateTime = !empty($dateOnly) ? "{$dateOnly} {$timeOnly}" : '';
+
                     $html .= "<button type='button' class='btn-open-date-modal' 
-                        data-target='modal-date-{$saeId}'>
-                        Modifier la date de rendu
+                        onclick='openDateModal({$saeId}, \"{$currentDateTime}\")'>
+                        <span class='btn-text-full'>Modifier la date de rendu</span>
+                        <span class='btn-text-short'>Modifier</span>
                     </button>";
                     $html .= "</div>";
 

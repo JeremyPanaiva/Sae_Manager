@@ -34,7 +34,7 @@ class UpdateSaeDateController implements ControllerInterface
      */
     public function control()
     {
-        // Démarrer la session si ce n'est pas déjà fait
+        // Start session if not already started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -64,7 +64,7 @@ class UpdateSaeDateController implements ControllerInterface
             $saeIdRaw = $_POST['sae_id'] ?? 0;
             $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
 
-            // Récupérer la date et l'heure séparément
+            // Get date and time separately
             $newDateRaw = $_POST['date_rendu'] ?? '';
             $newTimeRaw = $_POST['heure_rendu'] ?? '20:00';
 
@@ -74,7 +74,7 @@ class UpdateSaeDateController implements ControllerInterface
             // Combiner date et heure
             $newDateTime = '';
             if (!empty($newDate)) {
-                // Ajouter les secondes si nécessaire
+                // Add seconds if necessary
                 if (!str_contains($newTime, ':')) {
                     $newTime = '20:00';
                 }
@@ -105,7 +105,8 @@ class UpdateSaeDateController implements ControllerInterface
             // Set success message in session with formatted date and time
             $formattedDate = date('d/m/Y', $timestamp);
             $formattedTime = date('H:i', $timestamp);
-            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} à {$formattedTime} !";
+            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès " .
+                "pour le {$formattedDate} à {$formattedTime} !";
 
             // Redirect to dashboard
             header('Location: /dashboard');

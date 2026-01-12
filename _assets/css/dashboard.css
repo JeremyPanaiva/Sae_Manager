@@ -67,7 +67,7 @@
     font-size: 0.95rem;
 }
 
-/* Liste d'étudiants */
+/* Student list */
 .student-list {
     list-style-type: disc;
     padding-left: 20px;
@@ -168,7 +168,7 @@
     color: #444;
 }
 
-/* Bouton discret à côté de la date */
+/* Subtle button next to date */
 .btn-update-date {
     padding: 4px 10px;
     border: none;
@@ -252,7 +252,7 @@ ul.todo-list li {
     transition: width 0.3s ease;
 }
 
-/* Compte à rebours */
+/* Countdown */
 .countdown {
     font-weight: bold;
     color: var(--danger);
@@ -377,7 +377,7 @@ ul.todo-list li:hover {
     transform: rotate(90deg) scale(0.9);
 }
 
-/* Compte à rebours */
+/* Countdown */
 .countdown-container {
     display: flex;
     gap: 15px;
@@ -463,7 +463,7 @@ ul.todo-list li:hover {
     color: var(--danger);
 }
 
-/* Responsive pour petits écrans */
+/* Responsive for small screens */
 @media (max-width: 768px) {
     .countdown-container {
         gap: 10px;
@@ -502,10 +502,15 @@ body.modal-open {
     background: #f9f9f9;
     border-radius: 8px;
     border-left: 4px solid var(--amu-blue);
+    /* Flexbox for alignment */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
 }
 
 .date-rendu-wrapper p {
-    margin: 0 0 10px 0;
+    margin: 0;
     font-size: 1rem;
 }
 
@@ -538,23 +543,36 @@ body.modal-open {
     transform: translateY(0);
 }
 
-/* Modal overlay - Position fixe et stable */
+/* Modal overlay - Position absolu et local au conteneur */
 .date-modal {
     display: none;
-    position: fixed;
-    z-index: 9999;
+    position: absolute;
+    /* Changed from fixed to absolute */
+    z-index: 100;
+    /* Lower z-index since it's local */
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    background-color: rgba(0, 0, 0, 0.6);
+    /* Remove wrapper scroll to prevent conflict with date picker */
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.95);
+    /* Lighter background, less "grey blur" */
+    /* Flexbox centering */
+    display: none;
+    /* Hidden by default */
     align-items: center;
     justify-content: center;
     animation: fadeIn 0.3s ease;
     padding: 20px;
     box-sizing: border-box;
+    border-radius: 12px;
+    /* Match card border radius */
+}
+
+/* Ensure parent of modal is relative */
+.dashboard-card {
+    position: relative;
 }
 
 @keyframes fadeIn {
@@ -567,7 +585,7 @@ body.modal-open {
     }
 }
 
-/* Contenu de la modal - Centré et stable */
+/* Modal content - Centered and stable */
 .date-modal-content {
     background-color: white;
     padding: 30px;
@@ -576,9 +594,10 @@ body.modal-open {
     width: 90%;
     max-width: 500px;
     position: relative;
-    animation: slideDown 0.3s ease;
+    /* Animation removed to prevent jumping on repaint */
+    /* animation: slideDown 0.3s ease; */
     margin: auto;
-    /* Assurer que le contenu ne déborde pas */
+    /* Ensure content doesn't overflow */
     max-height: 90vh;
     overflow-y: auto;
 }
@@ -640,7 +659,7 @@ body.modal-open {
     font-size: 1rem;
 }
 
-/* Conteneur pour date et heure côte à côte */
+/* Container for date and time side by side */
 .date-time-inputs {
     display: flex;
     gap: 15px;
@@ -655,7 +674,7 @@ body.modal-open {
     margin-bottom: 0;
 }
 
-/* Champ de date optimisé */
+/* Optimized date field */
 .form-group input[type="date"],
 .form-group input[type="time"] {
     width: 100%;
@@ -788,5 +807,165 @@ body.modal-open {
 
     .date-time-inputs .form-group {
         margin-bottom: 15px;
+    }
+}
+
+/* ================================
+   RESPONSIVE MOBILE COMPLET
+================================ */
+
+@media (max-width: 768px) {
+
+    /* Page dashboard */
+    .dashboard-page {
+        padding: 15px 10px;
+    }
+
+    /* Section principale */
+    .dashboard-section {
+        padding: 15px;
+    }
+
+    /* Cartes SAE */
+    .dashboard-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-card p {
+        font-size: 0.9rem;
+    }
+
+    /* Student list */
+    .dashboard-card ul {
+        padding-left: 20px;
+    }
+
+    .dashboard-card li {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    /* Boutons */
+    .dashboard-card button,
+    .btn-open-date-modal {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    /* Date de rendu wrapper */
+    .date-rendu-wrapper {
+        padding: 12px;
+    }
+
+    .date-rendu-wrapper p {
+        font-size: 0.9rem;
+    }
+
+    .date-value {
+        font-size: 1rem;
+    }
+
+    /* Countdown */
+    .countdown-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .countdown-box {
+        min-width: 55px;
+    }
+
+    /* Success/error messages */
+    .success-message,
+    .error-message {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+}
+
+/* Very small screens (< 480px) */
+@media (max-width: 480px) {
+    .dashboard-page {
+        padding: 10px 5px;
+    }
+
+    .dashboard-section {
+        padding: 10px;
+    }
+
+    .dashboard-card {
+        padding: 12px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-card p {
+        font-size: 0.85rem;
+    }
+
+    .countdown-box {
+        min-width: 50px;
+        padding: 8px 10px;
+    }
+
+    .countdown-value {
+        font-size: 1.3rem;
+    }
+
+    .countdown-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* ================================
+   Textes de bouton responsive
+================================ */
+
+/* Default: show full text, hide short text */
+.btn-text-short {
+    display: none;
+}
+
+.btn-text-full {
+    display: inline;
+}
+
+/* Sur mobile, afficher le texte court et cacher le texte complet */
+@media (max-width: 768px) {
+    .btn-text-short {
+        display: inline;
+    }
+
+    .btn-text-full {
+        display: none;
+    }
+
+    /* Improve spacing on mobile to avoid cramped layout */
+    .dashboard-card {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .dashboard-card ul {
+        margin-bottom: 12px;
+    }
+
+    .date-rendu-wrapper {
+        margin: 12px 0;
+    }
+
+    .btn-open-date-modal {
+        margin-top: 8px;
     }
 }

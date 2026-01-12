@@ -13,9 +13,6 @@ function openDateModal(saeId, currentDateTime) {
         return;
     }
 
-    // Bloquer le scroll du body
-    document.body.classList.add('modal-open');
-
     // Séparer date et heure
     let datePart = '';
     let timePart = '20:00';
@@ -56,9 +53,6 @@ function closeDateModal(saeId) {
 
     // Masquer la modal
     modal.style.display = 'none';
-
-    // Réactiver le scroll du body
-    document.body.classList.remove('modal-open');
 }
 
 // Initialisation des événements au chargement de la page
@@ -69,6 +63,19 @@ document.addEventListener('DOMContentLoaded', function () {
     modals.forEach(modal => {
         modal.addEventListener('click', function (event) {
             if (event.target === modal) {
+                const saeId = modal.id.replace('modal-date-', '');
+                closeDateModal(saeId);
+            }
+        });
+    });
+
+    // Fermer avec le bouton croix (X)
+    const closeButtons = document.querySelectorAll('.date-modal-close');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Trouver la modal parente
+            const modal = button.closest('.date-modal');
+            if (modal) {
                 const saeId = modal.id.replace('modal-date-', '');
                 closeDateModal(saeId);
             }
