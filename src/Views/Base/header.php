@@ -60,7 +60,8 @@
     <link rel="stylesheet" href="/_assets/css/index.css">
 
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.
+    svg" />
     <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/_assets/img/favicon/site.webmanifest" />
