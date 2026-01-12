@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests\Integration;
+namespace Integration;
 
-use PHPUnit\Framework\TestCase;
-use Models\User\User;
 use Models\Database;
+use Models\User\User;
+use PHPUnit\Framework\TestCase;
 
 class LoginIntegrationTest extends TestCase
 {
