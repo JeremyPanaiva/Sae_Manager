@@ -7,66 +7,99 @@ use Models\User\User;
 use Models\User\PasswordResetToken;
 use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
-use Shared\Exceptions\EmailNotFoundException;
 
+/**
+ * Forgot password submission controller
+ *
+ * Handles POST requests from the forgot password form. Validates the email,
+ * creates a password reset token, and sends a reset link to the user's email.
+ *
+ * @package Controllers\User
+ */
 class ForgotPasswordPost implements ControllerInterface
 {
+    /**
+     * Forgot password route path
+     *
+     * @var string
+     */
     public const PATH = "/user/forgot-password";
 
+    /**
+     * Main controller method
+     *
+     * Validates the email address, checks if user exists, creates a reset token,
+     * and sends a password reset email. Always shows success message for security
+     * (doesn't reveal if email exists in database).
+     *
+     * @return void
+     */
     public function control()
     {
+        // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ?page=forgot-password');
+            header('Location: /user/forgot-password');
             exit;
         }
 
-        $email = $_POST['email'] ?? '';
+        // Extract and validate email
+        $emailRaw = $_POST['email'] ?? '';
+        $email = is_string($emailRaw) ? trim($emailRaw) : '';
 
-        if (empty($email)) {
-            header('Location: ?page=forgot-password&error=email_required');
+        // Validate email format
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            header('Location: /user/forgot-password?error=invalid_email');
             exit;
         }
 
         try {
+            // Check if user exists
             $userModel = new User();
             $user = $userModel->findByEmail($email);
 
-            if (!$user) {
-                header('Location: ?page=forgot-password&success=email_sent');
-                exit;
-            }
+            // Only send email if user exists (but always show success message for security)
+            if ($user) {
+                // Create password reset token
+                $tokenModel = new PasswordResetToken();
+                $token = $tokenModel->createToken($email);
 
-            // Générer et sauvegarder le token
-            $tokenModel = new PasswordResetToken();
-            $token = $tokenModel->createToken($email);
-
-            try {
+                // Send password reset email
                 $emailService = new EmailService();
                 $emailService->sendPasswordResetEmail($email, $token);
-            } catch (\Exception $e) {
-                error_log("Erreur SMTP lors de l'envoi de l'email de réinitialisation: " . $e->getMessage());
-                if (method_exists($e, 'getTraceAsString')) {
-                    error_log($e->getTraceAsString());
-                }
             }
 
-            header('Location: ?page=forgot-password&success=email_sent');
+            // Always redirect with success message (don't reveal if email exists)
+            header('Location: /user/forgot-password?success=email_sent');
             exit;
-
         } catch (DataBaseException $e) {
-            error_log("Erreur base de données dans ForgotPasswordPost: " . $e->getMessage());
-            header('Location: ?page=forgot-password&error=database_error');
+            // Log error with stack trace
+            error_log("Database error in ForgotPasswordPost: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+
+            header('Location: /user/forgot-password?error=database_error');
             exit;
         } catch (\Exception $e) {
-            error_log("Erreur générale dans ForgotPasswordPost: " . $e->getMessage());
-            header('Location: ?page=forgot-password&error=general_error');
+            // Log generic error
+            error_log("Error in ForgotPasswordPost: " . $e->getMessage());
+            error_log("Stack trace: " . $e->getTraceAsString());
+
+            header('Location: /user/forgot-password?error=general_error');
             exit;
         }
     }
 
-    static function support(string $chemin, string $method): bool
+    /**
+     * Checks if this controller supports the given route and HTTP method
+     *
+     * Supports both standard path and legacy query parameter format.
+     *
+     * @param string $chemin The requested route path
+     * @param string $method The HTTP method (GET, POST, etc.)
+     * @return bool True if path matches forgot password route and method is POST
+     */
+    public static function support(string $chemin, string $method): bool
     {
-        return ($chemin === self::PATH || 
+        return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'forgot-password'))
             && $method === "POST";
     }

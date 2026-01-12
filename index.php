@@ -1,12 +1,36 @@
 <?php
 
+/**
+ * Application Entry Point (index.php)
+ *
+ * This file serves as the main entry point and router for the application.
+ * It initializes the environment, loads controllers, and routes incoming requests
+ * to the appropriate controller based on the URL path and HTTP method.
+ *
+ * Responsibilities:
+ * - Configure timezone and error reporting
+ * - Initialize autoloader for class loading
+ * - Start user session
+ * - Register all application controllers
+ * - Route incoming requests to matching controllers
+ * - Handle 404 fallback to home page
+ *
+ * Routing Logic:
+ * The router iterates through registered controllers and calls their support()
+ * method to determine if they can handle the current request.  The first matching
+ * controller's control() method is executed.
+ *
+ * @package Root
+ */
+
+// Set application timezone from environment variable or default to Europe/Paris
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 
-// Inclure l'autoloader
+// Include and register the autoloader for automatic class loading
 require_once "Autoloader.php";
 \Autoloader::register();
 
-// Importer les controllers
+// Import all controller classes
 use Controllers\Dashboard\TodoController;
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
@@ -37,19 +61,31 @@ use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
 
-
-// Démarrer la session dès le départ
+// Start PHP session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Enable detailed error reporting for local development environments
 if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
     error_reporting(E_ALL);
 }
 
-// Liste des contrôleurs
+/**
+ * Application Controllers Registry
+ *
+ * Array of all controller instances that handle different routes in the application.
+ * Controllers are organized by feature area:
+ * - Home: Landing page
+ * - User: Authentication, registration, profile, password management
+ * - Legal: Legal pages, contact, site map
+ * - Dashboard: User dashboard and todos
+ * - SAE: SAE management (create, assign, update, delete)
+ *
+ * @var array
+ */
 $controllers = [
     new HomeController(),
     new Login(),
@@ -80,15 +116,19 @@ $controllers = [
     new ProfileController(),
     new ChangePassword(),
     new ChangePasswordPost()
-
 ];
 
-
-// Récupérer uniquement le chemin de l'URL (sans query string)
+// Extract the path from the request URI (without query string parameters)
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Parcourir les contrôleurs et exécuter celui qui supporte la route
+/**
+ * Route Matching and Controller Execution
+ *
+ * Iterate through all registered controllers and find the first one that supports
+ * the current request path and HTTP method.  Once found, execute its control()
+ * method and terminate the script.
+ */
 foreach ($controllers as $controller) {
     if ($controller::support($path, $method)) {
         error_log(sprintf("Controller utilisé: %s", $controller::class));
@@ -97,7 +137,12 @@ foreach ($controllers as $controller) {
     }
 }
 
-// Page d'accueil par défaut si aucun contrôleur ne correspond
+/**
+ * 404 Fallback Handler
+ *
+ * If no controller matches the request, display the home page as a fallback.
+ * This prevents showing error pages for unmatched routes.
+ */
 $home = new HomeController();
 $home->control();
 exit();

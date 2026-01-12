@@ -1,4 +1,5 @@
 <?php
+
 namespace Controllers\User;
 
 use Controllers\ControllerInterface;
@@ -10,86 +11,126 @@ use Shared\Exceptions\InvalidPasswordException;
 use Shared\Exceptions\DataBaseException;
 use Views\User\LoginView;
 
+/**
+ * User login submission controller
+ *
+ * Handles POST requests from the login form.   Validates credentials, checks account
+ * verification status, and creates a user session on successful authentication.
+ * Displays validation errors if login fails.
+ *
+ * @package Controllers\User
+ */
 class LoginPost implements ControllerInterface
 {
-    function control()
+    /**
+     * Main controller method
+     *
+     * Validates login credentials (email and password), verifies account is activated,
+     * and creates a session with user information on successful authentication.
+     * Displays error messages for invalid credentials, unverified accounts, or database errors.
+     *
+     * @return void
+     */
+    public function control()
     {
-        if (!isset($_POST['ok']))
+        // Check if form was submitted
+        if (!isset($_POST['ok'])) {
             return;
+        }
 
+        // Extract form data
         $email = $_POST['uname'] ?? '';
         $mdp = $_POST['psw'] ?? '';
 
         $User = new User();
+        /** @var array<ValidationException> $validationExceptions */
         $validationExceptions = [];
 
-        //  Vérifie email vide ou invalide
+        // Validate email format
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $validationExceptions[] = new ValidationException("Email invalide.");
         }
 
-        //  Vérifie mot de passe vide
+        // Validate password is not empty
         if (empty($mdp)) {
             $validationExceptions[] = new ValidationException("Le mot de passe ne peut pas être vide.");
         }
 
         try {
-            //  Si des erreurs de validation locales
+            // If local validation errors exist, throw exception
             if (count($validationExceptions) > 0) {
                 throw new ArrayException($validationExceptions);
             }
 
-            //  Vérifie la BDD en priorité
+            // Retrieve user data from database
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                throw new ArrayException([$dbEx]);
+                // Convert database exception to validation exception
+                $validationExceptions[] = new ValidationException($dbEx->getMessage());
+                throw new ArrayException($validationExceptions);
             }
 
-            //  Email non trouvé
+            // Email not found in database
             if (!$userData) {
-                throw new ArrayException([new EmailNotFoundException($email)]);
+                $validationExceptions[] = new ValidationException("Email non trouvé: " . $email);
+                throw new ArrayException($validationExceptions);
             }
 
-            //  Vérifie compte activé
-            if (isset($userData['is_verified']) && (int) $userData['is_verified'] === 0) {
-                throw new ArrayException([new ValidationException("Votre compte n'est pas vérifié. Veuillez cliquer sur le lien reçu par email.")]);
+            // Check if account is verified
+            $isVerifiedRaw = $userData['is_verified'] ?? 1;
+            $isVerified = is_numeric($isVerifiedRaw) ? (int)$isVerifiedRaw : 1;
+            if ($isVerified === 0) {
+                $validationExceptions[] = new ValidationException(
+                    "Votre compte n'est pas vérifié. Veuillez cliquer sur le lien reçu par email."
+                );
+                throw new ArrayException($validationExceptions);
             }
 
-            //  Vérifie mot de passe
-            if (!password_verify($mdp, $userData['mdp'])) {
-                throw new ArrayException([new InvalidPasswordException()]);
+            // Verify password
+            $passwordHash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
+            if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
+                $validationExceptions[] = new ValidationException("Mot de passe incorrect.");
+                throw new ArrayException($validationExceptions);
             }
 
-            //  Connexion réussie
+            // Login successful - create session
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
 
-            $role = isset($userData['role']) ? strtolower(trim($userData['role'])) : 'etudiant';
+            // Extract and normalize user role
+            $roleRaw = $userData['role'] ?? 'etudiant';
+            $role = is_string($roleRaw) ? strtolower(trim($roleRaw)) : 'etudiant';
 
+            // Store user information in session
             $_SESSION['user'] = [
                 'id' => $userData['id'],
                 'nom' => $userData['nom'],
                 'prenom' => $userData['prenom'],
+                'mail' => $userData['mail'] ?? $email,
                 'role' => $role
             ];
 
-
-
-
+            // Redirect to home page
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
-            // Affiche les erreurs sur la vue
+            // Display login form with error messages
             $view = new LoginView($exceptions->getExceptions());
             echo $view->render();
             return;
         }
     }
 
-    static function support(string $chemin, string $method): bool
+    /**
+     * Checks if this controller supports the given route and HTTP method
+     *
+     * @param string $chemin The requested route path
+     * @param string $method The HTTP method (GET, POST, etc.)
+     * @return bool True if path is '/user/login' and method is POST
+     */
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === "/user/login" && $method === "POST";
     }

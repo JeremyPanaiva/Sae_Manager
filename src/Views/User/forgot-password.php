@@ -1,3 +1,20 @@
+<?php
+
+/**
+ * Forgot Password Template
+ *
+ * Displays the password reset request form where users enter their email.
+ *
+ * Template variables:
+ * @var string $SUCCESS_MESSAGE HTML success message to display (optional)
+ * @var string $ERROR_MESSAGE HTML error message to display (optional)
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -17,8 +34,8 @@
 
                 <p>Saisissez votre adresse email pour recevoir un lien de réinitialisation.</p>
 
-                <?= $SUCCESS_MESSAGE ?? '' ?>
-                <?= $ERROR_MESSAGE ?? '' ?>
+                <?= $SUCCESS_MESSAGE ?>
+                <?= $ERROR_MESSAGE ?>
                 <label for="email">Adresse email :</label>
                 <input type="email" id="email" name="email" required placeholder="votre.email@etu.univ-amu.fr">
 

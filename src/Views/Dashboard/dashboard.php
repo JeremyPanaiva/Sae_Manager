@@ -1,5 +1,13 @@
 <link rel="stylesheet" href="/_assets/css/dashboard.css">
-<script src="/_assets/script/dash.js"></script>
+<script src="/_assets/script/dash.js">
+  <?php
+  /**
+   * @var string $ROLE_KEY
+   * @var string $USERNAME_KEY
+   * @var string $CONTENT_KEY
+   */
+    ?>
+</script>
 
 <section class="main dashboard-page" aria-label="Tableau de bord">
   <fieldset class="dashboard-section">

@@ -13,9 +13,16 @@
                 placeholder="Votre mot de passe actuel">
 
             <label for="new_password">Nouveau mot de passe :</label>
-            <input type="password" id="new_password" name="new_password" minlength="8" required
-                placeholder="Nouveau mot de passe">
-            <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">Minimum 8 caractères</small>
+            <input type="password" id="new_password" name="new_password" 
+                   minlength="8" maxlength="20"
+                   pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+                   title="Le mot de passe doit contenir au moins 8 caractères,
+                   une majuscule, une minuscule et un chiffre"
+                   required
+                   placeholder="Nouveau mot de passe">
+            <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">
+                Minimum 8 caractères avec au moins une majuscule, une minuscule et un chiffre
+            </small>
 
             <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
             <input type="password" id="confirm_password" name="confirm_password" required

@@ -1,3 +1,19 @@
+<?php
+
+/**
+ * Contact Page Template
+ *
+ * Displays the contact form with success/error messages.
+ *
+ * Template variables:
+ * @var string $MESSAGE_BLOCK HTML message block (success or error) to display
+ *
+ * @package SaeManager\Views\Legal
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/legal.css">
 <link rel="stylesheet" href="/_assets/css/contact.css">
 
@@ -21,12 +37,14 @@
 
                 <div class="legal-form-group">
                     <label for="contact-subject">Sujet</label>
-                    <input type="text" id="contact-subject" name="subject" required placeholder="Sujet de votre message">
+                    <input type="text" id="contact-subject" name="subject"
+                           required placeholder="Sujet de votre message">
                 </div>
 
                 <div class="legal-form-group">
                     <label for="contact-message">Votre message</label>
-                    <textarea id="contact-message" name="message" rows="8" required placeholder="Écrivez votre message ici..."></textarea>
+                    <textarea id="contact-message" name="message" rows="8" required
+                              placeholder="Écrivez votre message ici..."></textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary">Envoyer</button>

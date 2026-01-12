@@ -8,58 +8,97 @@ use Models\Sae\SaeAttribution;
 use Shared\Exceptions\SaeAttribueException;
 use Views\Sae\SaeView;
 
+/**
+ * SAE deletion controller
+ *
+ * Handles the deletion of SAE (Situation d'Apprentissage et d'Évaluation) by clients.
+ * Prevents deletion if the SAE has already been assigned to students.
+ * Displays appropriate error messages and SAE list on failure.
+ *
+ * @package Controllers\Sae
+ */
 class DeleteSaeController implements ControllerInterface
 {
+    /**
+     * SAE deletion route path
+     *
+     * @var string
+     */
     public const PATH = '/delete_sae';
 
+    /**
+     * Main controller method
+     *
+     * Validates client authentication, checks if SAE can be deleted (not assigned),
+     * and performs deletion.   Handles various error cases by displaying the SAE view
+     * with appropriate error messages.
+     *
+     * @return void
+     */
     public function control()
     {
-        // Vérifie que la requête est POST
+        // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');
             exit();
         }
 
-        // Vérifie que l'utilisateur est un client
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'client') {
+        // Verify user is authenticated as a client
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'client'
+        ) {
             header('HTTP/1.1 403 Forbidden');
             echo "Accès refusé";
             exit();
         }
 
-        $clientId = intval($_SESSION['user']['id']);
-        $saeId = intval($_POST['sae_id'] ?? 0);
+        // Extract client and SAE identifiers
+        $clientIdRaw = $_SESSION['user']['id'] ?? 0;
+        $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
+        $saeIdRaw = $_POST['sae_id'] ?? 0;
+        $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
 
+        // Validate SAE ID
         if ($saeId <= 0) {
             header('Location: /sae?error=invalid_id');
             exit();
         }
 
-        $username = $_SESSION['user']['nom'] . ' ' . $_SESSION['user']['prenom'];
-        $role = $_SESSION['user']['role'];
+        // Store user information for view rendering
+        $nomRaw = $_SESSION['user']['nom'] ?? '';
+        $prenomRaw = $_SESSION['user']['prenom'] ?? '';
+        $nom = is_string($nomRaw) ? $nomRaw : '';
+        $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+        $username = $nom . ' ' . $prenom;
+        $role = (string) $_SESSION['user']['role'];
 
         try {
-            // Récupère la SAE
+            // Retrieve SAE information
             $sae = Sae::getById($saeId);
             if (!$sae) {
-                header('Location: /sae?error=sae_not_found');
+                header('Location:  /sae?error=sae_not_found');
                 exit();
             }
 
-            // Vérifie si la SAE est déjà attribuée
+            // Check if SAE has been assigned to students
             if (Sae::isAttribuee($saeId)) {
-                throw new SaeAttribueException($sae['titre']);
+                $saeTitreRaw = $sae['titre'] ?? '';
+                $saeTitre = is_string($saeTitreRaw) ? $saeTitreRaw : '';
+                throw new SaeAttribueException($saeTitre);
             }
 
-            // Supprimer la SAE
+            // Delete SAE from database
             Sae::delete($clientId, $saeId);
 
-            // Redirection avec succès
+            // Redirect with success message
             header('Location: /sae?success=sae_deleted');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // Erreur DB → affiche la vue avec message, SAE vide
+            // Database error - display view with error message and empty SAE list
             $data = [
                 'saes' => [],
                 'error_message' => $e->getMessage(),
@@ -68,16 +107,18 @@ class DeleteSaeController implements ControllerInterface
             echo $view->render();
             exit();
         } catch (SaeAttribueException $e) {
-            // SAE attribuée → on récupère toutes les SAE pour afficher la liste avec le message
+            // SAE already assigned - retrieve client's SAE list and display with error
             $saes = [];
             try {
                 $saes = Sae::getByClient($clientId);
-                // Ajout info sur le responsable de chaque SAE
+                // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
-                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($s['id']);
+                    $sIdRaw = $s['id'] ?? 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
-                // Si la DB est HS, on laisse vide
+                // If database is unavailable, leave list empty
             }
 
             $data = [
@@ -89,15 +130,18 @@ class DeleteSaeController implements ControllerInterface
             echo $view->render();
             exit();
         } catch (\Throwable $e) {
-            // Autres erreurs → si possible, récupère les SAE sinon vide
+            // Generic error handling - attempt to retrieve SAE list
             $saes = [];
             try {
                 $saes = Sae::getByClient($clientId);
+                // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
-                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($s['id']);
+                    $sIdRaw = $s['id'] ?? 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
-                // Si la DB est HS, on laisse vide
+                // If database is unavailable, leave list empty
             }
 
             $data = [
@@ -111,6 +155,13 @@ class DeleteSaeController implements ControllerInterface
         }
     }
 
+    /**
+     * Checks if this controller supports the given route and HTTP method
+     *
+     * @param string $path The requested route path
+     * @param string $method The HTTP method (GET, POST, etc.)
+     * @return bool True if path is '/delete_sae' and method is POST
+     */
     public static function support(string $path, string $method): bool
     {
         return $path === self::PATH && $method === 'POST';

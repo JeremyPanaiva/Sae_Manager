@@ -4,14 +4,40 @@ namespace Views\Email;
 
 use Views\Base\BaseView;
 
+/**
+ * Email View
+ *
+ * Renders email templates with dynamic data injection.
+ * Used for generating HTML email content for password reset, notifications, etc.
+ *
+ * Unlike standard views, this class:
+ * - Does not include header/footer (emails are standalone)
+ * - Overrides render() to skip BaseView's header/footer wrapping
+ * - Uses dynamic template selection based on email type
+ *
+ * @package Views\Email
+ */
 class EmailView extends BaseView
 {
+    /**
+     * Template filename (without . php extension)
+     *
+     * @var string
+     */
     private string $templateName;
+
+    /**
+     * Template data for variable injection
+     *
+     * @var array<string, mixed>
+     */
     protected array $data;
 
     /**
-     * @param string $templateName - nom du template (sans .html)
-     * @param array $data - données à injecter dans le template
+     * Constructor
+     *
+     * @param string $templateName Template filename without extension (e.g., 'password_reset')
+     * @param array<string, mixed> $data Associative array of variables to inject into the template
      */
     public function __construct(string $templateName, array $data = [])
     {
@@ -19,18 +45,34 @@ class EmailView extends BaseView
         $this->data = $data;
     }
 
+    /**
+     * Returns the path to the email template file
+     *
+     * @return string Absolute path to the template file
+     */
     public function templatePath(): string
     {
         return __DIR__ . '/' . $this->templateName . '.php';
     }
 
+    /**
+     * Returns template variables for injection
+     *
+     * @return array<string, mixed> Template data array
+     */
     protected function templateVariables(): array
     {
         return $this->data;
     }
 
     /**
-     * Render le template email avec les variables
+     * Renders the email template with variables
+     *
+     * Overrides BaseView:: render() to skip header/footer inclusion.
+     * Loads the template file, extracts variables, and captures output.
+     *
+     * @return string Rendered HTML email content
+     * @throws \Exception If the template file does not exist
      */
     public function render(): string
     {
@@ -44,6 +86,6 @@ class EmailView extends BaseView
         ob_start();
         extract($this->data);
         include $templatePath;
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

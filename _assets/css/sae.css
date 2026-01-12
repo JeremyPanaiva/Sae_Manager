@@ -315,3 +315,80 @@
     background-color: #3e8e41; /* Vert encore plus foncé au clic */
     transform: scale(0.98);    /* Effet "pressé" */
 }
+
+
+/* ========================================
+   LÉGENDE DES COULEURS (Responsable)
+   ======================================== */
+
+. color-legend {
+    font-size: 0.85em;
+    padding: 10px 14px;
+    background:  linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-left: 4px solid #6c757d;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    max-width: 200px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.color-legend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.color-legend > div:first-child {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.color-legend > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+. color-legend > div:last-child > div {
+    display:  flex;
+    align-items:  center;
+    padding: 2px 0;
+    color:  #495057;
+    font-size:  0.9em;
+}
+
+.color-legend span[style*="inline-block"] {
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* En-tête avec titre et légende */
+.sae-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items:  flex-start;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.sae-header-flex h2 {
+    margin:  0;
+    flex: 1;
+    min-width:  250px;
+}
+
+@media (max-width: 768px) {
+    .sae-header-flex {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .color-legend {
+        max-width: 100%;
+        order: -1;
+    }
+}

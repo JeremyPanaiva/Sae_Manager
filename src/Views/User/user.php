@@ -1,10 +1,20 @@
 <?php
-// Définir les variables par défaut si elles n'existent pas
-$SORT = $SORT ?? 'date_creation';
-$ORDER = $ORDER ?? 'ASC';
-$ERROR_MESSAGE = $ERROR_MESSAGE ?? '';
-$USERS_ROWS = $USERS_ROWS ??  '';
-$PAGINATION = $PAGINATION ?? '';
+
+/**
+ * User List Template
+ *
+ * Displays a sortable table of all users with pagination.
+ *
+ * Template variables:
+ * @var string $SORT Current sort column (e.g., "prenom", "nom", "mail", "role", "date_creation")
+ * @var string $ORDER Current sort order ("ASC" or "DESC")
+ * @var string $ERROR_MESSAGE HTML error message to display (empty string if no error)
+ * @var string $USERS_ROWS HTML table rows containing user data
+ * @var string $PAGINATION HTML pagination controls
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
 ?>
 <link rel="stylesheet" href="/_assets/css/user.css">
 
