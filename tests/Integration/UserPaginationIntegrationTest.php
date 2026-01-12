@@ -1,9 +1,10 @@
 <?php
 
-namespace Integration;
+namespace Tests\Integration;
 
-use Models\User\User;
 use PHPUnit\Framework\TestCase;
+use Models\User\User;
+use Models\Database;
 
 class UserPaginationIntegrationTest extends TestCase
 {
@@ -95,19 +96,28 @@ class UserPaginationIntegrationTest extends TestCase
 
         $countBefore = $user->countUsers();
 
+        $createdCount = 0;  // ← COMPTER CEUX QUI SONT VRAIMENT CRÉÉS
+
         // Ajouter 3 utilisateurs
         for ($i = 1; $i <= 3; $i++) {
             $token = bin2hex(random_bytes(32));
-            $user->register("Count$i", "Test", "count$i@testpag.com", 'Pass123', 'etudiant', $token);
-            $userData = $user->findByEmail("count$i@testpag. com");
+            $email = "countuser" . time() . $i . "@testpag.com";  // ← EMAIL UNIQUE avec timestamp
+
+            $user->register("Count$i", "Test", $email, 'Pass123', 'etudiant', $token);
+            $userData = $user->findByEmail($email);
+
             if ($userData) {
                 $this->testUserIds[] = $userData['id'];
+                $createdCount++;  // ← INCRÉMENTER SEULEMENT SI CRÉÉ
             }
         }
 
         $countAfter = $user->countUsers();
 
-        // Vérifier qu'on a au moins 3 utilisateurs de plus
-        $this->assertGreaterThanOrEqual($countBefore + 3, $countAfter);
+        // Vérifier qu'on a bien créé 3 utilisateurs
+        $this->assertEquals(3, $createdCount);
+
+        // Vérifier le comptage en BDD
+        $this->assertEquals($countBefore + $createdCount, $countAfter);
     }
 }
