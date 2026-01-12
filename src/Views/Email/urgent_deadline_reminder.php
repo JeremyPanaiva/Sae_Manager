@@ -13,138 +13,188 @@
 /** @var string $STUDENT_NAME */
 /** @var string $SAE_URL */
 /** @var string $DATE_RENDU */
+/** @var string $HEURE_RENDU */
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚠️ Dernier jour - SAE</title>
+    <title>Urgent : Rendu SAE J-1</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #fff0f0;
+            background-color: #f9f9f9;
         }
         .email-container {
             background-color: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         .header {
             text-align: center;
-            padding-bottom: 20px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 25px;
         }
         .header h1 {
-            color: #d32f2f;
+            color: #2c3e50;
             margin: 0;
-            font-size: 26px;
+            font-size: 22px;
+            font-weight: 600;
         }
         .alert-badge {
+            background-color: #d35400; /* Orange brique professionnel */
+            color: white;
+            padding: 6px 14px;
+            border-radius: 4px;
             display: inline-block;
-            background-color: #ff3d00;
-            color: #fff;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px 20px;
-            border-radius: 25px;
-            margin: 15px 0;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+            margin-top: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         .content {
-            margin-top: 20px;
+            margin-top: 10px;
         }
-        .deadline-highlight {
-            background-color: #ff5722;
-            color: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 20px;
-            font-weight: bold;
-            margin: 20px 0;
+        .content p {
+            margin-bottom: 15px;
+            color: #4a4a4a;
         }
         .info-box {
-            background-color: #ffe0b2;
-            border-left: 4px solid #ff9800;
+            background-color: #fffaf0;
+            border-left: 4px solid #e67e22;
             padding: 15px;
             margin: 15px 0;
-            border-radius: 4px;
+            border-radius: 0 4px 4px 0;
+            font-size: 15px;
         }
         .info-box strong {
-            display: block;
-            margin-bottom: 5px;
+            display: inline-block;
+            width: 140px;
+            color: #d35400;
+            font-weight: 600;
+        }
+        .deadline-highlight {
+            background-color: #fdf2e9;
+            border: 1px solid #fae5d3;
             color: #bf360c;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin: 25px 0;
+            font-size: 16px;
         }
         .button {
             display: inline-block;
-            padding: 14px 30px;
-            background-color: #d32f2f;
-            color: #fff;
+            padding: 12px 25px;
+            background-color: #d35400;
+            color: white !important;
             text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-            margin: 20px 0;
+            border-radius: 4px;
+            margin: 25px 0;
+            text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
         .button:hover {
-            background-color: #b71c1c;
+            background-color: #a04000;
+        }
+        .checklist {
+            background-color: #fdfdfd;
+            border: 1px solid #eaeaea;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .checklist p {
+            margin-top: 0;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        .checklist ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            color: #555;
+        }
+        .checklist li {
+            margin: 8px 0;
+            list-style-type: disc;
         }
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #ddd;
+            border-top: 1px solid #eee;
             text-align: center;
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: #999;
         }
     </style>
 </head>
 <body>
 <div class="email-container">
     <div class="header">
-        <h1>🚨 DERNIER JOUR</h1>
-        <div class="alert-badge">23h59 pour rendre votre SAE !</div>
+        <h1>Rappel urgent - Clôture imminente</h1>
+        <div class="alert-badge">
+            Dernier jour : Fin des dépôts à <?= htmlspecialchars($HEURE_RENDU) ?>
+        </div>
     </div>
 
     <div class="content">
         <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME) ?></strong>,</p>
 
-        <p>Attention, c’est le <strong>dernier jour</strong> pour remettre votre SAE.</p>
+        <p>Sauf erreur de notre part, votre projet SAE n'a pas encore été validé.
+            Nous attirons votre attention sur le fait que la période de dépôt se termine aujourd'hui.</p>
 
         <div class="deadline-highlight">
-            ⚠️ DERNIER JOUR - <?= htmlspecialchars($DATE_RENDU) ?>
+            ⚠️ Date limite : <strong>Ce soir à <?= htmlspecialchars($HEURE_RENDU) ?></strong>
+            <br>
+            <span style="font-size: 0.9em; font-weight: normal;">(<?= htmlspecialchars($DATE_RENDU) ?>)</span>
         </div>
 
         <div class="info-box">
-            <strong>📋 SAE :</strong> <?= htmlspecialchars($SAE_TITLE) ?>
+            <strong>SAE concernée :</strong> <?= htmlspecialchars($SAE_TITLE) ?>
         </div>
 
         <div class="info-box">
-            <strong>👨‍🏫 Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
+            <strong>Enseignant :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
         </div>
 
-        <p>Ne tardez plus ! Vérifiez que votre livrable est complet et soumis avant la fin de la journée.</p>
+        <div class="checklist">
+            <p>Rappels importants avant soumission :</p>
+            <ul>
+                <li>Respectez scrupuleusement l'heure limite (<?= htmlspecialchars($HEURE_RENDU) ?>).</li>
+                <li>Vérifiez que tous vos fichiers sont bien uploadés.</li>
+                <li>Assurez-vous d'avoir cliqué sur "Valider" ou "Envoyer".</li>
+            </ul>
+        </div>
+
+        <p>Toute soumission hors délai pourrait être refusée par la plateforme.</p>
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                🚀 Accéder à ma SAE
+                Finaliser mon dépôt maintenant
             </a>
         </div>
+
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            Cordialement,<br>
+            L'équipe pédagogique.
+        </p>
     </div>
 
     <div class="footer">
-        <p>Ceci est un message automatique de SAE Manager</p>
-        <p>Merci de ne pas répondre à cet email</p>
+        <p>Ce courriel a été généré automatiquement par la plateforme de gestion des SAE.</p>
+        <p>Ne répondez pas à ce message.</p>
     </div>
 </div>
 </body>
