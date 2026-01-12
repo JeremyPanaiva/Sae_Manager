@@ -105,10 +105,8 @@
             <li class="nav-item">
                 <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
             </li>
-            <?php if ($ROLE_KEY === 'Responsable') : ?>
                 <li class="nav-item">
                     <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
                 </li>
-            <?php endif; ?>
         </ul>
     </nav>

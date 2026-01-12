@@ -1,12 +1,13 @@
 <link rel="stylesheet" href="/_assets/css/dashboard.css">
-<script src="/_assets/script/dash.js">
-  <?php
+<script src="/_assets/script/dash.js"><script src="/_assets/script/date-modal.js"></script>
+
+<?php
   /**
    * @var string $ROLE_KEY
    * @var string $USERNAME_KEY
    * @var string $CONTENT_KEY
    */
-    ?>
+?>
 </script>
 
 <section class="main dashboard-page" aria-label="Tableau de bord">
