@@ -166,7 +166,7 @@
         </div>
 
         <div class="info-box">
-            <strong>Enseignant référent :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
+            <strong>Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
         </div>
 
         <div class="checklist">
@@ -185,7 +185,7 @@
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                Consulter les détails de ma SAE
+                Consulter ma SAE
             </a>
         </div>
 

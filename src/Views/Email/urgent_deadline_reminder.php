@@ -156,7 +156,7 @@
             Si vous n'avez pas encore finalisé votre travail, il ne vous reste plus que quelques heures.</p>
 
         <div class="deadline-highlight">
-            ⚠️ Date limite : <strong>Ce soir à <?= htmlspecialchars($HEURE_RENDU) ?></strong>
+            ⚠️ Date limite : <strong> Demain à <?= htmlspecialchars($HEURE_RENDU) ?></strong>
             <br>
             <span style="font-size: 0.9em; font-weight: normal;">(<?= htmlspecialchars($DATE_RENDU) ?>)</span>
         </div>
@@ -166,7 +166,7 @@
         </div>
 
         <div class="info-box">
-            <strong>Enseignant :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
+            <strong>Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
         </div>
 
         <div class="checklist">
@@ -182,7 +182,7 @@
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                Consulter les détails de ma SAE
+                Consulter ma SAE
             </a>
         </div>
 
