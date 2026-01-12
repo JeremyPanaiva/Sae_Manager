@@ -65,6 +65,10 @@ class UpdateSaeDateController implements ControllerInterface
             $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
             $newDateRaw = $_POST['date_rendu'] ?? '';
             $newDate = is_string($newDateRaw) ? $newDateRaw : '';
+            if (! empty($newDate) && !str_contains($newDate, ': ')) {
+                $newDate = $newDate . ' 23:59:59';
+            }
+
 
             // Validate required fields
             if ($saeId <= 0 || !$newDate) {

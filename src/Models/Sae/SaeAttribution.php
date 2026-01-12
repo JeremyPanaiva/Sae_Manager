@@ -58,7 +58,7 @@ class SaeAttribution
             throw new DataBaseException("Échec de récupération du résultat dans assignStudentsToSae.");
         }
         $row = $result->fetch_assoc();
-        $dateRendu = $row['date_rendu'] ?? date('Y-m-d');
+        $dateRendu = $row['date_rendu'] ?? date('Y-m-d') . ' 23:59:59';
         $stmt->close();
 
         // Assign each student

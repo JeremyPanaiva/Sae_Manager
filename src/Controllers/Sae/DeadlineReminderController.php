@@ -121,7 +121,8 @@ class DeadlineReminderController implements ControllerInterface
                     }
                 } catch (DataBaseException $e) {
                     $failureCount++;
-                    echo $logPrefix . " ✗ Erreur lors de l'envoi à {$studentNom} ({$studentEmail}): " . $e->getMessage() . "\n";
+                    echo $logPrefix . " ✗ Erreur lors de l'envoi à " .
+                        "{$studentNom} ({$studentEmail}): " . $e->getMessage() . "\n";
                 }
 
                 // Small delay to avoid overwhelming the SMTP server
@@ -132,7 +133,6 @@ class DeadlineReminderController implements ControllerInterface
             echo $logPrefix . " Script terminé avec succès\n";
 
             http_response_code(200);
-
         } catch (DataBaseException $e) {
             http_response_code(500);
             echo $logPrefix . " ERREUR CRITIQUE: " . $e->getMessage() . "\n";
