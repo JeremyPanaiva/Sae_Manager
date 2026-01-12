@@ -741,4 +741,99 @@ class EmailService
             "Cordialement,\n" .
             "L'équipe SAE Manager";
     }
+
+
+    /**
+     * Sends a deadline reminder email to a student (3 days before submission)
+     *
+     * Notifies a student that their SAE submission deadline is approaching in 3 days.
+     *
+     * @param string $studentEmail Student's email address
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendDeadlineReminderEmail(
+        string $studentEmail,
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Rappel : Date de rendu SAE dans 3 jours - ' . $saeTitre;
+
+            $dateRenduFormatted = 'Non définie';
+            if (!empty($dateRendu)) {
+                $timestamp = strtotime($dateRendu);
+                if ($timestamp !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $timestamp);
+                }
+            }
+
+            $saeUrl = $this->getBaseUrl() . '/sae';
+
+            $emailView = new EmailView('deadline_reminder', [
+                'STUDENT_NAME' => $studentNom,
+                'SAE_TITLE' => $saeTitre,
+                'DATE_RENDU' => $dateRenduFormatted,
+                'RESPONSABLE_NAME' => $responsableNom,
+                'SAE_URL' => $saeUrl
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getDeadlineReminderEmailTextBody(
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $responsableNom
+            );
+
+            $this->mailer->send();
+            error_log("Email de rappel envoyé à {$studentEmail} pour la SAE '{$saeTitre}'");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (deadline reminder): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($studentEmail);
+        }
+    }
+
+    /**
+     * Generates plain text version of deadline reminder email
+     *
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return string Plain text email body
+     */
+    private function getDeadlineReminderEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+        return "Bonjour {$studentNom},\n\n" .
+            "RAPPEL : Il ne vous reste que 3 JOURS avant la date de rendu de votre SAE !\n\n" .
+            "SAE : {$saeTitre}\n" .
+            "DATE DE RENDU : {$dateRendu}\n" .
+            "RESPONSABLE : {$responsableNom}\n\n" .
+            "N'oubliez pas de préparer et soumettre votre livrable avant la date limite.\n\n" .
+            "Accéder à vos SAE : {$saeUrl}\n\n" .
+            "Bon courage pour la finalisation de votre projet !\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
+
 }
