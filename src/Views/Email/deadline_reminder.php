@@ -7,6 +7,7 @@
  * @var string $STUDENT_NAME
  * @var string $SAE_URL
  * @var string $DATE_RENDU
+ * @var string $HEURE_RENDU
  */
 ?>
 <!DOCTYPE html>
@@ -45,7 +46,7 @@
             font-weight: 600;
         }
         .alert-badge {
-            background-color: #e74c3c; /* Rouge plus sobre */
+            background-color: #2980b9; /* Bleu informatif pour J-3 */
             color: white;
             padding: 6px 14px;
             border-radius: 4px;
@@ -63,10 +64,9 @@
             margin-bottom: 15px;
             color: #4a4a4a;
         }
-        /* Style des boîtes d'info plus sobre */
         .info-box {
             background-color: #f8f9fa;
-            border-left: 4px solid #2980b9; /* Bleu professionnel */
+            border-left: 4px solid #2980b9;
             padding: 15px;
             margin: 15px 0;
             border-radius: 0 4px 4px 0;
@@ -78,11 +78,10 @@
             color: #2c3e50;
             font-weight: 600;
         }
-        /* Mise en avant de la deadline plus élégante */
         .deadline-highlight {
-            background-color: #fff8f8;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
+            background-color: #eff6ff; /* Fond bleu très pâle */
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
             padding: 15px;
             border-radius: 6px;
             text-align: center;
@@ -92,7 +91,7 @@
         .button {
             display: inline-block;
             padding: 12px 25px;
-            background-color: #2c3e50; /* Bleu foncé */
+            background-color: #2c3e50;
             color: white !important;
             text-decoration: none;
             border-radius: 4px;
@@ -124,7 +123,7 @@
         }
         .checklist li {
             margin: 8px 0;
-            list-style-type: disc; /* Puces classiques au lieu d'emojis */
+            list-style-type: disc;
         }
         .footer {
             margin-top: 40px;
@@ -151,6 +150,8 @@
 
         <div class="deadline-highlight">
             Attention, la clôture des dépôts aura lieu dans <strong>3 jours</strong>.
+            <br>
+            <span style="font-size: 0.9em; font-weight: normal;">(<?= htmlspecialchars($DATE_RENDU) ?>)</span>
         </div>
 
         <div class="info-box">
@@ -159,6 +160,9 @@
 
         <div class="info-box">
             <strong>Date limite :</strong> <?= htmlspecialchars($DATE_RENDU) ?>
+            <?php if (!empty($HEURE_RENDU)) : ?>
+                à <?= htmlspecialchars($HEURE_RENDU) ?>
+            <?php endif; ?>
         </div>
 
         <div class="info-box">
@@ -171,7 +175,12 @@
                 <li>Assurez-vous que l'ensemble des livrables est finalisé.</li>
                 <li>Vérifiez la présence de toutes les pièces jointes demandées.</li>
                 <li>Procédez à une dernière relecture (orthographe et syntaxe).</li>
-                <li>Déposez vos fichiers avant l'heure limite indiquée.</li>
+                <li>
+                    Déposez vos fichiers avant l'heure limite indiquée
+                    <?php if (!empty($HEURE_RENDU)) : ?>
+                        (<?= htmlspecialchars($HEURE_RENDU) ?>)
+                    <?php endif; ?>.
+                </li>
                 <li>En cas de difficulté technique, contactez votre responsable pédagogique sans délai.</li>
             </ul>
         </div>
