@@ -772,10 +772,12 @@ class EmailService
             $this->mailer->Subject = 'Rappel : Date de rendu SAE dans 3 jours - ' . $saeTitre;
 
             $dateRenduFormatted = 'Non définie';
+            $heureRendu = '';
             if (!empty($dateRendu)) {
                 $timestamp = strtotime($dateRendu);
                 if ($timestamp !== false) {
                     $dateRenduFormatted = date('d/m/Y', $timestamp);
+                    $heureRendu = date('H:i', $timestamp);
                 }
             }
 
@@ -785,6 +787,7 @@ class EmailService
                 'STUDENT_NAME' => $studentNom,
                 'SAE_TITLE' => $saeTitre,
                 'DATE_RENDU' => $dateRenduFormatted,
+                'HEURE_RENDU' => $heureRendu,
                 'RESPONSABLE_NAME' => $responsableNom,
                 'SAE_URL' => $saeUrl
             ]);
@@ -794,6 +797,7 @@ class EmailService
                 $studentNom,
                 $saeTitre,
                 $dateRenduFormatted,
+                $heureRendu,
                 $responsableNom
             );
 
@@ -821,13 +825,15 @@ class EmailService
         string $studentNom,
         string $saeTitre,
         string $dateRendu,
+        string $heureRendu,
         string $responsableNom
     ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
+        $textHeure = $heureRendu ? " à $heureRendu" : "";
         return "Bonjour {$studentNom},\n\n" .
             "RAPPEL : Il ne vous reste que 3 JOURS avant la date de rendu de votre SAE !\n\n" .
             "SAE : {$saeTitre}\n" .
-            "DATE DE RENDU : {$dateRendu}\n" .
+            "DATE DE RENDU : {$dateRendu}{$textHeure}\n" .
             "RESPONSABLE : {$responsableNom}\n\n" .
             "N'oubliez pas de préparer et soumettre votre livrable avant la date limite.\n\n" .
             "Accéder à vos SAE : {$saeUrl}\n\n" .
@@ -862,13 +868,15 @@ class EmailService
 
             $this->mailer->addAddress($studentEmail);
             $this->mailer->isHTML(true);
-            $this->mailer->Subject = '🚨 URGENT : Rendu SAE DEMAIN à 23h59 - ' . $saeTitre;
+            $this->mailer->Subject = '🚨 URGENT : Rendu SAE DANS 1 JOUR - ' . $saeTitre;
 
             $dateRenduFormatted = 'Non définie';
+            $heureRendu = '';
             if (!empty($dateRendu)) {
                 $timestamp = strtotime($dateRendu);
                 if ($timestamp !== false) {
                     $dateRenduFormatted = date('d/m/Y', $timestamp);
+                    $heureRendu = date('H:i', $timestamp);
                 }
             }
 
@@ -878,6 +886,7 @@ class EmailService
                 'STUDENT_NAME' => $studentNom,
                 'SAE_TITLE' => $saeTitre,
                 'DATE_RENDU' => $dateRenduFormatted,
+                'HEURE_RENDU' => $heureRendu,
                 'RESPONSABLE_NAME' => $responsableNom,
                 'SAE_URL' => $saeUrl
             ]);
@@ -887,7 +896,8 @@ class EmailService
                 $studentNom,
                 $saeTitre,
                 $dateRenduFormatted,
-                $responsableNom
+                $responsableNom,
+                $heureRendu
             );
 
             $this->mailer->send();
@@ -914,13 +924,16 @@ class EmailService
         string $studentNom,
         string $saeTitre,
         string $dateRendu,
-        string $responsableNom
+        string $responsableNom,
+        string $heureRendu,
     ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
+
+        $precisionHeure = $heureRendu ? " à {$heureRendu}" : "";
         return "Bonjour {$studentNom},\n\n" .
             "🚨 ATTENTION : Il ne vous reste qu'UN SEUL JOUR avant la date de rendu de votre SAE !\n\n" .
             "SAE : {$saeTitre}\n" .
-            "DATE DE RENDU : DEMAIN ({$dateRendu}) à 23h59\n" .
+            "DATE DE RENDU : DEMAIN ({$dateRendu}){$precisionHeure}\n" .
             "RESPONSABLE : {$responsableNom}\n\n" .
             "C'est le moment de finaliser et soumettre votre travail !\n\n" .
             "Accéder à vos SAE : {$saeUrl}\n\n" .
