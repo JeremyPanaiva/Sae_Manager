@@ -34,9 +34,14 @@ class UpdateSaeDateController implements ControllerInterface
      */
     public function control()
     {
+        // Démarrer la session si ce n'est pas déjà fait
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
         // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location:  /dashboard');
+            header('Location: /dashboard');
             exit();
         }
 
@@ -48,8 +53,7 @@ class UpdateSaeDateController implements ControllerInterface
             !is_string($_SESSION['user']['role']) ||
             strtolower($_SESSION['user']['role']) !== 'responsable'
         ) {
-            header('HTTP/1.1 403 Forbidden');
-            echo "Accès refusé";
+            header('Location: /dashboard');
             exit();
         }
 
@@ -72,18 +76,22 @@ class UpdateSaeDateController implements ControllerInterface
             // Update submission deadline for all students assigned to this SAE by this supervisor
             SaeAttribution::updateDateRendu($saeId, $responsableId, $newDate);
 
-            // Set success message in session
-            $_SESSION['success_message'] = "Date de rendu mise à jour avec succès. ";
+            // Set success message in session with formatted date
+            $timestamp = strtotime($newDate);
+            $formattedDate = $timestamp !== false ? date('d/m/Y', $timestamp) : $newDate;
+            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} !";
+
+            // Redirect to dashboard
             header('Location: /dashboard');
             exit();
         } catch (DataBaseException $e) {
             // Database error
-            $_SESSION['error_message'] = $e->getMessage();
+            $_SESSION['error_message'] = "Erreur de base de données :  " . $e->getMessage();
             header('Location: /dashboard');
             exit();
         } catch (\Exception $e) {
             // Generic error handling
-            $_SESSION['error_message'] = "Une erreur est survenue. Veuillez réessayer.";
+            $_SESSION['error_message'] = "Une erreur est survenue :  " . $e->getMessage();
             header('Location: /dashboard');
             exit();
         }

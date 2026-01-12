@@ -14,7 +14,7 @@ use Views\Base\BaseView;
  * Role-based content:
  * - Étudiant:  Shows assigned SAE with to-do list management, progress bar, deadlines
  * - Client: Shows created SAE with student assignments, progress, and feedback
- * - Responsable:  Shows assigned SAE with deadline management, student progress, feedback
+ * - Responsable: Shows assigned SAE with deadline management, student progress, feedback
  *
  * @package Views\Dashboard
  */
@@ -87,8 +87,8 @@ class DashboardView extends BaseView
 
         $this->data[self::TITLE_KEY] = $this->title;
         $this->data[self::USERNAME_KEY] = $this->username;
-        $this->data[self::ROLE_KEY] = $this->role;
-        $this->data[self::CONTENT_KEY] = $this->buildContentHtml();
+        $this->data[self:: ROLE_KEY] = $this->role;
+        $this->data[self:: CONTENT_KEY] = $this->buildContentHtml();
     }
 
     /**
@@ -170,7 +170,7 @@ class DashboardView extends BaseView
                     $html .= "<p><strong>Date de rendu :</strong> {$dateRendu} ";
                     $html .= "<span class='countdown' data-date='{$dateRendu}'></span></p>";
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
-                        /** @var array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool} $countdown */
+                        /** @var array{expired: bool, jours? :   int, heures?:  int, minutes?: int, timestamp? :   int, urgent?: bool} $countdown */
                         $countdown = $sae['countdown'];
                         $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
                             $countdown,
@@ -184,7 +184,7 @@ class DashboardView extends BaseView
                     $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
                     $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
-                    $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
+                    $html .= "<p><strong>Avancement :   </strong> {$percent}%</p>";
 
                     $html .= "<div class='progress-bar'>";
                     $html .= "<div class='progress-fill' style='width: {$percent}%;'></div>";
@@ -193,7 +193,7 @@ class DashboardView extends BaseView
                     $saeId = $this->safeString($sae['sae_id'] ?? 0);
                     $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche.. .' required>";
+                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
                     $html .= "<button type='submit'>Ajouter</button>";
                     $html .= "</form>";
 
@@ -202,7 +202,7 @@ class DashboardView extends BaseView
                         foreach ($todos as $task) {
                             $taskId = $this->safeString($task['id'] ?? 0);
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
-                            $fait = !empty($task['fait']);
+                            $fait = !  empty($task['fait']);
                             $checked = $fait ? 'checked' : '';
 
                             $html .= "<li>";
@@ -227,7 +227,7 @@ class DashboardView extends BaseView
                         }
                         $html .= "</ul>";
                     } else {
-                        $html .= "<p>Aucune tâche pour cette SAE. </p>";
+                        $html .= "<p>Aucune tâche pour cette SAE.   </p>";
                     }
 
                     /** @var array<int, array<string, mixed>> $etudiants */
@@ -246,12 +246,12 @@ class DashboardView extends BaseView
                     }
 
                     /** @var array<int, array<string, mixed>> $avisList */
-                    $avisList = $sae['avis'] ?? [];
+                    $avisList = $sae['avis'] ??  [];
                     if (!empty($avisList)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($avisList as $avis) {
                             $nomAuteur = htmlspecialchars($this->safeString($avis['nom'] ?? 'Inconnu'));
-                            $prenomAuteur = htmlspecialchars($this->safeString($avis['prenom'] ?? ''));
+                            $prenomAuteur = htmlspecialchars($this->safeString($avis['prenom'] ??  ''));
                             $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avis['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avis['message'] ?? ''));
                             $message = $this->rendreLiensCliquables($message);
@@ -279,7 +279,7 @@ class DashboardView extends BaseView
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    $saeId = $this->safeString($sae['id'] ?? 0);
+                    $saeId = $this->safeString($sae['id'] ??   0);
                     $titreSae = htmlspecialchars($this->safeString($sae['titre'] ?? 'Titre inconnu'));
                     $description = htmlspecialchars($this->safeString($sae['description'] ?? ''));
                     $html .= "<h3>{$titreSae}</h3>";
@@ -321,7 +321,7 @@ class DashboardView extends BaseView
 
                     $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ?? 'Non définie') . "</p>";
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
-                        /** @var array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool} $countdown */
+                        /** @var array{expired: bool, jours?:  int, heures?: int, minutes? :  int, timestamp?:  int, urgent? :   bool} $countdown */
                         $countdown = $sae['countdown'];
                         $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
                             $countdown,
@@ -329,7 +329,7 @@ class DashboardView extends BaseView
                         );
                     }
 
-                    if (!empty($allTodos)) {
+                    if (!  empty($allTodos)) {
                         $totalTasks = count($allTodos);
                         $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
                         $percent = round(($doneTasks / $totalTasks) * 100);
@@ -341,26 +341,26 @@ class DashboardView extends BaseView
                         $html .= "<ul class='todo-list'>";
                         foreach ($allTodos as $task) {
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
-                            $fait = !empty($task['fait']);
+                            $fait = ! empty($task['fait']);
                             $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
                         }
                         $html .= "</ul>";
                     } else {
-                        $html .= "<p>Aucune tâche pour cette SAE. </p>";
+                        $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
 
-                    if (!empty($allAvis)) {
+                    if (! empty($allAvis)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($allAvis as $avis) {
                             $avisData = (array) $avis;
                             /** @var array<string, mixed> $avisData */
-                            $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
-                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
+                            $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ??  'Inconnu'));
+                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ??  ''));
                             $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
                             $messageRendu = $this->rendreLiensCliquables($message);
-                            $dateAvis = htmlspecialchars($this->safeString($avisData['date_envoi'] ?? ''));
-                            $avisId = $this->safeString($avisData['id'] ?? 0);
+                            $dateAvis = htmlspecialchars($this->safeString($avisData['date_envoi'] ??  ''));
+                            $avisId = $this->safeString($avisData['id'] ??  0);
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
                             $html .= "<div class='avis-card'>";
@@ -371,12 +371,13 @@ class DashboardView extends BaseView
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
                                 // Formulaire de modification (caché par défaut)
                                 $html .= "<form id='edit-form-{$avisId}' method='POST' action='/sae/avis/update' 
-                                style='display:none; margin-top:10px;'>";
+                                style='display:  none; margin-top: 10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
                                 $html .= "<textarea name='message' required style='width:100%; 
-                                min-height:60px;'>{$message}</textarea>";
-                                $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; color:white; 
-                                border:none; padding:5px 10px; cursor:pointer;'>Sauvegarder</button> ";
+                                min-height: 60px;'>{$message}</textarea>";
+                                $html .= "<button type='submit' style='margin-top:5px; background:#4caf50; ";
+                                $html .= "color: white; border: none; padding: 5px 10px; cursor: pointer;'>";
+                                $html .= "Sauvegarder</button> ";
                                 $html .= "<button type='button' onclick='toggleEdit({$avisId}, false)' 
                                 style='margin-top:5px; 
                                 background:#999; color:white; border:none; padding:5px 10px; cursor:pointer;'>
@@ -386,12 +387,12 @@ class DashboardView extends BaseView
                                 // Boutons modifier et supprimer
                                 $html .= "<div id='avis-actions-{$avisId}' style='margin-top:10px;'>";
                                 $html .= "<button onclick='toggleEdit({$avisId}, true)' style='color:#1976d2; 
-                                background:none; 
-                                border:none; cursor:pointer; margin-right:10px;'>Modifier</button>";
+                                background:  none; 
+                                border: none; cursor:pointer; margin-right:10px;'>Modifier</button>";
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; 
-                                cursor:pointer;
+                                $html .= "<button type='submit' style='color:  red; background:none; border:  none; 
+                                cursor:  pointer;
                                 ' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
                                 Supprimer</button>";
                                 $html .= "</form>";
@@ -401,7 +402,7 @@ class DashboardView extends BaseView
                             $html .= "</div>";
                         }
                     } else {
-                        $html .= "<p>Aucun avis pour cette SAE. </p>";
+                        $html .= "<p>Aucun avis pour cette SAE.   </p>";
                     }
 
                     $html .= "<h4>Ajouter un avis</h4>";
@@ -439,22 +440,81 @@ class DashboardView extends BaseView
 
                     $dateRendu = htmlspecialchars($this->safeString($sae['date_rendu'] ?? ''));
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
-                        /** @var array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool} $countdown */
+                        /** @var array{expired: bool, jours?: int, heures?: int, minutes?:  int,
+                         *     timestamp?: int, urgent?: bool} $countdown
+                         */
                         $countdown = $sae['countdown'];
-                        $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
+                        $html .= \Controllers\Dashboard\DashboardController:: generateCountdownHTML(
                             $countdown,
                             "responsable-{$saeId}"
                         );
                     }
 
+                    // Date display and modal button
                     $html .= "<div class='date-rendu-wrapper'>";
-                    $html .= "<form method='POST' action='/sae/update_date' style='display:flex; 
-                    gap:5px; align-items:center; margin: 0;'>";
+                    $html .= "<p><strong>Date de rendu actuelle :</strong> <span class='date-value'>" .
+                    ($dateRendu ?: 'Non définie') . "</span></p>";
+                    $html .= "<button type='button' class='btn-open-date-modal' ";
+                    $html .= "onclick=\"openDateModal{$saeId}()\">
+                        Modifier la date de rendu
+                    </button>";
+                    $html .= "</div>";
+
+                    // Date modification modal
+                    $html .= "<div id='modal-date-{$saeId}' class='date-modal'>";
+                    $html .= "<div class='date-modal-content'>";
+                    $html .= "<span class='date-modal-close' onclick=\"closeDateModal{$saeId}()\">&times;</span>";
+                    $html .= "<h3>Modifier la date de rendu</h3>";
+                    $html .= "<form method='POST' action='/sae/update_date'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<input type='date' name='date_rendu' value='{$dateRendu}'>";
-                    $html .= "<button type='submit' class='btn-update-date'>Modifier</button>";
+                    $html .= "<div class='form-group'>";
+                    $html .= "<label for='date-input-{$saeId}'>Nouvelle date de rendu :</label>";
+                    $html .= "<input type='date' id='date-input-{$saeId}' name='date_rendu' value='{$dateRendu}' 
+                        required>";
+                    $html .= "</div>";
+                    $html .= "<div class='modal-buttons'>";
+                    $html .= "<button type='submit' class='btn-validate-date'>✓ Valider</button>";
+                    $html .= "<button type='button' class='btn-cancel-modal' onclick=\"closeDateModal{$saeId}()\">
+                        ✗ Annuler</button>";
+                    $html .= "</div>";
                     $html .= "</form>";
                     $html .= "</div>";
+                    $html .= "</div>";
+
+                    // Inline JavaScript for this specific SAE
+                    $html .= "<script>
+                    function openDateModal{$saeId}() {
+                        var modal = document.getElementById('modal-date-{$saeId}');
+                        if (modal) {
+                            modal.style. display = 'flex';
+                            setTimeout(function() {
+                                var dateInput = document.getElementById('date-input-{$saeId}');
+                                if (dateInput) {
+                                    dateInput.focus();
+                                }
+                            }, 100);
+                        }
+                    }
+
+                    function closeDateModal{$saeId}() {
+                        var modal = document.getElementById('modal-date-{$saeId}');
+                        if (modal) {
+                            modal. style.display = 'none';
+                        }
+                    }
+
+                    // Close modal when clicking outside
+                    (function() {
+                        var modal = document.getElementById('modal-date-{$saeId}');
+                        if (modal) {
+                            modal.addEventListener('click', function(e) {
+                                if (e.target. id === 'modal-date-{$saeId}') {
+                                    closeDateModal{$saeId}();
+                                }
+                            });
+                        }
+                    })();
+                    </script>";
 
                     /** @var array<int, array<string, mixed>> $todos */
                     $todos = $sae['todos'] ?? [];
@@ -463,7 +523,7 @@ class DashboardView extends BaseView
                         $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
                         $percent = round(($doneTasks / $totalTasks) * 100);
 
-                        $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
+                        $html .= "<p><strong>Avancement :   </strong> {$percent}%</p>";
                         $html .= "<div class='progress-bar'><div class='progress-fill' 
                         style='width: {$percent}%;'></div></div>";
 
@@ -471,7 +531,7 @@ class DashboardView extends BaseView
                         foreach ($todos as $task) {
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
                             $fait = !empty($task['fait']);
-                            $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
+                            $html .= "<li>{$taskTitre}" . ($fait ? " ✅" :   "") . "</li>";
                         }
                         $html .= "</ul>";
                     } else {
@@ -493,21 +553,21 @@ class DashboardView extends BaseView
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
                             $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
-                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
-                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
+                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ??  ''));
+                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ??  '')));
 
                             $html .= "<div class='avis-card'>";
                             $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) 
                             :</strong> {$messageRendu}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
-                            // Responsables peuvent seulement supprimer leurs remarques (pas de modification)
+                            // Supervisors can only delete their own comments (no modification)
                             if ($userIdAuteur === (int) $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' 
-                                style='display:inline; margin-left:10px;'>";
+                                style='display: inline; margin-left:10px;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background:none; border:none; 
-                                cursor:pointer;' 
+                                $html .= "<button type='submit' style='color: red; background:none; border: none; 
+                                cursor: pointer;' 
                                 onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
                                 Supprimer</button>";
                                 $html .= "</form>";
