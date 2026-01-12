@@ -46,7 +46,7 @@ class DeadlineReminderController implements ControllerInterface
      * Executes the deadline reminder process
      *
      * Checks authentication token, retrieves SAE attributions with deadlines
-     * in 3 days, and sends reminder emails to affected students.
+     * in 3 days AND 1 day, and sends appropriate reminder emails to affected students.
      *
      * URL: /sae/deadline-reminder?token=YOUR_SECRET_TOKEN
      *
@@ -81,69 +81,118 @@ class DeadlineReminderController implements ControllerInterface
             // Initialize email service
             $emailService = new EmailService();
 
-            // Get all attributions with deadline in 3 days
-            $attributions = SaeAttribution::getAttributionsWithDeadlineIn3Days();
+            $totalSuccessCount = 0;
+            $totalFailureCount = 0;
 
-            if (empty($attributions)) {
-                echo $logPrefix . " Aucune SAE avec deadline dans 3 jours. Aucun email à envoyer.\n";
-                http_response_code(200);
-                return;
-            }
+            // ========== RAPPEL J-3 ==========
+            echo $logPrefix . " --- Vérification des deadlines à J-3 ---\n";
+            $attributionsJ3 =
+                SaeAttribution::getAttributionsWithDeadlineIn3Days();
 
-            echo $logPrefix . " " . count($attributions) . " attribution(s) trouvée(s) avec deadline dans 3 jours\n";
+            if (!empty($attributionsJ3)) {
+                $msg = " attribution(s) trouvée(s) avec deadline dans 3 jours\n";
+                echo $logPrefix . " " . count($attributionsJ3) . $msg;
 
-            $successCount = 0;
-            $failureCount = 0;
+                foreach ($attributionsJ3 as $attribution) {
+                    /** @var array<string, string|null> $attribution */
+                    $studentEmail = (string) ($attribution['student_email'] ?? '');
 
-            // Send reminder email to each student
-            foreach ($attributions as $attribution) {
-                /* * CORRECTION : Cette annotation dit à PHPStan que $attribution contient
-                 * des clés en string et des valeurs qui sont soit string, soit null.
-                 * Cela autorise le cast (string) plus bas.
-                 */
-                /** @var array<string, string|null> $attribution */
+                    $prenom = (string) ($attribution['student_prenom'] ?? '');
+                    $nom = (string) ($attribution['student_nom'] ?? '');
+                    $studentNom = trim($prenom . ' ' . $nom);
 
-                // On utilise ?? '' pour gérer les null éventuels, et (string) pour le typage strict
-                $studentEmail = (string) ($attribution['student_email'] ?? '');
+                    $saeTitre = (string) ($attribution['sae_titre'] ?? '');
+                    $dateRendu = (string) ($attribution['date_rendu'] ?? '');
 
-                $prenom = (string) ($attribution['student_prenom'] ?? '');
-                $nom = (string) ($attribution['student_nom'] ?? '');
-                $studentNom = trim($prenom . ' ' . $nom);
+                    $respPrenom = (string) ($attribution['responsable_prenom'] ?? '');
+                    $respNom = (string) ($attribution['responsable_nom'] ?? '');
+                    $responsableNom = trim($respPrenom . ' ' . $respNom);
 
-                $saeTitre = (string) ($attribution['sae_titre'] ?? '');
-                $dateRendu = (string) ($attribution['date_rendu'] ?? '');
+                    try {
+                        $sent = $emailService->sendDeadlineReminderEmail(
+                            $studentEmail,
+                            $studentNom,
+                            $saeTitre,
+                            $dateRendu,
+                            $responsableNom
+                        );
 
-                $respPrenom = (string) ($attribution['responsable_prenom'] ?? '');
-                $respNom = (string) ($attribution['responsable_nom'] ?? '');
-                $responsableNom = trim($respPrenom . ' ' . $respNom);
-
-                try {
-                    $sent = $emailService->sendDeadlineReminderEmail(
-                        $studentEmail,
-                        $studentNom,
-                        $saeTitre,
-                        $dateRendu,
-                        $responsableNom
-                    );
-
-                    if ($sent) {
-                        $successCount++;
-                        echo $logPrefix . " ✓ Email envoyé à {$studentNom} ({$studentEmail}) pour SAE '{$saeTitre}'\n";
-                    } else {
-                        $failureCount++;
-                        echo $logPrefix . " ✗ Échec d'envoi à {$studentNom} ({$studentEmail})\n";
+                        if ($sent) {
+                            $totalSuccessCount++;
+                            echo $logPrefix . " ✓ [J-3] Email envoyé à {$studentNom} " .
+                                "({$studentEmail}) pour SAE '{$saeTitre}'\n";
+                        } else {
+                            $totalFailureCount++;
+                            echo $logPrefix . " ✗ [J-3] Échec d'envoi à {$studentNom} ({$studentEmail})\n";
+                        }
+                    } catch (DataBaseException $e) {
+                        $totalFailureCount++;
+                        echo $logPrefix . " ✗ [J-3] Erreur lors de l'envoi à {$studentNom} " .
+                            "({$studentEmail}): " . $e->getMessage() . "\n";
                     }
-                } catch (DataBaseException $e) {
-                    $failureCount++;
-                    echo $logPrefix . " ✗ Erreur lors de l'envoi à " .
-                        "{$studentNom} ({$studentEmail}): " . $e->getMessage() . "\n";
-                }
 
-                // Small delay to avoid overwhelming the SMTP server
-                usleep(500000); // 0.5 second delay
+                    usleep(500000); // 0.5 second delay
+                }
+            } else {
+                echo $logPrefix . " Aucune SAE avec deadline dans 3 jours\n";
             }
 
-            echo $logPrefix . " Résumé: {$successCount} email(s) envoyé(s), {$failureCount} échec(s)\n";
+            // ========== RAPPEL J-1 (URGENT) ==========
+            echo $logPrefix . " --- Vérification des deadlines à J-1 (URGENT) ---\n";
+            $attributionsJ1 =
+                SaeAttribution::getAttributionsWithDeadlineIn1Day();
+
+            if (!empty($attributionsJ1)) {
+                $msg = " attribution(s) trouvée(s) avec deadline DEMAIN (23h59)\n";
+                echo $logPrefix . " " . count($attributionsJ1) . $msg;
+
+                foreach ($attributionsJ1 as $attribution) {
+                    /** @var array<string, string|null> $attribution */
+                    $studentEmail = (string) ($attribution['student_email'] ?? '');
+
+                    $prenom = (string) ($attribution['student_prenom'] ?? '');
+                    $nom = (string) ($attribution['student_nom'] ?? '');
+                    $studentNom = trim($prenom . ' ' . $nom);
+
+                    $saeTitre = (string) ($attribution['sae_titre'] ?? '');
+                    $dateRendu = (string) ($attribution['date_rendu'] ?? '');
+
+                    $respPrenom = (string) ($attribution['responsable_prenom'] ?? '');
+                    $respNom = (string) ($attribution['responsable_nom'] ?? '');
+                    $responsableNom = trim($respPrenom . ' ' . $respNom);
+
+                    try {
+                        $sent = $emailService->sendUrgentDeadlineReminderEmail(
+                            $studentEmail,
+                            $studentNom,
+                            $saeTitre,
+                            $dateRendu,
+                            $responsableNom
+                        );
+
+                        if ($sent) {
+                            $totalSuccessCount++;
+                            echo $logPrefix . " ✓ [J-1 URGENT] Email envoyé à {$studentNom} " .
+                                "({$studentEmail}) pour SAE '{$saeTitre}'\n";
+                        } else {
+                            $totalFailureCount++;
+                            echo $logPrefix . " ✗ [J-1 URGENT] Échec d'envoi à {$studentNom} ({$studentEmail})\n";
+                        }
+                    } catch (DataBaseException $e) {
+                        $totalFailureCount++;
+                        echo $logPrefix . " ✗ [J-1 URGENT] Erreur lors de l'envoi à {$studentNom} " .
+                            "({$studentEmail}): " . $e->getMessage() . "\n";
+                    }
+
+                    usleep(500000); // 0.5 second delay
+                }
+            } else {
+                echo $logPrefix . " Aucune SAE avec deadline demain\n";
+            }
+
+            echo $logPrefix . " ==========================================\n";
+            echo $logPrefix .
+                " Résumé TOTAL: {$totalSuccessCount} email(s) envoyé(s), {$totalFailureCount} échec(s)\n";
             echo $logPrefix . " Script terminé avec succès\n";
 
             http_response_code(200);
