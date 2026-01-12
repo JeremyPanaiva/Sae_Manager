@@ -66,7 +66,7 @@ class UpdateSaeDateController implements ControllerInterface
             $newDateRaw = $_POST['date_rendu'] ?? '';
             $newDate = is_string($newDateRaw) ? $newDateRaw : '';
             if (! empty($newDate) && !str_contains($newDate, ': ')) {
-                $newDate = $newDate . ' 08:00:00';
+                $newDate = $newDate . ' 20:00:00';
             }
 
 
