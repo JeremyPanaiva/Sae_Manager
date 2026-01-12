@@ -97,11 +97,25 @@ class DeadlineReminderController implements ControllerInterface
 
             // Send reminder email to each student
             foreach ($attributions as $attribution) {
-                $studentEmail = $attribution['student_email'];
-                $studentNom = trim($attribution['student_prenom'] . ' ' . $attribution['student_nom']);
-                $saeTitre = $attribution['sae_titre'];
-                $dateRendu = $attribution['date_rendu'];
-                $responsableNom = trim($attribution['responsable_prenom'] . ' ' . $attribution['responsable_nom']);
+                /* * CORRECTION : Cette annotation dit à PHPStan que $attribution contient
+                 * des clés en string et des valeurs qui sont soit string, soit null.
+                 * Cela autorise le cast (string) plus bas.
+                 */
+                /** @var array<string, string|null> $attribution */
+
+                // On utilise ?? '' pour gérer les null éventuels, et (string) pour le typage strict
+                $studentEmail = (string) ($attribution['student_email'] ?? '');
+
+                $prenom = (string) ($attribution['student_prenom'] ?? '');
+                $nom = (string) ($attribution['student_nom'] ?? '');
+                $studentNom = trim($prenom . ' ' . $nom);
+
+                $saeTitre = (string) ($attribution['sae_titre'] ?? '');
+                $dateRendu = (string) ($attribution['date_rendu'] ?? '');
+
+                $respPrenom = (string) ($attribution['responsable_prenom'] ?? '');
+                $respNom = (string) ($attribution['responsable_nom'] ?? '');
+                $responsableNom = trim($respPrenom . ' ' . $respNom);
 
                 try {
                     $sent = $emailService->sendDeadlineReminderEmail(
