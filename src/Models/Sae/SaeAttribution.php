@@ -58,7 +58,7 @@ class SaeAttribution
             throw new DataBaseException("Échec de récupération du résultat dans assignStudentsToSae.");
         }
         $row = $result->fetch_assoc();
-        $dateRendu = $row['date_rendu'] ?? date('Y-m-d');
+        $dateRendu = $row['date_rendu'] ?? date('Y-m-d') . ' 20:00:00';
         $stmt->close();
 
         // Assign each student
@@ -695,5 +695,117 @@ class SaeAttribution
         $stmt->close();
 
         return $students;
+    }
+
+    /**
+     * Retrieves all SAE attributions with deadline in exactly 3 days
+     *
+     * Returns attributions where the submission deadline (date_rendu) is exactly 3 days
+     * from today. Used for sending reminder emails to students.
+     *
+     * @return array<int, array<string, mixed>> Array of attributions with student, SAE, and supervisor info
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getAttributionsWithDeadlineIn3Days(): array
+    {
+        $db = Database::getConnection();
+
+        // Calculate the date that is exactly 3 days from now
+        $targetDate = date('Y-m-d', strtotime('+3 days'));
+
+        $stmt = $db->prepare("
+            SELECT 
+                sa.id AS attribution_id,
+                sa.sae_id,
+                sa.student_id,
+                sa.responsable_id,
+                sa.date_rendu,
+                s.titre AS sae_titre,
+                s.description AS sae_description,
+                u_student.nom AS student_nom,
+                u_student.prenom AS student_prenom,
+                u_student.mail AS student_email,
+                u_resp.nom AS responsable_nom,
+                u_resp.prenom AS responsable_prenom
+            FROM sae_attributions sa
+            JOIN sae s ON sa.sae_id = s.id
+            JOIN users u_student ON sa.student_id = u_student.id
+            JOIN users u_resp ON sa.responsable_id = u_resp.id
+            WHERE DATE(sa.date_rendu) = ?
+            ORDER BY sa.sae_id, u_student.nom
+        ");
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAttributionsWithDeadlineIn3Days.");
+        }
+
+        $stmt->bind_param("s", $targetDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAttributionsWithDeadlineIn3Days.");
+        }
+
+        $attributions = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $attributions;
+    }
+    /**
+     * Retrieves all SAE attributions with deadline in exactly 1 day
+     *
+     * Returns attributions where the submission deadline (date_rendu) is exactly 1 day
+     * from today. Used for sending urgent reminder emails to students.
+     * Note: Since deadline is at 8:0, students still have the full day to submit.
+     *
+     * @return array<int, array<string, mixed>> Array of attributions with student, SAE, and supervisor info
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getAttributionsWithDeadlineIn1Day(): array
+    {
+        $db = Database::getConnection();
+
+        // Calculate the date that is exactly 1 day from now
+        $targetDate = date('Y-m-d', strtotime('+1 day'));
+
+        $stmt = $db->prepare("
+            SELECT 
+                sa.id AS attribution_id,
+                sa.sae_id,
+                sa.student_id,
+                sa.responsable_id,
+                sa.date_rendu,
+                s.titre AS sae_titre,
+                s.description AS sae_description,
+                u_student.nom AS student_nom,
+                u_student.prenom AS student_prenom,
+                u_student.mail AS student_email,
+                u_resp.nom AS responsable_nom,
+                u_resp.prenom AS responsable_prenom
+            FROM sae_attributions sa
+            JOIN sae s ON sa.sae_id = s.id
+            JOIN users u_student ON sa.student_id = u_student.id
+            JOIN users u_resp ON sa.responsable_id = u_resp.id
+            WHERE DATE(sa.date_rendu) = ?
+            ORDER BY sa.sae_id, u_student.nom
+        ");
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getAttributionsWithDeadlineIn1Day.");
+        }
+
+        $stmt->bind_param("s", $targetDate);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getAttributionsWithDeadlineIn1Day.");
+        }
+
+        $attributions = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        return $attributions;
     }
 }

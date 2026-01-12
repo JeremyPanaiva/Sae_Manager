@@ -36,6 +36,7 @@ use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
 use Controllers\Sae\AttribuerSaeController;
+use Controllers\Sae\DeadlineReminderController;
 use Controllers\Sae\DeleteSaeController;
 use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
@@ -115,7 +116,8 @@ $controllers = [
     new UpdateContentSaeController(),
     new ProfileController(),
     new ChangePassword(),
-    new ChangePasswordPost()
+    new ChangePasswordPost(),
+    new DeadlineReminderController(),
 ];
 
 // Extract the path from the request URI (without query string parameters)
