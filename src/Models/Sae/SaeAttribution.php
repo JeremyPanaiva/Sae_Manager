@@ -58,7 +58,7 @@ class SaeAttribution
             throw new DataBaseException("Échec de récupération du résultat dans assignStudentsToSae.");
         }
         $row = $result->fetch_assoc();
-        $dateRendu = $row['date_rendu'] ?? date('Y-m-d') . ' 23:59:59';
+        $dateRendu = $row['date_rendu'] ?? date('Y-m-d') . ' 08:00:00';
         $stmt->close();
 
         // Assign each student
@@ -757,7 +757,7 @@ class SaeAttribution
      *
      * Returns attributions where the submission deadline (date_rendu) is exactly 1 day
      * from today. Used for sending urgent reminder emails to students.
-     * Note: Since deadline is at 23:59, students still have the full day to submit.
+     * Note: Since deadline is at 8:0, students still have the full day to submit.
      *
      * @return array<int, array<string, mixed>> Array of attributions with student, SAE, and supervisor info
      * @throws DataBaseException If database operation fails
