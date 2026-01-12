@@ -3,9 +3,11 @@
     display: block;
     max-width: 700px;
     margin: 0 auto;
-    background: #fff; /* la carte principale de .legal-main est déjà blanche */
+    background: #fff;
+    /* la carte principale de .legal-main est déjà blanche */
     border-radius: 12px;
-    padding: 1rem 0;  /* léger padding interne au bloc */
+    padding: 1rem 0;
+    /* léger padding interne au bloc */
 }
 
 /* Groupes de champs */
@@ -35,6 +37,7 @@
     color: #1f2d3d;
     transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     box-sizing: border-box;
+    resize: vertical;
 }
 
 .legal-form input::placeholder,
@@ -70,14 +73,16 @@
 
 /* Succès: vert (utilise --success) */
 .legal-notice.success {
-    background-color: rgba(40, 167, 69, 0.12);  /* var(--success) allégée */
+    background-color: rgba(40, 167, 69, 0.12);
+    /* var(--success) allégée */
     border-color: var(--success);
     color: #176c30;
 }
 
 /* Erreur: rouge (utilise --danger) */
 .legal-notice.error {
-    background-color: rgba(220, 53, 69, 0.12);  /* var(--danger) allégée */
+    background-color: rgba(220, 53, 69, 0.12);
+    /* var(--danger) allégée */
     border-color: var(--danger);
     color: #a52a37;
 }
