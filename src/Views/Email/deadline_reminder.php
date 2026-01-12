@@ -14,157 +14,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rappel - Date de rendu SAE</title>
+    <title>Rappel d'échéance - SAE</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #f9f9f9;
         }
         .email-container {
             background-color: #ffffff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
         .header {
             text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 3px solid #ff6b6b;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 25px;
         }
         .header h1 {
-            color: #ff6b6b;
+            color: #2c3e50;
             margin: 0;
-            font-size: 24px;
+            font-size: 22px;
+            font-weight: 600;
         }
         .alert-badge {
-            background-color: #ff6b6b;
+            background-color: #e74c3c; /* Rouge plus sobre */
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
+            padding: 6px 14px;
+            border-radius: 4px;
             display: inline-block;
-            margin: 15px 0;
-            font-weight: bold;
-            font-size: 14px;
+            margin-top: 15px;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
         .content {
-            margin-top: 20px;
+            margin-top: 10px;
         }
+        .content p {
+            margin-bottom: 15px;
+            color: #4a4a4a;
+        }
+        /* Style des boîtes d'info plus sobre */
         .info-box {
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background-color: #f8f9fa;
+            border-left: 4px solid #2980b9; /* Bleu professionnel */
             padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
+            margin: 15px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 15px;
         }
         .info-box strong {
-            display: block;
-            margin-bottom: 5px;
-            color: #856404;
+            display: inline-block;
+            width: 140px;
+            color: #2c3e50;
+            font-weight: 600;
         }
+        /* Mise en avant de la deadline plus élégante */
         .deadline-highlight {
-            background-color: #ff6b6b;
-            color: white;
+            background-color: #fff8f8;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 6px;
             text-align: center;
-            margin: 20px 0;
-            font-size: 18px;
-            font-weight: bold;
+            margin: 25px 0;
+            font-size: 16px;
         }
         .button {
             display: inline-block;
-            padding: 12px 30px;
-            background-color: #007bff;
-            color: white;
+            padding: 12px 25px;
+            background-color: #2c3e50; /* Bleu foncé */
+            color: white !important;
             text-decoration: none;
-            border-radius: 5px;
-            margin: 20px 0;
+            border-radius: 4px;
+            margin: 25px 0;
             text-align: center;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.3s;
         }
         .button:hover {
-            background-color: #0056b3;
+            background-color: #1a252f;
         }
         .checklist {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
+            background-color: #fdfdfd;
+            border: 1px solid #eaeaea;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 25px 0;
+        }
+        .checklist p {
+            margin-top: 0;
+            color: #2c3e50;
+            font-weight: 600;
         }
         .checklist ul {
-            margin: 10px 0;
-            padding-left: 25px;
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            color: #555;
         }
         .checklist li {
             margin: 8px 0;
+            list-style-type: disc; /* Puces classiques au lieu d'emojis */
         }
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #eee;
             text-align: center;
-            font-size: 12px;
-            color: #666;
+            font-size: 11px;
+            color: #999;
         }
     </style>
 </head>
 <body>
 <div class="email-container">
     <div class="header">
-        <h1>⏰ Rappel de date de rendu</h1>
-        <div class="alert-badge">URGENT - 3 JOURS RESTANTS</div>
+        <h1>Rappel d'échéance - Projet SAE</h1>
+        <div class="alert-badge">Date limite : J-3</div>
     </div>
 
     <div class="content">
         <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME) ?></strong>,</p>
 
-        <p>Ce message est un rappel important concernant la date de rendu de votre SAE.</p>
+        <p>Nous vous informons par la présente que la date limite de dépôt pour votre
+            Situation d'Apprentissage et d'Évaluation (SAE) arrive prochainement à échéance.</p>
 
         <div class="deadline-highlight">
-            ⚠️ Il ne vous reste que <strong>3 JOURS</strong> !
+            Attention, la clôture des dépôts aura lieu dans <strong>3 jours</strong>.
         </div>
 
         <div class="info-box">
-            <strong>📋 SAE :</strong> <?= htmlspecialchars($SAE_TITLE) ?>
+            <strong>Intitulé de la SAE :</strong> <?= htmlspecialchars($SAE_TITLE) ?>
         </div>
 
         <div class="info-box">
-            <strong>📅 Date de rendu :</strong> <?= htmlspecialchars($DATE_RENDU) ?>
+            <strong>Date limite :</strong> <?= htmlspecialchars($DATE_RENDU) ?>
         </div>
 
         <div class="info-box">
-            <strong>👨‍🏫 Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
+            <strong>Enseignant référent :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?>
         </div>
 
         <div class="checklist">
-            <p><strong>N'oubliez pas de :</strong></p>
+            <p>Rappel des prérequis avant soumission :</p>
             <ul>
-                <li>✅ Finaliser votre livrable</li>
-                <li>✅ Vérifier que tous les documents requis sont prêts</li>
-                <li>✅ Relire et corriger votre travail</li>
-                <li>✅ Soumettre votre travail avant la date limite</li>
-                <li>✅ Contacter votre responsable en cas de questions</li>
+                <li>Assurez-vous que l'ensemble des livrables est finalisé.</li>
+                <li>Vérifiez la présence de toutes les pièces jointes demandées.</li>
+                <li>Procédez à une dernière relecture (orthographe et syntaxe).</li>
+                <li>Déposez vos fichiers avant l'heure limite indiquée.</li>
+                <li>En cas de difficulté technique, contactez votre responsable pédagogique sans délai.</li>
             </ul>
         </div>
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                🚀 Accéder à mes SAE
+                Accéder à l'espace de dépôt
             </a>
         </div>
 
-        <p style="margin-top: 20px; font-style: italic; color: #666;">
-            Bon courage pour la finalisation de votre projet ! 💪
+        <p style="margin-top: 20px; font-size: 14px; color: #666;">
+            Cordialement,<br>
+            L'équipe pédagogique.
         </p>
     </div>
 
     <div class="footer">
-        <p>Ceci est un message automatique de SAE Manager</p>
-        <p>Merci de ne pas répondre à cet email</p>
+        <p>Ce courriel a été généré automatiquement par la plateforme de gestion des SAE.</p>
+        <p>Merci de ne pas répondre directement à ce message.</p>
     </div>
 </div>
 </body>
