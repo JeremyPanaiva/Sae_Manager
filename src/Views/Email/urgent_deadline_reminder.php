@@ -152,8 +152,8 @@
     <div class="content">
         <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME) ?></strong>,</p>
 
-        <p>Sauf erreur de notre part, votre projet SAE n'a pas encore été validé.
-            Nous attirons votre attention sur le fait que la période de dépôt se termine aujourd'hui.</p>
+        <p>Nous tenons à vous rappeler que la date limite de rendu pour votre projet SAE est fixée à demain.
+            Si vous n'avez pas encore finalisé votre travail, il ne vous reste plus que quelques heures.</p>
 
         <div class="deadline-highlight">
             ⚠️ Date limite : <strong>Ce soir à <?= htmlspecialchars($HEURE_RENDU) ?></strong>
@@ -170,19 +170,19 @@
         </div>
 
         <div class="checklist">
-            <p>Rappels importants avant soumission :</p>
+            <p>Rappels importants :</p>
             <ul>
-                <li>Respectez scrupuleusement l'heure limite (<?= htmlspecialchars($HEURE_RENDU) ?>).</li>
-                <li>Vérifiez que tous vos fichiers sont bien uploadés.</li>
-                <li>Assurez-vous d'avoir cliqué sur "Valider" ou "Envoyer".</li>
+                <li>Vérifiez bien l'heure limite fixée par l'enseignant (<?= htmlspecialchars($HEURE_RENDU) ?>).</li>
+                <li>Assurez-vous d'avoir déposé vos fichiers sur la plateforme demandée (Moodle, Email, etc.).</li>
+                <li>Relisez les consignes disponibles sur votre fiche SAE.</li>
             </ul>
         </div>
 
-        <p>Toute soumission hors délai pourrait être refusée par la plateforme.</p>
+        <p>Tout retard dans le rendu est susceptible d'entraîner des pénalités.</p>
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                Finaliser mon dépôt maintenant
+                Consulter les détails de ma SAE
             </a>
         </div>
 
@@ -193,7 +193,7 @@
     </div>
 
     <div class="footer">
-        <p>Ce courriel a été généré automatiquement par la plateforme de gestion des SAE.</p>
+        <p>Ce courriel a été généré automatiquement par SAE Manager.</p>
         <p>Ne répondez pas à ce message.</p>
     </div>
 </div>

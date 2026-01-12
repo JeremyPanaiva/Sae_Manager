@@ -145,11 +145,11 @@
     <div class="content">
         <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME) ?></strong>,</p>
 
-        <p>Nous vous informons par la présente que la date limite de dépôt pour votre
+        <p>Nous vous rappelons que la date limite de rendu pour votre
             Situation d'Apprentissage et d'Évaluation (SAE) arrive prochainement à échéance.</p>
 
         <div class="deadline-highlight">
-            Attention, la clôture des dépôts aura lieu dans <strong>3 jours</strong>.
+            Attention, la clôture est prévue dans <strong>3 jours</strong>.
             <br>
             <span style="font-size: 0.9em; font-weight: normal;">(<?= htmlspecialchars($DATE_RENDU) ?>)</span>
         </div>
@@ -170,24 +170,22 @@
         </div>
 
         <div class="checklist">
-            <p>Rappel des prérequis avant soumission :</p>
+            <p>Check-list avant le rendu final :</p>
             <ul>
-                <li>Assurez-vous que l'ensemble des livrables est finalisé.</li>
-                <li>Vérifiez la présence de toutes les pièces jointes demandées.</li>
-                <li>Procédez à une dernière relecture (orthographe et syntaxe).</li>
-                <li>
-                    Déposez vos fichiers avant l'heure limite indiquée
+                <li>Finalisez la rédaction de vos livrables.</li>
+                <li>Vérifiez bien le format et la plateforme de dépôt demandés (Moodle, Email, etc.).</li>
+                <li>Prévoyez une marge de sécurité pour l'envoi de vos fichiers
                     <?php if (!empty($HEURE_RENDU)) : ?>
-                        (<?= htmlspecialchars($HEURE_RENDU) ?>)
+                        avant <?= htmlspecialchars($HEURE_RENDU) ?>
                     <?php endif; ?>.
                 </li>
-                <li>En cas de difficulté technique, contactez votre responsable pédagogique sans délai.</li>
+                <li>Relisez les consignes disponibles sur la fiche de la SAE.</li>
             </ul>
         </div>
 
         <div style="text-align: center;">
             <a href="<?= htmlspecialchars($SAE_URL) ?>" class="button">
-                Accéder à l'espace de dépôt
+                Consulter les détails de ma SAE
             </a>
         </div>
 
@@ -198,7 +196,7 @@
     </div>
 
     <div class="footer">
-        <p>Ce courriel a été généré automatiquement par la plateforme de gestion des SAE.</p>
+        <p>Ce courriel a été généré automatiquement par SAE Manager.</p>
         <p>Merci de ne pas répondre directement à ce message.</p>
     </div>
 </div>
