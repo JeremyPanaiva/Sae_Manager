@@ -5,14 +5,19 @@ namespace Tests\Unitaire\Models\User;
 use Models\User\UserList;
 use PHPUnit\Framework\TestCase;
 
-
 class UserListSecurityTest extends TestCase
 {
     public function testGetRowsHtmlEscapesXssInPrenom(): void
     {
         $users = [
-            ['prenom' => '<script>alert("XSS")</script>', 'nom' => 'Test', 'mail' => 'test@test.com', 'role' => 'client']
+            [
+                'prenom' => '<script>alert("XSS")</script>',
+                'nom'    => 'Test',
+                'mail'   => 'test@test.com',
+                'role'   => 'client',
+            ],
         ];
+
 
         $userList = new UserList($users);
         $html = $userList->getRowsHtml();
@@ -24,8 +29,14 @@ class UserListSecurityTest extends TestCase
     public function testGetRowsHtmlEscapesXssInNom(): void
     {
         $users = [
-            ['prenom' => 'John', 'nom' => '<img src=x onerror=alert(1)>', 'mail' => 'test@test.com', 'role' => 'etudiant']
+            [
+                'prenom' => 'John',
+                'nom'    => '<img src=x onerror=alert(1)>',
+                'mail'   => 'test@test.com',
+                'role'   => 'etudiant',
+            ],
         ];
+
 
         $userList = new UserList($users);
         $html = $userList->getRowsHtml();
