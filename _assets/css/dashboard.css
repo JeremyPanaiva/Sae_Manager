@@ -455,8 +455,6 @@ ul.todo-list li:hover {
 
 .countdown-container.urgent {
     animation: pulse 2s infinite;
-    background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
-    border: 2px solid var(--danger);
 }
 
 .countdown-container.urgent .countdown-value {
