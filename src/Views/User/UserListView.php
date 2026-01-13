@@ -155,10 +155,10 @@ class UserListView extends BaseView
             $roleBadge = "<span class='role-badge role-{$role}'>{$roleDisplay}</span>";
 
             $USERS_ROWS .= "<tr>";
-            $USERS_ROWS .= "<td>{$prenom}</td>";
-            $USERS_ROWS .= "<td>{$nom}</td>";
-            $USERS_ROWS .= "<td>{$mail}</td>";
-            $USERS_ROWS .= "<td>{$roleBadge}</td>";
+            $USERS_ROWS .= "<td data-label='Prénom'>{$prenom}</td>";
+            $USERS_ROWS .= "<td data-label='Nom'>{$nom}</td>";
+            $USERS_ROWS .= "<td data-label='Email'>{$mail}</td>";
+            $USERS_ROWS .= "<td data-label='Rôle'>{$roleBadge}</td>";
             $USERS_ROWS .= "</tr>";
         }
 

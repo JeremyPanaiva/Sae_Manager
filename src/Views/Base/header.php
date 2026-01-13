@@ -60,8 +60,7 @@
     <link rel="stylesheet" href="/_assets/css/index.css">
 
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
-    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.
-    svg" />
+    <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
     <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/_assets/img/favicon/apple-touch-icon.png" />
     <link rel="manifest" href="/_assets/img/favicon/site.webmanifest" />
@@ -77,6 +76,14 @@
                     <img src="/_assets/img/SM_logo.png" alt="SAE Manager" class="logo-img">
                 </a>
             </section>
+
+            <!-- Hamburger button (visible only on mobile) -->
+            <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
             <section class="user-info" aria-label="Informations utilisateur">
                 <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
                     <p>
@@ -98,7 +105,26 @@
         </section>
     </header>
 
-    <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Navigation principale">
+    <nav class="nav mobile-menu" id="mobileMenu" style="<?php echo $NAV_STYLE; ?>" aria-label="Navigation principale">
+        <!-- User info in mobile menu -->
+        <div class="mobile-user-info" style="<?php echo $USER_META_STYLE; ?>">
+            <p>
+                👤 <?php echo $USERNAME_KEY; ?>
+                <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
+            </p>
+        </div>
+
+        <!-- User actions in mobile menu -->
+        <div class="mobile-user-actions" style="<?php echo $USER_META_STYLE; ?>">
+            <a href="/user/profile" class="mobile-action-btn" style="<?php echo $PROFILE_BTN_STYLE; ?>">
+                Mon profil
+            </a>
+            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
+                <?php echo $CONNECTION_LINK_KEY; ?>
+            </a>
+        </div>
+
+        <!-- Main navigation -->
         <ul class="nav-content">
             <li class="nav-item">
                 <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
@@ -106,9 +132,12 @@
             <li class="nav-item">
                 <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
             </li>
-                <li class="nav-item">
-                    <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
-                </li>
+            <li class="nav-item">
+                <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
+            </li>
         </ul>
 
     </nav>
+
+    <!-- Hamburger menu script -->
+    <script src="/_assets/script/mobile-menu.js"></script>

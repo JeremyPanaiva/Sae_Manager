@@ -24,37 +24,65 @@
 
         <?= $ERROR_MESSAGE ?>
 
+        <!-- Mobile sort controls -->
+        <div class="mobile-sort-controls">
+            <label for="mobile-sort">Trier par :</label>
+            <select id="mobile-sort" onchange="window.location.href=this.value">
+                <option value="?sort=prenom&order=<?= ($SORT === 'prenom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                    <?= $SORT === 'prenom' ? 'selected' : '' ?>>
+                    Prénom
+                </option>
+                <option value="?sort=nom&order=<?= ($SORT === 'nom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                    <?= $SORT === 'nom' ? 'selected' : '' ?>>
+                    Nom
+                </option>
+                <option value="?sort=mail&order=<?= ($SORT === 'mail' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                    <?= $SORT === 'mail' ? 'selected' : '' ?>>
+                    Email
+                </option>
+                <option value="?sort=role&order=<?= ($SORT === 'role' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                    <?= $SORT === 'role' ? 'selected' : '' ?>>
+                    Rôle
+                </option>
+            </select>
+        </div>
+
         <table>
             <thead>
-            <tr>
-                <th>
-                    <a href="?sort=prenom&order=<?= ($SORT === 'prenom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
-                           class="sort-link<?= $SORT === 'prenom' ?  ' active' : '' ?>">
-                        Prénom <?= $SORT === 'prenom' ? ($ORDER === 'ASC' ?  '▲' : '▼') : '' ?>
-                    </a>
-                </th>
-                <th>
-                    <a href="?sort=nom&order=<?= ($SORT === 'nom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
-                           class="sort-link<?= $SORT === 'nom' ? ' active' : '' ?>">
-                        Nom <?= $SORT === 'nom' ? ($ORDER === 'ASC' ? '▲' : '▼') : '' ?>
-                    </a>
-                </th>
-                <th>
-                    <a href="?sort=mail&order=<?= ($SORT === 'mail' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
-                       class="sort-link<?= $SORT === 'mail' ? ' active' : '' ?>">
-                        Email <?= $SORT === 'mail' ? ($ORDER === 'ASC' ? '▲' : '▼') : '' ?>
-                    </a>
-                </th>
-                <th>
-                    <a href="?sort=role&order=<?= ($SORT === 'role' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
-                       class="sort-link<?= $SORT === 'role' ? ' active' : '' ?>">
-                        Rôle <?= $SORT === 'role' ?  ($ORDER === 'ASC' ? '▲' : '▼') : '' ?>
-                    </a>
-                </th>
-            </tr>
+                <tr>
+                    <th>
+                        <a href="?sort=prenom&order=<?= ($SORT === 'prenom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                            class="sort-link<?= $SORT === 'prenom' ? ' active' : '' ?>">
+                            Prénom <span class="sort-icon">
+                                <?= $SORT === 'prenom' ? ($ORDER === 'ASC' ? '▲' : '▼') : '⇅' ?>
+                            </span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort=nom&order=<?= ($SORT === 'nom' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                            class="sort-link<?= $SORT === 'nom' ? ' active' : '' ?>">
+                            Nom <span
+                                class="sort-icon"><?= $SORT === 'nom' ? ($ORDER === 'ASC' ? '▲' : '▼') : '⇅' ?></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort=mail&order=<?= ($SORT === 'mail' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                            class="sort-link<?= $SORT === 'mail' ? ' active' : '' ?>">
+                            Email <span
+                                class="sort-icon"><?= $SORT === 'mail' ? ($ORDER === 'ASC' ? '▲' : '▼') : '⇅' ?></span>
+                        </a>
+                    </th>
+                    <th>
+                        <a href="?sort=role&order=<?= ($SORT === 'role' && $ORDER === 'ASC') ? 'DESC' : 'ASC' ?>"
+                            class="sort-link<?= $SORT === 'role' ? ' active' : '' ?>">
+                            Rôle <span
+                                class="sort-icon"><?= $SORT === 'role' ? ($ORDER === 'ASC' ? '▲' : '▼') : '⇅' ?></span>
+                        </a>
+                    </th>
+                </tr>
             </thead>
             <tbody>
-            <?= $USERS_ROWS ?>
+                <?= $USERS_ROWS ?>
             </tbody>
         </table>
         <div class="pagination">

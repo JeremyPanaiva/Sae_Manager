@@ -148,7 +148,7 @@ class User
             throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE role = ?");
+        $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE role = ? AND is_verified = 1");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getAllByRole.");
         }
@@ -179,7 +179,8 @@ class User
             throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $stmt = $conn->prepare("SELECT id, nom, prenom, mail FROM users WHERE role = 'Responsable'");
+        $stmt = $conn->prepare("SELECT id, nom, prenom, mail FROM users " .
+            "WHERE role = 'Responsable' AND is_verified = 1");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getAllResponsables.");
         }
@@ -226,11 +227,11 @@ class User
 
         // Validate sort order
         $order = strtoupper($order);
-        if (!   in_array($order, ['ASC', 'DESC'])) {
+        if (!in_array($order, ['ASC', 'DESC'])) {
             $order = 'ASC';
         }
 
-        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ?    OFFSET ?";
+        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ? OFFSET ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getUsersPaginated.");
@@ -276,11 +277,11 @@ class User
             throw new DataBaseException("Échec de récupération du comptage dans countUsers.");
         }
 
-        if (! isset($row['total'])) {
+        if (!isset($row['total'])) {
             throw new DataBaseException("Colonne total introuvable dans countUsers.");
         }
 
-        return (int)$row['total'];
+        return (int) $row['total'];
     }
 
     /**
@@ -297,7 +298,7 @@ class User
             throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE LOWER(role) = 'etudiant'");
+        $stmt = $db->prepare("SELECT id, nom, prenom FROM users WHERE LOWER(role) = 'etudiant' AND is_verified = 1");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getAllStudents.");
         }
@@ -324,7 +325,7 @@ class User
     public static function getById(int $id): ?array
     {
         try {
-            $db = Database::   getConnection();
+            $db = Database::getConnection();
         } catch (\Throwable $e) {
             throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
@@ -357,7 +358,7 @@ class User
      */
     public static function deleteAccount(int $userId): void
     {
-        Database::  checkConnection();
+        Database::checkConnection();
         $db = Database::getConnection();
 
         try {
@@ -395,7 +396,7 @@ class User
     public function updateEmail(int $userId, string $newEmail, string $token): void
     {
         try {
-            $conn = Database::   getConnection();
+            $conn = Database::getConnection();
             $stmt = $conn->prepare("UPDATE users SET mail = ?, verification_token = ?, is_verified = 0 WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL updateEmail");
