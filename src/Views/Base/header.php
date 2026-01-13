@@ -105,27 +105,44 @@
         </section>
     </header>
 
-    <nav class="nav mobile-menu" id="mobileMenu" style="<?php echo $NAV_STYLE; ?>" aria-label="Navigation principale">
+    <nav class="nav mobile-menu" id="mobileMenu" aria-label="Navigation principale">
         <!-- User info in mobile menu -->
+        <!-- User info in mobile menu (Only when logged in) -->
         <div class="mobile-user-info" style="<?php echo $USER_META_STYLE; ?>">
             <p>
-                👤 <?php echo $USERNAME_KEY; ?>
-                <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
+                👤
+                <?php echo $USERNAME_KEY; ?>
+                <span class="role-badge role-
+            <?php echo $ROLE_CLASS; ?>">
+                    <?php echo $ROLE_KEY; ?></span>
             </p>
         </div>
 
-        <!-- User actions in mobile menu -->
+        <!-- User actions when logged in -->
         <div class="mobile-user-actions" style="<?php echo $USER_META_STYLE; ?>">
-            <a href="/user/profile" class="mobile-action-btn" style="<?php echo $PROFILE_BTN_STYLE; ?>">
+            <a href="/user/profile" class="mobile-action-btn" style="
+            <?php echo $PROFILE_BTN_STYLE; ?>">
                 Mon profil
             </a>
-            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
-                <?php echo $CONNECTION_LINK_KEY; ?>
+            <a href="/logout" class="mobile-action-btn mobile-action-logout">
+                Se déconnecter
             </a>
         </div>
 
+        <!-- Guest actions when logged out -->
+        <?php if (empty($ROLE_KEY)) : ?>
+            <div class="mobile-user-actions mobile-guest-actions">
+                <a href="/user/login" class="mobile-action-btn">
+                    Se connecter
+                </a>
+                <a href="/user/register" class="mobile-action-btn" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">
+                    S'inscrire
+                </a>
+            </div>
+        <?php endif; ?>
+
         <!-- Main navigation -->
-        <ul class="nav-content">
+        <ul class="nav-content" style="<?php echo $NAV_STYLE; ?>">
             <li class="nav-item">
                 <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
             </li>
