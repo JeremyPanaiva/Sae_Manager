@@ -67,7 +67,7 @@
                style="display: inline-block; padding: 14px 35px; background-color: #d35400; color: #ffffff;
                           text-decoration: none; border-radius: 5px; font-weight: bold;
                           box-shadow: 0 2px 5px rgba(211, 84, 0, 0.3);">
-                Accéder au dépôt
+                Consulter les détails sur SAE Manager
             </a>
         </div>
 
