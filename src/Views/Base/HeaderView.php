@@ -98,9 +98,16 @@ class HeaderView extends AbstractView
         $navStyle = 'display:none;';
         $userMetaStyle = 'display: none;';
 
-        if (isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
-            $role = strtolower($_SESSION['user']['role']);
-            $username = $_SESSION['user']['nom'] . ' ' .  $_SESSION['user']['prenom'];
+        if (
+            isset($_SESSION['user']) &&
+            is_array($_SESSION['user']) &&
+            isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
+        ) {
+            $roleRaw = $_SESSION['user']['role'];
+            $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
+            $nomRaw = $_SESSION['user']['nom'];
+            $prenomRaw = $_SESSION['user']['prenom'];
+            $username = (is_string($nomRaw) ? $nomRaw : '') . ' ' . (is_string($prenomRaw) ? $prenomRaw : '');
             $roleDisplay = ucfirst($role);
             $roleClass = $role;
 
@@ -108,7 +115,7 @@ class HeaderView extends AbstractView
             $connectionText = 'Se déconnecter';
             $usersLink = ListUsers::PATH;
             $saeLink = '/sae';
-            $dashboardLink = DashboardController:: PATH;
+            $dashboardLink = DashboardController::PATH;
 
             $navStyle = '';
             $userMetaStyle = '';
@@ -117,10 +124,14 @@ class HeaderView extends AbstractView
             $profileBtnStyle = 'display:none;';
         }
 
-        $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $scheme = (! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $currentPath = parse_url(is_string($requestUri) ? $requestUri : '', PHP_URL_PATH);
+        $https = $_SERVER['HTTPS'] ?? '';
+        $scheme = (!empty($https) && $https !== 'off') ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'] ?? 'sae-manager.alwaysdata.net';
-        $path = $currentPath ?: '/';
+        $host = is_string($host) ? $host : 'sae-manager.alwaysdata.net';
+        $path = is_string($currentPath) ? $currentPath : '/';
+        $path = $path ?: '/';
         $canonical = rtrim($scheme . '://' . $host . $path, '/');
         if ($canonical === '') {
             $canonical = $scheme . '://' . $host . '/';
@@ -128,7 +139,13 @@ class HeaderView extends AbstractView
 
         $inscriptionLink = '/user/register';
         $inscriptionStyle = '';
-        if (isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
+        $inscriptionLink = '/user/register';
+        $inscriptionStyle = '';
+        if (
+            isset($_SESSION['user']) &&
+            is_array($_SESSION['user']) &&
+            isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
+        ) {
             $inscriptionLink = '';
             $inscriptionStyle = 'display:none;';
         }
@@ -137,11 +154,11 @@ class HeaderView extends AbstractView
         $this->data[self::ROLE_KEY] = $roleDisplay;
         $this->data['ROLE_CLASS'] = $roleClass;
         $this->data[self::LINK_KEY] = $link;
-        $this->data[self:: CONNECTION_LINK_KEY] = $connectionText;
+        $this->data[self::CONNECTION_LINK_KEY] = $connectionText;
         $this->data[self::INSCRIPTION_LINK_KEY] = $inscriptionLink;
         $this->data['INSCRIPTION_STYLE_KEY'] = $inscriptionStyle;
         $this->data[self::USERS_LINK_KEY] = $usersLink;
-        $this->data[self:: DASHBOARD_LINK_KEY] = $dashboardLink;
+        $this->data[self::DASHBOARD_LINK_KEY] = $dashboardLink;
         $this->data[self::SAE_LINK_KEY] = $saeLink;
         $this->data['CANONICAL_URL'] = $canonical;
 
@@ -159,7 +176,7 @@ class HeaderView extends AbstractView
      *
      * @return string Absolute path to the template file
      */
-    function templatePath(): string
+    public function templatePath(): string
     {
         return __DIR__ . '/header.php';
     }
@@ -175,8 +192,13 @@ class HeaderView extends AbstractView
      */
     private function getActiveClass(string $link): string
     {
-        $currentPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        if (!isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])) {
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $currentPath = parse_url(is_string($requestUri) ? $requestUri : '', PHP_URL_PATH);
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'], $_SESSION['user']['role'])
+        ) {
             return '';
         }
         return ($currentPath === $link) ? 'active' : '';

@@ -46,7 +46,7 @@ class UserListView extends BaseView
     /**
      * Array of user data
      *
-     * @var array
+     * @var array<int, array<string, mixed>>
      */
     private array $users;
 
@@ -81,14 +81,19 @@ class UserListView extends BaseView
     /**
      * Constructor
      *
-     * @param array $users Array of user data (each containing prenom, nom, mail, role)
+     * @param array<int, array<string, mixed>> $users Array of user data (each containing prenom, nom, mail, role)
      * @param string $paginationHtml HTML for pagination controls
      * @param string $errorMessage Error message to display if operation failed
      * @param string $sort Current sort column (default: 'date_creation')
      * @param string $order Current sort order (default: 'ASC')
      */
-    public function __construct(array $users, string $paginationHtml = '', string $errorMessage = '', string $sort = 'date_creation', string $order = 'ASC')
-    {
+    public function __construct(
+        array $users,
+        string $paginationHtml = '',
+        string $errorMessage = '',
+        string $sort = 'date_creation',
+        string $order = 'ASC'
+    ) {
         $this->users = $users;
         $this->paginationHtml = $paginationHtml;
         $this->errorMessage = $errorMessage;
@@ -137,23 +142,27 @@ class UserListView extends BaseView
 
         $USERS_ROWS = '';
         foreach ($this->users as $user) {
-            $prenom = htmlspecialchars($user['prenom'] ?? '');
-            $nom = htmlspecialchars($user['nom'] ?? '');
-            $mail = htmlspecialchars($user['mail'] ?? '');
-            $role = strtolower($user['role'] ?? 'inconnu');
+            $valPrenom = $user['prenom'] ?? '';
+            $prenom = htmlspecialchars(is_scalar($valPrenom) ? (string) $valPrenom : '');
+            $valNom = $user['nom'] ?? '';
+            $nom = htmlspecialchars(is_scalar($valNom) ? (string) $valNom : '');
+            $valMail = $user['mail'] ?? '';
+            $mail = htmlspecialchars(is_scalar($valMail) ? (string) $valMail : '');
+            $valRole = $user['role'] ?? 'inconnu';
+            $role = strtolower(is_scalar($valRole) ? (string) $valRole : 'inconnu');
             $roleDisplay = htmlspecialchars(ucfirst($role));
 
             $roleBadge = "<span class='role-badge role-{$role}'>{$roleDisplay}</span>";
 
             $USERS_ROWS .= "<tr>";
-            $USERS_ROWS .= "<td>{$prenom}</td>";
-            $USERS_ROWS .= "<td>{$nom}</td>";
-            $USERS_ROWS .= "<td>{$mail}</td>";
-            $USERS_ROWS .= "<td>{$roleBadge}</td>";
+            $USERS_ROWS .= "<td data-label='Prénom'>{$prenom}</td>";
+            $USERS_ROWS .= "<td data-label='Nom'>{$nom}</td>";
+            $USERS_ROWS .= "<td data-label='Email'>{$mail}</td>";
+            $USERS_ROWS .= "<td data-label='Rôle'>{$roleBadge}</td>";
             $USERS_ROWS .= "</tr>";
         }
 
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

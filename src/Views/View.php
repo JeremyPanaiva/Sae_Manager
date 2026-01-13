@@ -27,7 +27,7 @@ interface View
      *
      * @return string Absolute path to the template file
      */
-    function templatePath(): string;
+    public function templatePath(): string;
 
     /**
      * Renders the view body content
@@ -37,5 +37,5 @@ interface View
      *
      * @return string Rendered HTML body content
      */
-    function renderBody(): string;
+    public function renderBody(): string;
 }

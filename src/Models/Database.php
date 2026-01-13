@@ -7,7 +7,7 @@ use Shared\Exceptions\DataBaseException;
 /**
  * Database connection manager
  *
- * Provides a singleton database connection using mysqli.   Handles connection
+ * Provides a singleton database connection using mysqli.  Handles connection
  * initialization, configuration loading from environment variables or . env file,
  * and connection health checks.
  *
@@ -44,10 +44,11 @@ class Database
     public static function getConnection()
     {
         if (self::$conn === null) {
-            $servername = self::parseEnvVar("DB_HOST");
-            $username = self::parseEnvVar("DB_USER");
-            $password = self::parseEnvVar("DB_PASSWORD");
-            $dbname = self:: parseEnvVar("DB_NAME");
+            // Convert false to null for mysqli constructor
+            $servername = self:: parseEnvVar("DB_HOST") ?: null;
+            $username = self::parseEnvVar("DB_USER") ?: null;
+            $password = self::parseEnvVar("DB_PASSWORD") ?: null;
+            $dbname = self::parseEnvVar("DB_NAME") ?: null;
 
             try {
                 // Enable strict error reporting - all errors become exceptions
@@ -56,10 +57,13 @@ class Database
                 self::$conn->set_charset('utf8mb4');
             } catch (\mysqli_sql_exception $e) {
                 // Throw custom exception with user-friendly message
-                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+                throw new DataBaseException(
+                    "Unable to connect to the database " .
+                    "please contact sae-manager@alwaysdata. net"
+                );
             }
         }
-        return self::$conn;
+        return self:: $conn;
     }
 
     /**
@@ -71,7 +75,7 @@ class Database
      * @param string $envVar The environment variable name to retrieve
      * @return string|false The variable value, or false if not found
      */
-    static function parseEnvVar(string $envVar)
+    public static function parseEnvVar(string $envVar)
     {
         // Try system environment variable first
         $val = getenv($envVar);
@@ -87,13 +91,23 @@ class Database
 
         // Parse .env file
         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        // Check if file() succeeded
+        if ($lines === false) {
+            return $val;
+        }
+
         $env = [];
         foreach ($lines as $line) {
             $line = trim($line);
 
             // Skip empty lines and comments
-            if ($line === '' || $line[0] === '#' || $line[0] === ';') continue;
-            if (strpos($line, '=') === false) continue;
+            if ($line === '' || $line[0] === '#' || $line[0] === ';') {
+                continue;
+            }
+            if (strpos($line, '=') === false) {
+                continue;
+            }
 
             // Parse key=value pairs
             [$key, $value] = explode('=', $line, 2);
@@ -101,8 +115,10 @@ class Database
             $value = trim($value);
 
             // Remove quotes from values
-            if ((str_starts_with($value, '"') && str_ends_with($value, '"')) ||
-                (str_starts_with($value, "'") && str_ends_with($value, "'"))) {
+            if (
+                (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
+                (str_starts_with($value, "'") && str_ends_with($value, "'"))
+            ) {
                 $value = substr($value, 1, -1);
             }
             $env[$key] = $value;
@@ -122,12 +138,18 @@ class Database
     public static function checkConnection(): void
     {
         try {
-            $db = self::getConnection();
+            $db = self:: getConnection();
             if (!$db->ping()) {
-                throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+                throw new DataBaseException(
+                    "Unable to connect to the database " .
+                    "please contact sae-manager@alwaysdata.net"
+                );
             }
         } catch (\Exception $e) {
-            throw new DataBaseException("Unable to connect to the database please contact sae-manager@alwaysdata.net");
+            throw new DataBaseException(
+                "Unable to connect to the database " .
+                "please contact sae-manager@alwaysdata.net"
+            );
         }
     }
 }

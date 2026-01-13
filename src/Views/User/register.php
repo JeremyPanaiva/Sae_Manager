@@ -1,10 +1,26 @@
+<?php
+
+/**
+ * Registration Form Template
+ *
+ * Displays the user registration form with validation errors.
+ *
+ * Template variables:
+ * @var string $ERRORS_KEY HTML error messages to display (optional)
+ *
+ * @package SaeManager\Views\User
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
+
 <link rel="stylesheet" href="/_assets/css/inscription.css">
 <script src="/_assets/script/showPassword.js"></script>
 
 <section class="main" aria-label="Contenu principal">
   <form action="/user/register" method="post">
     <fieldset>
-      <?= $ERRORS_KEY ?? '' ?>
+      <?= $ERRORS_KEY ?>
       <legend>Inscription</legend>
 
       <label for="nom">Nom :</label>
@@ -18,11 +34,10 @@
 
       <label for="mdp">Mot de passe :</label>
       <div class="password-wrapper">
-        <input type="password" id="mdp" name="mdp" required 
-               minlength="8" maxlength="20"
-               pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-               title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
-               placeholder="Votre mot de passe">
+        <input type="password" id="mdp" name="mdp" required minlength="8" maxlength="20"
+          pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
+          title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
+          placeholder="Votre mot de passe">
         <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000"
             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

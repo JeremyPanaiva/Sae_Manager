@@ -26,7 +26,7 @@ class ChangePasswordView extends BaseView
     /**
      * Path to the change password template file
      */
-    private const TEMPLATE_PATH = __DIR__ .  '/change-password.php';
+    private const TEMPLATE_PATH = __DIR__ . '/change-password.php';
 
     /**
      * Returns the path to the change password template file
@@ -88,6 +88,6 @@ class ChangePasswordView extends BaseView
         }
 
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

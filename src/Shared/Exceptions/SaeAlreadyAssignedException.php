@@ -42,7 +42,8 @@ class SaeAlreadyAssignedException extends Exception
     {
         $this->saeTitre = $saeTitre;
         $this->responsable = $responsable;
-        parent::__construct("Impossible d'attribuer la SAE « $saeTitre » : elle a déjà été attribuée par $responsable.");
+        parent::__construct("Impossible d'attribuer la SAE « $saeTitre » : 
+        elle a déjà été attribuée par $responsable.");
     }
 
     /**

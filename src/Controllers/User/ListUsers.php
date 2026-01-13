@@ -35,7 +35,7 @@ class ListUsers implements ControllerInterface
      */
     public static function support(string $uri, string $method): bool
     {
-        return $uri === self:: PATH && $method === 'GET';
+        return $uri === self::PATH && $method === 'GET';
     }
 
     /**
@@ -58,18 +58,21 @@ class ListUsers implements ControllerInterface
 
         // Pagination configuration
         $limit = 10;
-        $currentPage = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $pageRaw = $_GET['page'] ?? 1;
+        $currentPage = is_numeric($pageRaw) ? max(1, (int)$pageRaw) : 1;
         $offset = ($currentPage - 1) * $limit;
 
         // Extract sorting parameters
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : 'date_creation';
-        $order = isset($_GET['order']) ? strtoupper($_GET['order']) : 'ASC';
+        $sortRaw = $_GET['sort'] ?? 'date_creation';
+        $sort = is_string($sortRaw) ? $sortRaw : 'date_creation';
+        $orderRaw = $_GET['order'] ?? 'ASC';
+        $order = is_string($orderRaw) ? strtoupper($orderRaw) : 'ASC';
 
         try {
             // Retrieve paginated and sorted users
             $users = $userModel->getUsersPaginated($limit, $offset, $sort, $order);
             $totalUsers = $userModel->countUsers();
-            $totalPages = ceil($totalUsers / $limit);
+            $totalPages = (int)ceil($totalUsers / $limit);
 
             // Generate pagination HTML with sort parameters preserved
             $sortParam = "&sort=$sort&order=$order";
@@ -116,7 +119,6 @@ class ListUsers implements ControllerInterface
             // Render user list view
             $view = new UserListView($users, $paginationHtml, '', $sort, $order);
             echo $view->render();
-
         } catch (DataBaseException $e) {
             // Display empty list with database error message
             $view = new UserListView([], '', $e->getMessage());

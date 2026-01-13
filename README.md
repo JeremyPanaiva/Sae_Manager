@@ -1,62 +1,97 @@
 # Sae_Manager_G4
 # 🧩 SAE Manager
 
-Application web permettant le **suivi des SAEs** (Situations d’Apprentissage et d’Évaluation) du département **Informatique**.
+A web application for **tracking SAEs** (Situations d’Apprentissage et d’Évaluation — Project-Based Learning) in the Computer Science department.
 
 ---
 
-## 🎯 Objectif
+## 🎯 Purpose
 
-- Faciliter le **suivi et l’organisation** des SAEs pour les étudiants et les enseignants.  
-- **Automatiser les notifications et rappels** concernant les échéances, dépôts de livrables et soutenances.  
-- Simplifier la **gestion des évaluations et compétences** via une **plateforme centralisée**.
-
----
-
-## 🌐 Déploiement
-
-🔗 **Site en ligne :** [https://sae-manager.alwaysdata.net](https://sae-manager.alwaysdata.net/) 
-
-📁 **Hébergement :** AlwaysData  
-
-💻 **Langage principal :** PHP (MVC artisanal)
+- **Streamline SAE tracking and organization** for both students and teachers
+- **Automate notifications and reminders** for deadlines, deliverables, and oral defenses
+- Simplify the **management of evaluations and competencies** with a **centralized platform**
+- Provide a user-friendly interface for managing projects, schedules, and student progress
 
 ---
 
-## 🗂️ Structure du projet
+## 🌐 Deployment
+
+🔗 **Live site:** [https://sae-manager.alwaysdata.net](https://sae-manager.alwaysdata.net/)  
+📁 **Hosted on:** AlwaysData  
+💻 **Main language:** PHP (custom MVC framework)
+
+---
+
+## 🗂️ Project Structure
 
 ```bash
 .
 ├── _assets/
-│   ├── css/              # Feuilles de style
-│   ├── docs/             # Documents légaux (PDF)
-│   ├── img/              # Images et favicon
-│   └── script/           # Scripts JavaScript
+│   ├── css/              # Stylesheets
+│   ├── docs/             # Legal documents (PDF)
+│   ├── img/              # Images and favicon
+│   └── script/           # JavaScript scripts
 ├── src/
-│   ├── Controllers/      # Logique métier (contrôleurs)
-│   ├── Models/           # Accès aux données et objets métier
-│   ├── Shared/           # Exceptions et utilitaires
-│   └── Views/            # Pages HTML et vues PHP
-├── index.php             # Point d’entrée de l’application
-├── Autoloader.php        # Chargement automatique des classes
-├── robots.txt            # Directives pour les robots d’indexation
-├── sitemap.xml           # Plan du site pour le référencement
-└── README.md             # Documentation du projet
+│   ├── Controllers/      # Business logic (controllers)
+│   ├── Models/           # Data access and business objects
+│   ├── Shared/           # Exceptions and utilities
+│   └── Views/            # HTML pages and PHP views
+├── index.php             # Application entry point
+├── Autoloader.php        # Class autoloader
+├── robots.txt            # Robot/crawler rules
+├── sitemap.xml           # SEO sitemap
+└── README.md             # Project documentation
 ```
 
 ---
 
-#### Ne pas oubliez si vous travaillez en local !  
+### ⚙️ Quick start for local development
 
-```bash
-cp .env.dist .env
-```
+1. **Clone or download** the repository.
+2. **Create an environment configuration file:**
+    ```bash
+    cp .env.dist .env
+    ```
+3. **Configure your database settings** in the `.env` file if needed.
+4. **Launch a local PHP server** from the root of the project:
+    ```bash
+    php -S localhost:8000
+    ```
+5. Visit [http://localhost:8000](http://localhost:8000) in your browser.
+
 ---
 
-## Sources
+## 🚀 Features
 
-- **aka dev** : [https://www.youtube.com/@akdevyt](https://www.youtube.com/@akdevyt).
-- **MDN** : [https://developer.mozilla.org/fr/](https://developer.mozilla.org/fr/)
-- **Ia Intrgrée phpstorm**
+- Student and teacher accounts
+- Dashboard with upcoming deadlines, deliverables, and important dates
+- Centralized document management for every SAE
+- Automated email notifications and reminders
+- Skills and evaluations tracking for each student
+- File submissions and oral defense scheduling
+- Responsive design and accessible interface
+- Simple setup and clear folder structure
 
+---
 
+## 📚 References
+
+- **aka dev:** [https://www.youtube.com/@akdevyt](https://www.youtube.com/@akdevyt)
+- **MDN Web Docs:** [https://developer.mozilla.org/](https://developer.mozilla.org/)
+- **Built-in AI & PHPStorm helpers**
+
+---
+
+## 🤝 Contributing
+
+Pull requests and suggestions are welcome!  
+If you have ideas to improve the platform or want to report a bug, please open an issue.
+
+---
+
+## 📜 License
+
+This project is for educational use and demonstration purposes.  
+You are encouraged to adapt or extend it for your own needs.
+
+---

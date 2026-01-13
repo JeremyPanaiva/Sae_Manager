@@ -44,8 +44,9 @@ class RegisterPost implements ControllerInterface
     public function control()
     {
         // Check if form was submitted
-        if (!isset($_POST['ok']))
+        if (!isset($_POST['ok'])) {
             return;
+        }
 
         // Extract form data
         $lastName = $_POST['nom'] ?? '';
@@ -98,7 +99,7 @@ class RegisterPost implements ControllerInterface
                 $User->emailExists($email);
             } catch (DataBaseException $dbEx) {
                 // Wrap database exception in ArrayException
-                throw new ArrayException([$dbEx]);
+                throw new ArrayException([new ValidationException($dbEx->getMessage())]);
             } catch (EmailAlreadyExistsException $e) {
                 // Email is already registered
                 $validationExceptions[] = new ValidationException(
@@ -124,7 +125,6 @@ class RegisterPost implements ControllerInterface
             // Redirect to login with success message
             header("Location: /user/login?success=registered");
             exit();
-
         } catch (ArrayException $exceptions) {
             // Display registration form with validation errors
             $view = new \Views\User\RegisterView($exceptions->getExceptions());

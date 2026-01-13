@@ -44,15 +44,23 @@ class DeleteSaeController implements ControllerInterface
         }
 
         // Verify user is authenticated as a client
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'client') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'client'
+        ) {
             header('HTTP/1.1 403 Forbidden');
             echo "Accès refusé";
             exit();
         }
 
         // Extract client and SAE identifiers
-        $clientId = intval($_SESSION['user']['id']);
-        $saeId = intval($_POST['sae_id'] ??  0);
+        $clientIdRaw = $_SESSION['user']['id'] ?? 0;
+        $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
+        $saeIdRaw = $_POST['sae_id'] ?? 0;
+        $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
 
         // Validate SAE ID
         if ($saeId <= 0) {
@@ -61,8 +69,12 @@ class DeleteSaeController implements ControllerInterface
         }
 
         // Store user information for view rendering
-        $username = $_SESSION['user']['nom'] . ' ' .  $_SESSION['user']['prenom'];
-        $role = $_SESSION['user']['role'];
+        $nomRaw = $_SESSION['user']['nom'] ?? '';
+        $prenomRaw = $_SESSION['user']['prenom'] ?? '';
+        $nom = is_string($nomRaw) ? $nomRaw : '';
+        $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+        $username = $nom . ' ' . $prenom;
+        $role = (string) $_SESSION['user']['role'];
 
         try {
             // Retrieve SAE information
@@ -73,8 +85,10 @@ class DeleteSaeController implements ControllerInterface
             }
 
             // Check if SAE has been assigned to students
-            if (Sae:: isAttribuee($saeId)) {
-                throw new SaeAttribueException($sae['titre']);
+            if (Sae::isAttribuee($saeId)) {
+                $saeTitreRaw = $sae['titre'] ?? '';
+                $saeTitre = is_string($saeTitreRaw) ? $saeTitreRaw : '';
+                throw new SaeAttribueException($saeTitre);
             }
 
             // Delete SAE from database
@@ -83,7 +97,6 @@ class DeleteSaeController implements ControllerInterface
             // Redirect with success message
             header('Location: /sae?success=sae_deleted');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
             // Database error - display view with error message and empty SAE list
             $data = [
@@ -93,7 +106,6 @@ class DeleteSaeController implements ControllerInterface
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (SaeAttribueException $e) {
             // SAE already assigned - retrieve client's SAE list and display with error
             $saes = [];
@@ -101,7 +113,9 @@ class DeleteSaeController implements ControllerInterface
                 $saes = Sae::getByClient($clientId);
                 // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
-                    $s['responsable_attribution'] = SaeAttribution:: getResponsableForSae($s['id']);
+                    $sIdRaw = $s['id'] ?? 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
                 // If database is unavailable, leave list empty
@@ -115,7 +129,6 @@ class DeleteSaeController implements ControllerInterface
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (\Throwable $e) {
             // Generic error handling - attempt to retrieve SAE list
             $saes = [];
@@ -123,7 +136,9 @@ class DeleteSaeController implements ControllerInterface
                 $saes = Sae::getByClient($clientId);
                 // Add supervisor information for each SAE
                 foreach ($saes as &$s) {
-                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($s['id']);
+                    $sIdRaw = $s['id'] ?? 0;
+                    $sId = is_numeric($sIdRaw) ? (int)$sIdRaw : 0;
+                    $s['responsable_attribution'] = SaeAttribution::getResponsableForSae($sId);
                 }
             } catch (\Shared\Exceptions\DataBaseException $dbEx) {
                 // If database is unavailable, leave list empty

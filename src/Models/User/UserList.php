@@ -5,8 +5,8 @@ namespace Models\User;
 /**
  * User List model
  *
- * Encapsulates user list data for display purposes.   Generates HTML table rows
- * for user data and manages pagination controls.  Used primarily by the user
+ * Encapsulates user list data for display purposes.     Generates HTML table rows
+ * for user data and manages pagination controls.   Used primarily by the user
  * list view to separate data processing from presentation logic.
  *
  * @package Models\User
@@ -16,7 +16,7 @@ class UserList
     /**
      * Array of user data
      *
-     * @var array
+     * @var array<int, array{prenom?: string, nom?: string, mail?: string, role?: string}>
      */
     private array $users;
 
@@ -30,16 +30,16 @@ class UserList
     /**
      * Additional header data for the view
      *
-     * @var array
+     * @var array<string, mixed>
      */
     private array $headerData;
 
     /**
      * Constructor
      *
-     * @param array $users Array of user data (each user as associative array)
+     * @param array<int, array{prenom?: string, nom?: string, mail?: string, role?: string}> $users
      * @param string $paginationHtml Pre-generated pagination HTML controls
-     * @param array $headerData Additional data for page header
+     * @param array<string, mixed> $headerData Additional data for page header
      */
     public function __construct(array $users, string $paginationHtml = '', array $headerData = [])
     {
@@ -62,9 +62,9 @@ class UserList
         foreach ($this->users as $user) {
             // Escape all output to prevent XSS
             $prenom = htmlspecialchars($user['prenom'] ?? '');
-            $nom = htmlspecialchars($user['nom'] ?? '');
+            $nom = htmlspecialchars($user['nom'] ??  '');
             $mail = htmlspecialchars($user['mail'] ?? '');
-            $role = htmlspecialchars(ucfirst($user['role'] ?? ''));
+            $role = htmlspecialchars(ucfirst($user['role'] ??  ''));
 
             $rowsHtml .= "<tr>";
             $rowsHtml .= "<td>{$prenom}</td>";
@@ -89,7 +89,7 @@ class UserList
     /**
      * Gets the header data
      *
-     * @return array Additional data for the page header
+     * @return array<string, mixed> Additional data for the page header
      */
     public function getHeaderData(): array
     {

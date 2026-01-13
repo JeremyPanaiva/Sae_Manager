@@ -63,7 +63,7 @@ class SaeView extends BaseView
     /**
      * SAE data (available SAE, students, assignments, etc.)
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $data;
 
@@ -71,7 +71,7 @@ class SaeView extends BaseView
      * Constructor
      *
      * @param string $title Page title
-     * @param array $data SAE data (available SAE, students for assignment, etc.)
+     * @param array<string, mixed> $data SAE data (available SAE, students for assignment, etc.)
      * @param string $username User's full name
      * @param string $role User's role (etudiant, client, responsable)
      */
@@ -82,7 +82,7 @@ class SaeView extends BaseView
         $this->username = $username;
         $this->role = $role;
 
-        $this->data[self:: TITLE_KEY] = $this->title;
+        $this->data[self::TITLE_KEY] = $this->title;
         $this->data[self::USERNAME_KEY] = $this->username;
         $this->data[self::ROLE_KEY] = $this->role;
         $this->data[self::CONTENT_KEY] = $this->buildContentHtml();
@@ -114,32 +114,35 @@ class SaeView extends BaseView
     {
         $html = '';
 
-        if (! empty($this->data['error_message'])) {
+        if (!empty($this->data['error_message'])) {
             $html .= "<div class='error-message'>";
-            $html .= htmlspecialchars($this->data['error_message']);
+            $html .= htmlspecialchars($this->safeString($this->data['error_message']));
             $html .= "</div>";
         }
 
         switch (strtolower($this->role)) {
-
             case 'etudiant':
                 $html .= "<h2>Vos SAE attribuées</h2>";
-                foreach ($this->data['saes'] ?? [] as $sae) {
+                /** @var array<int, array<string, mixed>> $saes */
+                $saes = $this->data['saes'] ?? [];
+                foreach ($saes as $sae) {
                     $html .= "<div class='sae-card'>";
-                    $html .= "<h3>" . htmlspecialchars($sae['sae_titre']) . "</h3>";
-                    $html .= "<p><strong>Description :</strong> " . htmlspecialchars($sae['sae_description']) . "</p>";
+                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['sae_titre'] ?? '')) . "</h3>";
+                    $html .= "<p><strong>Description :</strong> " .
+                        htmlspecialchars($this->safeString($sae['sae_description'] ?? '')) . "</p>";
 
-                    $respNom = htmlspecialchars($sae['responsable_nom'] ?? 'N/A');
-                    $respPrenom = htmlspecialchars($sae['responsable_prenom'] ?? '');
-                    $respMail = htmlspecialchars($sae['responsable_mail'] ?? '');
+                    $respNom = htmlspecialchars($this->safeString($sae['responsable_nom'] ?? 'N/A'));
+                    $respPrenom = htmlspecialchars($this->safeString($sae['responsable_prenom'] ?? ''));
+                    $respMail = htmlspecialchars($this->safeString($sae['responsable_mail'] ?? ''));
                     $html .= "<p><strong>Responsable :</strong> {$respNom} {$respPrenom} - {$respMail}</p>";
 
-                    $clientNom = htmlspecialchars($sae['client_nom'] ?? 'N/A');
-                    $clientPrenom = htmlspecialchars($sae['client_prenom'] ?? '');
-                    $clientMail = htmlspecialchars($sae['client_mail'] ?? '');
+                    $clientNom = htmlspecialchars($this->safeString($sae['client_nom'] ?? 'N/A'));
+                    $clientPrenom = htmlspecialchars($this->safeString($sae['client_prenom'] ?? ''));
+                    $clientMail = htmlspecialchars($this->safeString($sae['client_mail'] ?? ''));
                     $html .= "<p><strong>Client : </strong> {$clientNom} {$clientPrenom} - {$clientMail}</p>";
 
-                    $html .= "<p><strong>Date de rendu :</strong> " . htmlspecialchars($sae['date_rendu']) . "</p>";
+                    $html .= "<p><strong>Date de rendu :</strong> " .
+                        htmlspecialchars($this->safeString($sae['date_rendu'] ?? '')) . "</p>";
                     $html .= "</div>";
                 }
                 break;
@@ -149,24 +152,33 @@ class SaeView extends BaseView
                 $html .= "<h2>SAE proposées par les clients</h2>";
 
                 $html .= "<div class='color-legend'>";
-                $html .= "<div>Légende :</div>";
-                $html .= "<div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e3f2fd; border: 1px solid #2196f3; border-radius: 2px; margin-right: 6px;'></span>Libre</div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height: 12px; background: #e8f5e9; border: 1px solid #4caf50; border-radius: 2px; margin-right: 6px;'></span>Vous</div>";
-                $html .= "<div><span style='display: inline-block; width: 12px; height:  12px; background: #ffebee; border: 1px solid #f44336; border-radius: 2px; margin-right: 6px;'></span>Autre</div>";
-                $html .= "</div>";
+                $html .= "<span style='font-weight: 600; margin-right: 15px;'>Légende :</span>";
+                $html .= "<span style='margin-right: 15px;'>" .
+                    "<span style='display: inline-block; width: 12px; height: 12px; " .
+                    "background: #e3f2fd; border: 1px solid #2196f3; border-radius: 2px; " .
+                    "margin-right: 6px;'></span>Libre</span>";
+                $html .= "<span style='margin-right: 15px;'>" .
+                    "<span style='display: inline-block; width: 12px; height: 12px; " .
+                    "background: #e8f5e9; border: 1px solid #4caf50; border-radius: 2px; " .
+                    "margin-right: 6px;'></span>Vous</span>";
+                $html .= "<span>" .
+                    "<span style='display: inline-block; width: 12px; height: 12px; " .
+                    "background: #ffebee; border: 1px solid #f44336; border-radius: 2px; " .
+                    "margin-right: 6px;'></span>Autre</span>";
                 $html .= "</div>";
                 $html .= "</div>";
 
 
                 if (!empty($this->data['success_message'])) {
-                    $html .= "<div class='success-message' style='background-color: #efe; border:  1px solid #8f8; color: #070; padding:  15px; margin-bottom:  20px; border-radius:  5px;'>";
-                    $html .= htmlspecialchars($this->data['success_message']);
+                    $html .= "<div class='success-message' style='background-color: #efe; border:  1px solid #8f8; 
+                        color: #070; padding:  15px; margin-bottom:  20px; border-radius:  5px;'>";
+                    $html .= htmlspecialchars($this->safeString($this->data['success_message']));
                     $html .= "</div>";
                 }
 
-                foreach ($this->data['saes'] ?? [] as $sae) {
-
+                /** @var array<int, array<string, mixed>> $saes */
+                $saes = $this->data['saes'] ?? [];
+                foreach ($saes as $sae) {
                     if (!empty($sae['etudiants_attribues'])) {
                         $cardClass = "sae-card my-attr";
                     } elseif (empty($sae['responsable_attribution'])) {
@@ -176,48 +188,102 @@ class SaeView extends BaseView
                     }
 
                     $html .= "<div class='{$cardClass}'>";
-                    $html .= "<h3>" . htmlspecialchars($sae['titre']) . "</h3>";
-                    $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
+                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
+                    $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
 
-                    if (! empty($sae['responsable_attribution'])) {
+                    $responsable = $sae['responsable_attribution'] ?? null;
+                    if (is_array($responsable)) {
                         $html .= "<p><strong>Attribué par :</strong> "
-                            . htmlspecialchars($sae['responsable_attribution']['nom'] . ' ' . $sae['responsable_attribution']['prenom'])
+                            . htmlspecialchars($this->safeString($responsable['nom'] ?? '') . ' ' .
+                                $this->safeString($responsable['prenom'] ?? ''))
                             . "</p>";
                     } else {
                         $html .= "<p><strong>Attribué par :</strong> Pas attribué</p>";
                     }
 
-                    $html .= "<form method='POST' action='/attribuer_sae'>";
-                    $html .= "<label>Attribuer à :</label>";
+                    $html .= "<form method='POST' action='/attribuer_sae' class='attribution-form'>";
+                    $html .= "<label class='section-label'>Attribuer à :</label>";
 
                     if (empty($sae['etudiants_disponibles'])) {
                         $html .= "<p class='info-message'>Aucun étudiant disponible pour l'attribution.</p>";
                     } else {
-                        $html .= "<select name='etudiants[]' multiple size='5' required>";
-                        foreach ($sae['etudiants_disponibles'] as $etu) {
-                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' . $etu['prenom']) . "</option>";
+                        $saeId = $this->safeString($sae['id'] ?? 0);
+
+                        // Bouton "Tout sélectionner / Tout désélectionner"
+                        $html .= "<div class='selection-controls'>";
+                        $html .= "<button type='button' class='btn-select-all' 
+                            onclick='toggleAllStudents(this, \"assign-{$saeId}\")'>
+                            Tout sélectionner
+                        </button>";
+                        $html .= "</div>";
+
+                        // Student list with checkboxes
+                        $html .= "<div class='students-grid' id='assign-{$saeId}'>";
+                        /** @var array<int, array<string, mixed>> $etudiantsDispo */
+                        $etudiantsDispo = $sae['etudiants_disponibles'];
+                        foreach ($etudiantsDispo as $etu) {
+                            $etuId = $this->safeString($etu['id'] ?? 0);
+                            $etuNom = htmlspecialchars(
+                                $this->safeString($etu['nom'] ?? '') . ' ' .
+                                $this->safeString($etu['prenom'] ?? '')
+                            );
+
+                            $html .= "<label class='student-card'>";
+                            $html .= "<input type='checkbox' name='etudiants[]' value='{$etuId}' 
+                                class='student-checkbox'>";
+                            $html .= "<span class='student-name'>{$etuNom}</span>";
+                            $html .= "<span class='checkmark'></span>";
+                            $html .= "</label>";
                         }
-                        $html .= "</select>";
-                        $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
-                        $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
-                        $html .= "<button type='submit'>Attribuer</button>";
+                        $html .= "</div>";
+
+                        $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
+                        $html .= "<button type='submit' class='btn-submit'>
+                            Attribuer les étudiants sélectionnés
+                        </button>";
                     }
                     $html .= "</form>";
 
-                    $html .= "<form method='POST' action='/unassign_sae' class='remove-form'>";
-                    $html .= "<label>Retirer de la SAE (vos attributions uniquement) :</label>";
+                    $html .= "<form method='POST' action='/unassign_sae' class='remove-form attribution-form'>";
+                    $html .= "<label class='section-label'>Retirer de la SAE (vos attributions uniquement) :</label>";
 
                     if (empty($sae['etudiants_attribues'])) {
                         $html .= "<p class='info-message'>Vous n'avez attribué aucun étudiant à cette SAE.</p>";
                     } else {
-                        $html .= "<select name='etudiants[]' multiple size='5' required>";
-                        foreach ($sae['etudiants_attribues'] as $etu) {
-                            $html .= "<option value='{$etu['id']}'>" . htmlspecialchars($etu['nom'] . ' ' .  $etu['prenom']) . "</option>";
+                        $saeId = $this->safeString($sae['id'] ?? 0);
+
+                        // Bouton "Tout sélectionner / Tout désélectionner"
+                        $html .= "<div class='selection-controls'>";
+                        $html .= "<button type='button' class='btn-select-all' 
+                            onclick='toggleAllStudents(this, \"remove-{$saeId}\")'>
+                            Tout sélectionner
+                        </button>";
+                        $html .= "</div>";
+
+                        // Student list with checkboxes
+                        $html .= "<div class='students-grid' id='remove-{$saeId}'>";
+                        /** @var array<int, array<string, mixed>> $etudiantsAttribues */
+                        $etudiantsAttribues = $sae['etudiants_attribues'];
+                        foreach ($etudiantsAttribues as $etu) {
+                            $etuId = $this->safeString($etu['id'] ?? 0);
+                            $etuNom = htmlspecialchars(
+                                $this->safeString($etu['nom'] ?? '') . ' ' .
+                                $this->safeString($etu['prenom'] ?? '')
+                            );
+
+                            $html .= "<label class='student-card'>";
+                            $html .= "<input type='checkbox' name='etudiants[]' value='{$etuId}' 
+                                class='student-checkbox'>";
+                            $html .= "<span class='student-name'>{$etuNom}</span>";
+                            $html .= "<span class='checkmark'></span>";
+                            $html .= "</label>";
                         }
-                        $html .= "</select>";
-                        $html .= "<small>(Maintenez Ctrl ou Cmd pour sélectionner plusieurs étudiants)</small>";
-                        $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
-                        $html .= "<button type='submit' class='danger-btn'>Retirer</button>";
+                        $html .= "</div>";
+
+                        $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
+                        $html .= "<button type='submit' class='btn-submit danger-btn'>
+                            Retirer les étudiants sélectionnés
+                        </button>";
                     }
                     $html .= "</form>";
 
@@ -226,7 +292,6 @@ class SaeView extends BaseView
                 break;
 
             case 'client':
-
                 $html .= "<h2>Créer une nouvelle SAE</h2>";
                 $html .= "<form method='POST' action='/creer_sae'>";
                 $html .= "<label>Titre :</label><input type='text' name='titre' required>";
@@ -236,8 +301,9 @@ class SaeView extends BaseView
 
                 $html .= "<h2>Vos SAE existantes</h2>";
 
-                foreach ($this->data['saes'] ??  [] as $sae) {
-
+                /** @var array<int, array<string, mixed>> $saes */
+                $saes = $this->data['saes'] ?? [];
+                foreach ($saes as $sae) {
                     if (!empty($sae['responsable_attribution'])) {
                         $cardClass = "sae-card attribuee";
                     } else {
@@ -246,37 +312,49 @@ class SaeView extends BaseView
 
                     $html .= "<div class='{$cardClass}'>";
 
-                    $html .= "<h3>" .  htmlspecialchars($sae['titre']) . "</h3>";
-                    $html .= "<p>" . htmlspecialchars($sae['description']) . "</p>";
-                    $html .= "<p><strong>Date de création :</strong> " . htmlspecialchars($sae['date_creation']) . "</p>";
+                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
+                    $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
+                    $html .= "<p><strong>Date de création :</strong> " .
+                        htmlspecialchars($this->safeString($sae['date_creation'] ?? '')) . "</p>";
 
-                    if (!empty($sae['responsable_attribution'])) {
-                        $responsable = $sae['responsable_attribution'];
+                    $responsable = $sae['responsable_attribution'] ?? null;
+                    if (is_array($responsable)) {
                         $html .= "<p><strong>Attribuée par :</strong> "
-                            . htmlspecialchars($responsable['prenom'] .  " " . $responsable['nom'])
+                            . htmlspecialchars(
+                                $this->safeString($responsable['prenom'] ?? '') . " " .
+                                $this->safeString($responsable['nom'] ?? '')
+                            )
                             . "</p>";
                     } else {
                         $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
                     }
 
-                    $html .= "<button class='btn-modifier' onclick=\"document.getElementById('edit-{$sae['id']}').style.display='block';\">Modifier</button>";
+                    $html .= "<button class='btn-modifier' 
+                        onclick=\"document.getElementById('edit-" .
+                        $this->safeString($sae['id'] ?? 0) .
+                        "').style.display='block';\">
+                        Modifier</button>";
 
-                    $html .= "<div id='edit-{$sae['id']}' class='edit-form' style='display:none; margin-top:10px;'>";
+                    $html .= "<div id='edit-" . $this->safeString($sae['id'] ?? 0) .
+                        "' class='edit-form' style='display:none; margin-top:10px;'>";
                     $html .= "<form method='POST' action='/update_sae'>";
-                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+                    $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
 
                     $html .= "<label>Nouveau titre :</label>";
-                    $html .= "<input type='text' name='titre' value='" . htmlspecialchars($sae['titre']) . "' required>";
+                    $html .= "<input type='text' name='titre' value='" .
+                        htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "' required>";
 
                     $html .= "<label>Nouvelle description :</label>";
-                    $html .= "<textarea name='description' required>" . htmlspecialchars($sae['description']) . "</textarea>";
+                    $html .= "<textarea name='description' required>" .
+                        htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</textarea>";
 
                     $html .= "<button type='submit' class='btn-valider'>Valider</button>";
                     $html .= "</form>";
                     $html .= "</div>";
 
-                    $html .= "<form method='POST' action='/delete_sae' onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
-                    $html .= "<input type='hidden' name='sae_id' value='{$sae['id']}'>";
+                    $html .= "<form method='POST' action='/delete_sae'
+                        onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
+                    $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
                     $html .= "<button type='submit' class='btn-supprimer'>Supprimer</button>";
                     $html .= "</form>";
 
@@ -288,6 +366,25 @@ class SaeView extends BaseView
             default:
                 $html .= "<p>Rôle inconnu ou aucune SAE disponible.</p>";
         }
+
+        // Add JavaScript for select all button
+        $html .= "
+        <script>
+        function toggleAllStudents(button, gridId) {
+            const grid = document.getElementById(gridId);
+            if (!grid) return;
+            
+            const checkboxes = grid.querySelectorAll('.student-checkbox');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+            
+            button.textContent = allChecked ? 'Tout sélectionner' : 'Tout désélectionner';
+        }
+        </script>
+        ";
 
         return $html;
     }

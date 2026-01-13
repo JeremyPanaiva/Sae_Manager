@@ -1,3 +1,15 @@
+<?php
+
+/**
+ * View:  Site map
+ *
+ * Displays the complete navigation structure and main pages of SAE Manager.
+ *
+ * @package SaeManager\Views\Legal
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
 <link rel="stylesheet" href="/_assets/css/plan.css">
 
 <main class="plan-main">
@@ -13,6 +25,7 @@
                 <li><a href="/">Accueil</a></li>
                 <li><a href="/user/login">Connexion</a></li>
                 <li><a href="/user/register">Inscription</a></li>
+                <li><a href="/contact">Contact</a></li>
                 <li><a href="/mentions-legales">Mentions légales</a></li>
                 <li><a href="/plan-du-site">Plan du site</a></li>
             </ul>
@@ -21,9 +34,10 @@
         <article class="plan-section">
             <h2 class="plan-subtitle">2. Pages utilisateurs</h2>
             <ul class="plan-list">
-                <li><a href="/user/user">Profil utilisateur</a></li>
-                <li><a href="/user/list">Liste des utilisateurs</a></li>
+                <li><a href="/user/profile">Profil utilisateur</a></li>
                 <li><a href="/user/forgot-password">Mot de passe oublié</a></li>
+                <li><a href="/user/change-password">Changer mot de passe</a></li>
+                <li><a href="/user/list">Liste des utilisateurs</a></li>
             </ul>
         </article>
 
@@ -34,31 +48,5 @@
                 <li><a href="/dashboard">Tableau de bord</a></li>
             </ul>
         </article>
-
-        <article class="plan-section">
-            <h2 class="plan-subtitle">4. Contrôleurs principaux</h2>
-            <ul class="plan-list">
-                <li>HomeController</li>
-                <li>Login / LoginPost</li>
-                <li>Register / RegisterPost</li>
-                <li>Logout</li>
-                <li>ForgotPassword</li>
-                <li>ListUsers</li>
-                <li>MentionsLegalesController</li>
-                <li>PlanDuSiteController</li>
-            </ul>
-        </article>
-
-        <article class="plan-section">
-            <h2 class="plan-subtitle">5. Fichiers importants</h2>
-            <ul class="plan-list">
-                <li>index.php</li>
-                <li>Autoloader.php</li>
-                <li>robots.txt</li>
-                <li>sitemap.xml</li>
-                <li>_assets/css / _assets/script / _assets/img / _assets/docs</li>
-            </ul>
-        </article>
-
     </section>
 </main>

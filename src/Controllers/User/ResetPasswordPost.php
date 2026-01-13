@@ -51,9 +51,12 @@ class ResetPasswordPost implements ControllerInterface
         }
 
         // Extract form data
-        $token = $_POST['token'] ?? '';
-        $password = $_POST['password'] ?? '';
-        $confirmPassword = $_POST['confirm_password'] ??  '';
+        $tokenRaw = $_POST['token'] ?? '';
+        $token = is_string($tokenRaw) ? $tokenRaw : '';
+        $passwordRaw = $_POST['password'] ?? '';
+        $password = is_string($passwordRaw) ? $passwordRaw : '';
+        $confirmPasswordRaw = $_POST['confirm_password'] ?? '';
+        $confirmPassword = is_string($confirmPasswordRaw) ? $confirmPasswordRaw : '';
 
         // Validate required fields
         if (empty($token) || empty($password) || empty($confirmPassword)) {
@@ -112,9 +115,15 @@ class ResetPasswordPost implements ControllerInterface
             $stmt->execute();
             $result = $stmt->get_result();
 
-            if ($row = $result->fetch_assoc()) {
+            if ($result === false) {
+                throw new DataBaseException("Failed to get result from query.");
+            }
+
+            $row = $result->fetch_assoc();
+            if ($row !== null) {
                 // Check if new password is the same as current password
-                if (password_verify($password, $row['mdp'])) {
+                $currentPasswordHash = isset($row['mdp']) && is_string($row['mdp']) ? $row['mdp'] : '';
+                if ($currentPasswordHash !== '' && password_verify($password, $currentPasswordHash)) {
                     throw new SamePasswordException();
                 }
             } else {
@@ -126,6 +135,8 @@ class ResetPasswordPost implements ControllerInterface
 
             // Hash and update the new password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+
 
             $stmt = $conn->prepare("UPDATE users SET mdp = ?  WHERE mail = ?");
             if (!$stmt) {
@@ -141,7 +152,6 @@ class ResetPasswordPost implements ControllerInterface
             // Redirect to login with success message
             header('Location: /user/login?success=password_reset');
             exit;
-
         } catch (SamePasswordException $e) {
             // New password is identical to current password
             header('Location: /user/reset-password? token=' . urlencode($token) . '&error=same_password');
@@ -168,7 +178,7 @@ class ResetPasswordPost implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path matches reset password route and method is POST
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
                 (isset($_GET['page']) && $_GET['page'] === 'reset-password'))

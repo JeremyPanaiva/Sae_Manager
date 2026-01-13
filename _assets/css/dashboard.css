@@ -10,19 +10,19 @@
     --red: #dc3545;
 }
 
-/* Page dashboard */
+/* Dashboard page */
 .dashboard-page {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     padding: 30px 40px;
     background-color: var(--amu-gray);
     max-width: 1200px;
-    /* Aligne avec le header */
+    /* Aligns with header */
     margin: 0 auto;
-    /* Centre la page */
+    /* Centers the page */
     width: 100%;
 }
 
-/* Section principale */
+/* Main section */
 .dashboard-section {
     background-color: var(--white);
     padding: 25px;
@@ -30,10 +30,10 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* Informations utilisateur */
-/* Informations utilisateur - voir index.css */
+/* User information */
+/* User information - see index.css */
 
-/* Cartes SAE */
+/* SAE Cards */
 .dashboard-card {
     background-color: var(--white);
     border-radius: 12px;
@@ -67,7 +67,7 @@
     font-size: 0.95rem;
 }
 
-/* Liste d'étudiants */
+/* Student list */
 .student-list {
     list-style-type: disc;
     padding-left: 20px;
@@ -77,7 +77,7 @@
     margin-bottom: 5px;
 }
 
-/* Avis / remarques */
+/* Reviews / remarks */
 .avis-card {
     background-color: #f8f9fa;
     border-left: 4px solid var(--amu-light-blue);
@@ -95,7 +95,7 @@
     font-size: 0.8rem;
 }
 
-/* Formulaire ajout avis */
+/* Add review form */
 .avis-add {
     margin-top: 10px;
 }
@@ -125,7 +125,7 @@
     background-color: var(--amu-light-blue);
 }
 
-/* Wrapper date + bouton */
+/* Date + button wrapper */
 .date-rendu-wrapper {
     display: flex;
     align-items: center;
@@ -133,13 +133,13 @@
     margin: 10px 0;
 }
 
-/* Date de rendu */
+/* Due date */
 .date-rendu {
     font-weight: bold;
     color: #444;
 }
 
-/* Formulaire modification date de rendu */
+/* Update due date form */
 .update-date-form {
     display: flex;
     align-items: center;
@@ -153,7 +153,7 @@
     font-size: 0.9rem;
 }
 
-/* Wrapper date + bouton sur la même ligne */
+/* Date + button wrapper on same line */
 .date-rendu-wrapper {
     display: flex;
     align-items: center;
@@ -162,13 +162,13 @@
     margin: 10px 0;
 }
 
-/* Date de rendu */
+/* Due date */
 .date-rendu {
     font-weight: bold;
     color: #444;
 }
 
-/* Bouton discret à côté de la date */
+/* Subtle button next to date */
 .btn-update-date {
     padding: 4px 10px;
     border: none;
@@ -185,7 +185,7 @@
 }
 
 
-/* Liste To-Do */
+/* To-Do List */
 ul.todo-list {
     list-style-type: none;
     padding-left: 0;
@@ -197,7 +197,7 @@ ul.todo-list li {
     align-items: center;
 }
 
-/* Checkbox To-Do */
+/* To-Do Checkbox */
 .todo-checkbox {
     margin-right: 10px;
     cursor: pointer;
@@ -206,7 +206,7 @@ ul.todo-list li {
     accent-color: var(--amu-blue);
 }
 
-/* Formulaire ajout To-Do */
+/* Add To-Do form */
 .todo-add {
     display: flex;
     align-items: center;
@@ -235,7 +235,7 @@ ul.todo-list li {
     background-color: var(--amu-light-blue);
 }
 
-/* Barre de progression */
+/* Progress bar */
 .progress-bar {
     width: 100%;
     height: 22px;
@@ -252,13 +252,13 @@ ul.todo-list li {
     transition: width 0.3s ease;
 }
 
-/* Compte à rebours */
+/* Countdown */
 .countdown {
     font-weight: bold;
     color: var(--danger);
 }
 
-/* Boutons supprimer avis */
+/* Delete review buttons */
 form button {
     cursor: pointer;
     border: none;
@@ -270,7 +270,7 @@ form button:hover {
     opacity: 0.8;
 }
 
-/* Message d'erreur */
+/* Error message */
 .error-message {
     background-color: #ffe6e6;
     color: var(--red);
@@ -301,7 +301,7 @@ form button:hover {
     }
 }
 
-/* Liste To-Do */
+/* To-Do List */
 ul.todo-list {
     list-style-type: none;
     padding-left: 0;
@@ -322,14 +322,14 @@ ul.todo-list li:hover {
     background-color: #f0f0f0;
 }
 
-/* Formulaire toggle (checkbox) */
+/* Toggle form (checkbox) */
 .todo-toggle {
     flex: 1;
     display: flex;
     align-items: center;
 }
 
-/* Checkbox To-Do */
+/* To-Do Checkbox */
 .todo-checkbox {
     margin-right: 10px;
     cursor: pointer;
@@ -338,7 +338,7 @@ ul.todo-list li:hover {
     accent-color: var(--amu-blue);
 }
 
-/* ✅ NOUVEAU : Bouton de suppression avec croix design */
+/* ✅ NEW: Delete button with design cross */
 .todo-delete {
     margin: 0;
 }
@@ -377,16 +377,16 @@ ul.todo-list li:hover {
     transform: rotate(90deg) scale(0.9);
 }
 
-/* Compte à rebours */
+/* Countdown */
 .countdown-container {
     display: flex;
     gap: 15px;
     margin: 15px 0;
     padding: 20px;
-    background:  linear-gradient(135deg, var(--amu-blue) 0%, var(--amu-light-blue) 100%);
+    background: linear-gradient(135deg, var(--amu-blue) 0%, var(--amu-light-blue) 100%);
     border-radius: 10px;
-    justify-content:  center;
-    box-shadow:  0 4px 15px rgba(0, 51, 102, 0.25);
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 51, 102, 0.25);
 }
 
 .countdown-box {
@@ -427,40 +427,41 @@ ul.todo-list li:hover {
     color: var(--white);
     padding: 12px 24px;
     border-radius: 8px;
-    font-weight:  bold;
+    font-weight: bold;
     margin: 10px 0;
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
 .countdown-error {
-    color:  var(--danger);
+    color: var(--danger);
     font-style: italic;
     font-size: 0.9rem;
 }
 
-/* Animation pulsante quand il reste moins de 24h */
+/* Pulsing animation when less than 24h remains */
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
         box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
     }
+
     50% {
         transform: scale(1.02);
         box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
     }
 }
 
-.countdown-container. urgent {
+.countdown-container.urgent {
     animation: pulse 2s infinite;
-    background: linear-gradient(135deg, var(--danger) 0%, #c82333 100%);
-    border:  2px solid var(--danger);
 }
 
 .countdown-container.urgent .countdown-value {
     color: var(--danger);
 }
 
-/* Responsive pour petits écrans */
+/* Responsive for small screens */
 @media (max-width: 768px) {
     .countdown-container {
         gap: 10px;
@@ -468,11 +469,11 @@ ul.todo-list li:hover {
     }
 
     .countdown-box {
-        min-width:  60px;
+        min-width: 60px;
         padding: 10px 15px;
     }
 
-    . countdown-value {
+    .countdown-value {
         font-size: 1.5rem;
     }
 
@@ -481,4 +482,522 @@ ul.todo-list li:hover {
     }
 }
 
+/* ================================
+   Date modification modal
+================================ */
 
+/* Block body scroll when modal is open */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+/* Date wrapper */
+.date-rendu-wrapper {
+    margin: 15px 0;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 4px solid var(--amu-blue);
+    /* Flexbox for alignment */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.date-rendu-wrapper p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.date-value {
+    font-weight: bold;
+    color: var(--amu-blue);
+    font-size: 1.1rem;
+}
+
+/* Open modal button */
+.btn-open-date-modal {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--amu-blue), var(--amu-light-blue));
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-open-date-modal:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-open-date-modal:active {
+    transform: translateY(0);
+}
+
+/* Modal overlay - Absolute position and local to container */
+.date-modal {
+    display: none;
+    position: absolute;
+    /* Changed from fixed to absolute */
+    z-index: 100;
+    /* Lower z-index since it's local */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    /* Remove wrapper scroll to prevent conflict with date picker */
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.95);
+    /* Lighter background, less "grey blur" */
+    /* Flexbox centering */
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    /* Match card border radius */
+}
+
+/* Ensure parent of modal is relative */
+.dashboard-card {
+    position: relative;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Modal content - Centered and stable */
+.date-modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    /* Animation removed to prevent jumping on repaint */
+    /* animation: slideDown 0.3s ease; */
+    margin: auto;
+    /* Ensure content doesn't overflow */
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Close button (X) */
+.date-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #999;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    line-height: 1;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-modal-close:hover {
+    color: #333;
+    transform: rotate(90deg);
+}
+
+/* Modal title */
+.date-modal-content h3 {
+    margin: 0 0 20px 0;
+    color: var(--amu-blue);
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--amu-light-blue);
+    padding-bottom: 10px;
+}
+
+/* Form group */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* Container for date and time side by side */
+.date-time-inputs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.date-time-inputs .input-wrapper {
+    flex: 1;
+}
+
+.date-time-inputs .form-group {
+    margin-bottom: 0;
+}
+
+/* Optimized date field */
+.form-group input[type="date"],
+.form-group input[type="time"] {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: #fff;
+}
+
+.form-group input[type="date"]:hover,
+.form-group input[type="time"]:hover {
+    border-color: var(--amu-light-blue);
+}
+
+.form-group input[type="date"]:focus,
+.form-group input[type="time"]:focus {
+    outline: none;
+    border-color: var(--amu-blue);
+    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.15);
+}
+
+/* Native calendar style */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator,
+.form-group input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.form-group input[type="date"]::-webkit-calendar-picker-indicator:hover,
+.form-group input[type="time"]::-webkit-calendar-picker-indicator:hover {
+    background-color: rgba(0, 102, 204, 0.1);
+}
+
+/* Modal buttons */
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+/* Validate Button */
+.btn-validate-date {
+    flex: 1;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+.btn-validate-date:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+    background: linear-gradient(135deg, #45a049, #3d8b40);
+}
+
+.btn-validate-date:active {
+    transform: translateY(0);
+}
+
+/* Cancel Button */
+.btn-cancel-modal {
+    flex: 1;
+    padding: 14px 20px;
+    background: #757575;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(117, 117, 117, 0.3);
+}
+
+.btn-cancel-modal:hover {
+    background: #616161;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(117, 117, 117, 0.4);
+}
+
+.btn-cancel-modal:active {
+    transform: translateY(0);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .date-modal {
+        padding: 10px;
+    }
+
+    .date-modal-content {
+        width: 95%;
+        padding: 20px;
+        max-height: 85vh;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+    }
+
+    .btn-validate-date,
+    .btn-cancel-modal {
+        width: 100%;
+    }
+
+    .form-group input[type="date"],
+    .form-group input[type="time"] {
+        font-size: 16px;
+        /* Prevents automatic zoom on iOS */
+    }
+
+    /* Custom Input Icons - Mobile */
+    .custom-input-icon {
+        width: 24px;
+        height: 24px;
+        right: 15px;
+    }
+}
+
+/* Custom Input Icons - Global Styles */
+.input-with-icon {
+    position: relative;
+    width: 100%;
+}
+
+.custom-input-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--amu-dark-gray);
+    cursor: pointer;
+    transition: color 0.2s;
+    background: transparent;
+    pointer-events: auto;
+    /* Ensure clicks are captured */
+    z-index: 10;
+}
+
+.custom-input-icon:hover {
+    color: var(--amu-light-blue);
+}
+
+/* Stack date and time fields on mobile */
+.date-time-inputs {
+    flex-direction: column;
+    gap: 0;
+}
+
+.date-time-inputs .form-group {
+    margin-bottom: 15px;
+}
+
+
+/* ================================
+         RESPONSIVE MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+    /* Dashboard Page */
+    .dashboard-page {
+        padding: 15px 10px;
+    }
+
+    /* Main section */
+    .dashboard-section {
+        padding: 15px;
+    }
+
+    /* SAE Cards */
+    .dashboard-card {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .dashboard-card p {
+        font-size: 0.9rem;
+    }
+
+    /* Student list */
+    .dashboard-card ul {
+        padding-left: 20px;
+    }
+
+    .dashboard-card li {
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    /* Buttons */
+    .dashboard-card button,
+    .btn-open-date-modal {
+        font-size: 0.9rem;
+        padding: 8px 16px;
+    }
+
+    /* Due date wrapper */
+    .date-rendu-wrapper {
+        padding: 12px;
+    }
+
+    .date-rendu-wrapper p {
+        font-size: 0.9rem;
+    }
+
+    .date-value {
+        font-size: 1rem;
+    }
+
+    /* Countdown */
+    .countdown-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .countdown-box {
+        min-width: 55px;
+    }
+
+    /* Success/error messages */
+    .success-message,
+    .error-message {
+        font-size: 0.9rem;
+        padding: 12px;
+    }
+}
+
+/* Very small screens (< 480px) */
+@media (max-width: 480px) {
+    .dashboard-page {
+        padding: 10px 5px;
+    }
+
+    .dashboard-section {
+        padding: 10px;
+    }
+
+    .dashboard-card {
+        padding: 12px;
+    }
+
+    .dashboard-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .dashboard-card p {
+        font-size: 0.85rem;
+    }
+
+    .countdown-box {
+        min-width: 50px;
+        padding: 8px 10px;
+    }
+
+    .countdown-value {
+        font-size: 1.3rem;
+    }
+
+    .countdown-label {
+        font-size: 0.7rem;
+    }
+}
+
+/* ================================
+   Responsive button texts
+================================ */
+
+/* Default: show full text, hide short text */
+.btn-text-short {
+    display: none;
+}
+
+.btn-text-full {
+    display: inline;
+}
+
+/* On mobile, show short text and hide full text */
+@media (max-width: 768px) {
+    .btn-text-short {
+        display: inline;
+    }
+
+    .btn-text-full {
+        display: none;
+    }
+
+    /* Improve spacing on mobile to avoid cramped layout */
+    .dashboard-card {
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card p {
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .dashboard-card ul {
+        margin-bottom: 12px;
+    }
+
+    .date-rendu-wrapper {
+        margin: 12px 0;
+    }
+
+    .btn-open-date-modal {
+        margin-top: 8px;
+    }
+}

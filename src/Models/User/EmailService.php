@@ -45,7 +45,7 @@ class EmailService
     public function __construct()
     {
         $autoload = __DIR__ . '/../../../vendor/autoload.php';
-        if (!file_exists($autoload)) {
+        if (!  file_exists($autoload)) {
             error_log('vendor/autoload.php manquant — exécuter composer install ou uploader le dossier vendor/');
             throw new DataBaseException('Dépendances manquantes pour l\'envoi d\'emails.');
         }
@@ -71,19 +71,23 @@ class EmailService
     {
         try {
             $this->mailer->isSMTP();
-            $smtpHost = Database::parseEnvVar('SMTP_HOST') ?: 'smtp.alwaysdata.com';
+            $smtpHost = Database::parseEnvVar('SMTP_HOST');
             $smtpUser = Database::parseEnvVar('SMTP_USERNAME');
             $smtpPass = Database::parseEnvVar('SMTP_PASSWORD');
             $smtpSecure = Database::parseEnvVar('SMTP_SECURE');
 
-            $this->mailer->Host = $smtpHost;
-            $this->mailer->Username = $smtpUser;
-            $this->mailer->Password = $smtpPass;
+            $this->mailer->Host = $smtpHost !== false ? $smtpHost :  'smtp.alwaysdata.com';
+            $this->mailer->Username = $smtpUser !== false ? $smtpUser : '';
+            $this->mailer->Password = $smtpPass !== false ? $smtpPass :  '';
 
-            $this->mailer->SMTPAuth = ! empty($smtpUser) && !empty($smtpPass);
+            $this->mailer->SMTPAuth = !   empty($smtpUser) && ! empty($smtpPass);
 
-            $this->mailer->SMTPSecure = $smtpSecure === 'tls' ?  PHPMailer::ENCRYPTION_STARTTLS : PHPMailer::ENCRYPTION_SMTPS;
-            $this->mailer->Port = (int) (Database::parseEnvVar('SMTP_PORT') ?: 587);
+            $this->mailer->SMTPSecure = $smtpSecure === 'tls'
+                ? PHPMailer::   ENCRYPTION_STARTTLS
+                : PHPMailer::  ENCRYPTION_SMTPS;
+
+            $smtpPort = Database::parseEnvVar('SMTP_PORT');
+            $this->mailer->Port = (int) ($smtpPort !== false ? $smtpPort : 587);
             $this->mailer->CharSet = 'UTF-8';
 
             $this->mailer->SMTPAutoTLS = ($smtpSecure === 'tls');
@@ -94,7 +98,7 @@ class EmailService
                 $this->mailer->SMTPDebug = SMTP::DEBUG_SERVER;
 
                 $smtpDebugFile = Database::parseEnvVar('SMTP_DEBUG_FILE');
-                if (!empty($smtpDebugFile)) {
+                if ($smtpDebugFile !== false && ! empty($smtpDebugFile)) {
                     $logPath = $smtpDebugFile;
                     if ($logPath[0] !== '/') {
                         $logPath = __DIR__ . '/../../../' . ltrim($logPath, '/');
@@ -105,8 +109,8 @@ class EmailService
                         @mkdir($dir, 0755, true);
                     }
 
-                    $this->mailer->Debugoutput = function ($str, $level) use ($logPath) {
-                        $line = sprintf("%s [level %s] %s\n", date('c'), $level, trim($str));
+                    $this->mailer->Debugoutput = function ($str, $level) use ($logPath): void {
+                        $line = sprintf("%s [level %s] %s\n", date('c'), $level, trim((string)$str));
                         @file_put_contents($logPath, $line, FILE_APPEND | LOCK_EX);
                     };
                 } else {
@@ -119,10 +123,11 @@ class EmailService
 
             // Configure sender
             $fromEmail = Database::parseEnvVar('FROM_EMAIL');
-            $fromName = Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
+            $fromNameRaw = Database::parseEnvVar('FROM_NAME');
+            $fromName = $fromNameRaw !== false ? $fromNameRaw : 'SAE Manager';
 
-            if (empty($fromEmail)) {
-                error_log('EmailService configuration:  FROM_EMAIL is not set.');
+            if ($fromEmail === false || empty($fromEmail)) {
+                error_log('EmailService configuration:    FROM_EMAIL is not set.');
                 throw new DataBaseException('FROM_EMAIL n\'est pas configuré pour l\'envoi d\'emails.');
             }
 
@@ -142,15 +147,15 @@ class EmailService
             }
 
             error_log(sprintf(
-                "EmailService SMTP config: host=%s port=%s user=%s secure=%s auth=%s",
+                "EmailService SMTP config:  host=%s port=%s user=%s secure=%s auth=%s",
                 $this->mailer->Host,
                 $this->mailer->Port,
-                $this->mailer->Username ?  'set' : 'not-set',
-                $smtpSecure,
+                $this->mailer->Username ?    'set' : 'not-set',
+                $smtpSecure !== false ? $smtpSecure : 'default',
                 $this->mailer->SMTPAuth ? 'true' : 'false'
             ));
         } catch (Exception $e) {
-            throw new DataBaseException("Erreur de configuration email :  " . $e->getMessage());
+            throw new DataBaseException("Erreur de configuration email :    " . $e->getMessage());
         }
     }
 
@@ -172,7 +177,7 @@ class EmailService
         $this->mailer->isHTML(true);
         $this->mailer->Subject = 'Réinitialisation de votre mot de passe - SAE Manager';
 
-        $resetLink = $this->getBaseUrl() . "/user/reset-password? token=" . $token;
+        $resetLink = $this->getBaseUrl() . "/user/reset-password?token=" . $token;
 
         $emailView = new EmailView('password_reset', [
             'RESET_LINK' => $resetLink
@@ -185,35 +190,14 @@ class EmailService
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
-            error_log('PHPMailer SMTP exception:  ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' .  $phpmailerError);
+            $phpmailerError = $this->mailer->ErrorInfo;
+            error_log(
+                'PHPMailer SMTP exception:  ' . $e->getMessage() .
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError
+            );
 
             // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (!empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($from, $fromName);
-                }
-
-                $mail->addAddress($email);
-                $mail->isHTML(true);
-                $mail->Subject = $this->mailer->Subject;
-                $mail->Body = $this->mailer->Body;
-                $mail->AltBody = $this->mailer->AltBody;
-
-                $mail->send();
-                error_log('Email sent via local mail() fallback to ' . $email);
-                return true;
-            } catch (Exception $e2) {
-                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception: ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
-                throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
-            }
+            return $this->sendViaFallback($email);
         }
     }
 
@@ -248,35 +232,14 @@ class EmailService
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
-            error_log('PHPMailer SMTP exception (account verification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+            $phpmailerError = $this->mailer->ErrorInfo;
+            error_log(
+                'PHPMailer SMTP exception (account verification): ' . $e->getMessage() .
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError
+            );
 
             // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (!empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($from, $fromName);
-                }
-
-                $mail->addAddress($email);
-                $mail->isHTML(true);
-                $mail->Subject = $this->mailer->Subject;
-                $mail->Body = $this->mailer->Body;
-                $mail->AltBody = $this->mailer->AltBody;
-
-                $mail->send();
-                error_log('Email sent via local mail() fallback to ' . $email);
-                return true;
-            } catch (Exception $e2) {
-                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (account verification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
-                throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
-            }
+            return $this->sendViaFallback($email);
         }
     }
 
@@ -319,44 +282,25 @@ class EmailService
             ]);
 
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody($responsableNom, $clientNom, $saeTitle, $saeDescription);
+            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody(
+                $responsableNom,
+                $clientNom,
+                $saeTitle,
+                $saeDescription
+            );
 
             $this->mailer->send();
             error_log("Email de notification SAE envoyé à {$responsableEmail}");
             return true;
-
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
-            error_log('PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError);
+            $phpmailerError = $this->mailer->ErrorInfo;
+            error_log(
+                'PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() .
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError
+            );
 
             // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database:: parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (!empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($from, $fromName);
-                }
-
-                $mail->addAddress($responsableEmail);
-                $mail->isHTML(true);
-                $mail->Subject = $this->mailer->Subject;
-                $mail->Body = $this->mailer->Body;
-                $mail->AltBody = $this->mailer->AltBody;
-
-                $mail->send();
-                error_log('Email SAE notification sent via local mail() fallback to ' . $responsableEmail);
-                return true;
-
-            } catch (Exception $e2) {
-                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (SAE notification): ' . $e2->getMessage() . ' | PHPMailer ErrorInfo: ' . $phpmailerError2);
-                throw new DataBaseException("Erreur d'envoi d'email de notification SAE: " . $e2->getMessage());
-            }
+            return $this->sendViaFallback($responsableEmail);
         }
     }
 
@@ -392,7 +336,14 @@ class EmailService
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Nouvelle affectation SAE - ' . $saeTitre;
 
-            $dateRenduFormatted = ! empty($dateRendu) ? date('d/m/Y', strtotime($dateRendu)) : 'Non définie';
+            $dateRenduFormatted = 'Non définie';
+            if (!empty($dateRendu)) {
+                $timestamp = strtotime($dateRendu);
+                if ($timestamp !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $timestamp);
+                }
+            }
+
             $saeUrl = $this->getBaseUrl() . '/sae';
 
             $emailView = new EmailView('student_assignment', [
@@ -417,35 +368,11 @@ class EmailService
 
             $this->mailer->send();
             return true;
-
         } catch (Exception $e) {
             error_log('PHPMailer SMTP exception (student assignment): ' . $e->getMessage());
 
             // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (! empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($from, $fromName);
-                }
-
-                $mail->addAddress($studentEmail);
-                $mail->isHTML(true);
-                $mail->Subject = $this->mailer->Subject;
-                $mail->Body = $this->mailer->Body;
-                $mail->AltBody = $this->mailer->AltBody;
-
-                $mail->send();
-                return true;
-            } catch (Exception $e2) {
-                error_log('PHPMailer fallback exception (student assignment): ' . $e2->getMessage());
-                throw new DataBaseException("Erreur d'envoi d'email d'affectation:  " . $e2->getMessage());
-            }
+            return $this->sendViaFallback($studentEmail);
         }
     }
 
@@ -497,35 +424,11 @@ class EmailService
 
             $this->mailer->send();
             return true;
-
         } catch (Exception $e) {
             error_log('PHPMailer SMTP exception (client assignment): ' . $e->getMessage());
 
             // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (! empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($from, $fromName);
-                }
-
-                $mail->addAddress($clientEmail);
-                $mail->isHTML(true);
-                $mail->Subject = $this->mailer->Subject;
-                $mail->Body = $this->mailer->Body;
-                $mail->AltBody = $this->mailer->AltBody;
-
-                $mail->send();
-                return true;
-            } catch (Exception $e2) {
-                error_log('PHPMailer fallback exception (client assignment): ' . $e2->getMessage());
-                throw new DataBaseException("Erreur d'envoi d'email au client: " . $e2->getMessage());
-            }
+            return $this->sendViaFallback($clientEmail);
         }
     }
 
@@ -561,15 +464,15 @@ class EmailService
             $this->mailer->Subject = '[Contact] ' . $safeSubject;
             $this->mailer->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
                 . "De       : {$fromUserEmail}\n"
-                . "Sujet    : {$safeSubject}\n"
+                . "Sujet    :  {$safeSubject}\n"
                 . "---------\n\n"
-                . "{$message}\n";
+                .  "{$message}\n";
 
             $this->mailer->send();
             error_log("Contact email sent to {$to} (reply-to: {$fromUserEmail})");
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo ?? 'no additional info';
+            $phpmailerError = $this->mailer->ErrorInfo;
             error_log('PHPMailer SMTP exception (contact): ' . $e->getMessage() . ' | ErrorInfo: ' . $phpmailerError);
 
             // Fallback to local mail() function
@@ -578,31 +481,105 @@ class EmailService
                 $mail->isMail();
                 $mail->CharSet = 'UTF-8';
 
-                $from = $this->mailer->From ?? Database::parseEnvVar('FROM_EMAIL');
-                $fromName = $this->mailer->FromName ?? Database::parseEnvVar('FROM_NAME') ?: 'SAE Manager';
-                if (! empty($from)) {
+                $from = $this->getFromEmail();
+                $fromName = $this->getFromName();
+                if (!   empty($from)) {
                     $mail->setFrom($from, $fromName);
                     $mail->addReplyTo($fromUserEmail ?: $from, $fromName);
                 }
 
                 $mail->addAddress('sae-manager@alwaysdata.net');
                 $mail->isHTML(false);
+                $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
                 $mail->Subject = '[Contact] ' . $safeSubject;
                 $mail->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
                     . "De       : {$fromUserEmail}\n"
-                    . "Sujet    :  {$safeSubject}\n"
+                    . "Sujet    :    {$safeSubject}\n"
                     . "---------\n\n"
-                    .  "{$message}\n";
+                    .    "{$message}\n";
 
                 $mail->send();
                 error_log('Contact email sent via local mail() fallback');
                 return true;
             } catch (Exception $e2) {
-                $phpmailerError2 = $mail->ErrorInfo ?? 'no additional info';
-                error_log('PHPMailer fallback exception (contact): ' . $e2->getMessage() . ' | ErrorInfo: ' . $phpmailerError2);
-                throw new DataBaseException("Erreur d'envoi d'email de contact: " . $e2->getMessage());
+                $phpmailerError2 = $mail->ErrorInfo;
+                error_log(
+                    'PHPMailer fallback exception (contact): ' . $e2->getMessage() .
+                    ' | ErrorInfo:  ' . $phpmailerError2
+                );
+                throw new DataBaseException("Erreur d'envoi d'email de contact:   " . $e2->getMessage());
             }
         }
+    }
+
+    /**
+     * Sends email via local mail() fallback
+     *
+     * @param string $recipientEmail Recipient's email address
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If fallback also fails
+     */
+    private function sendViaFallback(string $recipientEmail): bool
+    {
+        try {
+            $mail = new PHPMailer(true);
+            $mail->isMail();
+            $mail->CharSet = 'UTF-8';
+
+            $from = $this->getFromEmail();
+            $fromName = $this->getFromName();
+            if (!empty($from)) {
+                $mail->setFrom($from, $fromName);
+                $mail->addReplyTo($from, $fromName);
+            }
+
+            $mail->addAddress($recipientEmail);
+            $mail->isHTML($this->mailer->ContentType === 'text/html');
+            $mail->Subject = $this->mailer->Subject;
+            $mail->Body = $this->mailer->Body;
+            $mail->AltBody = $this->mailer->AltBody;
+
+            $mail->send();
+            error_log('Email sent via local mail() fallback to ' . $recipientEmail);
+            return true;
+        } catch (Exception $e2) {
+            $phpmailerError2 = $mail->ErrorInfo;
+            error_log(
+                'PHPMailer fallback exception:   ' . $e2->getMessage() .
+                ' | PHPMailer ErrorInfo: ' .   $phpmailerError2
+            );
+            throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
+        }
+    }
+
+    /**
+     * Gets the FROM email address
+     *
+     * @return string FROM email address
+     */
+    private function getFromEmail(): string
+    {
+        // @phpstan-ignore-next-line function.alreadyNarrowedType
+        if (is_string($this->mailer->From) && ! empty($this->mailer->From)) {
+            return $this->mailer->From;
+        }
+        $fromEmail = Database::parseEnvVar('FROM_EMAIL');
+        return ($fromEmail !== false && !empty($fromEmail)) ? $fromEmail : 'noreply@sae-manager.com';
+    }
+
+    /**
+     * Gets the FROM name
+     *
+     * @return string FROM name
+     */
+    private function getFromName(): string
+    {
+        // @phpstan-ignore-next-line function.alreadyNarrowedType
+        if (is_string($this->mailer->From) && ! empty($this->mailer->From)) {
+            return $this->mailer->From;
+        }
+        $fromName = Database::parseEnvVar('FROM_NAME');
+        return $fromName !== false ?  $fromName : 'SAE Manager';
     }
 
     /**
@@ -618,21 +595,32 @@ class EmailService
     private function getBaseUrl(): string
     {
         // For local development, always use detected host
-        if (isset($_SERVER['HTTP_HOST']) && (str_contains($_SERVER['HTTP_HOST'], 'localhost') || str_contains($_SERVER['HTTP_HOST'], '127.0.0.1'))) {
-            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-            return $protocol . '://' . $_SERVER['HTTP_HOST'];
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $httpHost = is_string($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+            if (
+                str_contains($httpHost, 'localhost') ||
+                str_contains($httpHost, '127.0.0.1')
+            ) {
+                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+                return $protocol . '://' . $httpHost;
+            }
         }
 
         // Check for APP_URL in environment
         $appUrl = Database::parseEnvVar('APP_URL');
-        if (!empty($appUrl)) {
+        if ($appUrl !== false && !empty($appUrl)) {
             return rtrim($appUrl, '/');
         }
 
         // Fallback to current server configuration
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        $path = dirname($_SERVER['SCRIPT_NAME']);
+        $host = (isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']))
+            ? $_SERVER['HTTP_HOST']
+            : 'localhost';
+        $scriptName = (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME']))
+            ? $_SERVER['SCRIPT_NAME']
+            : '';
+        $path = $scriptName !== '' ? dirname($scriptName) : '';
         return $protocol . '://' . $host . $path;
     }
 
@@ -646,7 +634,12 @@ class EmailService
      */
     private function getPasswordResetEmailTextBody(string $resetLink): string
     {
-        return "Réinitialisation de votre mot de passe - SAE Manager\n\nVous avez demandé la réinitialisation de votre mot de passe.\n\nLien :  {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nCordialement,\nL'équipe SAE Manager";
+        return "Réinitialisation de votre mot de passe - SAE Manager\n\n" .
+            "Vous avez demandé la réinitialisation de votre mot de passe.\n\n" .
+            "Lien :   {$resetLink}\n\n" .
+            "Ce lien est valide pendant 1 heure.\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -657,7 +650,12 @@ class EmailService
      */
     private function getAccountVerificationEmailTextBody(string $verificationLink): string
     {
-        return "Vérification de votre compte - SAE Manager\n\nMerci de vous être inscrit.  Pour activer votre compte, veuillez copier et coller le lien suivant dans votre navigateur :\n\nLien : {$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Vérification de votre compte - SAE Manager\n\n" .
+            "Merci de vous être inscrit.   Pour activer votre compte, " .
+            "veuillez copier et coller le lien suivant dans votre navigateur :\n\n" .
+            "Lien :  {$verificationLink}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -669,10 +667,21 @@ class EmailService
      * @param string $saeDescription SAE description
      * @return string Plain text email body
      */
-    private function getSaeCreationEmailTextBody(string $responsableNom, string $clientNom, string $saeTitle, string $saeDescription): string
-    {
+    private function getSaeCreationEmailTextBody(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$responsableNom},\n\nUne nouvelle SAE a été créée par {$clientNom}.\n\nTITRE : {$saeTitle}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\n\n{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Bonjour {$responsableNom},\n\n" .
+            "Une nouvelle SAE a été créée par {$clientNom}.\n\n" .
+            "TITRE :   {$saeTitle}\n" .
+            "DESCRIPTION :  {$saeDescription}\n" .
+            "CLIENT :  {$clientNom}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -686,10 +695,25 @@ class EmailService
      * @param string $dateRendu Submission deadline
      * @return string Plain text email body
      */
-    private function getStudentAssignmentEmailTextBody(string $studentNom, string $saeTitre, string $saeDescription, string $responsableNom, string $clientNom, string $dateRendu): string
-    {
+    private function getStudentAssignmentEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$studentNom},\n\nVous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\nTITRE : {$saeTitre}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\nRESPONSABLE :  {$responsableNom}\nDATE DE RENDU : {$dateRendu}\n\n{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
+        return "Bonjour {$studentNom},\n\n" .
+            "Vous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\n" .
+            "TITRE :  {$saeTitre}\n" .
+            "DESCRIPTION : {$saeDescription}\n" .
+            "CLIENT : {$clientNom}\n" .
+            "RESPONSABLE : {$responsableNom}\n" .
+            "DATE DE RENDU : {$dateRendu}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Bon courage !\n" .
+            "L'équipe SAE Manager";
     }
 
     /**
@@ -701,9 +725,220 @@ class EmailService
      * @param string $responsableNom Supervisor's name
      * @return string Plain text email body
      */
-    private function getClientAssignmentEmailTextBody(string $clientNom, string $saeTitre, string $studentNom, string $responsableNom): string
-    {
+    private function getClientAssignmentEmailTextBody(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNom,
+        string $responsableNom
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$clientNom},\n\nUn étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\nSAE : {$saeTitre}\nÉTUDIANT AFFECTÉ : {$studentNom}\nRESPONSABLE : {$responsableNom}\n\n{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+        return "Bonjour {$clientNom},\n\n" .
+            "Un étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\n" .
+            "SAE : {$saeTitre}\n" .
+            "ÉTUDIANT AFFECTÉ : {$studentNom}\n" .
+            "RESPONSABLE : {$responsableNom}\n\n" .
+            "{$saeUrl}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
+
+
+    /**
+     * Sends a deadline reminder email to a student (3 days before submission)
+     *
+     * Notifies a student that their SAE submission deadline is approaching in 3 days.
+     *
+     * @param string $studentEmail Student's email address
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendDeadlineReminderEmail(
+        string $studentEmail,
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Rappel : Date de rendu SAE dans 3 jours - ' . $saeTitre;
+
+            $dateRenduFormatted = 'Non définie';
+            $heureRendu = '';
+            if (!empty($dateRendu)) {
+                $timestamp = strtotime($dateRendu);
+                if ($timestamp !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $timestamp);
+                    $heureRendu = date('H:i', $timestamp);
+                }
+            }
+
+            $saeUrl = $this->getBaseUrl() . '/sae';
+
+            $emailView = new EmailView('deadline_reminder', [
+                'STUDENT_NAME' => $studentNom,
+                'SAE_TITLE' => $saeTitre,
+                'DATE_RENDU' => $dateRenduFormatted,
+                'HEURE_RENDU' => $heureRendu,
+                'RESPONSABLE_NAME' => $responsableNom,
+                'SAE_URL' => $saeUrl
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getDeadlineReminderEmailTextBody(
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $heureRendu,
+                $responsableNom
+            );
+
+            $this->mailer->send();
+            error_log("Email de rappel envoyé à {$studentEmail} pour la SAE '{$saeTitre}'");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (deadline reminder): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($studentEmail);
+        }
+    }
+
+    /**
+     * Generates plain text version of deadline reminder email
+     *
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return string Plain text email body
+     */
+    private function getDeadlineReminderEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $heureRendu,
+        string $responsableNom
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+        $textHeure = $heureRendu ? " à $heureRendu" : "";
+        return "Bonjour {$studentNom},\n\n" .
+            "RAPPEL : Il ne vous reste que 3 JOURS avant la date de rendu de votre SAE !\n\n" .
+            "SAE : {$saeTitre}\n" .
+            "DATE DE RENDU : {$dateRendu}{$textHeure}\n" .
+            "RESPONSABLE : {$responsableNom}\n\n" .
+            "N'oubliez pas de préparer et soumettre votre livrable avant la date limite.\n\n" .
+            "Accéder à vos SAE : {$saeUrl}\n\n" .
+            "Bon courage pour la finalisation de votre projet !\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
+
+    /**
+     * Sends an urgent deadline reminder email to a student (1 day before submission)
+     *
+     * Notifies a student that their SAE submission deadline is TOMORROW at 23:59.
+     *
+     * @param string $studentEmail Student's email address
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendUrgentDeadlineReminderEmail(
+        string $studentEmail,
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = '🚨 URGENT : Rendu SAE DANS 1 JOUR - ' . $saeTitre;
+
+            $dateRenduFormatted = 'Non définie';
+            $heureRendu = '';
+            if (!empty($dateRendu)) {
+                $timestamp = strtotime($dateRendu);
+                if ($timestamp !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $timestamp);
+                    $heureRendu = date('H:i', $timestamp);
+                }
+            }
+
+            $saeUrl = $this->getBaseUrl() . '/sae';
+
+            $emailView = new EmailView('urgent_deadline_reminder', [
+                'STUDENT_NAME' => $studentNom,
+                'SAE_TITLE' => $saeTitre,
+                'DATE_RENDU' => $dateRenduFormatted,
+                'HEURE_RENDU' => $heureRendu,
+                'RESPONSABLE_NAME' => $responsableNom,
+                'SAE_URL' => $saeUrl
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getUrgentDeadlineReminderEmailTextBody(
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $responsableNom,
+                $heureRendu
+            );
+
+            $this->mailer->send();
+            error_log("Email de rappel URGENT (J-1) envoyé à {$studentEmail} pour la SAE '{$saeTitre}'");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (urgent deadline reminder): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($studentEmail);
+        }
+    }
+
+    /**
+     * Generates plain text version of urgent deadline reminder email (J-1)
+     *
+     * @param string $studentNom Student's name
+     * @param string $saeTitre SAE title
+     * @param string $dateRendu Submission deadline
+     * @param string $responsableNom Supervisor's name
+     * @return string Plain text email body
+     */
+    private function getUrgentDeadlineReminderEmailTextBody(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom,
+        string $heureRendu,
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+
+        $precisionHeure = $heureRendu ? " à {$heureRendu}" : "";
+        return "Bonjour {$studentNom},\n\n" .
+            "🚨 ATTENTION : Il ne vous reste qu'UN SEUL JOUR avant la date de rendu de votre SAE !\n\n" .
+            "SAE : {$saeTitre}\n" .
+            "DATE DE RENDU : DEMAIN ({$dateRendu}){$precisionHeure}\n" .
+            "RESPONSABLE : {$responsableNom}\n\n" .
+            "C'est le moment de finaliser et soumettre votre travail !\n\n" .
+            "Accéder à vos SAE : {$saeUrl}\n\n" .
+            "Bon courage pour ces dernières heures !\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
     }
 }

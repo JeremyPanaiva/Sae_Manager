@@ -46,14 +46,16 @@ class ChangePassword implements ControllerInterface
     public function control(): void
     {
         // Ensure session is started
-        if (session_status() === PHP_SESSION_NONE)
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
 
         // Verify user is authenticated
-        if (! isset($_SESSION['user']['id'])) {
-            header('Location:  /login');
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            header('Location: /login');
             exit;
         }
+
 
         // Render password change form
         $view = new ChangePasswordView();

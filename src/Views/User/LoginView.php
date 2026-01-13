@@ -49,7 +49,7 @@ class LoginView extends BaseView
     /**
      * Constructor
      *
-     * @param array $errors Array of Throwable exceptions representing login errors
+     * @param array<\Throwable> $errors Array of Throwable exceptions representing login errors
      * @param string $successMessage Success message to display (e.g., "Password reset successful")
      */
     public function __construct(
@@ -81,11 +81,13 @@ class LoginView extends BaseView
     public function renderBody(): string
     {
         ob_start();
-        $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius:  4px;">' . $this->successMessage . '</div>' :  '';
+        $SUCCESS_MESSAGE_KEY = $this->successMessage ? '<div style="color: green; margin: 10px 0; padding: 10px; 
+        background: #d4edda; border: 1px solid #c3e6cb; border-radius:  4px;">
+        ' . $this->successMessage . '</div>' : '';
         $ERRORS_KEY = (new ErrorsView($this->errors))->renderBody();
         $uname = '';
 
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

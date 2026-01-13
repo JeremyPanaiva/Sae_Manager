@@ -55,9 +55,9 @@ class RegisterView extends BaseView
     /**
      * Constructor
      *
-     * @param array $errors Array of Throwable exceptions representing registration validation errors
+     * @param array<\Throwable> $errors Array of Throwable exceptions representing registration validation errors
      */
-    function __construct(
+    public function __construct(
         private array $errors = [],
     ) {
     }
@@ -94,6 +94,6 @@ class RegisterView extends BaseView
         $mail = $this->data['mail'] ?? '';
 
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

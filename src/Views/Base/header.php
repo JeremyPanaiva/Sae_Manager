@@ -1,3 +1,31 @@
+<?php
+
+/**
+ * Header Template
+ *
+ * Displays the main header with navigation and user information.
+ *
+ * Template variables:
+ * @var string $CANONICAL_URL Canonical URL of the current page
+ * @var string $USERNAME_KEY Display name of the logged-in user
+ * @var string $ROLE_KEY User role (e.g., "Étudiant", "Enseignant", "Admin")
+ * @var string $ROLE_CLASS CSS class for role badge styling
+ * @var string $USER_META_STYLE Inline CSS for user meta section visibility
+ * @var string $PROFILE_BTN_STYLE Inline CSS for profile button visibility
+ * @var string $LINK_KEY URL for login/logout link
+ * @var string $CONNECTION_LINK_KEY Text for connection link (e.g., "Se connecter" or "Se déconnecter")
+ * @var string $INSCRIPTION_LINK_KEY URL for registration link
+ * @var string $INSCRIPTION_STYLE_KEY Inline CSS for registration button visibility
+ * @var string $NAV_STYLE Inline CSS for navigation visibility
+ * @var string $DASHBOARD_LINK_KEY URL for the dashboard page
+ * @var string $SAE_LINK_KEY URL for the SAE list page
+ * @var string $USERS_LINK_KEY URL for the users management page
+ *
+ * @package SaeManager\Views\Base
+ * @author JeremyPanaiva & mohamedDriouchi
+ */
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -6,14 +34,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
-    <!-- Canonical -->
+        content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
-    <!-- JSON-LD -->
     <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
+            "@context":  "https://schema.org",
             "@graph": [
                 {
                     "@type": "WebSite",
@@ -33,7 +59,6 @@
     </script>
     <link rel="stylesheet" href="/_assets/css/index.css">
 
-    <!-- Favicons -->
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
     <link rel="shortcut icon" href="/_assets/img/favicon/favicon.ico" />
@@ -51,6 +76,14 @@
                     <img src="/_assets/img/SM_logo.png" alt="SAE Manager" class="logo-img">
                 </a>
             </section>
+
+            <!-- Hamburger button (visible only on mobile) -->
+            <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
             <section class="user-info" aria-label="Informations utilisateur">
                 <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
                     <p>
@@ -63,7 +96,8 @@
                     <a href="/user/profile" class="btn btn-outline header-btn-transparent"
                         style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
                         profil</a>
-                    <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-transparent"><?php echo $CONNECTION_LINK_KEY; ?></a>
+                    <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-transparent">
+                        <?php echo $CONNECTION_LINK_KEY; ?></a>
                     <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
                         style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
                 </div>
@@ -71,16 +105,39 @@
         </section>
     </header>
 
-    <nav class="nav" style="<?php echo $NAV_STYLE; ?>" aria-label="Contenu principal">
+    <nav class="nav mobile-menu" id="mobileMenu" style="<?php echo $NAV_STYLE; ?>" aria-label="Navigation principale">
+        <!-- User info in mobile menu -->
+        <div class="mobile-user-info" style="<?php echo $USER_META_STYLE; ?>">
+            <p>
+                👤 <?php echo $USERNAME_KEY; ?>
+                <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
+            </p>
+        </div>
+
+        <!-- User actions in mobile menu -->
+        <div class="mobile-user-actions" style="<?php echo $USER_META_STYLE; ?>">
+            <a href="/user/profile" class="mobile-action-btn" style="<?php echo $PROFILE_BTN_STYLE; ?>">
+                Mon profil
+            </a>
+            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
+                <?php echo $CONNECTION_LINK_KEY; ?>
+            </a>
+        </div>
+
+        <!-- Main navigation -->
         <ul class="nav-content">
-            <li class="nav-item <?php echo $ACTIVE_DASHBOARD; ?>">
+            <li class="nav-item">
                 <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
             </li>
-            <li class="nav-item <?php echo $ACTIVE_SAE; ?>">
-                <a href="<?php echo $SAE_LINK_KEY; ?>">SAEs</a>
+            <li class="nav-item">
+                <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
             </li>
-            <li class="nav-item <?php echo $ACTIVE_USERS; ?>">
+            <li class="nav-item">
                 <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
             </li>
         </ul>
+
     </nav>
+
+    <!-- Hamburger menu script -->
+    <script src="/_assets/script/mobile-menu.js"></script>

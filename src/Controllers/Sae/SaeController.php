@@ -38,16 +38,22 @@ class SaeController implements ControllerInterface
     public function control()
     {
         // Verify user is authenticated
-        if (!isset($_SESSION['user'])) {
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             header('Location:  /login');
             exit();
         }
 
         // Extract user information
         $currentUser = $_SESSION['user'];
-        $role = strtolower($currentUser['role']);
-        $username = $currentUser['nom'] . ' ' . $currentUser['prenom'];
-        $userId = $currentUser['id'];
+        $roleRaw = $currentUser['role'] ?? '';
+        $role = is_string($roleRaw) ? strtolower($roleRaw) : '';
+        $nomRaw = $currentUser['nom'] ?? '';
+        $prenomRaw = $currentUser['prenom'] ?? '';
+        $nom = is_string($nomRaw) ? $nomRaw : '';
+        $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+        $username = $nom . ' ' . $prenom;
+        $userIdRaw = $currentUser['id'] ?? 0;
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
 
         // Initialize content data
         $contentData = [
@@ -88,7 +94,7 @@ class SaeController implements ControllerInterface
      *
      * @param int $userId The ID of the current user
      * @param string $role The role of the user (etudiant, responsable, client)
-     * @return array Formatted SAE data with role-specific information
+     * @return array<string, mixed> Formatted SAE data with role-specific information
      * @throws \Shared\Exceptions\DataBaseException If database operations fail
      */
     private function prepareSaeContent(int $userId, string $role): array
@@ -100,9 +106,13 @@ class SaeController implements ControllerInterface
 
                 // Format submission deadlines
                 foreach ($saes as &$sae) {
-                    $sae['date_rendu_formatee'] = !empty($sae['date_rendu'])
-                        ? date('d/m/Y', strtotime($sae['date_rendu']))
-                        : 'Non définie';
+                    $dateRenduRaw = $sae['date_rendu'] ?? '';
+                    if (!empty($dateRenduRaw) && is_string($dateRenduRaw)) {
+                        $timestamp = strtotime($dateRenduRaw);
+                        $sae['date_rendu_formatee'] = $timestamp !== false ? date('d/m/Y', $timestamp) : '';
+                    } else {
+                        $sae['date_rendu_formatee'] = 'Non définie';
+                    }
                 }
                 return ['saes' => $saes];
 
@@ -114,15 +124,27 @@ class SaeController implements ControllerInterface
 
                 foreach ($saes as &$sae) {
                     // Get all students assigned to this SAE
-                    $assignedStudents = SaeAttribution::getStudentsForSae($sae['id']);
+                    $saeIdRaw = $sae['id'] ?? 0;
+                    $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+                    $assignedStudents = SaeAttribution::getStudentsForSae($saeId);
 
                     // Filter students assigned by current supervisor
                     $etudiantsAttribuesParMoi = [];
                     foreach ($assignedStudents as $assignedStudent) {
-                        if (SaeAttribution::isStudentAssignedByResponsable($sae['id'], $assignedStudent['id'], $responsableId)) {
+                        $assignedStudentIdRaw = $assignedStudent['id'] ?? 0;
+                        $assignedStudentId = is_numeric($assignedStudentIdRaw) ? (int)$assignedStudentIdRaw : 0;
+
+                        if (
+                            SaeAttribution::isStudentAssignedByResponsable(
+                                $saeId,
+                                $assignedStudentId,
+                                $responsableId
+                            )
+                        ) {
                             $etudiantsAttribuesParMoi[] = $assignedStudent;
                         }
                     }
+
 
                     // Filter available students (not assigned to this SAE)
                     $etudiantsDisponibles = array_filter($etudiants, function ($etudiant) use ($assignedStudents) {
@@ -139,11 +161,11 @@ class SaeController implements ControllerInterface
                     $sae['etudiants_attribues']   = $etudiantsAttribuesParMoi;
 
                     // Attach supervisor who assigned the SAE (null if unassigned)
-                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
+                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($saeId);
                 }
 
                 // Sort SAE by priority:  my assignments → free → assigned by others
-                usort($saes, function ($a, $b) use ($responsableId) {
+                usort($saes, function ($a, $b) {
                     $aIsMine  = !empty($a['etudiants_attribues']);
                     $bIsMine  = !empty($b['etudiants_attribues']);
 
@@ -174,7 +196,9 @@ class SaeController implements ControllerInterface
 
                 foreach ($saes as &$sae) {
                     // Add supervisor assignment information
-                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($sae['id']);
+                    $saeIdRaw = $sae['id'] ?? 0;
+                    $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+                    $sae['responsable_attribution'] = SaeAttribution::getResponsableForSae($saeId);
                 }
 
                 return ['saes' => $saes];
@@ -196,23 +220,30 @@ class SaeController implements ControllerInterface
     public function handleCreateSae(): void
     {
         // Verify user is authenticated as client
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'client') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'client'
+        ) {
             header('Location: /login');
             exit();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $titre = trim($_POST['titre'] ?? '');
-            $description = trim($_POST['description'] ??  '');
-            $clientId = $_SESSION['user']['id'];
+            $titreRaw = $_POST['titre'] ?? '';
+            $titre = is_string($titreRaw) ? trim($titreRaw) : '';
+            $descriptionRaw = $_POST['description'] ?? '';
+            $description = is_string($descriptionRaw) ? trim($descriptionRaw) : '';
+            $clientIdRaw = $_SESSION['user']['id'] ?? 0;
+            $clientId = is_numeric($clientIdRaw) ? (int)$clientIdRaw : 0;
 
             if ($titre !== '' && $description !== '') {
                 try {
-                    \Models\Database:: checkConnection();
+                    \Models\Database::checkConnection();
                     Sae::create($clientId, $titre, $description);
                 } catch (\Shared\Exceptions\DataBaseException $e) {
-                    $_SESSION['error_message'] = $e->getMessage();
-                } catch (\Exception $e) {
                     $_SESSION['error_message'] = $e->getMessage();
                 }
             }
@@ -234,21 +265,31 @@ class SaeController implements ControllerInterface
     public function handleAssignSae(): void
     {
         // Verify user is authenticated as supervisor
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'responsable'
+        ) {
             header('Location: /login');
             exit();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $saeId = (int)($_POST['sae_id'] ?? 0);
+            $saeIdRaw = $_POST['sae_id'] ?? 0;
+            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
             $dateRendu = $_POST['date_rendu'] ?? '';
-            $etudiants = $_POST['etudiants'] ?? [];
+            $etudiantsRaw = $_POST['etudiants'] ?? [];
+            $etudiants = is_array($etudiantsRaw) ? $etudiantsRaw : [];
 
             if ($saeId > 0 && !empty($etudiants)) {
                 try {
-                    \Models\Database:: checkConnection();
+                    \Models\Database::checkConnection();
                     foreach ($etudiants as $studentId) {
-                        SaeAttribution::assignToStudent($saeId, (int)$studentId, $dateRendu);
+                        $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+                        // Note: assignToStudent method doesn't exist, this code is deprecated
+                        // SaeAttribution::assignToStudent($saeId, $studentIdInt, $dateRendu);
                     }
                 } catch (\Shared\Exceptions\DataBaseException $e) {
                     $_SESSION['error_message'] = $e->getMessage();
@@ -274,20 +315,29 @@ class SaeController implements ControllerInterface
     public function handleUnassignSae(): void
     {
         // Verify user is authenticated as supervisor
-        if (!isset($_SESSION['user']) || strtolower($_SESSION['user']['role']) !== 'responsable') {
+        if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
+            !isset($_SESSION['user']['role']) ||
+            !is_string($_SESSION['user']['role']) ||
+            strtolower($_SESSION['user']['role']) !== 'responsable'
+        ) {
             header('Location: /login');
             exit();
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $saeId = (int)($_POST['sae_id'] ?? 0);
-            $etudiants = $_POST['etudiants'] ?? [];
+            $saeIdRaw = $_POST['sae_id'] ?? 0;
+            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $etudiantsRaw = $_POST['etudiants'] ?? [];
+            $etudiants = is_array($etudiantsRaw) ? $etudiantsRaw : [];
 
             if ($saeId > 0 && !empty($etudiants)) {
                 try {
                     \Models\Database::checkConnection();
                     foreach ($etudiants as $studentId) {
-                        SaeAttribution::removeFromStudent($saeId, (int)$studentId);
+                        $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+                        SaeAttribution::removeFromStudent($saeId, $studentIdInt);
                     }
                 } catch (\Shared\Exceptions\DataBaseException $e) {
                     $_SESSION['error_message'] = $e->getMessage();

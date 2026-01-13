@@ -33,20 +33,23 @@ class Login implements ControllerInterface
      *
      * @return void
      */
-    function control()
+    public function control()
     {
         $successMessage = '';
 
         // Process success messages from query parameters
         if (isset($_GET['success'])) {
             if ($_GET['success'] === 'password_reset') {
-                $successMessage = "Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.";
+                $successMessage = "Votre mot de passe a été réinitialisé avec succès.
+                  Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'account_verified') {
                 $successMessage = "Votre compte a été vérifié avec succès.   Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'registered') {
-                $successMessage = "Inscription réussie. Veuillez vérifier votre email pour activer votre compte.";
+                $successMessage = "Inscription réussie. 
+                Veuillez vérifier votre email pour activer votre compte.";
             } elseif ($_GET['success'] === 'email_changed') {
-                $successMessage = "Votre email a été mis à jour. Veuillez vérifier votre nouvelle adresse pour réactiver votre compte.";
+                $successMessage = "Votre email a été mis à jour.
+                 Veuillez vérifier votre nouvelle adresse pour réactiver votre compte.";
             }
         }
 
@@ -55,9 +58,11 @@ class Login implements ControllerInterface
         // Process error messages from query parameters
         if (isset($_GET['error'])) {
             if ($_GET['error'] === 'invalid_token') {
-                $errors[] = new \Shared\Exceptions\ValidationException("Le lien de vérification est invalide ou a expiré.");
+                $errors[] = new \Shared\Exceptions\ValidationException("Le lien
+                 de vérification est invalide ou a expiré.");
             } elseif ($_GET['error'] === 'db_error') {
-                $errors[] = new \Shared\Exceptions\DataBaseException("Une erreur est survenue lors de la vérification.");
+                $errors[] = new \Shared\Exceptions\DataBaseException("Une erreur est
+                 survenue lors de la vérification.");
             }
         }
 
@@ -73,7 +78,7 @@ class Login implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path is '/user/login' and method is GET
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === self:: PATH && $method === "GET";
     }

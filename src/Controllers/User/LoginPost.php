@@ -31,17 +31,19 @@ class LoginPost implements ControllerInterface
      *
      * @return void
      */
-    function control()
+    public function control()
     {
         // Check if form was submitted
-        if (!isset($_POST['ok']))
+        if (!isset($_POST['ok'])) {
             return;
+        }
 
         // Extract form data
         $email = $_POST['uname'] ?? '';
         $mdp = $_POST['psw'] ?? '';
 
         $User = new User();
+        /** @var array<ValidationException> $validationExceptions */
         $validationExceptions = [];
 
         // Validate email format
@@ -64,23 +66,32 @@ class LoginPost implements ControllerInterface
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                // Wrap database exception in ArrayException
-                throw new ArrayException([$dbEx]);
+                // Convert database exception to validation exception
+                $validationExceptions[] = new ValidationException($dbEx->getMessage());
+                throw new ArrayException($validationExceptions);
             }
 
             // Email not found in database
             if (!$userData) {
-                throw new ArrayException([new EmailNotFoundException($email)]);
+                $validationExceptions[] = new ValidationException("Email non trouvé: " . $email);
+                throw new ArrayException($validationExceptions);
             }
 
             // Check if account is verified
-            if (isset($userData['is_verified']) && (int) $userData['is_verified'] === 0) {
-                throw new ArrayException([new ValidationException("Votre compte n'est pas vérifié.  Veuillez cliquer sur le lien reçu par email.")]);
+            $isVerifiedRaw = $userData['is_verified'] ?? 1;
+            $isVerified = is_numeric($isVerifiedRaw) ? (int)$isVerifiedRaw : 1;
+            if ($isVerified === 0) {
+                $validationExceptions[] = new ValidationException(
+                    "Votre compte n'est pas vérifié. Veuillez cliquer sur le lien reçu par email."
+                );
+                throw new ArrayException($validationExceptions);
             }
 
             // Verify password
-            if (!password_verify($mdp, $userData['mdp'])) {
-                throw new ArrayException([new InvalidPasswordException()]);
+            $passwordHash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
+            if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
+                $validationExceptions[] = new ValidationException("Mot de passe incorrect.");
+                throw new ArrayException($validationExceptions);
             }
 
             // Login successful - create session
@@ -89,7 +100,8 @@ class LoginPost implements ControllerInterface
             }
 
             // Extract and normalize user role
-            $role = isset($userData['role']) ? strtolower(trim($userData['role'])) : 'etudiant';
+            $roleRaw = $userData['role'] ?? 'etudiant';
+            $role = is_string($roleRaw) ? strtolower(trim($roleRaw)) : 'etudiant';
 
             // Store user information in session
             $_SESSION['user'] = [
@@ -103,7 +115,6 @@ class LoginPost implements ControllerInterface
             // Redirect to home page
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
             // Display login form with error messages
             $view = new LoginView($exceptions->getExceptions());
@@ -119,7 +130,7 @@ class LoginPost implements ControllerInterface
      * @param string $method The HTTP method (GET, POST, etc.)
      * @return bool True if path is '/user/login' and method is POST
      */
-    static function support(string $chemin, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
         return $chemin === "/user/login" && $method === "POST";
     }

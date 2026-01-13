@@ -19,14 +19,14 @@ class ArrayException extends \RuntimeException
     /**
      * Array of validation exceptions
      *
-     * @var array
+     * @var array<ValidationException>
      */
     private array $validationException;
 
     /**
      * Constructor
      *
-     * @param ValidationException[] $validationException Array of validation exceptions to collect
+     * @param array<ValidationException> $validationException Array of validation exceptions to collect
      */
     public function __construct(array $validationException)
     {
@@ -37,7 +37,7 @@ class ArrayException extends \RuntimeException
     /**
      * Gets all collected validation exceptions
      *
-     * @return ValidationException[] Array of validation exceptions
+     * @return array<ValidationException> Array of validation exceptions
      */
     public function getExceptions(): array
     {

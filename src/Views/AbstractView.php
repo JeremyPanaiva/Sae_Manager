@@ -57,13 +57,13 @@ abstract class AbstractView implements View
      *
      * @return string Rendered HTML body content
      */
-    function renderBody(): string
+    public function renderBody(): string
     {
         $templatePath = $this->templatePath();
 
         ob_start();
         extract($this->data);
         include $templatePath;
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

@@ -60,14 +60,14 @@ class ProfileView extends BaseView
     /**
      * User data (nom, prenom, mail, date_creation)
      *
-     * @var array
+     * @var array<string, mixed>
      */
     private array $userData;
 
     /**
      * Array of error exceptions
      *
-     * @var array
+     * @var array<\Throwable>
      */
     private array $errors;
 
@@ -81,8 +81,9 @@ class ProfileView extends BaseView
     /**
      * Constructor
      *
-     * @param array $userData Associative array containing user information (nom, prenom, mail, date_creation)
-     * @param array $errors Array of Throwable exceptions representing profile errors
+     * @param array<string, mixed> $userData Associative array containing user information
+     *                                       (nom, prenom, mail, date_creation)
+     * @param array<\Throwable> $errors Array of Throwable exceptions representing profile errors
      * @param string $success Success message to display after profile update
      */
     public function __construct(array $userData, array $errors = [], string $success = '')
@@ -99,7 +100,7 @@ class ProfileView extends BaseView
      */
     public function templatePath(): string
     {
-        return self:: TEMPLATE_PATH;
+        return self::TEMPLATE_PATH;
     }
 
     /**
@@ -125,6 +126,6 @@ class ProfileView extends BaseView
         $SUCCESS_KEY = $this->success ? "<div class='success-message'>{$this->success}</div>" : '';
 
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

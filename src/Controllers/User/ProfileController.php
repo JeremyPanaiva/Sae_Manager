@@ -57,24 +57,27 @@ class ProfileController implements ControllerInterface
     public function control(): void
     {
         // Ensure session is started
-        if (session_status() === PHP_SESSION_NONE)
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
 
         // Verify user is authenticated
-        if (!isset($_SESSION['user']['id'])) {
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
             header("Location: /login");
             exit;
         }
 
-        $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+        $path = is_string($requestUri) ? parse_url($requestUri, PHP_URL_PATH) : '';
 
         // Route to account deletion handler
-        if ($path === self:: PATH_DELETE && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($path === self::PATH_DELETE && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->handleDelete();
             return;
         }
 
-        $userId = $_SESSION['user']['id'];
+        $userIdRaw = $_SESSION['user']['id'];
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
         $errors = [];
         $success = '';
 
@@ -84,7 +87,7 @@ class ProfileController implements ControllerInterface
         // Retrieve user data from database
         try {
             \Models\Database::checkConnection();
-            $userData = $userModel:: getById($userId) ?? [];
+            $userData = $userModel::getById($userId) ?? [];
         } catch (DataBaseException $e) {
             $errors[] = $e;
         } catch (\Throwable $e) {
@@ -94,9 +97,12 @@ class ProfileController implements ControllerInterface
         // Handle profile update (POST request)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
             // Extract and sanitize form data
-            $nom = trim($_POST['nom'] ?? '');
-            $prenom = trim($_POST['prenom'] ?? '');
-            $mail = trim($_POST['mail'] ?? '');
+            $nomRaw = $_POST['nom'] ?? '';
+            $nom = is_string($nomRaw) ? trim($nomRaw) : '';
+            $prenomRaw = $_POST['prenom'] ?? '';
+            $prenom = is_string($prenomRaw) ? trim($prenomRaw) : '';
+            $mailRaw = $_POST['mail'] ?? '';
+            $mail = is_string($mailRaw) ? trim($mailRaw) : '';
 
             // Validate required fields
             if (!$nom || !$prenom || !$mail) {
@@ -109,16 +115,23 @@ class ProfileController implements ControllerInterface
 
                     // Check if email is already used by another user
                     $stmt = $conn->prepare("SELECT id FROM users WHERE mail = ?  AND id != ?");
+                    if ($stmt === false) {
+                        throw new \Exception("Erreur de préparation de la requête");
+                    }
                     $stmt->bind_param("si", $mail, $userId);
                     $stmt->execute();
                     $result = $stmt->get_result();
+                    if ($result === false) {
+                        throw new \Exception("Erreur lors de l'exécution de la requête");
+                    }
                     if ($result->num_rows > 0) {
                         $errors[] = new \Exception("Cet email est déjà utilisé.");
                     }
 
                     // Update profile
                     if (empty($errors)) {
-                        $currentEmail = $_SESSION['user']['mail'];
+                        $currentEmailRaw = $_SESSION['user']['mail'] ?? '';
+                        $currentEmail = is_string($currentEmailRaw) ? $currentEmailRaw : '';
 
                         // Handle email change
                         if ($mail !== $currentEmail) {
@@ -130,6 +143,9 @@ class ProfileController implements ControllerInterface
 
                             // Update other fields (name, first name)
                             $stmt = $conn->prepare("UPDATE users SET nom=?, prenom=? WHERE id=?");
+                            if ($stmt === false) {
+                                throw new \Exception("Erreur de préparation de la requête");
+                            }
                             $stmt->bind_param("ssi", $nom, $prenom, $userId);
                             $stmt->execute();
                             $stmt->close();
@@ -146,19 +162,24 @@ class ProfileController implements ControllerInterface
                         } else {
                             // Standard update without email change
                             $stmt = $conn->prepare("UPDATE users SET nom=?, prenom=? WHERE id=?");
+                            if ($stmt === false) {
+                                throw new \Exception("Erreur de préparation de la requête");
+                            }
                             $stmt->bind_param("ssi", $nom, $prenom, $userId);
                             $stmt->execute();
                             $stmt->close();
 
                             // Update session data
-                            $_SESSION['user']['nom'] = $nom;
-                            $_SESSION['user']['prenom'] = $prenom;
+                            if (isset($_SESSION['user']['nom'], $_SESSION['user']['prenom'])) {
+                                $_SESSION['user']['nom'] = $nom;
+                                $_SESSION['user']['prenom'] = $prenom;
+                            }
+
 
                             $success = "Profil mis à jour avec succès.";
                             $userData = $userModel::getById($userId) ?? [];
                         }
                     }
-
                 } catch (DataBaseException $e) {
                     $errors[] = $e;
                 } catch (\Throwable $e) {
@@ -182,7 +203,13 @@ class ProfileController implements ControllerInterface
      */
     private function handleDelete(): void
     {
-        $userId = $_SESSION['user']['id'];
+        if (!isset($_SESSION['user']) || !is_array($_SESSION['user']) || !isset($_SESSION['user']['id'])) {
+            header("Location: /login");
+            exit;
+        }
+
+        $userIdRaw = $_SESSION['user']['id'];
+        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
 
         try {
             // Check database connection
@@ -197,7 +224,6 @@ class ProfileController implements ControllerInterface
             // Redirect to home page with deletion confirmation
             header("Location: /?deleted=1");
             exit;
-
         } catch (DataBaseException $e) {
             // Database error
             $_SESSION['error_message'] = "Erreur :  " . $e->getMessage();

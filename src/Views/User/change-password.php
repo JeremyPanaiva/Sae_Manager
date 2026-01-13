@@ -16,7 +16,8 @@
             <input type="password" id="new_password" name="new_password" 
                    minlength="8" maxlength="20"
                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}"
-                   title="Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre"
+                   title="Le mot de passe doit contenir au moins 8 caractères,
+                   une majuscule, une minuscule et un chiffre"
                    required
                    placeholder="Nouveau mot de passe">
             <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">

@@ -27,7 +27,7 @@ class ErrorView extends BaseView
      *
      * @param \Throwable $exception The exception whose message will be displayed
      */
-    function __construct(
+    public function __construct(
         private \Throwable $exception,
     ) {
         $this->data[self::MESSAGE_KEY] = $this->exception->getMessage();
@@ -38,7 +38,7 @@ class ErrorView extends BaseView
      *
      * @return string Absolute path to the template file
      */
-    function templatePath(): string
+    public function templatePath(): string
     {
         return __DIR__ . '/error.php';
     }

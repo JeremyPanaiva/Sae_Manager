@@ -47,7 +47,7 @@ abstract class BaseView implements View
 
     /**
      * Données dynamiques fournies aux templates (clé => valeur)
-     * @var array<string,string>
+     * @var array<string, mixed>
      */
     protected array $data = [];
 
@@ -64,7 +64,7 @@ abstract class BaseView implements View
      *
      * @return string Complete HTML output
      */
-    function render(): string
+    public function render(): string
     {
         $this->header = new HeaderView();
         $this->footer = new FooterView();
@@ -78,7 +78,7 @@ abstract class BaseView implements View
      *
      * @param User|null $user The authenticated user or null
      */
-    function setUser(?User $user)
+    public function setUser(?User $user): void
     {
         $this->user = $user;
     }
@@ -93,6 +93,24 @@ abstract class BaseView implements View
     }
 
     /**
+     * Safely converts a mixed value to a string.
+     * Returns the string representation if scalar or Stringable, empty string otherwise.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    protected function safeString(mixed $value): string
+    {
+        if ($value === null) {
+            return '';
+        }
+        if (is_scalar($value) || $value instanceof \Stringable) {
+            return (string) $value;
+        }
+        return '';
+    }
+
+    /**
      * Renders the view body from the template
      *
      * Loads the template file specified by templatePath(), extracts data variables
@@ -100,13 +118,13 @@ abstract class BaseView implements View
      *
      * @return string Rendered HTML body content
      */
-    function renderBody(): string
+    public function renderBody(): string
     {
         $templatePath = $this->templatePath();
 
         ob_start();
         extract($this->data);
         include $templatePath;
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }

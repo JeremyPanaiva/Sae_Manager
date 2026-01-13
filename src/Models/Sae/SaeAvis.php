@@ -3,6 +3,7 @@
 namespace Models\Sae;
 
 use Models\Database;
+use Shared\Exceptions\DataBaseException;
 
 /**
  * SAE Avis (Feedback) model
@@ -25,6 +26,7 @@ class SaeAvis
      * @param int $userId The ID of the user posting the feedback
      * @param string $message The feedback message content
      * @return bool True if feedback was successfully added, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public static function add(int $saeId, int $userId, string $message): bool
     {
@@ -33,6 +35,11 @@ class SaeAvis
             INSERT INTO sae_avis (sae_id, user_id, message, date_envoi) 
             VALUES (?, ?, ?, NOW())
         ");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in add");
+        }
+
         $stmt->bind_param("iis", $saeId, $userId, $message);
         $result = $stmt->execute();
         $stmt->close();
@@ -46,7 +53,9 @@ class SaeAvis
      * submission date (most recent first).
      *
      * @param int $saeId The ID of the SAE
-     * @return array Array of feedback entries with id, message, date_envoi, user_id, nom, prenom, role
+     * @return list<array<string, int|string|null>>
+     *         Array of feedback entries with id, message, date_envoi, user_id, nom, prenom, role
+     * @throws DataBaseException If database operation fails
      */
     public static function getBySae(int $saeId): array
     {
@@ -59,15 +68,26 @@ class SaeAvis
                 sa.date_envoi,
                 u.nom,
                 u.prenom,
-                u.role
+                u. role
             FROM sae_avis sa
-            JOIN users u ON sa.user_id = u.id
+            JOIN users u ON sa.user_id = u. id
             WHERE sa.sae_id = ?
             ORDER BY sa.date_envoi DESC
         ");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in getBySae");
+        }
+
         $stmt->bind_param("i", $saeId);
         $stmt->execute();
         $result = $stmt->get_result();
+
+        if ($result === false) {
+            $stmt->close();
+            throw new DataBaseException("Échec de récupération du résultat dans getBySae");
+        }
+
         $avis = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
         return $avis;
@@ -80,11 +100,17 @@ class SaeAvis
      *
      * @param int $avisId The ID of the feedback entry to delete
      * @return bool True if deletion was successful, false otherwise
+     * @throws DataBaseException If database operation fails
      */
     public static function delete(int $avisId): bool
     {
         $db = Database:: getConnection();
         $stmt = $db->prepare("DELETE FROM sae_avis WHERE id = ? ");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in delete");
+        }
+
         $stmt->bind_param("i", $avisId);
         $result = $stmt->execute();
         $stmt->close();
@@ -102,22 +128,28 @@ class SaeAvis
      * @param string $message The new feedback message content
      * @return bool True if update was successful, false otherwise
      * @throws \Exception If user is not the author or feedback doesn't exist
+     * @throws DataBaseException If database operation fails
      */
     public static function update(int $avisId, int $userId, string $message): bool
     {
         $db = Database::getConnection();
-        
+
         // Verify that the user is the author before updating
         $stmt = $db->prepare("UPDATE sae_avis SET message = ? WHERE id = ? AND user_id = ?");
+
+        if ($stmt === false) {
+            throw new DataBaseException("Failed to prepare statement in update");
+        }
+
         $stmt->bind_param("sii", $message, $avisId, $userId);
         $result = $stmt->execute();
-        
+
         // Check if any row was affected
         if ($stmt->affected_rows === 0) {
             $stmt->close();
             throw new \Exception("Impossible de modifier cet avis. Vous n'êtes pas l'auteur ou l'avis n'existe pas.");
         }
-        
+
         $stmt->close();
         return $result;
     }

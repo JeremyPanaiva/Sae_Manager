@@ -40,7 +40,7 @@ class ForgotPasswordView extends BaseView
     /**
      * Path to the forgot password template file
      */
-    private const TEMPLATE_PATH = __DIR__ .  '/forgot-password.php';
+    private const TEMPLATE_PATH = __DIR__ . '/forgot-password.php';
 
     /**
      * Returns the path to the forgot password template file
@@ -78,7 +78,7 @@ class ForgotPasswordView extends BaseView
         $SUCCESS_MESSAGE = $this->data['SUCCESS_MESSAGE'] ?? '';
         $ERROR_MESSAGE = $this->data['ERROR_MESSAGE'] ?? '';
         include $this->templatePath();
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 
     /**
@@ -108,10 +108,14 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['success'])) {
             switch ($_GET['success']) {
                 case 'email_sent':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">Un email de réinitialisation a été envoyé à votre adresse email.</div>';
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    border: 1px solid #c3e6cb; border-radius: 4px;">
+                    Un email de réinitialisation a été envoyé à votre adresse email.</div>';
                     break;
                 case 'password_reset':
-                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; border: 1px solid #c3e6cb; border-radius: 4px;">Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.</div>';
+                    $successMessage = '<div style="color: green; margin: 10px 0; padding: 10px; background: #d4edda; 
+                    border: 1px solid #c3e6cb; border-radius: 4px;">
+                    Votre mot de passe a été réinitialisé avec succès.  Vous pouvez maintenant vous connecter.</div>';
                     break;
             }
         }
@@ -119,16 +123,24 @@ class ForgotPasswordView extends BaseView
         if (isset($_GET['error'])) {
             switch ($_GET['error']) {
                 case 'email_required':
-                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Veuillez saisir votre adresse email.</div>';
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Veuillez saisir votre adresse email.</div>';
                     break;
                 case 'invalid_token':
-                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Le lien de réinitialisation est invalide ou a expiré.</div>';
+                    $errorMessage = '<div style="color: red; margin:  10px 0; padding:  10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Le lien de réinitialisation est invalide ou a expiré.</div>';
                     break;
                 case 'database_error':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 4px;">Une erreur est survenue. Veuillez réessayer plus tard. </div>';
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Une erreur est survenue. Veuillez réessayer plus tard. </div>';
                     break;
                 case 'general_error':
-                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; border:  1px solid #f5c6cb; border-radius: 4px;">Une erreur est survenue. Veuillez réessayer plus tard.</div>';
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border:  1px solid #f5c6cb; border-radius: 4px;">
+                    Une erreur est survenue. Veuillez réessayer plus tard.</div>';
                     break;
             }
         }

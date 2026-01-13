@@ -29,7 +29,7 @@ class EmailView extends BaseView
     /**
      * Template data for variable injection
      *
-     * @var array
+     * @var array<string, mixed>
      */
     protected array $data;
 
@@ -37,7 +37,7 @@ class EmailView extends BaseView
      * Constructor
      *
      * @param string $templateName Template filename without extension (e.g., 'password_reset')
-     * @param array $data Associative array of variables to inject into the template
+     * @param array<string, mixed> $data Associative array of variables to inject into the template
      */
     public function __construct(string $templateName, array $data = [])
     {
@@ -52,13 +52,13 @@ class EmailView extends BaseView
      */
     public function templatePath(): string
     {
-        return __DIR__ . '/' .  $this->templateName . '.php';
+        return __DIR__ . '/' . $this->templateName . '.php';
     }
 
     /**
      * Returns template variables for injection
      *
-     * @return array Template data array
+     * @return array<string, mixed> Template data array
      */
     protected function templateVariables(): array
     {
@@ -86,6 +86,6 @@ class EmailView extends BaseView
         ob_start();
         extract($this->data);
         include $templatePath;
-        return ob_get_clean();
+        return (string) ob_get_clean();
     }
 }
