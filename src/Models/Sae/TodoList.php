@@ -28,16 +28,16 @@ class TodoList
      * @return bool True if task was successfully added, false otherwise
      * @throws DataBaseException If database operation fails
      */
-    public static function addTask(int $saeId, string $titre): bool
+    public static function addTask(int $saeId, string $titre, ?int $userId = null): bool
     {
         $db = Database::getConnection();
-        $stmt = $db->prepare("INSERT INTO todo_list (sae_id, titre, fait) VALUES (?, ?, 0)");
+        $stmt = $db->prepare("INSERT INTO todo_list (sae_id, titre, fait, user_id) VALUES (?, ?, 0, ?)");
 
         if ($stmt === false) {
             throw new DataBaseException("Failed to prepare statement in addTask");
         }
 
-        $stmt->bind_param("is", $saeId, $titre);
+        $stmt->bind_param("isi", $saeId, $titre, $userId);
         $result = $stmt->execute();
         $stmt->close();
         return $result;
@@ -57,10 +57,11 @@ class TodoList
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT id, titre, fait, date_creation 
-            FROM todo_list 
-            WHERE sae_id = ?  
-            ORDER BY id ASC
+            SELECT t.id, t.titre, t.fait, t.date_creation, u.nom, u.prenom, u.role
+            FROM todo_list t
+            LEFT JOIN users u ON t.user_id = u.id
+            WHERE t.sae_id = ?  
+            ORDER BY t.id ASC
         ");
 
         if ($stmt === false) {
@@ -117,7 +118,7 @@ class TodoList
      */
     public static function deleteTask(int $taskId): bool
     {
-        $db = Database:: getConnection();
+        $db = Database::getConnection();
         $stmt = $db->prepare("DELETE FROM todo_list WHERE id = ?");
 
         if ($stmt === false) {
