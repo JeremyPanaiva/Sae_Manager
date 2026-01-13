@@ -5,7 +5,7 @@
     "require": {
         "php": ">=8.0",
         "phpmailer/phpmailer": "^7.0",
-      "ext-json": "*"
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
@@ -15,8 +15,14 @@
             "Shared\\": "src/Shared/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Unitaire\\":  "tests/Unitaire/"
+        }
+    },
     "require-dev": {
         "squizlabs/php_codesniffer": "^4.0",
-        "phpstan/phpstan": "^2.1"
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^12.5"
     }
 }
