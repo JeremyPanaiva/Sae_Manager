@@ -312,6 +312,9 @@ class SaeView extends BaseView
 
                     $html .= "<div class='{$cardClass}'>";
 
+                    $html .= "<div class='sae-card-header' 
+                    style='display:flex; justify-content:space-between; align-items:flex-start;'>";
+                    $html .= "<div class='sae-card-info'>";
                     $html .= "<h3>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
                     $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
                     $html .= "<p><strong>Date de création :</strong> " .
@@ -328,35 +331,54 @@ class SaeView extends BaseView
                     } else {
                         $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
                     }
+                    $html .= "</div>"; // End info
+
+                    $html .= "<div class='sae-card-actions' style='display:flex; flex-direction:column; gap:8px;'>";
 
                     $html .= "<button class='btn-modifier' 
                         onclick=\"document.getElementById('edit-" .
                         $this->safeString($sae['id'] ?? 0) .
-                        "').style.display='block';\">
+                        "').style.display='block'; this.style.display='none';\">
                         Modifier</button>";
 
+                    $html .= "<form method='POST' action='/delete_sae' class='form-action-simple'
+                        onsubmit='return confirm(\"Supprimer cette SAE ?\");' style='margin:0;'>";
+                    $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
+                    $html .= "<button type='submit' class='btn-supprimer' style='width:100%'>Supprimer</button>";
+                    $html .= "</form>";
+
+                    $html .= "</div>"; // End actions
+                    $html .= "</div>"; // End header
+
+                    // Formulaire de modification (caché par défaut)
                     $html .= "<div id='edit-" . $this->safeString($sae['id'] ?? 0) .
-                        "' class='edit-form' style='display:none; margin-top:10px;'>";
-                    $html .= "<form method='POST' action='/update_sae'>";
+                        "' class='edit-form' style='display:none;'>";
+                    $html .= "<form method='POST' action='/update_sae' class='form-edit-sae'>";
                     $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
 
-                    $html .= "<label>Nouveau titre :</label>";
+                    $html .= "<div class='form-group'>";
+                    $html .= "<label>Titre</label>";
                     $html .= "<input type='text' name='titre' value='" .
                         htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "' required>";
-
-                    $html .= "<label>Nouvelle description :</label>";
-                    $html .= "<textarea name='description' required>" .
-                        htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</textarea>";
-
-                    $html .= "<button type='submit' class='btn-valider'>Valider</button>";
-                    $html .= "</form>";
                     $html .= "</div>";
 
-                    $html .= "<form method='POST' action='/delete_sae'
-                        onsubmit='return confirm(\"Supprimer cette SAE ?\");'>";
-                    $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
-                    $html .= "<button type='submit' class='btn-supprimer'>Supprimer</button>";
+                    $html .= "<div class='form-group'>";
+                    $html .= "<label>Description</label>";
+                    $html .= "<textarea name='description' required>" .
+                        htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</textarea>";
+                    $html .= "</div>";
+
+                    $html .= "<div class='form-actions'>";
+                    $html .= "<button type='submit' class='btn-valider'>Enregistrer</button>";
+                    $html .= "<button type='button' class='btn-annuler' 
+                        onclick=\"document.getElementById('edit-" . $this->safeString($sae['id'] ?? 0) .
+                        "').style.display='none'; 
+                        this.closest('.sae-card').querySelector('.btn-modifier').style.display='inline-block';\">
+                        Annuler</button>";
+                    $html .= "</div>";
+
                     $html .= "</form>";
+                    $html .= "</div>";
 
                     $html .= "</div>";
                 }

@@ -281,6 +281,66 @@ form button:hover {
     font-weight: bold;
 }
 
+/* To-Do List Cards */
+.todo-card {
+    background-color: var(--white);
+    border: 1px solid #eee;
+    border-left: 4px solid var(--amu-blue);
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    /* Ensure card takes full width */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    /* Handle padding correctly */
+}
+
+.todo-card.done {
+    border-left-color: var(--success);
+    background-color: #f8fff9;
+}
+
+.todo-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.todo-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.todo-date {
+    font-size: 0.8rem;
+    color: var(--amu-dark-gray);
+    margin-top: 4px;
+}
+
+.todo-left-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Update li to accomodate card */
+ul.todo-list li {
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin-bottom: 10px;
+}
+
+.todo-actions {
+    display: flex;
+    align-items: center;
+}
+
 /* Responsive */
 @media (max-width: 1200px) {
     .dashboard-page {

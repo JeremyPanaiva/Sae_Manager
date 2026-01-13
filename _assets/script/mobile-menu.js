@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close menu when clicking overlay
     overlay.addEventListener('click', toggleMenu);
 
-    // Close menu when clicking a link
-    const navLinks = mobileMenu.querySelectorAll('.nav-item a');
-    navLinks.forEach(link => {
+    // Close menu when clicking ANY link inside the mobile menu
+    const menuLinks = mobileMenu.querySelectorAll('a');
+    menuLinks.forEach(link => {
         link.addEventListener('click', function () {
             if (window.innerWidth <= 768) {
                 toggleMenu();

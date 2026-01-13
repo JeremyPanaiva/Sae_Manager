@@ -208,16 +208,21 @@
 
 /* Bouton Supprimer SAE */
 .sae-page .sae-card .btn-supprimer {
-    padding: 6px 12px;
+    padding: 8px 16px;
     background-color: #e74c3c;
     /* rouge vif */
     color: #fff;
-    font-weight: bold;
     border: none;
+    outline: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 14px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 0;
+}
+
+.sae-page .sae-card-actions .btn-modifier {
+    margin-bottom: 0;
 }
 
 .sae-page .sae-card .btn-supprimer:hover {
@@ -535,8 +540,12 @@
 
 /* Bouton de soumission */
 .btn-submit {
-    width: 100%;
-    padding: 12px 20px;
+    width: auto;
+    min-width: 350px;
+    max-width: 100%;
+    display: inline-block;
+    align-self: center;
+    padding: 12px 24px;
     background: linear-gradient(135deg, #0066cc, #66b3ff);
     color: white;
     border: none;
@@ -678,4 +687,96 @@
     .student-name {
         font-size: 0.9rem;
     }
+}
+
+/* ========================================
+   SAE EDIT FORM (Clients)
+   ======================================== */
+
+.sae-page .edit-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px dashed #ccc;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Override default form styles for the inline edit form */
+.sae-page form.form-edit-sae {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+}
+
+.sae-page .form-edit-sae .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.sae-page .form-edit-sae label {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 2px;
+}
+
+.sae-page .form-edit-sae input,
+.sae-page .form-edit-sae textarea {
+    background-color: #fff;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.sae-page .btn-valider {
+    background-color: #28a745;
+    /* Green */
+    color: white;
+    flex: 1;
+}
+
+.sae-page .btn-valider:hover {
+    background-color: #218838;
+}
+
+.sae-page .btn-annuler {
+    background-color: #95a5a6;
+    /* Gray */
+    color: white;
+    flex: 0 0 auto;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.sae-page .btn-annuler:hover {
+    background-color: #7f8c8d;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Override for simple action forms (like delete button container) */
+.sae-page form.form-action-simple {
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
+    gap: 0;
+    margin: 0;
 }

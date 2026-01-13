@@ -205,27 +205,59 @@ class DashboardView extends BaseView
                         foreach ($todos as $task) {
                             $taskId = $this->safeString($task['id'] ?? 0);
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
                             $fait = !empty($task['fait']);
                             $checked = $fait ? 'checked' : '';
 
                             $html .= "<li>";
+                            $html .= "<div class='todo-card" . ($fait ? " done" : "") . "'>";
 
-                            $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'>";
+                            // Left section (Checkbox + Title + Date)
+                            $html .= "<div class='todo-left-section'>";
+                            $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle' 
+                            style='margin:0; flex:0;'>";
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
-                            $html .= "<label>";
                             $html .= "<input type='checkbox' class='todo-checkbox' onclick='this.form.submit();' 
-                            {$checked}> ";
-                            $html .= $taskTitre;
-                            $html .= "</label>";
+                            {$checked}>";
                             $html .= "</form>";
 
-                            $html .= "<form method='POST' action='/todo/delete' class='todo-delete'>";
+                            $html .= "<div class='todo-info'>";
+                            $html .= "<span class='todo-title'>{$taskTitre}</span>";
+
+                            $metaInfo = [];
+                            if ($dateCreation) {
+                                $metaInfo[] = "{$dateCreation}";
+                            }
+
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
+                            $prenomAuteur = $this->safeString($task['prenom'] ?? '');
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
+
+                            if ($nomAuteur && $prenomAuteur) {
+                                $metaInfo[] = "{$prenomAuteur} {$nomAuteur}" . ($roleAuteur ? " ({$roleAuteur})" : "");
+                            }
+
+                            if (!empty($metaInfo)) {
+                                $html .= "<span class='todo-date'>" . implode(' ', $metaInfo) . "</span>";
+                            }
+
+                            $html .= "</div>"; // end todo-info
+                            $html .= "</div>"; // end todo-left-section
+
+                            // Right section (Delete)
+                            $html .= "<div class='todo-actions'>";
+                            $html .= "<form method='POST' action='/todo/delete' class='todo-delete' style='margin:0;'>";
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<button type='submit' class='btn-delete-task' 
                             onclick='return confirm(\"Supprimer cette tâche ?\");' title='Supprimer'></button>";
                             $html .= "</form>";
+                            $html .= "</div>"; // end todo-actions
 
+                            $html .= "</div>"; // end todo-card
                             $html .= "</li>";
                         }
                         $html .= "</ul>";
@@ -258,7 +290,10 @@ class DashboardView extends BaseView
                             $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avis['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avis['message'] ?? ''));
                             $message = $this->rendreLiensCliquables($message);
-                            $dateAvis = htmlspecialchars($this->safeString($avis['date_envoi'] ?? ''));
+                            $dateAvisRaw = $this->safeString($avis['date_envoi'] ?? '');
+                            $dateAvisRaw = $this->safeString($avis['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
 
                             $html .= "<div class='avis-card'>";
                             $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) : 
@@ -284,9 +319,7 @@ class DashboardView extends BaseView
 
                     $saeId = $this->safeString($sae['id'] ?? 0);
                     $titreSae = htmlspecialchars($this->safeString($sae['titre'] ?? 'Titre inconnu'));
-                    $description = htmlspecialchars($this->safeString($sae['description'] ?? ''));
                     $html .= "<h3>{$titreSae}</h3>";
-                    $html .= "<p><strong>Description :</strong> {$description}</p>";
 
                     $allEtudiants = [];
                     $dateRendu = null;
@@ -344,8 +377,43 @@ class DashboardView extends BaseView
                         $html .= "<ul class='todo-list'>";
                         foreach ($allTodos as $task) {
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
                             $fait = !empty($task['fait']);
-                            $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
+
+                            $html .= "<li>";
+                            $html .= "<div class='todo-card" . ($fait ? " done" : "") . "'>";
+
+                            $html .= "<div class='todo-info'>";
+                            $html .= "<span class='todo-title'>{$taskTitre}</span>";
+
+                            $metaInfo = [];
+                            if ($dateCreation) {
+                                $metaInfo[] = "{$dateCreation}";
+                            }
+
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
+                            $prenomAuteur = $this->safeString($task['prenom'] ?? '');
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
+
+                            if ($nomAuteur && $prenomAuteur) {
+                                $metaInfo[] = "{$prenomAuteur} {$nomAuteur}" . ($roleAuteur ? " ({$roleAuteur})" : "");
+                            }
+
+                            if (!empty($metaInfo)) {
+                                $html .= "<span class='todo-date'>" . implode(' ', $metaInfo) . "</span>";
+                            }
+
+                            $html .= "</div>";
+
+                            if ($fait) {
+                                $html .= "<div class='todo-actions'>✅</div>";
+                            }
+
+                            $html .= "</div>";
+                            $html .= "</li>";
                         }
                         $html .= "</ul>";
                     } else {
@@ -362,7 +430,10 @@ class DashboardView extends BaseView
                             $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
                             $messageRendu = $this->rendreLiensCliquables($message);
-                            $dateAvis = htmlspecialchars($this->safeString($avisData['date_envoi'] ?? ''));
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
                             $avisId = $this->safeString($avisData['id'] ?? 0);
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
@@ -374,7 +445,10 @@ class DashboardView extends BaseView
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' class='avis-btn-supprimer' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' class='avis-btn-supprimer' 
+                                style='color:red; background:none; border:none; cursor:pointer;' 
+                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
+                                Supprimer</button>";
                                 $html .= "</form>";
                             }
 
@@ -513,8 +587,43 @@ class DashboardView extends BaseView
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
                             $fait = !empty($task['fait']);
-                            $html .= "<li>{$taskTitre}" . ($fait ? " ✅" : "") . "</li>";
+
+                            $html .= "<li>";
+                            $html .= "<div class='todo-card" . ($fait ? " done" : "") . "'>";
+
+                            $html .= "<div class='todo-info'>";
+                            $html .= "<span class='todo-title'>{$taskTitre}</span>";
+
+                            $metaInfo = [];
+                            if ($dateCreation) {
+                                $metaInfo[] = "{$dateCreation}";
+                            }
+
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
+                            $prenomAuteur = $this->safeString($task['prenom'] ?? '');
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
+
+                            if ($nomAuteur && $prenomAuteur) {
+                                $metaInfo[] = "{$prenomAuteur} {$nomAuteur}" . ($roleAuteur ? " ({$roleAuteur})" : "");
+                            }
+
+                            if (!empty($metaInfo)) {
+                                $html .= "<span class='todo-date'>" . implode(' ', $metaInfo) . "</span>";
+                            }
+
+                            $html .= "</div>";
+
+                            if ($fait) {
+                                $html .= "<div class='todo-actions'>✅</div>";
+                            }
+
+                            $html .= "</div>";
+                            $html .= "</li>";
                         }
                         $html .= "</ul>";
                     } else {
@@ -531,7 +640,10 @@ class DashboardView extends BaseView
                             $userIdAuteur = (int) $this->safeString($avisData['user_id'] ?? 0);
                             $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
                             $messageRendu = $this->rendreLiensCliquables($message);
-                            $dateAvis = htmlspecialchars($this->safeString($avisData['date_envoi'] ?? ''));
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
                             $avisId = $this->safeString($avisData['id'] ?? 0);
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
@@ -547,7 +659,10 @@ class DashboardView extends BaseView
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' class='avis-btn-supprimer' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
+                                $html .= "<button type='submit' class='avis-btn-supprimer' 
+                                style='color:red; background:none; border:none; cursor:pointer;' 
+                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
+                                Supprimer</button>";
                                 $html .= "</form>";
                             }
 

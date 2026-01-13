@@ -60,11 +60,12 @@ class TodoController implements ControllerInterface
             exit();
         }
 
-        $saeId = isset($_POST['sae_id']) && is_numeric($_POST['sae_id']) ? (int)$_POST['sae_id'] : 0;
+        $saeId = isset($_POST['sae_id']) && is_numeric($_POST['sae_id']) ? (int) $_POST['sae_id'] : 0;
         $titre = isset($_POST['titre']) && is_scalar($_POST['titre']) ? trim(strval($_POST['titre'])) : '';
 
         if ($saeId > 0 && $titre !== '') {
-            TodoList::addTask($saeId, $titre);
+            $userId = isset($_SESSION['user']['id']) ? (int) $_SESSION['user']['id'] : null;
+            TodoList::addTask($saeId, $titre, $userId);
         }
 
         header('Location: /dashboard');
@@ -84,8 +85,8 @@ class TodoController implements ControllerInterface
             exit();
         }
 
-        $taskId = isset($_POST['task_id']) && is_numeric($_POST['task_id']) ? (int)$_POST['task_id'] : 0;
-        $fait = isset($_POST['fait']) && is_numeric($_POST['fait']) ? (int)$_POST['fait'] : 0;
+        $taskId = isset($_POST['task_id']) && is_numeric($_POST['task_id']) ? (int) $_POST['task_id'] : 0;
+        $fait = isset($_POST['fait']) && is_numeric($_POST['fait']) ? (int) $_POST['fait'] : 0;
 
         if ($taskId > 0) {
             // Vérifier la signature de toggleTask dans TodoList
@@ -112,7 +113,7 @@ class TodoController implements ControllerInterface
             exit();
         }
 
-        $taskId = isset($_POST['task_id']) && is_numeric($_POST['task_id']) ? (int)$_POST['task_id'] : 0;
+        $taskId = isset($_POST['task_id']) && is_numeric($_POST['task_id']) ? (int) $_POST['task_id'] : 0;
 
         if ($taskId > 0) {
             TodoList::deleteTask($taskId);
