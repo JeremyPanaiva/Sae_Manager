@@ -372,16 +372,10 @@ class DashboardView extends BaseView
                             $html .= "<small>{$dateAvis}</small>";
 
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
-                                $html .= "<div style='margin-top: 10px;'>";
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background: none; ";
-                                $html .= "border:none; cursor:pointer;' ";
-                                $html .= "onclick='return confirm
-                                (\"Voulez-vous vraiment supprimer cette remarque ?\");'>";
-                                $html .= "Supprimer</button>";
+                                $html .= "<button type='submit' class='avis-btn-supprimer' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
                                 $html .= "</form>";
-                                $html .= "</div>";
                             }
 
                             $html .= "</div>";
@@ -550,14 +544,10 @@ class DashboardView extends BaseView
                             :</strong> {$messageRendu}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
-                            if ($userIdAuteur === (int) $currentUserId) {
-                                $html .= "<form method='POST' action='/sae/avis/delete' 
-                                style='display:inline; margin-left:10px;'>";
+                            if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
+                                $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
-                                $html .= "<button type='submit' style='color:red; background: none; border:none; 
-                                cursor:pointer;' 
-                                onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>
-                                Supprimer</button>";
+                                $html .= "<button type='submit' class='avis-btn-supprimer' style='color:red; background:none; border:none; cursor:pointer;' onclick='return confirm(\"Voulez-vous vraiment supprimer cette remarque ?\");'>Supprimer</button>";
                                 $html .= "</form>";
                             }
 
