@@ -9,7 +9,7 @@
  * @var string $STUDENT_NAME
  * @var string $SAE_URL
  * @var string $DATE_RENDU
- * @var string $HEURE_RENDU
+ * @var string|null $HEURE_RENDU
  */
 ?>
 <!DOCTYPE html>
@@ -34,22 +34,22 @@
             </div>
         </div>
 
-        <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME ?? '') ?></strong>,</p>
+        <p>Bonjour <strong><?= htmlspecialchars($STUDENT_NAME) ?></strong>,</p>
 
         <p>Nous vous rappelons que la date limite de rendu pour votre Situation d'Apprentissage et
             d'Évaluation (SAE) arrive prochainement à son terme.</p>
 
         <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; padding: 15px;
                 border-radius: 6px; text-align: center; margin: 25px 0; font-size: 16px;">
-            Dépôt attendu le <strong><?= htmlspecialchars($DATE_RENDU ?? '') ?></strong>
+            Dépôt attendu le <strong><?= htmlspecialchars($DATE_RENDU) ?></strong>
             <?php if (!empty($HEURE_RENDU)) : ?>
                 à <strong><?= htmlspecialchars($HEURE_RENDU) ?></strong>
             <?php endif; ?>
         </div>
 
         <div style="margin: 20px 0;">
-            <p style="margin: 5px 0;"><strong>SAE :</strong> <?= htmlspecialchars($SAE_TITLE ?? '') ?></p>
-            <p style="margin: 5px 0;"><strong>Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME ?? '') ?></p>
+            <p style="margin: 5px 0;"><strong>SAE :</strong> <?= htmlspecialchars($SAE_TITLE) ?></p>
+            <p style="margin: 5px 0;"><strong>Responsable :</strong> <?= htmlspecialchars($RESPONSABLE_NAME) ?></p>
 
             <?php if (!empty($CLIENT_NAME)) : ?>
                 <p style="margin: 5px 0;"><strong>Client :</strong> <?= htmlspecialchars($CLIENT_NAME) ?></p>
@@ -67,7 +67,7 @@
         </div>
 
         <div style="text-align: center; margin: 30px 0;">
-            <a href="<?= htmlspecialchars($SAE_URL ?? '#') ?>"
+            <a href="<?= htmlspecialchars($SAE_URL) ?>"
                style="display: inline-block; padding: 12px 25px; background-color: #2c3e50; color: #ffffff;
                    text-decoration: none; border-radius: 4px; font-weight: 500; font-size: 14px;">
                 Consulter les détails sur SAE Manager
