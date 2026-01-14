@@ -124,13 +124,13 @@
             <?php echo $PROFILE_BTN_STYLE; ?>">
                 Mon profil
             </a>
-            <a href="/logout" class="mobile-action-btn mobile-action-logout">
+            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
                 Se déconnecter
             </a>
         </div>
 
         <!-- Guest actions when logged out -->
-        <?php if (empty($ROLE_KEY)) : ?>
+        <?php if (empty($ROLE_KEY)): ?>
             <div class="mobile-user-actions mobile-guest-actions">
                 <a href="/user/login" class="mobile-action-btn">
                     Se connecter
