@@ -217,7 +217,7 @@ class LoginIntegrationTest extends TestCase
 
         // Créer et vérifier un responsable
         $token2 = bin2hex(random_bytes(32));
-        $user->register('Responsable', 'Test', 'responsable@test. com', 'Pass123', 'responsable', $token2);
+        $user->register('Responsable', 'Test', 'responsable@test.com', 'Pass123', 'responsable', $token2);
         $responsableData = $user->findByEmail('responsable@test.com');
         $this->assertNotNull($responsableData);
         $this->assertArrayHasKey('id', $responsableData);

@@ -13,7 +13,7 @@
          failOnWarning="true">
     <testsuites>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+            <directory>tests/Unitaire</directory>
         </testsuite>
         <testsuite name="Integration">
             <directory>tests/Integration</directory>

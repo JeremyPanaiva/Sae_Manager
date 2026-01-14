@@ -86,7 +86,7 @@ class RegistrationIntegrationTest extends TestCase
         $this->testUserIds[] = $userId;
 
         $this->expectException(EmailAlreadyExistsException::class);
-        $user->emailExists('duplicate@example. com');
+        $user->emailExists('duplicate@example.com');
     }
 
     public function testCompleteVerificationFlow(): void
@@ -135,7 +135,7 @@ class RegistrationIntegrationTest extends TestCase
         $token = bin2hex(random_bytes(32));
 
         $user->register('Test', 'User', 'invalidtoken@test.com', 'Pass123', 'etudiant', $token);
-        $userData = $user->findByEmail('invalidtoken@test. com');
+        $userData = $user->findByEmail('invalidtoken@test.com');
         $this->assertNotNull($userData);
         $this->assertArrayHasKey('id', $userData);
 
@@ -146,7 +146,7 @@ class RegistrationIntegrationTest extends TestCase
         $result = $user->verifyAccount('wrongtoken123');
         $this->assertFalse($result);
 
-        $userData = $user->findByEmail('invalidtoken@test. com');
+        $userData = $user->findByEmail('invalidtoken@test.com');
         $this->assertNotNull($userData);
         $this->assertEquals(0, $userData['is_verified']);
     }
