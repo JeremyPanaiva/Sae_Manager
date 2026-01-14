@@ -11,6 +11,7 @@
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    flex: 1 0 auto;
 }
 
 .plan-header {
@@ -63,8 +64,11 @@
 /* Responsive */
 @media (max-width: 768px) {
     .plan-main {
-        margin: 2rem 1rem;
+        margin: 2rem 15px;
+        width: auto;
         padding: 1.5rem;
+        overflow-x: hidden;
+        box-sizing: border-box;
     }
 
     .plan-title {

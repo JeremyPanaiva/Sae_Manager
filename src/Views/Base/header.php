@@ -130,7 +130,7 @@
         </div>
 
         <!-- Guest actions when logged out -->
-        <?php if (empty($ROLE_KEY)): ?>
+        <?php if (empty($ROLE_KEY)) : ?>
             <div class="mobile-user-actions mobile-guest-actions">
                 <a href="/user/login" class="mobile-action-btn">
                     Se connecter
