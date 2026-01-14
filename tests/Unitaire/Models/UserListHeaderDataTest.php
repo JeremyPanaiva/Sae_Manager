@@ -36,9 +36,9 @@ class UserListHeaderDataTest extends TestCase
         $userList = new UserList([]);
 
         $this->assertEquals([], $userList->getHeaderData());
-        $this->assertIsArray($userList->getHeaderData());
         $this->assertEmpty($userList->getHeaderData());
     }
+
 
     public function testGetHeaderDataWithComplexData(): void
     {

@@ -39,11 +39,12 @@ class RegisterPostControllerTest extends TestCase
         $_POST['ok'] = true;
         $_POST['nom'] = 'Test';
         $_POST['prenom'] = 'User';
-        $_POST['mail'] = 'test@example. com';
+        $_POST['mail'] = 'test@example.com';
         $_POST['mdp'] = 'short';
         $_POST['role'] = 'etudiant';
 
-        $this->assertTrue(strlen($_POST['mdp']) < 8);
+        // Test supprimé car PHPStan signale toujours vrai
+        // $this->assertTrue(strlen($_POST['mdp']) < 8);
     }
 
     public function testValidatesEmailFormat(): void
