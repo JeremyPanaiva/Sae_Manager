@@ -650,10 +650,17 @@
         padding: 6px 12px;
     }
 
-    /* Bouton de soumission */
+    /* Submit button */
     .btn-submit {
         font-size: 0.9rem;
         padding: 10px 16px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    .sae-page .sae-section {
+        padding: 15px 10px;
+        overflow-x: hidden;
     }
 }
 

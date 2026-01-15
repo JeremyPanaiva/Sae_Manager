@@ -45,7 +45,7 @@ class EmailService
     public function __construct()
     {
         $autoload = __DIR__ . '/../../../vendor/autoload.php';
-        if (!  file_exists($autoload)) {
+        if (!file_exists($autoload)) {
             error_log('vendor/autoload.php manquant — exécuter composer install ou uploader le dossier vendor/');
             throw new DataBaseException('Dépendances manquantes pour l\'envoi d\'emails.');
         }
@@ -76,15 +76,15 @@ class EmailService
             $smtpPass = Database::parseEnvVar('SMTP_PASSWORD');
             $smtpSecure = Database::parseEnvVar('SMTP_SECURE');
 
-            $this->mailer->Host = $smtpHost !== false ? $smtpHost :  'smtp.alwaysdata.com';
+            $this->mailer->Host = $smtpHost !== false ? $smtpHost : 'smtp.alwaysdata.com';
             $this->mailer->Username = $smtpUser !== false ? $smtpUser : '';
-            $this->mailer->Password = $smtpPass !== false ? $smtpPass :  '';
+            $this->mailer->Password = $smtpPass !== false ? $smtpPass : '';
 
-            $this->mailer->SMTPAuth = !   empty($smtpUser) && ! empty($smtpPass);
+            $this->mailer->SMTPAuth = !empty($smtpUser) && !empty($smtpPass);
 
             $this->mailer->SMTPSecure = $smtpSecure === 'tls'
-                ? PHPMailer::   ENCRYPTION_STARTTLS
-                : PHPMailer::  ENCRYPTION_SMTPS;
+                ? PHPMailer::ENCRYPTION_STARTTLS
+                : PHPMailer::ENCRYPTION_SMTPS;
 
             $smtpPort = Database::parseEnvVar('SMTP_PORT');
             $this->mailer->Port = (int) ($smtpPort !== false ? $smtpPort : 587);
@@ -98,7 +98,7 @@ class EmailService
                 $this->mailer->SMTPDebug = SMTP::DEBUG_SERVER;
 
                 $smtpDebugFile = Database::parseEnvVar('SMTP_DEBUG_FILE');
-                if ($smtpDebugFile !== false && ! empty($smtpDebugFile)) {
+                if ($smtpDebugFile !== false && !empty($smtpDebugFile)) {
                     $logPath = $smtpDebugFile;
                     if ($logPath[0] !== '/') {
                         $logPath = __DIR__ . '/../../../' . ltrim($logPath, '/');
@@ -110,7 +110,7 @@ class EmailService
                     }
 
                     $this->mailer->Debugoutput = function ($str, $level) use ($logPath): void {
-                        $line = sprintf("%s [level %s] %s\n", date('c'), $level, trim((string)$str));
+                        $line = sprintf("%s [level %s] %s\n", date('c'), $level, trim((string) $str));
                         @file_put_contents($logPath, $line, FILE_APPEND | LOCK_EX);
                     };
                 } else {
@@ -150,7 +150,7 @@ class EmailService
                 "EmailService SMTP config:  host=%s port=%s user=%s secure=%s auth=%s",
                 $this->mailer->Host,
                 $this->mailer->Port,
-                $this->mailer->Username ?    'set' : 'not-set',
+                $this->mailer->Username ? 'set' : 'not-set',
                 $smtpSecure !== false ? $smtpSecure : 'default',
                 $this->mailer->SMTPAuth ? 'true' : 'false'
             ));
@@ -466,7 +466,7 @@ class EmailService
                 . "De       : {$fromUserEmail}\n"
                 . "Sujet    :  {$safeSubject}\n"
                 . "---------\n\n"
-                .  "{$message}\n";
+                . "{$message}\n";
 
             $this->mailer->send();
             error_log("Contact email sent to {$to} (reply-to: {$fromUserEmail})");
@@ -483,7 +483,7 @@ class EmailService
 
                 $from = $this->getFromEmail();
                 $fromName = $this->getFromName();
-                if (!   empty($from)) {
+                if (!empty($from)) {
                     $mail->setFrom($from, $fromName);
                     $mail->addReplyTo($fromUserEmail ?: $from, $fromName);
                 }
@@ -496,7 +496,7 @@ class EmailService
                     . "De       : {$fromUserEmail}\n"
                     . "Sujet    :    {$safeSubject}\n"
                     . "---------\n\n"
-                    .    "{$message}\n";
+                    . "{$message}\n";
 
                 $mail->send();
                 error_log('Contact email sent via local mail() fallback');
@@ -546,7 +546,7 @@ class EmailService
             $phpmailerError2 = $mail->ErrorInfo;
             error_log(
                 'PHPMailer fallback exception:   ' . $e2->getMessage() .
-                ' | PHPMailer ErrorInfo: ' .   $phpmailerError2
+                ' | PHPMailer ErrorInfo: ' . $phpmailerError2
             );
             throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
         }
@@ -560,7 +560,7 @@ class EmailService
     private function getFromEmail(): string
     {
         // @phpstan-ignore-next-line function.alreadyNarrowedType
-        if (is_string($this->mailer->From) && ! empty($this->mailer->From)) {
+        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
             return $this->mailer->From;
         }
         $fromEmail = Database::parseEnvVar('FROM_EMAIL');
@@ -575,11 +575,11 @@ class EmailService
     private function getFromName(): string
     {
         // @phpstan-ignore-next-line function.alreadyNarrowedType
-        if (is_string($this->mailer->From) && ! empty($this->mailer->From)) {
+        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
             return $this->mailer->From;
         }
         $fromName = Database::parseEnvVar('FROM_NAME');
-        return $fromName !== false ?  $fromName : 'SAE Manager';
+        return $fromName !== false ? $fromName : 'SAE Manager';
     }
 
     /**
@@ -721,21 +721,21 @@ class EmailService
      *
      * @param string $clientNom Client's name
      * @param string $saeTitre SAE title
-     * @param string $studentNom Student's name
+     * @param string $studentNames Student's name(s)
      * @param string $responsableNom Supervisor's name
      * @return string Plain text email body
      */
     private function getClientAssignmentEmailTextBody(
         string $clientNom,
         string $saeTitre,
-        string $studentNom,
+        string $studentNames,
         string $responsableNom
     ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
         return "Bonjour {$clientNom},\n\n" .
-            "Un étudiant a été affecté à votre SAE par le responsable {$responsableNom}.\n\n" .
+            "Un ou plusieurs étudiants ont été affectés à votre SAE par le responsable {$responsableNom}.\n\n" .
             "SAE : {$saeTitre}\n" .
-            "ÉTUDIANT AFFECTÉ : {$studentNom}\n" .
+            "ÉTUDIANT(S) AFFECTÉ(S) : {$studentNames}\n" .
             "RESPONSABLE : {$responsableNom}\n\n" .
             "{$saeUrl}\n\n" .
             "Cordialement,\n" .

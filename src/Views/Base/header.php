@@ -124,7 +124,7 @@
             <?php echo $PROFILE_BTN_STYLE; ?>">
                 Mon profil
             </a>
-            <a href="/logout" class="mobile-action-btn mobile-action-logout">
+            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
                 Se déconnecter
             </a>
         </div>

@@ -51,11 +51,17 @@ class UnassignSaeController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Extract form data
             $saeIdRaw = $_POST['sae_id'] ?? 0;
-            $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;
+            $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
             $studentsRaw = $_POST['etudiants'] ?? [];
             $students = is_array($studentsRaw) ? $studentsRaw : [];
             $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
-            $responsableId = is_numeric($responsableIdRaw) ? (int)$responsableIdRaw : 0;
+            $responsableId = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
+
+            if (empty($students)) {
+                $_SESSION['error_message'] = "Veuillez sélectionner au moins un étudiant à retirer.";
+                header('Location: /sae');
+                exit();
+            }
 
             try {
                 // Check database connection
@@ -63,7 +69,7 @@ class UnassignSaeController implements ControllerInterface
 
                 // Process each student unassignment
                 foreach ($students as $studentId) {
-                    $studentIdInt = is_numeric($studentId) ? (int)$studentId : 0;
+                    $studentIdInt = is_numeric($studentId) ? (int) $studentId : 0;
 
                     // Verify that the current supervisor is the one who assigned this student
                     SaeAttribution::checkResponsableOwnership($saeId, $responsableId, $studentIdInt);

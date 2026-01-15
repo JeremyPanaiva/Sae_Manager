@@ -54,11 +54,13 @@
     background: #fff;
 }
 
-/* Bouton envoyer (réutilise .btn .btn-primary de index.css) */
+/* Bouton envoyer */
 .legal-form .btn.btn-primary {
     padding: 0.65rem 1.2rem;
     border-radius: 10px;
     font-weight: 600;
+    display: block;
+    margin: 0 auto;
 }
 
 /* Notices (succès / erreur) alignées avec la charte du site */

@@ -32,23 +32,67 @@
 
         <form action="/user/profile" method="POST" class="profile-form">
             <label for="prenom">Prénom :</label>
-            <input type="text" id="prenom" name="prenom" value="<?= $prenom ?>" required>
+            <input type="text" id="prenom" name="prenom" value="<?= $prenom ?>" required readonly
+                class="form-control-locked">
 
             <label for="nom">Nom :</label>
-            <input type="text" id="nom" name="nom" value="<?= $nom ?>" required>
+            <input type="text" id="nom" name="nom" value="<?= $nom ?>" required readonly class="form-control-locked">
 
             <label for="mail">Email :</label>
-            <input type="email" id="mail" name="mail" value="<?= $mail ?>" required data-original-email="<?= $mail ?>">
+            <input type="email" id="mail" name="mail" value="<?= $mail ?>" required readonly class="form-control-locked"
+                data-original-email="<?= $mail ?>">
 
             <div class="profile-actions"
                 style="margin-top: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                <a href="/user/change-password" class="btn btn-outline"
-                    style="min-width: 200px; text-align: center;">Modifier le mot de passe</a>
-                <input type="submit" value="Mettre à jour" class="btn btn-primary" style="min-width: 200px;">
+
+                <!-- Bouton pour activer l'édition -->
+                <button type="button" id="btn-enable-edit" class="btn btn-outline" style="min-width: 200px;">
+                    Modifier les informations
+                </button>
+
+                <!-- Bouton de soumission (caché par défaut) -->
+                <input type="submit" id="btn-save" value="Mettre à jour" class="btn btn-primary"
+                    style="min-width: 200px; display: none;">
+
+                <a href="/user/change-password" id="btn-change-password" class="btn btn-outline"
+                    style="min-width: 200px; text-align: center; display: none;">Modifier le mot de passe</a>
             </div>
         </form>
 
+        <style>
+            /* Style pour les champs verrouillés (gris + curseur interdit) */
+            .form-control-locked {
+                background-color: #e9ecef !important;
+                color: #495057;
+                cursor: not-allowed;
+                border-color: #ced4da;
+            }
+        </style>
+
         <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const btnData = document.getElementById('btn-enable-edit');
+                const btnSave = document.getElementById('btn-save');
+                const btnChangePassword = document.getElementById('btn-change-password');
+                const inputs = document.querySelectorAll('.profile-form input[readonly]');
+
+                btnData.addEventListener('click', function () {
+                    // Unlock fields
+                    inputs.forEach(input => {
+                        input.removeAttribute('readonly');
+                        input.classList.remove('form-control-locked');
+                    });
+
+                    // Toggle buttons
+                    btnData.style.display = 'none';
+                    btnSave.style.display = 'block';
+                    btnChangePassword.style.display = 'block'; // Reveal password button
+
+                    // Focus on first field
+                    document.getElementById('prenom').focus();
+                });
+            });
+
             document.querySelector('.profile-form').addEventListener('submit', function (e) {
                 const mailInput = document.getElementById('mail');
                 const originalMail = mailInput.dataset.originalEmail;
