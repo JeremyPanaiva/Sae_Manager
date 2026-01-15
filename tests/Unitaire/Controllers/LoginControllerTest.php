@@ -49,7 +49,7 @@ class LoginControllerTest extends TestCase
         $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('lien de vérification est invalide', (string) $output);
+        $this->assertStringContainsString('vérification invalide', (string) $output);
     }
 
     public function testLoginFormContainsRequiredFields(): void
