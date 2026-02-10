@@ -25,7 +25,8 @@ class Logout implements ControllerInterface
     /**
      * Main controller method
      *
-     * logs the logout action, destroys the user session, and redirects to the home page.
+     * Logs the logout action (including user name), destroys the user session,
+     * and redirects to the home page.
      *
      * @return void
      */
@@ -38,8 +39,7 @@ class Logout implements ControllerInterface
                 session_start();
             }
 
-            // CORRECTION PHPSTAN ICI :
-            // On ajoute "is_numeric" dans la condition pour garantir que le cast (int) est sûr.
+            // Check if user is logged in and ID is valid before logging
             if (
                 isset($_SESSION['user']) &&
                 is_array($_SESSION['user']) &&
@@ -48,9 +48,13 @@ class Logout implements ControllerInterface
             ) {
                 $db = Database::getConnection();
 
-                // Le cast est maintenant sûr grâce au is_numeric juste au-dessus
                 $userId = (int) $_SESSION['user']['id'];
-                $details = "Utilisateur déconnecté";
+
+                // Add Name and Surname to log details
+                $nom = isset($_SESSION['user']['nom']) ? $_SESSION['user']['nom'] : '';
+                $prenom = isset($_SESSION['user']['prenom']) ? $_SESSION['user']['prenom'] : '';
+
+                $details = "Déconnexion de: $nom $prenom";
 
                 $stmt = $db->prepare(
                     "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
