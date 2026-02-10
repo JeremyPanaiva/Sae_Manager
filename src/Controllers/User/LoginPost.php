@@ -25,7 +25,7 @@ class LoginPost implements ControllerInterface
      *
      * Validates login credentials (email and password), verifies account is activated,
      * creates a session with user information on successful authentication, and
-     * records the login action in the database logs.
+     * records the login action (including user name) in the database logs.
      *
      * @return void
      */
@@ -114,12 +114,18 @@ class LoginPost implements ControllerInterface
             try {
                 $db = Database::getConnection();
 
-                // CORRECTION PHPSTAN ICI :
-                // On vérifie que c'est bien un nombre avant de caster
+                // Safe cast for PHPStan
                 $rawId = $userData['id'] ?? 0;
                 $userId = is_numeric($rawId) ? (int)$rawId : 0;
 
-                $details = "Utilisateur connecté avec succès";
+                // Add Name and Surname to log details
+                $rawNom = $userData['nom'] ?? '';
+                $nom = is_string($rawNom) ? $rawNom : '';
+
+                $rawPrenom = $userData['prenom'] ?? '';
+                $prenom = is_string($rawPrenom) ? $rawPrenom : '';
+
+                $details = "Connexion de: $nom $prenom";
 
                 $stmt = $db->prepare(
                     "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
