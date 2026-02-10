@@ -30,6 +30,11 @@ date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 require_once "Autoloader.php";
 \Autoloader::register();
 
+// Placed early to ensure $_SESSION is available before any controller is instantiated.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Import all controller classes
 use Controllers\Dashboard\TodoController;
 use Controllers\Home\HomeController;
