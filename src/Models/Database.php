@@ -35,46 +35,34 @@ class Database
     /**
      * Retrieves the singleton database connection instance.
      *
-     * This method initializes the MySQLi connection if it doesn't exist (Lazy Loading).
-     * It enforces the 'utf8mb4' character set for full Unicode support.
-     *
-     * Feature: Logging Context Injection
-     * Every time this method is called, it checks if a user is logged in.
-     * If so, it injects the user ID into a MySQL session variable (@current_user_id).
-     * This allows SQL triggers to automatically log the 'user_id' responsible for changes.
+     * This method initializes the MySQLi connection if it doesn't exist.
+     * It also handles the "Context Injection" for your Audit Logs:
+     * It detects the connected user ID from the session ($_SESSION['user']['id'])
+     * and sends it to MySQL (@current_user_id) so your triggers can log who is acting.
      *
      * @return \mysqli The active database connection object.
      * @throws DataBaseException If the connection fails to establish.
      */
     public static function getConnection(): \mysqli
     {
-        // 1. Singleton Pattern: Initialize connection only if it doesn't exist
+        // 1. Singleton: Initialize connection only if it doesn't exist
         if (self::$conn === null) {
-
-            // Retrieve credentials (parseEnvVar returns string|false)
             $hostRaw = self::parseEnvVar("DB_HOST");
             $userRaw = self::parseEnvVar("DB_USER");
             $passRaw = self::parseEnvVar("DB_PASSWORD");
             $dbRaw   = self::parseEnvVar("DB_NAME");
 
-            // Type Sanitization:
-            // mysqli constructor expects ?string (string or null), but parseEnvVar returns false on failure.
-            // We explicitly convert 'false' to 'null' to avoid type errors.
+            // Type Sanitization for mysqli constructor (false -> null)
             $host = ($hostRaw === false) ? null : $hostRaw;
             $user = ($userRaw === false) ? null : $userRaw;
             $pass = ($passRaw === false) ? null : $passRaw;
             $db   = ($dbRaw   === false) ? null : $dbRaw;
 
             try {
-                // Enable strict error reporting: MySQL errors will throw exceptions
                 mysqli_report(MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR);
-
-                // Initialize the MySQLi connection
                 self::$conn = new \mysqli($host, $user, $pass, $db);
                 self::$conn->set_charset('utf8mb4');
-
             } catch (\mysqli_sql_exception $e) {
-                // Wrap native MySQL exception into a custom application exception
                 throw new DataBaseException(
                     "Unable to connect to the database. " .
                     "Please contact sae-manager@alwaysdata.net for assistance."
@@ -82,18 +70,24 @@ class Database
             }
         }
 
-        // 2. Context Injection for Audit Logs (CRITICAL FIX)
-        // This block is now OUTSIDE the singleton check.
-        // It runs every time getConnection() is called, ensuring the DB always knows
-        // who is currently performing the action, even if the connection was already open.
-        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-            $sessionVal = $_SESSION['user_id'];
+        // 2. Context Injection for Audit Logs (The Fix)
+        // This runs every time you use the database.
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            $userIdToLog = null;
 
-            // PHPStan safety check: ensure value is scalar (int/string) before casting
-            if (is_scalar($sessionVal)) {
-                $userId = (int) $sessionVal;
-                // Update the SQL variable '@current_user_id' for the current request
-                self::$conn->query("SET @current_user_id = $userId");
+            // Option A: Check the structure defined in LoginPost.php
+            if (isset($_SESSION['user']) && is_array($_SESSION['user']) && isset($_SESSION['user']['id'])) {
+                $userIdToLog = $_SESSION['user']['id'];
+            }
+            // Option B: Fallback check (just in case)
+            elseif (isset($_SESSION['user_id'])) {
+                $userIdToLog = $_SESSION['user_id'];
+            }
+
+            // If we found a valid user ID, tell MySQL about it
+            if ($userIdToLog !== null && is_scalar($userIdToLog)) {
+                $uid = (int) $userIdToLog;
+                self::$conn->query("SET @current_user_id = $uid");
             }
         }
 
