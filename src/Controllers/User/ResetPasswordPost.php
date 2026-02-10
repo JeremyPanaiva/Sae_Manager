@@ -78,12 +78,12 @@ class ResetPasswordPost implements ControllerInterface
 
         // Validate password contains uppercase letter
         if (!preg_match('/[A-Z]/', $password)) {
-            header('Location: /user/reset-password? token=' . urlencode($token) . '&error=password_no_uppercase');
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_uppercase');
             exit;
         }
 
         // Validate password contains lowercase letter
-        if (! preg_match('/[a-z]/', $password)) {
+        if (!preg_match('/[a-z]/', $password)) {
             header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_lowercase');
             exit;
         }
@@ -154,7 +154,7 @@ class ResetPasswordPost implements ControllerInterface
             exit;
         } catch (SamePasswordException $e) {
             // New password is identical to current password
-            header('Location: /user/reset-password? token=' . urlencode($token) . '&error=same_password');
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=same_password');
             exit;
         } catch (DataBaseException $e) {
             // Database error
@@ -164,7 +164,7 @@ class ResetPasswordPost implements ControllerInterface
         } catch (\Exception $e) {
             // Generic error handling
             error_log("Erreur générale dans ResetPasswordPost: " . $e->getMessage());
-            header('Location: /user/reset-password?token=' .  urlencode($token) . '&error=general_error');
+            header('Location: /user/reset-password?token=' . urlencode($token) . '&error=general_error');
             exit;
         }
     }
@@ -181,7 +181,7 @@ class ResetPasswordPost implements ControllerInterface
     public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
-                (isset($_GET['page']) && $_GET['page'] === 'reset-password'))
+            (isset($_GET['page']) && $_GET['page'] === 'reset-password'))
             && $method === "POST";
     }
 }

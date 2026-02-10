@@ -67,7 +67,7 @@ class ChangePasswordPost implements ControllerInterface
 
         // Extract user ID and form data
         $userIdRaw = $_SESSION['user']['id'];
-        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
         $oldPasswordRaw = $_POST['old_password'] ?? '';
         $oldPassword = is_string($oldPasswordRaw) ? $oldPasswordRaw : '';
         $newPasswordRaw = $_POST['new_password'] ?? '';
@@ -114,8 +114,8 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // Retrieve current password hash from database
-            $stmt = $conn->prepare("SELECT mdp FROM users WHERE id = ?");
+            // Retrieve current password hash and last change timestamp
+            $stmt = $conn->prepare("SELECT mdp, last_password_change FROM users WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
             }
@@ -133,27 +133,41 @@ class ChangePasswordPost implements ControllerInterface
 
             // Verify current password is correct
             if ($user === null) {
-                header('Location:  /user/change-password?error=wrong_password');
+                header('Location: /user/change-password?error=wrong_password');
                 exit;
+            }
+
+            // Check rate limit (24 hours)
+            if (!empty($user['last_password_change'])) {
+                $lastChange = new \DateTime($user['last_password_change']);
+                $now = new \DateTime();
+                $diff = $now->diff($lastChange);
+
+                // If less than 24 hours (roughly, checking days < 1 is safer/simpler or verify hours)
+                // Let's use total hours check
+                $hours = $diff->h + ($diff->days * 24);
+                if ($hours < 24) {
+                    header('Location: /user/change-password?error=wait_before_retry');
+                    exit;
+                }
             }
 
             $currentPasswordHash = isset($user['mdp']) && is_string($user['mdp']) ? $user['mdp'] : '';
             if ($currentPasswordHash === '' || !password_verify($oldPassword, $currentPasswordHash)) {
-                header('Location:  /user/change-password?error=wrong_password');
+                header('Location: /user/change-password?error=wrong_password');
                 exit;
             }
 
             // Ensure new password is different from current password
             if (password_verify($newPassword, $currentPasswordHash)) {
-                header('Location: /user/change-password? error=same_password');
+                header('Location: /user/change-password?error=same_password');
                 exit;
             }
 
-            // Hash and update the new password
+            // Hash and update the new password (and timestamp)
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-
-            $updateStmt = $conn->prepare("UPDATE users SET mdp = ? WHERE id = ?");
+            $updateStmt = $conn->prepare("UPDATE users SET mdp = ?, last_password_change = NOW() WHERE id = ?");
             if (!$updateStmt) {
                 throw new DataBaseException("Erreur de préparation SQL update");
             }
@@ -163,12 +177,12 @@ class ChangePasswordPost implements ControllerInterface
             $updateStmt->close();
 
             // Redirect with success message
-            header('Location:  /user/change-password?success=password_updated');
+            header('Location:  /user/profile?success=password_updated');
             exit;
         } catch (\Exception $e) {
             // Log error and redirect with error message
             error_log("Erreur changement mot de passe: " . $e->getMessage());
-            header('Location: /user/change-password? error=database_error');
+            header('Location: /user/change-password?error=database_error');
             exit;
         }
     }

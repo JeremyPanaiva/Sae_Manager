@@ -77,9 +77,14 @@ class ProfileController implements ControllerInterface
         }
 
         $userIdRaw = $_SESSION['user']['id'];
-        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
         $errors = [];
         $success = '';
+
+        if (isset($_GET['success']) && $_GET['success'] === 'password_updated') {
+            $success = "Mot de passe modifié avec succès.";
+        }
+
 
         $userModel = new User();
         $userData = [];
@@ -209,7 +214,7 @@ class ProfileController implements ControllerInterface
         }
 
         $userIdRaw = $_SESSION['user']['id'];
-        $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+        $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
 
         try {
             // Check database connection
