@@ -1125,3 +1125,35 @@ body.modal-open {
 .btn-primary:hover {
     background-color: #0055aa;
 }
+
+
+/* Style pour la ligne du lien GitHub */
+.github-link-item {
+    margin: 15px 0;
+    padding: 10px 15px;
+    background-color: #f6f8fa; /* Gris très clair style GitHub */
+    border-left: 4px solid #2f81f7; /* Barre bleue accentuée */
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Style spécifique pour le texte en gras */
+.github-link-item strong {
+    color: #24292f;
+}
+
+/* Style pour le lien lui-même */
+.github-link-item a {
+    color: #0969da;
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all; /* Évite que les longs liens dépassent du cadre */
+}
+
+.github-link-item a:hover {
+    text-decoration: underline;
+    color: #0a4da4;
+}
