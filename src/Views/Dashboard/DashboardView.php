@@ -470,6 +470,11 @@ class DashboardView extends BaseView
                 break;
 
             case 'responsable':
+                // === BOUTON MESSAGERIE (AU DÉBUT) ===
+                $html .= '<div class="send-message-section">';
+                $html .= '<button class="btn btn-primary" onclick="openMessageModal()">📧 Envoyer un message à un étudiant</button>';
+                $html .= '</div>';
+
                 $html .= "<h2>Vos SAE attribuées</h2>";
 
                 /** @var array<int, array<string, mixed>> $saes */
