@@ -104,7 +104,7 @@ class SaeView extends BaseView
      * Builds different views based on user role:
      * - Étudiant: List of assigned SAE with supervisor and client details
      * - Responsable:  SAE assignment interface with student selection, color-coded by status
-     * - Client: SAE creation, modification, and deletion interface
+     * - Client: Creates, modifies, and deletes SAE, views assignment status
      *
      * Also displays error and success messages when present.
      *
@@ -188,7 +188,19 @@ class SaeView extends BaseView
                     }
 
                     $html .= "<div class='{$cardClass}'>";
-                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
+
+                    // Afficher le titre avec le nom du client
+                    $titreSae = htmlspecialchars($this->safeString($sae['titre'] ?? ''));
+                    $clientNom = htmlspecialchars($this->safeString($sae['client_nom'] ?? ''));
+                    $clientPrenom = htmlspecialchars($this->safeString($sae['client_prenom'] ?? ''));
+                    $clientComplet = trim($clientPrenom . ' ' . $clientNom);
+
+                    if ($clientComplet) {
+                        $html .= "<h3>{$titreSae} - {$clientComplet}</h3>";
+                    } else {
+                        $html .= "<h3>{$titreSae}</h3>";
+                    }
+
                     $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
 
                     $responsable = $sae['responsable_attribution'] ?? null;
