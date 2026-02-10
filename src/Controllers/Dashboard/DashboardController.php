@@ -98,8 +98,11 @@ class DashboardController implements ControllerInterface
                 $saeId = $sae['id'];
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
 
+                $sae['github_link'] = !empty($attributions) ? ($attributions[0]['github_link'] ?? '') : '';
+
                 $sae['todos'] = TodoList::getBySae($saeId);
                 $sae['avis'] = SaeAvis::getBySae($saeId);
+
 
                 foreach ($attributions as &$attrib) {
                     if (isset($attrib['student_id']) && is_int($attrib['student_id'])) {
@@ -109,11 +112,15 @@ class DashboardController implements ControllerInterface
 
                 $sae['attributions'] = $attributions;
 
+
                 $dateRendu = (isset($attributions[0]['date_rendu']) && is_string($attributions[0]['date_rendu']))
                     ? $attributions[0]['date_rendu']
                     : '';
 
+
                 $sae['countdown'] = $this->calculateCountdown($dateRendu);
+
+
                 $saes[] = $sae;
             }
         }
