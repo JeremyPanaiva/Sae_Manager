@@ -296,19 +296,20 @@ class SaeAttribution
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT
-                MIN(sa.id) AS sae_attribution_id,
-                s.id AS sae_id,
-                s.titre AS sae_titre,
-                s.description AS sae_description,
-                sa.date_rendu,
-                GROUP_CONCAT(CONCAT(u.nom,' ',u.prenom) SEPARATOR ', ') AS etudiants
-            FROM sae_attributions sa
-            JOIN sae s ON s.id = sa.sae_id
-            JOIN users u ON u.id = sa.student_id
-            WHERE sa.responsable_id = ?
-            GROUP BY sa.sae_id, s.titre, s.description, sa.date_rendu
-        ");
+        SELECT
+            MIN(sa.id) AS sae_attribution_id,
+            s.id AS sae_id,
+            s.titre AS sae_titre,
+            s.description AS sae_description,
+            sa.date_rendu,
+            sa.github_link, -- Ajout ici
+            GROUP_CONCAT(CONCAT(u.nom,' ',u.prenom) SEPARATOR ', ') AS etudiants
+        FROM sae_attributions sa
+        JOIN sae s ON s.id = sa.sae_id
+        JOIN users u ON u.id = sa.student_id
+        WHERE sa.responsable_id = ?
+        GROUP BY sa.sae_id, s.titre, s.description, sa.date_rendu, sa.github_link
+    ");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getSaeForResponsable.");
         }
@@ -335,11 +336,11 @@ class SaeAttribution
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT sa.id, sa.student_id, sa.responsable_id, sa.date_rendu, s.client_id
-            FROM sae_attributions sa
-            JOIN sae s ON sa.sae_id = s. id
-            WHERE sa.sae_id = ?
-        ");
+        SELECT sa.id, sa.student_id, sa.responsable_id, sa.date_rendu, sa.github_link, s.client_id
+        FROM sae_attributions sa
+        JOIN sae s ON sa.sae_id = s.id
+        WHERE sa.sae_id = ?
+    ");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getAttributionsBySae.");
         }
@@ -588,24 +589,25 @@ class SaeAttribution
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT 
-                sa.id AS sae_attribution_id,
-                s.id AS sae_id,
-                s.titre AS sae_titre,
-                s.description AS sae_description,
-                u_resp.nom AS responsable_nom,
-                u_resp.prenom AS responsable_prenom,
-                u_resp.mail AS responsable_mail,
-                u_client.nom AS client_nom,
-                u_client.prenom AS client_prenom,
-                u_client.mail AS client_mail,
-                sa.date_rendu
-            FROM sae s
-            JOIN sae_attributions sa ON s. id = sa.sae_id
-            LEFT JOIN users u_resp ON sa. responsable_id = u_resp.id
-            LEFT JOIN users u_client ON s.client_id = u_client.id
-            WHERE sa.student_id = ?
-        ");
+        SELECT 
+            sa.id AS sae_attribution_id,
+            s.id AS sae_id,
+            s.titre AS sae_titre,
+            s.description AS sae_description,
+            u_resp.nom AS responsable_nom,
+            u_resp.prenom AS responsable_prenom,
+            u_resp.mail AS responsable_mail,
+            u_client.nom AS client_nom,
+            u_client.prenom AS client_prenom,
+            u_client.mail AS client_mail,
+            sa.date_rendu,
+            sa.github_link -- Ajout ici
+        FROM sae s
+        JOIN sae_attributions sa ON s.id = sa.sae_id
+        LEFT JOIN users u_resp ON sa.responsable_id = u_resp.id
+        LEFT JOIN users u_client ON s.client_id = u_client.id
+        WHERE sa.student_id = ?
+    ");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getSaeForStudent.");
         }
@@ -807,5 +809,30 @@ class SaeAttribution
         $stmt->close();
 
         return $attributions;
+    }
+
+    /**
+     * Updates the project link (GitHub/Drive) for a specific SAE assignment.
+     *
+     * This link is associated with the attribution record, meaning it will be
+     * automatically deleted if the assignment is removed (CASCADE).
+     *
+     * @param int $saeId The ID of the SAE.
+     * @param int $studentId The ID of the student.
+     * @param string|null $link The URL to the project repository or shared drive.
+     * @throws \Shared\Exceptions\DataBaseException If the SQL preparation or execution fails.
+     */
+    public static function updateGithubLink(int $saeId, int $studentId, ?string $link): void
+    {
+        $db = \Models\Database::getConnection();
+        $stmt = $db->prepare("UPDATE sae_attributions SET github_link = ? WHERE sae_id = ? AND student_id = ?");
+
+        if (!$stmt) {
+            throw new \Shared\Exceptions\DataBaseException("Erreur de préparation SQL.");
+        }
+
+        $stmt->bind_param("sii", $link, $saeId, $studentId);
+        $stmt->execute();
+        $stmt->close();
     }
 }
