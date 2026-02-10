@@ -66,6 +66,7 @@ use Controllers\Legal\ContactPost;
 use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
+use Controllers\Sae\UpdateLinkController;
 
 // Start PHP session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -123,6 +124,7 @@ $controllers = [
     new ChangePassword(),
     new ChangePasswordPost(),
     new DeadlineReminderController(),
+    new UpdateLinkController(),
 ];
 
 // Extract the path from the request URI (without query string parameters)
