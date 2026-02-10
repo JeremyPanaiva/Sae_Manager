@@ -4,13 +4,14 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
+use Models\Database;
 
 /**
  * UpdateLinkController
  *
  * Handles the submission and update of project delivery links (GitHub, Google Drive, etc.)
- * by students. This controller ensures that only users with the 'etudiant' role can
- * modify the link for their assigned SAE.
+ * for an entire student group. This controller ensures that only users with the 'etudiant'
+ * role can modify the link for their assigned SAE.
  *
  * @package Controllers\Sae
  */
@@ -25,9 +26,9 @@ class UpdateLinkController implements ControllerInterface
     /**
      * Main controller method
      *
-     * Validates student session, checks permissions, validates the URL format,
-     * and updates the 'github_link' field in the sae_attributions table.
-     * Redirects back to the dashboard with a success or error message.
+     * Validates student session, retrieves the supervisor ID to identify the group,
+     * validates the URL format, and updates the 'github_link' field for all
+     * team members in the sae_attributions table.
      *
      * @return void
      */
@@ -42,7 +43,7 @@ class UpdateLinkController implements ControllerInterface
         /** @var array<string, mixed>|null $userSession */
         $userSession = $_SESSION['user'] ?? null;
 
-        // Access Control check with explicit type validation for PHPStan
+        // Access Control check
         if (
             !is_array($userSession) ||
             !isset($userSession['role']) ||
@@ -64,23 +65,41 @@ class UpdateLinkController implements ControllerInterface
         $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
 
         try {
-            // URL validation: ensure the link is a valid URL if not empty
+            // URL validation
             if (!empty($githubLink) && !filter_var($githubLink, FILTER_VALIDATE_URL)) {
-                throw new \Exception("The link format is invalid. " .
-                    "Please provide a full URL (starting with http:// or https://).");
+                throw new \Exception("The link format is invalid. Please provide a full URL.");
             }
 
-            // Update the link in the database via the model
-            SaeAttribution::updateGithubLink($saeId, $userId, $githubLink);
+            Database::checkConnection();
+            $db = Database::getConnection();
 
-            // Set success feedback for the user
-            $_SESSION['success_message'] = "Project link updated successfully.";
+            // 1. Identify the supervisor (responsable) to target the entire group
+            $stmt = $db->prepare("SELECT responsable_id FROM sae_attributions 
+                      WHERE sae_id = ? AND student_id = ? LIMIT 1");
+            if (!$stmt) {
+                throw new \Exception("Database error during group identification.");
+            }
+
+            $stmt->bind_param("ii", $saeId, $userId);
+            $stmt->execute();
+            $res = $stmt->get_result();
+            $row = $res ? $res->fetch_assoc() : null;
+            $stmt->close();
+
+            if (!$row) {
+                throw new \Exception("Assignment not found or unauthorized.");
+            }
+
+            $responsableId = (int)$row['responsable_id'];
+
+            // 2. Update the link for the whole team using the updated Model method
+            SaeAttribution::updateGithubLink($saeId, $responsableId, $githubLink);
+
+            $_SESSION['success_message'] = "Project link updated for the entire team.";
         } catch (\Exception $e) {
-            // Log and display error feedback
             $_SESSION['error_message'] = "Update failed: " . $e->getMessage();
         }
 
-        // Return to the dashboard to view changes
         header('Location: /dashboard');
         exit();
     }
@@ -89,7 +108,7 @@ class UpdateLinkController implements ControllerInterface
      * Checks if this controller supports the given route and HTTP method
      *
      * @param string $path The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
+     * @param string $method The HTTP method
      * @return bool True if path matches and method is POST
      */
     public static function support(string $path, string $method): bool
