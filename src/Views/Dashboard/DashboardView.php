@@ -166,8 +166,39 @@ class DashboardView extends BaseView
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
+                    $saeId = $this->safeString($sae['sae_id'] ?? 0);
+
                     $titreSae = htmlspecialchars($this->safeString($sae['sae_titre'] ?? 'Titre inconnu'));
                     $html .= "<h3>{$titreSae}</h3>";
+
+                    // --- SECTION LIVRABLE (Utilise les classes de dashboard.css) ---
+                    $githubLink = $this->safeString($sae['github_link'] ?? '');
+                    $html .= "<div class='deliverable-container'>";
+                    $html .= "<div class='deliverable-header'>";
+                    $html .= "<span><i class='fas fa-code-branch'></i> Dépôt du projet</span>";
+                    if (!empty($githubLink)) {
+                        $html .= "<span class='badge badge-success'>Déposé</span>";
+                    }
+                    $html .= "</div>";
+
+                    $html .= "<div class='deliverable-body'>";
+                    if (!empty($githubLink)) {
+                        $html .= "<div class='link-display'>";
+                        $html .= $this->rendreLiensCliquables($githubLink);
+                        $html .= "</div>";
+                    } else {
+                        $html .= "<p class='no-link-text'>Aucun lien GitHub ou Drive configuré.</p>";
+                    }
+
+                    // Formulaire d'édition pour l'étudiant
+                    $html .= "<form method='POST' action='/sae/update_link' class='link-update-form'>";
+                    $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
+                    $html .= "<input type='url' name='github_link' value='" . htmlspecialchars($githubLink) . "' 
+                      placeholder='https://github.com/votre-projet' class='input-url'>";
+                    $html .= "<button type='submit' class='btn-primary'>Enregistrer</button>";
+                    $html .= "</form>";
+                    $html .= "</div>";
+                    $html .= "</div>";
 
                     $dateRendu = $this->safeString($sae['date_rendu'] ?? '');
                     $html .= "<p><strong>Date de rendu :</strong> {$dateRendu} ";
@@ -323,6 +354,12 @@ class DashboardView extends BaseView
 
                     $allEtudiants = [];
                     $dateRendu = null;
+
+                    $githubLink = $this->safeString($sae['github_link'] ?? '');
+                    if (!empty($githubLink)) {
+                        $html .= "<p style='margin: 10px 0;'><strong>Lien déposé par les étudiants :</strong> "
+                            . $this->rendreLiensCliquables($githubLink) . "</p>";
+                    }
 
                     /** @var array<int, array<string, mixed>> $attributions */
                     $attributions = $sae['attributions'] ?? [];
@@ -489,6 +526,12 @@ class DashboardView extends BaseView
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                     } else {
                         $html .= "<p><strong>Étudiants :</strong> Aucun</p>";
+                    }
+
+                    $githubLink = $this->safeString($sae['github_link'] ?? '');
+                    if (!empty($githubLink)) {
+                        $html .= "<p style='margin: 10px 0;'><strong>Lien déposé par les étudiants :</strong> "
+                            . $this->rendreLiensCliquables($githubLink) . "</p>";
                     }
 
                     $dateRendu = htmlspecialchars($this->safeString($sae['date_rendu'] ?? ''));
