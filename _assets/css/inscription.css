@@ -192,3 +192,28 @@ input[type="submit"]:hover {
         font-size: 0.95em;
     }
 }
+
+/* =========================
+   Succes & ErrorMessages
+========================= */
+.error-message,
+.success-message {
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-weight: 600;
+}
+
+.error-message {
+    background-color: #ffe6e6;
+    color: #dc3545;
+    /* var(--danger) fallback */
+    border: 1px solid #dc3545;
+}
+
+.success-message {
+    background-color: #e6ffea;
+    color: #28a745;
+    /* var(--success) fallback */
+    border: 1px solid #28a745;
+}
