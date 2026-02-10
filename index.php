@@ -32,6 +32,7 @@ require_once "Autoloader.php";
 
 // Import all controller classes
 use Controllers\Dashboard\TodoController;
+use Controllers\Dashboard\SendMessageController; // ← LIGNE AJOUTÉE
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
@@ -118,6 +119,7 @@ $controllers = [
     new ChangePassword(),
     new ChangePasswordPost(),
     new DeadlineReminderController(),
+    new SendMessageController(), // ← LIGNE AJOUTÉE
 ];
 
 // Extract the path from the request URI (without query string parameters)

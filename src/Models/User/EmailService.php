@@ -941,4 +941,69 @@ class EmailService
             "Cordialement,\n" .
             "L'équipe SAE Manager";
     }
+
+    /**
+     * Sends a message from responsable to student
+     *
+     * Sends a custom message from a supervisor to a student.
+     *
+     * @param string $studentEmail Student's email address
+     * @param string $studentName Student's name
+     * @param string $subject Message subject
+     * @param string $message Message content
+     * @param string $responsableName Supervisor's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    /**
+     * Sends a message from responsable to student
+     *
+     * Sends a custom message from a supervisor to a student.
+     *
+     * @param string $studentEmail Student's email address
+     * @param string $studentName Student's name
+     * @param string $subject Message subject
+     * @param string $message Message content
+     * @param string $responsableName Supervisor's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendMessageToStudent(
+        string $studentEmail,
+        string $studentName,
+        string $subject,
+        string $message,
+        string $responsableName
+    ): bool {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($studentEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = $subject;
+
+            $emailView = new EmailView('responsable_message', [
+                'STUDENT_NAME' => $studentName,
+                'MESSAGE' => nl2br(htmlspecialchars($message)),
+                'RESPONSABLE_NAME' => $responsableName,
+                'SUBJECT' => $subject
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = "Bonjour {$studentName},\n\n{$message}\n\n"
+                . "Cordialement,\n{$responsableName}\n"
+                . "Responsable SAE Manager";
+
+            $this->mailer->send();
+            error_log("Message envoyé à {$studentEmail} par {$responsableName}");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (responsable message): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($studentEmail);
+        }
+    }
+
 }
