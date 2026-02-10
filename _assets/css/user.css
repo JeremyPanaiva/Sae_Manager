@@ -88,28 +88,6 @@
     box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
-/* =====================================
-   Messages
-   ===================================== */
-.error-message,
-.success-message {
-    padding: 10px 15px;
-    margin: 15px 0;
-    border-radius: 5px;
-    font-weight: 600;
-}
-
-.error-message {
-    background-color: #ffe6e6;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-}
-
-.success-message {
-    background-color: #e6ffea;
-    color: var(--success);
-    border: 1px solid var(--success);
-}
 
 /* =====================================
    Danger Zone
