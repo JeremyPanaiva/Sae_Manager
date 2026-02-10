@@ -342,12 +342,13 @@ class Sae
     {
         $db = Database::getConnection();
         $stmt = $db->prepare("
-            SELECT DISTINCT s. id, s.titre, s. description, s.date_creation
-            FROM sae s
-            INNER JOIN sae_attributions sa ON s.id = sa.sae_id
-            WHERE s. client_id = ? 
-            ORDER BY s.date_creation DESC
-        ");
+        SELECT s.id, s.titre, s.description, s.date_creation, MAX(sa.github_link) AS github_link
+        FROM sae s
+        INNER JOIN sae_attributions sa ON s.id = sa.sae_id
+        WHERE s.client_id = ? 
+        GROUP BY s.id, s.titre, s.description, s.date_creation
+        ORDER BY s.date_creation DESC
+    ");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getAssignedSaeByClient.");
         }
