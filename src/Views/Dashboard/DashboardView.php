@@ -355,6 +355,11 @@ class DashboardView extends BaseView
                     $allEtudiants = [];
                     $dateRendu = null;
 
+                    /** @var array<int, array<string, mixed>> $allTodos */
+                    $allTodos = $sae['todos'] ?? [];
+                    /** @var array<int, array<string, mixed>> $allAvis */
+                    $allAvis = $sae['avis'] ?? [];
+
                     /** @var array<int, array<string, mixed>> $attributions */
                     $attributions = $sae['attributions'] ?? [];
                     foreach ($attributions as $attrib) {
@@ -372,7 +377,6 @@ class DashboardView extends BaseView
                         }
                     }
 
-                    // Affichage des étudiants
                     $html .= "<p><strong>Étudiants :</strong> ";
                     if (!empty($allEtudiants)) {
                         $html .= implode(', ', $allEtudiants);
@@ -387,12 +391,10 @@ class DashboardView extends BaseView
                             . $this->rendreLiensCliquables($githubLink) . "</p>";
                     }
 
-
                     $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ?? 'Non définie') . "</p>";
 
-
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
-                        /** @var array{expired: bool, jours?: int, heures?:  int, minutes?: int, timestamp?:  int, urgent?: bool} $countdown */
+                        /** @var array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool} $countdown */
                         $countdown = $sae['countdown'];
                         $html .= \Controllers\Dashboard\DashboardController::generateCountdownHTML(
                             $countdown,
@@ -403,7 +405,7 @@ class DashboardView extends BaseView
                     if (!empty($allTodos)) {
                         $totalTasks = count($allTodos);
                         $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
-                        $percent = round(($doneTasks / $totalTasks) * 100);
+                        $percent = (int) round(($doneTasks / $totalTasks) * 100);
 
                         $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
                         $html .= "<div class='progress-bar'><div class='progress-fill' style='width: {$percent}%;'>
@@ -413,14 +415,12 @@ class DashboardView extends BaseView
                         foreach ($allTodos as $task) {
                             $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
                             $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
-                            $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
                             $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
                             $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
                             $fait = !empty($task['fait']);
 
                             $html .= "<li>";
                             $html .= "<div class='todo-card" . ($fait ? " done" : "") . "'>";
-
                             $html .= "<div class='todo-info'>";
                             $html .= "<span class='todo-title'>{$taskTitre}</span>";
 
@@ -442,11 +442,9 @@ class DashboardView extends BaseView
                             }
 
                             $html .= "</div>";
-
                             if ($fait) {
                                 $html .= "<div class='todo-actions'>✅</div>";
                             }
-
                             $html .= "</div>";
                             $html .= "</li>";
                         }
@@ -459,13 +457,11 @@ class DashboardView extends BaseView
                         $html .= "<h4>Remarques</h4>";
                         foreach ($allAvis as $avis) {
                             $avisData = (array) $avis;
-                            /** @var array<string, mixed> $avisData */
                             $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
                             $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
                             $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
                             $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
                             $messageRendu = $this->rendreLiensCliquables($message);
-                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
                             $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
                             $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
                             $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
@@ -477,7 +473,7 @@ class DashboardView extends BaseView
                             $html .= "{$messageRendu}</p>";
                             $html .= "<small>{$dateAvis}</small>";
 
-                            if ((int) $this->safeString($avisData['user_id'] ?? 0) === (int) $currentUserId) {
+                            if ((int) $this->safeString($avisData['user_id'] ?? 0) === $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
                                 $html .= "<button type='submit' class='avis-btn-supprimer' 
@@ -486,11 +482,10 @@ class DashboardView extends BaseView
                                 Supprimer</button>";
                                 $html .= "</form>";
                             }
-
                             $html .= "</div>";
                         }
                     } else {
-                        $html .= "<p>Aucun avis pour cette SAE.  </p>";
+                        $html .= "<p>Aucun avis pour cette SAE. </p>";
                     }
 
                     $html .= "<h4>Ajouter un avis</h4>";
