@@ -34,62 +34,45 @@ class Database
 
     /**
      * Retrieves the singleton database connection instance.
-     *
-     * This method initializes the MySQLi connection if it doesn't exist (Lazy Loading).
-     * It enforces the 'utf8mb4' character set for full Unicode support.
-     *
-     * Feature: Logging Context Injection
-     * If a PHP session is active and a user is logged in, this method injects
-     * the user ID into a MySQL session variable (@current_user_id).
-     * This enables SQL triggers to automatically log the 'user_id' responsible for changes.
-     *
      * @return \mysqli The active database connection object.
      * @throws DataBaseException If the connection fails to establish.
      */
     public static function getConnection(): \mysqli
     {
-        // Singleton pattern: Only create the connection if it doesn't exist
+        // 1. Si la connexion n'existe pas encore, on la crée
         if (self::$conn === null) {
-            // 1. Retrieve credentials (parseEnvVar returns string|false)
             $hostRaw = self::parseEnvVar("DB_HOST");
             $userRaw = self::parseEnvVar("DB_USER");
             $passRaw = self::parseEnvVar("DB_PASSWORD");
             $dbRaw   = self::parseEnvVar("DB_NAME");
 
-            // 2. Type sanitization for mysqli constructor
-            // mysqli expects ?string (string or null), but parseEnvVar returns false on failure.
-            // We convert 'false' to 'null' to satisfy strict typing.
+            // Conversion false -> null pour mysqli
             $host = ($hostRaw === false) ? null : $hostRaw;
             $user = ($userRaw === false) ? null : $userRaw;
             $pass = ($passRaw === false) ? null : $passRaw;
             $db   = ($dbRaw   === false) ? null : $dbRaw;
 
             try {
-                // Enable strict error reporting: MySQL errors will throw exceptions
                 mysqli_report(MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR);
-
-                // Initialize connection
                 self::$conn = new \mysqli($host, $user, $pass, $db);
                 self::$conn->set_charset('utf8mb4');
-
-                // 3. Context Injection for SQL Triggers (Audit Logs)
-                // We check if a session exists AND if 'user_id' is set to identify the actor.
-                if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-                    $sessionVal = $_SESSION['user_id'];
-
-                    // PHPStan check: ensure value is scalar (int/string) before casting
-                    if (is_scalar($sessionVal)) {
-                        $userId = (int) $sessionVal;
-                        // Set the SQL variable for the current request scope
-                        self::$conn->query("SET @current_user_id = $userId");
-                    }
-                }
             } catch (\mysqli_sql_exception $e) {
-                // Wrap native exception into a custom one for security and clarity
                 throw new DataBaseException(
                     "Unable to connect to the database. " .
                     "Please contact sae-manager@alwaysdata.net for assistance."
                 );
+            }
+        }
+
+        // 2. INJECTION DE L'ID UTILISATEUR (A faire à chaque appel !)
+        // C'est ici que ça corrige le problème du NULL.
+        // On met à jour la variable SQL même si la connexion était déjà ouverte.
+        if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
+            $sessionVal = $_SESSION['user_id'];
+            if (is_scalar($sessionVal)) {
+                $userId = (int) $sessionVal;
+                // On écrase la variable @current_user_id avec l'ID actuel
+                self::$conn->query("SET @current_user_id = $userId");
             }
         }
 
