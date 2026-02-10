@@ -78,9 +78,8 @@ class Database
             // Option A: Check the structure defined in LoginPost.php
             if (isset($_SESSION['user']) && is_array($_SESSION['user']) && isset($_SESSION['user']['id'])) {
                 $userIdToLog = $_SESSION['user']['id'];
-            }
-            // Option B: Fallback check (just in case)
-            elseif (isset($_SESSION['user_id'])) {
+            } elseif (isset($_SESSION['user_id'])) {
+                // Option B: Fallback check (just in case)
                 $userIdToLog = $_SESSION['user_id'];
             }
 
