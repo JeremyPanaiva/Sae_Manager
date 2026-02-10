@@ -302,13 +302,13 @@ class SaeAttribution
             s.titre AS sae_titre,
             s.description AS sae_description,
             sa.date_rendu,
-            sa.github_link, -- Ajout ici
+            MAX(sa.github_link) AS github_link, 
             GROUP_CONCAT(CONCAT(u.nom,' ',u.prenom) SEPARATOR ', ') AS etudiants
         FROM sae_attributions sa
         JOIN sae s ON s.id = sa.sae_id
         JOIN users u ON u.id = sa.student_id
         WHERE sa.responsable_id = ?
-        GROUP BY sa.sae_id, s.titre, s.description, sa.date_rendu, sa.github_link
+        GROUP BY sa.sae_id, s.titre, s.description, sa.date_rendu
     ");
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getSaeForResponsable.");
@@ -812,26 +812,31 @@ class SaeAttribution
     }
 
     /**
-     * Updates the project link (GitHub/Drive) for a specific SAE assignment.
+     * Updates the project delivery link (GitHub/Drive) for all students in a group.
      *
-     * This link is associated with the attribution record, meaning it will be
-     * automatically deleted if the assignment is removed (CASCADE).
+     * This method ensures that when one student updates the link, it is reflected
+     * [cite_start]for the entire team assigned to the same SAE by the same supervisor[cite: 382].
+     * Since the link is stored in the sae_attributions table, it will be
+     * [cite_start]automatically removed if the assignment is deleted due to CASCADE constraints[cite: 279, 382].
      *
-     * @param int $saeId The ID of the SAE.
-     * @param int $studentId The ID of the student.
-     * @param string|null $link The URL to the project repository or shared drive.
-     * @throws \Shared\Exceptions\DataBaseException If the SQL preparation or execution fails.
+     * [cite_start]@param int $saeId The ID of the SAE[cite: 269].
+     * [cite_start]@param int $responsableId The ID of the supervisor managing the group[cite: 270].
+     * @param string|null $link The URL of the repository or shared folder.
+     * @return void
+     * @throws \Shared\Exceptions\DataBaseException If the SQL statement cannot be prepared or executed.
      */
-    public static function updateGithubLink(int $saeId, int $studentId, ?string $link): void
+    public static function updateGithubLink(int $saeId, int $responsableId, ?string $link): void
     {
         $db = \Models\Database::getConnection();
-        $stmt = $db->prepare("UPDATE sae_attributions SET github_link = ? WHERE sae_id = ? AND student_id = ?");
+
+        // We update by sae_id AND responsable_id to target the whole group assignment
+        $stmt = $db->prepare("UPDATE sae_attributions SET github_link = ? WHERE sae_id = ? AND responsable_id = ?");
 
         if (!$stmt) {
-            throw new \Shared\Exceptions\DataBaseException("Erreur de préparation SQL.");
+            throw new \Shared\Exceptions\DataBaseException("SQL preparation error in updateGithubLink.");
         }
 
-        $stmt->bind_param("sii", $link, $saeId, $studentId);
+        $stmt->bind_param("sii", $link, $saeId, $responsableId);
         $stmt->execute();
         $stmt->close();
     }
