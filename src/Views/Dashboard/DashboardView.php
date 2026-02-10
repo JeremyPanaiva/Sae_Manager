@@ -381,18 +381,10 @@ class DashboardView extends BaseView
                     }
                     $html .= "</p>";
 
-                    // --- PARTIE MODIFIÉE : LIEN GITHUB SOUS LES ÉTUDIANTS ---
                     $githubLink = $this->safeString($sae['github_link'] ?? '');
                     if (!empty($githubLink)) {
-                        $html .= "<div class='deliverable-container view-only'>";
-                        $html .= "<div class='deliverable-body'>";
-                        $html .= "<strong>Lien déposé par les étudiants :</strong> " . $this->rendreLiensCliquables($githubLink);
-                        $html .= "</div>";
-                        $html .= "</div>";
-                    } else {
-                        $html .= "<div class='deliverable-container empty'>";
-                        $html .= "<p class='no-link-text' style='color: #666; font-style: italic; font-size: 13px; margin: 10px 0;'>Aucun lien déposé.</p>";
-                        $html .= "</div>";
+                        $html .= "<p class='github-link-item'><strong>Lien déposé par les étudiants :</strong> "
+                            . $this->rendreLiensCliquables($githubLink) . "</p>";
                     }
 
 
@@ -536,7 +528,7 @@ class DashboardView extends BaseView
 
                     $githubLink = $this->safeString($sae['github_link'] ?? '');
                     if (!empty($githubLink)) {
-                        $html .= "<p style='margin: 10px 0;'><strong>Lien déposé par les étudiants :</strong> "
+                        $html .= "<p class='github-link-item'><strong>Lien déposé par les étudiants :</strong> "
                             . $this->rendreLiensCliquables($githubLink) . "</p>";
                     }
 
