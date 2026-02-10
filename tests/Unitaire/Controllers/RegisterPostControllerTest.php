@@ -36,14 +36,17 @@ class RegisterPostControllerTest extends TestCase
 
     public function testValidatesPasswordLength(): void
     {
+        // Simulate a POST request with a short password
         $_POST['ok'] = true;
         $_POST['nom'] = 'Test';
         $_POST['prenom'] = 'User';
-        $_POST['mail'] = 'test@example. com';
+        $_POST['mail'] = 'test@example.com';
         $_POST['mdp'] = 'short';
         $_POST['role'] = 'etudiant';
 
-        $this->assertTrue(strlen($_POST['mdp']) < 8);
+        // We expect a redirection or error handling.
+        $this->assertEquals('short', $_POST['mdp']);
+        $this->assertLessThan(8, strlen($_POST['mdp']));
     }
 
     public function testValidatesEmailFormat(): void

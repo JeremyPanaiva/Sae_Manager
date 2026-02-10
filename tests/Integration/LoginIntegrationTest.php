@@ -8,12 +8,15 @@ use PHPUnit\Framework\TestCase;
 
 class LoginIntegrationTest extends TestCase
 {
+    /** @var int|null */
     private $testUserId;
 
     protected function setUp(): void
     {
         parent::setUp();
-        if (session_status() === PHP_SESSION_NONE) session_start();
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     protected function tearDown(): void
@@ -33,19 +36,30 @@ class LoginIntegrationTest extends TestCase
         $user->register('Test', 'User', 'test@example.com', 'Pass123', 'etudiant', $token);
 
         $userData = $user->findByEmail('test@example.com');
-        $this->testUserId = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserId = $userId;
 
         $conn = Database::getConnection();
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
+        $this->assertNotFalse($stmt);
         $stmt->bind_param("i", $this->testUserId);
         $stmt->execute();
         $stmt->close();
 
         // Simuler le login
         $userData = $user->findByEmail('test@example.com');
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('mdp', $userData);
+
+        $password = $userData['mdp'];
+        $this->assertIsString($password);
 
         $loginSuccess = false;
-        if ($userData && password_verify('Pass123', $userData['mdp']) && $userData['is_verified'] == 1) {
+        if (password_verify('Pass123', $password) && $userData['is_verified'] == 1) {
             $_SESSION['user_id'] = $userData['id'];
             $_SESSION['user_role'] = $userData['role'];
             $loginSuccess = true;
@@ -64,19 +78,30 @@ class LoginIntegrationTest extends TestCase
         $user->register('Test', 'User', 'test2@example.com', 'Pass123', 'etudiant', $token);
 
         $userData = $user->findByEmail('test2@example.com');
-        $this->testUserId = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserId = $userId;
 
         $conn = Database::getConnection();
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
+        $this->assertNotFalse($stmt);
         $stmt->bind_param("i", $this->testUserId);
         $stmt->execute();
         $stmt->close();
 
         // Tentative de login avec mauvais mot de passe
         $userData = $user->findByEmail('test2@example.com');
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('mdp', $userData);
+
+        $password = $userData['mdp'];
+        $this->assertIsString($password);
 
         $loginSuccess = false;
-        if ($userData && password_verify('WrongPassword', $userData['mdp']) && $userData['is_verified'] == 1) {
+        if (password_verify('WrongPassword', $password) && $userData['is_verified'] == 1) {
             $_SESSION['user_id'] = $userData['id'];
             $loginSuccess = true;
         }
@@ -100,11 +125,20 @@ class LoginIntegrationTest extends TestCase
         $user->register('Test', 'User', 'unverified@example.com', 'Pass123', 'etudiant', $token);
 
         $userData = $user->findByEmail('unverified@example.com');
-        $this->testUserId = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+        $this->assertArrayHasKey('mdp', $userData);
+
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserId = $userId;
+
+        $password = $userData['mdp'];
+        $this->assertIsString($password);
 
         // Tentative de login avec compte non vérifié
         $loginSuccess = false;
-        if ($userData && password_verify('Pass123', $userData['mdp']) && $userData['is_verified'] == 1) {
+        if (password_verify('Pass123', $password) && $userData['is_verified'] == 1) {
             $_SESSION['user_id'] = $userData['id'];
             $loginSuccess = true;
         }
@@ -121,17 +155,30 @@ class LoginIntegrationTest extends TestCase
         $user->register('Test', 'User', 'test3@example.com', 'Pass123', 'etudiant', $token);
 
         $userData = $user->findByEmail('test3@example.com');
-        $this->testUserId = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+        $this->assertArrayHasKey('mdp', $userData);
+
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserId = $userId;
 
         $conn = Database::getConnection();
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
+        $this->assertNotFalse($stmt);
         $stmt->bind_param("i", $this->testUserId);
         $stmt->execute();
         $stmt->close();
 
         // Login
         $userData = $user->findByEmail('test3@example.com');
-        if ($userData && password_verify('Pass123', $userData['mdp']) && $userData['is_verified'] == 1) {
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('mdp', $userData);
+
+        $password = $userData['mdp'];
+        $this->assertIsString($password);
+
+        if (password_verify('Pass123', $password) && $userData['is_verified'] == 1) {
             $_SESSION['user_id'] = $userData['id'];
             $_SESSION['user_role'] = $userData['role'];
         }
@@ -153,9 +200,15 @@ class LoginIntegrationTest extends TestCase
         $token1 = bin2hex(random_bytes(32));
         $user->register('Etudiant', 'Test', 'etudiant@test.com', 'Pass123', 'etudiant', $token1);
         $etudiantData = $user->findByEmail('etudiant@test.com');
+        $this->assertNotNull($etudiantData);
+        $this->assertArrayHasKey('id', $etudiantData);
+
+        $etudiantId = $etudiantData['id'];
+        $this->assertIsInt($etudiantId);
 
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
-        $stmt->bind_param("i", $etudiantData['id']);
+        $this->assertNotFalse($stmt);
+        $stmt->bind_param("i", $etudiantId);
         $stmt->execute();
         $stmt->close();
 
@@ -166,9 +219,15 @@ class LoginIntegrationTest extends TestCase
         $token2 = bin2hex(random_bytes(32));
         $user->register('Responsable', 'Test', 'responsable@test.com', 'Pass123', 'responsable', $token2);
         $responsableData = $user->findByEmail('responsable@test.com');
+        $this->assertNotNull($responsableData);
+        $this->assertArrayHasKey('id', $responsableData);
+
+        $responsableId = $responsableData['id'];
+        $this->assertIsInt($responsableId);
 
         $stmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
-        $stmt->bind_param("i", $responsableData['id']);
+        $this->assertNotFalse($stmt);
+        $stmt->bind_param("i", $responsableId);
         $stmt->execute();
         $stmt->close();
 
@@ -176,8 +235,8 @@ class LoginIntegrationTest extends TestCase
         $this->assertEquals('responsable', $responsableData['role']);
 
         // Cleanup
-        User::deleteAccount($etudiantData['id']);
-        User::deleteAccount($responsableData['id']);
+        User::deleteAccount($etudiantId);
+        User::deleteAccount($responsableId);
         $this->testUserId = null;
     }
 }

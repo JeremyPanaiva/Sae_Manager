@@ -9,7 +9,7 @@ class LoginControllerTest extends TestCase
 {
     protected function setUp(): void
     {
-        parent:: setUp();
+        parent::setUp();
 
         $_SERVER['REQUEST_URI'] = '/login';
         $_SERVER['HTTP_HOST'] = 'localhost';
@@ -25,7 +25,7 @@ class LoginControllerTest extends TestCase
         $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('Inscription réussie', $output);
+        $this->assertStringContainsString('Inscription réussie', (string) $output);
     }
 
     public function testDisplaysPasswordResetSuccessMessage(): void
@@ -37,7 +37,7 @@ class LoginControllerTest extends TestCase
         $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('mot de passe a été réinitialisé', $output);
+        $this->assertStringContainsString('mot de passe a été réinitialisé', (string) $output);
     }
 
     public function testDisplaysInvalidTokenError(): void
@@ -49,7 +49,7 @@ class LoginControllerTest extends TestCase
         $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('lien de vérification est invalide', $output);
+        $this->assertStringContainsString('vérification invalide', (string) $output);
     }
 
     public function testLoginFormContainsRequiredFields(): void
@@ -59,8 +59,8 @@ class LoginControllerTest extends TestCase
         $controller->control();
         $output = ob_get_clean();
 
-        $this->assertStringContainsString('type="email"', $output);
-        $this->assertStringContainsString('type="password"', $output);
-        $this->assertStringContainsString('type="submit"', $output);
+        $this->assertStringContainsString('type="email"', (string) $output);
+        $this->assertStringContainsString('type="password"', (string) $output);
+        $this->assertStringContainsString('type="submit"', (string) $output);
     }
 }

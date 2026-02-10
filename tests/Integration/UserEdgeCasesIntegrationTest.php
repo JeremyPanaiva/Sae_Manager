@@ -9,14 +9,13 @@ use Shared\Exceptions\EmailAlreadyExistsException;
 
 class UserEdgeCasesIntegrationTest extends TestCase
 {
-    private $testUserIds = [];
+    /** @var list<int> */
+    private array $testUserIds = [];
 
     protected function tearDown(): void
     {
         foreach ($this->testUserIds as $id) {
-            if ($id !== null) {
-                User::deleteAccount($id);
-            }
+            User::deleteAccount($id);
         }
         parent::tearDown();
     }
@@ -28,7 +27,12 @@ class UserEdgeCasesIntegrationTest extends TestCase
 
         $user->register('Test', 'User', 'exists@test.com', 'Pass123', 'etudiant', $token);
         $userData = $user->findByEmail('exists@test.com');
-        $this->testUserIds[] = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserIds[] = $userId;
 
         $this->expectException(EmailAlreadyExistsException::class);
         $user->emailExists('exists@test.com');
@@ -58,9 +62,18 @@ class UserEdgeCasesIntegrationTest extends TestCase
 
         $user->register('Test', 'User', 'hashed@test.com', $plainPassword, 'etudiant', $token);
         $userData = $user->findByEmail('hashed@test.com');
-        $this->testUserIds[] = $userData['id'];
+        $this->assertNotNull($userData);
+        $this->assertArrayHasKey('id', $userData);
+        $this->assertArrayHasKey('mdp', $userData);
 
-        $this->assertNotEquals($plainPassword, $userData['mdp']);
-        $this->assertTrue(password_verify($plainPassword, $userData['mdp']));
+        $userId = $userData['id'];
+        $this->assertIsInt($userId);
+        $this->testUserIds[] = $userId;
+
+        $password = $userData['mdp'];
+        $this->assertIsString($password);
+
+        $this->assertNotEquals($plainPassword, $password);
+        $this->assertTrue(password_verify($plainPassword, $password));
     }
 }

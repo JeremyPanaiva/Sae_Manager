@@ -7,7 +7,7 @@ A web application for **tracking SAEs** (Situations d’Apprentissage et d’Év
 
 ## 🎯 Purpose
 
-- **Streamline SAE tracking and organization** for both students and teachers
+- **Streamline SAE tracking and organization** for students, teachers and clients
 - **Automate notifications and reminders** for deadlines, deliverables, and oral defenses
 - Simplify the **management of evaluations and competencies** with a **centralized platform**
 - Provide a user-friendly interface for managing projects, schedules, and student progress
@@ -31,13 +31,17 @@ A web application for **tracking SAEs** (Situations d’Apprentissage et d’Év
 │   ├── docs/             # Legal documents (PDF)
 │   ├── img/              # Images and favicon
 │   └── script/           # JavaScript scripts
+├── doc/                  # Generated PHPDoc documentation
 ├── src/
 │   ├── Controllers/      # Business logic (controllers)
 │   ├── Models/           # Data access and business objects
 │   ├── Shared/           # Exceptions and utilities
 │   └── Views/            # HTML pages and PHP views
+├── tests/                # Unit and integration tests
 ├── index.php             # Application entry point
 ├── Autoloader.php        # Class autoloader
+├── composer.json         # Dependency configuration
+├── phpunit.xml           # Testing configuration
 ├── robots.txt            # Robot/crawler rules
 ├── sitemap.xml           # SEO sitemap
 └── README.md             # Project documentation
@@ -48,22 +52,35 @@ A web application for **tracking SAEs** (Situations d’Apprentissage et d’Év
 ### ⚙️ Quick start for local development
 
 1. **Clone or download** the repository.
-2. **Create an environment configuration file:**
+2. **Install dependencies:**
+    ```bash
+    composer install
+    ```
+3. **Create an environment configuration file:**
     ```bash
     cp .env.dist .env
     ```
-3. **Configure your database settings** in the `.env` file if needed.
-4. **Launch a local PHP server** from the root of the project:
+4. **Configure your database settings** in the `.env` file if needed.
+5. **Launch a local PHP server** from the root of the project:
     ```bash
     php -S localhost:8000
     ```
-5. Visit [http://localhost:8000](http://localhost:8000) in your browser.
+6. Visit [http://localhost:8000](http://localhost:8000) in your browser.
+
+### 📖 Documentation
+
+You can verify the code quality or generate the documentation using the following commands:
+
+- **Open PHPDoc**:
+    ```bash
+    firefox doc/index.html
+    ```
 
 ---
 
 ## 🚀 Features
 
-- Student and teacher accounts
+- Student, teacher and client accounts
 - Dashboard with upcoming deadlines, deliverables, and important dates
 - Centralized document management for every SAE
 - Automated email notifications and reminders
