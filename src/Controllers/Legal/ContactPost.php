@@ -4,11 +4,12 @@ namespace Controllers\Legal;
 
 use Controllers\ControllerInterface;
 use Models\User\EmailService;
+use Models\Database;
 
 /**
  * Contact form submission controller
  *
- * Handles POST requests from the contact form.  Validates user input,
+ * Handles POST requests from the contact form. Validates user input,
  * sends the contact email via EmailService, and redirects with appropriate
  * success or error messages.
  *
@@ -38,19 +39,14 @@ class ContactPost implements ControllerInterface
     /**
      * Main controller method
      *
-     * Validates contact form data (email, subject, message), sends the email
-     * via EmailService, and redirects with query parameters indicating success or failure.
-     *
-     * Validation errors:
-     * - missing_fields: One or more required fields are empty
-     * - invalid_email:  Email format is invalid
-     * - mail_failed: Email sending failed
+     * Validates contact form data, sends the email via EmailService,
+     * logs the action in the database manually, and redirects.
      *
      * @return void
      */
     public function control(): void
     {
-        // Ensure POST method (redundant check, but safe)
+        // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location:  ' . self::PATH);
             exit();
@@ -60,7 +56,6 @@ class ContactPost implements ControllerInterface
         $email   = isset($_POST['email']) && is_string($_POST['email']) ? trim($_POST['email']) : '';
         $subject = isset($_POST['subject']) && is_string($_POST['subject']) ? trim($_POST['subject']) : '';
         $message = isset($_POST['message']) && is_string($_POST['message']) ? trim($_POST['message']) : '';
-
 
         // Validate required fields
         if ($email === '' || $subject === '' || $message === '') {
@@ -81,12 +76,40 @@ class ContactPost implements ControllerInterface
 
             // Redirect based on email sending result
             if ($ok) {
+                // --- DEBUT LOG MANUEL ---
+                try {
+                    $db = Database::getConnection();
+
+                    $userId = null;
+                    if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
+                        if (isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) {
+                            $userId = (int) $_SESSION['user']['id'];
+                        }
+                    }
+
+                    // On prépare le message de détails
+                    $details = "Sujet : " . substr($subject, 0, 50) . " | Email contact : " . $email;
+
+                    // On coupe la requête en deux pour respecter la limite de 120 caractères (PHPCS)
+                    $sql = "INSERT INTO logs (user_id, action, table_concernee, element_id, details) " .
+                        "VALUES (?, 'CONTACT_ENVOI', 'system', 0, ?)";
+
+                    $stmt = $db->prepare($sql);
+                    if ($stmt) {
+                        $stmt->bind_param('is', $userId, $details);
+                        $stmt->execute();
+                        $stmt->close();
+                    }
+                } catch (\Throwable $e) {
+                    error_log("Erreur Log Contact: " . $e->getMessage());
+                }
+                // --- FIN LOG MANUEL ---
+
                 header('Location: ' .  self::PATH . '?success=message_sent');
             } else {
                 header('Location: ' . self::PATH . '?error=mail_failed');
             }
         } catch (\Throwable $e) {
-            // Log exception and redirect with error
             error_log('ContactPost error: ' . $e->getMessage());
             header('Location: ' .  self::PATH . '?error=mail_failed');
         }
