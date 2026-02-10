@@ -4,19 +4,17 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\User\User;
+use Models\Database;
 use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
-use Shared\Exceptions\EmailNotFoundException;
-use Shared\Exceptions\InvalidPasswordException;
 use Shared\Exceptions\DataBaseException;
 use Views\User\LoginView;
 
 /**
  * User login submission controller
  *
- * Handles POST requests from the login form.   Validates credentials, checks account
- * verification status, and creates a user session on successful authentication.
- * Displays validation errors if login fails.
+ * Handles POST requests from the login form. Validates credentials, checks account
+ * verification status, creates a user session, and logs the login event for audit purposes.
  *
  * @package Controllers\User
  */
@@ -26,8 +24,8 @@ class LoginPost implements ControllerInterface
      * Main controller method
      *
      * Validates login credentials (email and password), verifies account is activated,
-     * and creates a session with user information on successful authentication.
-     * Displays error messages for invalid credentials, unverified accounts, or database errors.
+     * creates a session with user information on successful authentication, and
+     * records the login action in the database logs.
      *
      * @return void
      */
@@ -111,6 +109,33 @@ class LoginPost implements ControllerInterface
                 'mail' => $userData['mail'] ?? $email,
                 'role' => $role
             ];
+
+            // --- AUDIT LOGGING: LOGIN EVENT ---
+            try {
+                $db = Database::getConnection();
+
+                // CORRECTION PHPSTAN ICI :
+                // On vérifie que c'est bien un nombre avant de caster
+                $rawId = $userData['id'] ?? 0;
+                $userId = is_numeric($rawId) ? (int)$rawId : 0;
+
+                $details = "Utilisateur connecté avec succès";
+
+                $stmt = $db->prepare(
+                    "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
+                     VALUES (?, 'CONNEXION', 'users', ?, ?)"
+                );
+
+                if ($stmt) {
+                    $stmt->bind_param('iis', $userId, $userId, $details);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            } catch (\Throwable $e) {
+                // Silently fail logging to avoid blocking the user login process
+                error_log("Login Audit Log Error: " . $e->getMessage());
+            }
+            // --- END AUDIT LOGGING ---
 
             // Redirect to home page
             header("Location: /");
