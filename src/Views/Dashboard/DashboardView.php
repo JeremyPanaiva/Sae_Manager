@@ -355,12 +355,6 @@ class DashboardView extends BaseView
                     $allEtudiants = [];
                     $dateRendu = null;
 
-                    $githubLink = $this->safeString($sae['github_link'] ?? '');
-                    if (!empty($githubLink)) {
-                        $html .= "<p style='margin: 10px 0;'><strong>Lien déposé par les étudiants :</strong> "
-                            . $this->rendreLiensCliquables($githubLink) . "</p>";
-                    }
-
                     /** @var array<int, array<string, mixed>> $attributions */
                     $attributions = $sae['attributions'] ?? [];
                     foreach ($attributions as $attrib) {
@@ -373,17 +367,12 @@ class DashboardView extends BaseView
                                 )
                             );
                         }
-
                         if (!isset($dateRendu)) {
                             $dateRendu = htmlspecialchars($this->safeString($attrib['date_rendu'] ?? ''));
                         }
                     }
 
-                    /** @var array<int, array<string, mixed>> $allTodos */
-                    $allTodos = $sae['todos'] ?? [];
-                    /** @var array<int, array<string, mixed>> $allAvis */
-                    $allAvis = $sae['avis'] ?? [];
-
+                    // Affichage des étudiants
                     $html .= "<p><strong>Étudiants :</strong> ";
                     if (!empty($allEtudiants)) {
                         $html .= implode(', ', $allEtudiants);
@@ -392,7 +381,24 @@ class DashboardView extends BaseView
                     }
                     $html .= "</p>";
 
+                    // --- PARTIE MODIFIÉE : LIEN GITHUB SOUS LES ÉTUDIANTS ---
+                    $githubLink = $this->safeString($sae['github_link'] ?? '');
+                    if (!empty($githubLink)) {
+                        $html .= "<div class='deliverable-container view-only'>";
+                        $html .= "<div class='deliverable-body'>";
+                        $html .= "<strong>Lien déposé par les étudiants :</strong> " . $this->rendreLiensCliquables($githubLink);
+                        $html .= "</div>";
+                        $html .= "</div>";
+                    } else {
+                        $html .= "<div class='deliverable-container empty'>";
+                        $html .= "<p class='no-link-text' style='color: #666; font-style: italic; font-size: 13px; margin: 10px 0;'>Aucun lien déposé.</p>";
+                        $html .= "</div>";
+                    }
+
+
                     $html .= "<p><strong>Date de rendu :</strong> " . ($dateRendu ?? 'Non définie') . "</p>";
+
+
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
                         /** @var array{expired: bool, jours?: int, heures?:  int, minutes?: int, timestamp?:  int, urgent?: bool} $countdown */
                         $countdown = $sae['countdown'];
