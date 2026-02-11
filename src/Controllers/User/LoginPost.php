@@ -53,9 +53,12 @@ class LoginPost implements ControllerInterface
 
         // 2. Validate Inputs
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Format Email Invalid " . ($email ?: 'empty'));
+
             $validationExceptions[] = new ValidationException("Invalid Email Format.");
         }
         if (empty($mdp)) {
+            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Mot de passe vide pour : $email");
             $validationExceptions[] = new ValidationException("Password cannot be empty.");
         }
 
@@ -69,6 +72,7 @@ class LoginPost implements ControllerInterface
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
                 $validationExceptions[] = new ValidationException($dbEx->getMessage());
+                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0, "Erreur DB : " . $dbEx->getMessage());
                 throw new ArrayException($validationExceptions);
             }
 
