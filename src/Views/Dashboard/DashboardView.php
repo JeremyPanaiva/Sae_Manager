@@ -184,7 +184,7 @@ class DashboardView extends BaseView
                     /** @var array<int, array<string, mixed>> $todos */
                     $todos = $sae['todos'] ?? [];
                     $totalTasks = count($todos);
-                    $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                    $doneTasks = count(array_filter($todos, fn ($task) => !empty($task['fait'])));
                     $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                     $html .= "<p><strong>Avancement :  </strong> {$percent}%</p>";
@@ -367,7 +367,7 @@ class DashboardView extends BaseView
 
                     if (!empty($allTodos)) {
                         $totalTasks = count($allTodos);
-                        $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
+                        $doneTasks = count(array_filter($allTodos, fn ($task) => !empty($task['fait'])));
                         $percent = round(($doneTasks / $totalTasks) * 100);
 
                         $html .= "<p><strong>Avancement : </strong> {$percent}%</p>";
@@ -472,7 +472,8 @@ class DashboardView extends BaseView
             case 'responsable':
                 // === BOUTON MESSAGERIE (AU DÉBUT) ===
                 $html .= '<div class="send-message-section">';
-                $html .= '<button class="btn btn-primary" onclick="openMessageModal()">📧 Envoyer un message à un étudiant</button>';
+                $html .= '<button class="btn btn-primary" onclick="openMessageModal()">';
+                $html .= '📧 Envoyer un message à un étudiant</button>';
                 $html .= '</div>';
 
                 $html .= "<h2>Vos SAE attribuées</h2>";
@@ -489,7 +490,7 @@ class DashboardView extends BaseView
                     /** @var array<int, array<string, mixed>> $etudiants */
                     $etudiants = $sae['etudiants'] ?? [];
                     if (!empty($etudiants)) {
-                        $etudiantsList = array_map(fn($etu) => htmlspecialchars($this->safeString($etu['nom'] ?? '')
+                        $etudiantsList = array_map(fn ($etu) => htmlspecialchars($this->safeString($etu['nom'] ?? '')
                             . ' ' . $this->safeString($etu['prenom'] ?? '')), $etudiants);
                         $html .= "<p><strong>Étudiants :</strong> " . implode(', ', $etudiantsList) . "</p>";
                     } else {
@@ -582,7 +583,7 @@ class DashboardView extends BaseView
                     $todos = $sae['todos'] ?? [];
                     if (!empty($todos)) {
                         $totalTasks = count($todos);
-                        $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                        $doneTasks = count(array_filter($todos, fn ($task) => !empty($task['fait'])));
                         $percent = round(($doneTasks / $totalTasks) * 100);
 
                         $html .= "<p><strong>Avancement :  </strong> {$percent}%</p>";

@@ -37,8 +37,9 @@ class SendMessageController implements ControllerInterface
 
     public function control(): void
     {
-        // Verify user is logged in and is a responsable
         if (
+            !isset($_SESSION['user']) ||
+            !is_array($_SESSION['user']) ||
             !isset($_SESSION['user']['id']) ||
             !isset($_SESSION['user']['role']) ||
             !is_string($_SESSION['user']['role']) ||
@@ -49,21 +50,17 @@ class SendMessageController implements ControllerInterface
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Get form data
             $studentIds = $_POST['student_id'] ?? [];
 
-            // Si c'est une string, convertir en tableau
             if (!is_array($studentIds)) {
                 $studentIds = [$studentIds];
             }
 
-            // Filtrer et convertir en entiers
-            $studentIds = array_filter(array_map(function($id) {
+            $studentIds = array_filter(array_map(function ($id) {
                 return is_numeric($id) ? (int)$id : 0;
             }, $studentIds));
 
-            // Retirer les 0
-            $studentIds = array_filter($studentIds, function($id) {
+            $studentIds = array_filter($studentIds, function ($id) {
                 return $id > 0;
             });
 
@@ -74,23 +71,38 @@ class SendMessageController implements ControllerInterface
                 ? trim($_POST['message'])
                 : '';
 
-            // Validate required fields
             if (empty($studentIds) || $subject === '' || $message === '') {
                 header('Location: /dashboard?error=missing_fields');
                 exit();
             }
 
             try {
-                // Get responsable information from session
-                $responsableId = (int)$_SESSION['user']['id'];
-                $responsableName = $_SESSION['user']['prenom'] . ' ' . $_SESSION['user']['nom'];
+                $userSession = $_SESSION['user'];
 
-                // Group students by SAE
+                if (
+                    !isset($userSession['prenom']) ||
+                    !isset($userSession['nom'])
+                ) {
+                    header('Location: /login');
+                    exit();
+                }
+
+                $responsableIdRaw = $userSession['id'];
+                $responsableId = is_numeric($responsableIdRaw) ? (int)$responsableIdRaw : 0;
+
+                if ($responsableId === 0) {
+                    header('Location: /login');
+                    exit();
+                }
+
+                $responsablePrenom = is_string($userSession['prenom']) ? $userSession['prenom'] : '';
+                $responsableNom = is_string($userSession['nom']) ? $userSession['nom'] : '';
+                $responsableName = $responsablePrenom . ' ' . $responsableNom;
+
                 $db = Database::getConnection();
                 $studentsBySae = [];
 
                 foreach ($studentIds as $studentId) {
-                    // Récupérer la SAE de cet étudiant (pour ce responsable)
                     $stmt = $db->prepare("
                         SELECT DISTINCT s.id as sae_id, s.titre as sae_name
                         FROM sae s
@@ -98,15 +110,27 @@ class SendMessageController implements ControllerInterface
                         WHERE sa.student_id = ? AND sa.responsable_id = ?
                         LIMIT 1
                     ");
+
+                    if ($stmt === false) {
+                        error_log("Failed to prepare statement for student {$studentId}");
+                        continue;
+                    }
+
                     $stmt->bind_param("ii", $studentId, $responsableId);
                     $stmt->execute();
                     $result = $stmt->get_result();
+
+                    if ($result === false) {
+                        $stmt->close();
+                        continue;
+                    }
+
                     $saeInfo = $result->fetch_assoc();
                     $stmt->close();
 
-                    if ($saeInfo) {
+                    if ($saeInfo !== null && is_array($saeInfo)) {
                         $saeId = (int)$saeInfo['sae_id'];
-                        $saeName = $saeInfo['sae_name'];
+                        $saeName = (string)$saeInfo['sae_name'];
 
                         if (!isset($studentsBySae[$saeId])) {
                             $studentsBySae[$saeId] = [
@@ -117,7 +141,6 @@ class SendMessageController implements ControllerInterface
 
                         $studentsBySae[$saeId]['students'][] = $studentId;
                     } else {
-                        // Si aucune SAE trouvée, mettre dans un groupe "general"
                         if (!isset($studentsBySae[0])) {
                             $studentsBySae[0] = [
                                 'sae_name' => null,
@@ -128,7 +151,6 @@ class SendMessageController implements ControllerInterface
                     }
                 }
 
-                // Send emails grouped by SAE
                 $emailService = new EmailService();
                 $successCount = 0;
                 $failCount = 0;
@@ -138,8 +160,7 @@ class SendMessageController implements ControllerInterface
                     $saeName = $saeData['sae_name'];
                     $studentsInSae = $saeData['students'];
 
-                    // Personnaliser le sujet avec le nom de la SAE
-                    $personalizedSubject = $saeName
+                    $personalizedSubject = $saeName !== null
                         ? "[SAE: {$saeName}] {$subject}"
                         : $subject;
 
@@ -153,16 +174,26 @@ class SendMessageController implements ControllerInterface
                                 continue;
                             }
 
-                            if (strtolower($student['role']) !== 'etudiant') {
+                            $studentRole = is_string($student['role']) ? strtolower($student['role']) : '';
+
+                            if ($studentRole !== 'etudiant') {
                                 $invalidCount++;
-                                error_log("User {$studentId} is not a student: " . $student['role']);
+                                $roleStr = is_string($student['role']) ? $student['role'] : 'unknown';
+                                error_log("User {$studentId} is not a student: " . $roleStr);
                                 continue;
                             }
 
-                            $studentEmail = $student['mail'];
-                            $studentName = $student['prenom'] . ' ' . $student['nom'];
+                            $studentEmail = is_string($student['mail']) ? $student['mail'] : '';
+                            $studentPrenom = is_string($student['prenom']) ? $student['prenom'] : '';
+                            $studentNom = is_string($student['nom']) ? $student['nom'] : '';
+                            $studentName = $studentPrenom . ' ' . $studentNom;
 
-                            // Send email with personalized subject
+                            if ($studentEmail === '') {
+                                $invalidCount++;
+                                error_log("Student {$studentId} has no email");
+                                continue;
+                            }
+
                             try {
                                 $success = $emailService->sendMessageToStudent(
                                     $studentEmail,
@@ -174,7 +205,9 @@ class SendMessageController implements ControllerInterface
 
                                 if ($success) {
                                     $successCount++;
-                                    error_log("Message sent to {$studentName} ({$studentEmail}) for SAE: {$saeName}");
+                                    $logMessage = "Message sent to {$studentName} "
+                                        . "({$studentEmail}) for SAE: {$saeName}";
+                                    error_log($logMessage);
                                 } else {
                                     $failCount++;
                                     error_log("Failed to send message to {$studentName} ({$studentEmail})");
@@ -195,7 +228,6 @@ class SendMessageController implements ControllerInterface
                     }
                 }
 
-                // Redirect with appropriate message
                 if ($successCount > 0 && $failCount === 0 && $invalidCount === 0) {
                     if ($successCount === 1) {
                         header('Location: /dashboard?success=message_sent');
@@ -204,7 +236,10 @@ class SendMessageController implements ControllerInterface
                     }
                 } elseif ($successCount > 0 && ($failCount > 0 || $invalidCount > 0)) {
                     $totalFailed = $failCount + $invalidCount;
-                    header('Location: /dashboard?warning=partial_success&sent=' . $successCount . '&failed=' . $totalFailed);
+                    $redirectUrl = '/dashboard?warning=partial_success'
+                        . '&sent=' . $successCount
+                        . '&failed=' . $totalFailed;
+                    header('Location: ' . $redirectUrl);
                 } else {
                     if ($invalidCount > 0) {
                         header('Location: /dashboard?error=invalid_student');
