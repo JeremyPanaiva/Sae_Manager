@@ -169,16 +169,7 @@ class DashboardController implements ControllerInterface
         }
     }
 
-    /**
-     * @param array{
-     *     expired: bool,
-     *     jours?: int,
-     *     heures?: int,
-     *     minutes?: int,
-     *     timestamp?: int,
-     *     urgent?: bool
-     * }|null $countdown
-     */
+
 
     public static function support(string $path, string $method): bool
     {
