@@ -127,9 +127,9 @@ class Log
 
         if (preg_match('/MSIE/i', $ua) && !preg_match('/Opera/i', $ua)) {
             $browser = 'Internet Explorer';
-        } elseif (preg_match('/Firefox/i', $ua)) {
+        } elseif (preg_match('Firefox|FxiOS/i', $ua)) {
             $browser = 'Firefox';
-        } elseif (preg_match('/Chrome/i', $ua)) {
+        } elseif (preg_match('/Chrome|CriOS/i', $ua)) {
             $browser = 'Chrome';
         } elseif (preg_match('/Safari/i', $ua)) {
             $browser = 'Safari';
