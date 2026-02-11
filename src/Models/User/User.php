@@ -231,7 +231,9 @@ class User
             $order = 'ASC';
         }
 
-        $sql = "SELECT id, nom, prenom, mail, role FROM users WHERE is_verified = 1 ORDER BY $sort $order LIMIT ? OFFSET ?";
+        $sql = "SELECT id, nom, prenom, mail, role FROM users 
+                                   WHERE is_verified = 1 
+                                   ORDER BY $sort $order LIMIT ? OFFSET ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getUsersPaginated.");
