@@ -4,123 +4,115 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\User\User;
-use Models\Database;
+use Models\Log;
 use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
 use Views\User\LoginView;
 
 /**
- * User login submission controller
+ * Class LoginPost
  *
- * Handles POST requests from the login form. Validates credentials, checks account
- * verification status, creates a user session, and logs login events (success AND failures).
+ * Handles the POST request for user authentication.
+ * It validates credentials, checks account status (verified/active),
+ * manages session creation, and records audit logs for security.
  *
  * @package Controllers\User
  */
 class LoginPost implements ControllerInterface
 {
     /**
-     * Main controller method
+     * Executes the login logic.
      *
-     * Validates login credentials (email and password), verifies account is activated,
-     * creates a session with user information on successful authentication, and
-     * records the login action in the database logs.
+     * 1. Validates form inputs.
+     * 2. Retrieves user by email.
+     * 3. Checks specific failure scenarios (Unknown email, Unverified account, Wrong password).
+     * 4. Logs failures using the Log model.
+     * 5. On success, initializes the session and logs the connection event.
      *
      * @return void
      */
     public function control()
     {
-        // Check if form was submitted
+        // 1. Check if form is submitted
         if (!isset($_POST['ok'])) {
             return;
         }
 
-        // Extract form data
         $email = $_POST['uname'] ?? '';
         $mdp = $_POST['psw'] ?? '';
 
+        // Model Instantiation
         $User = new User();
-        /** @var array<ValidationException> $validationExceptions */
+        $Logger = new Log(); // Audit Logger
+
         $validationExceptions = [];
 
-        // Validate email format
+        // 2. Input Validation
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $validationExceptions[] = new ValidationException("Email invalide.");
+            $validationExceptions[] = new ValidationException("Invalid Email Format.");
         }
-
-        // Validate password is not empty
         if (empty($mdp)) {
-            $validationExceptions[] = new ValidationException("Le mot de passe ne peut pas être vide.");
+            $validationExceptions[] = new ValidationException("Password cannot be empty.");
         }
 
         try {
-            // If local validation errors exist, throw exception
             if (count($validationExceptions) > 0) {
                 throw new ArrayException($validationExceptions);
             }
 
-            // Retrieve user data from database
+            // 3. Retrieve User Data
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                // Convert database exception to validation exception
                 $validationExceptions[] = new ValidationException($dbEx->getMessage());
                 throw new ArrayException($validationExceptions);
             }
 
-            // CAS 1 : Email not found in database (Unknown user)
+            // --- SECURITY CHECKS ---
+
+            // CASE A: User Not Found (Unknown Email)
             if (!$userData) {
-                // APPEL DE LA FONCTION logFailure ICI
-                $this->logFailure(null, "Echec connexion (Email inconnu) : $email");
+                // Audit: Log failed attempt with NULL user_id
+                $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Unknown User: $email");
 
-                $validationExceptions[] = new ValidationException("Email non trouvé: " . $email);
+                $validationExceptions[] = new ValidationException("Email not found: " . $email);
                 throw new ArrayException($validationExceptions);
             }
 
-            // Check if account is verified
-            $isVerifiedRaw = $userData['is_verified'] ?? 1;
-            $isVerified = is_numeric($isVerifiedRaw) ? (int)$isVerifiedRaw : 1;
-
-            // CAS 2 : Account not verified
+            // CASE B: Account Not Verified
+            $isVerified = (int)($userData['is_verified'] ?? 1);
             if ($isVerified === 0) {
-                $rawId = $userData['id'] ?? 0;
-                $userId = is_numeric($rawId) ? (int)$rawId : 0;
+                $userId = (int)$userData['id'];
 
-                // APPEL DE LA FONCTION logFailure ICI
-                $this->logFailure($userId, "Echec connexion (Non vérifié) : $email");
+                // Audit: Log attempt on unverified account
+                $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Unverified Account: $email");
 
-                $validationExceptions[] = new ValidationException(
-                    "Votre compte n'est pas vérifié. Veuillez cliquer sur le lien reçu par email."
-                );
+                $validationExceptions[] = new ValidationException("Account not verified. Please check your emails.");
                 throw new ArrayException($validationExceptions);
             }
 
-            // Verify password
-            $passwordHash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
-
-            // CAS 3 : Wrong password
+            // CASE C: Incorrect Password
+            $passwordHash = $userData['mdp'] ?? '';
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
-                $rawId = $userData['id'] ?? 0;
-                $userId = is_numeric($rawId) ? (int)$rawId : 0;
+                $userId = (int)$userData['id'];
 
-                // APPEL DE LA FONCTION logFailure ICI
-                $this->logFailure($userId, "Echec connexion (Mauvais MDP) : $email");
+                // Audit: Log security failure (Critical)
+                $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
-                $validationExceptions[] = new ValidationException("Mot de passe incorrect.");
+                $validationExceptions[] = new ValidationException("Incorrect Password.");
                 throw new ArrayException($validationExceptions);
             }
 
-            // --- SUCCESS : Login successful ---
+            // --- LOGIN SUCCESS ---
+
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }
 
-            // Extract and normalize user role
-            $roleRaw = $userData['role'] ?? 'etudiant';
-            $role = is_string($roleRaw) ? strtolower(trim($roleRaw)) : 'etudiant';
+            $role = strtolower(trim($userData['role'] ?? 'etudiant'));
 
-            // Store user information in session
+            // Set Session Data
             $_SESSION['user'] = [
                 'id' => $userData['id'],
                 'nom' => $userData['nom'],
@@ -129,44 +121,18 @@ class LoginPost implements ControllerInterface
                 'role' => $role
             ];
 
-            // --- AUDIT LOGGING: LOGIN SUCCESS ---
-            try {
-                $db = Database::getConnection();
+            // Audit: Log successful connection
+            $userId = (int)$userData['id'];
+            $fullName = ($userData['nom'] ?? '') . ' ' . ($userData['prenom'] ?? '');
 
-                // Safe cast for PHPStan
-                $rawId = $userData['id'] ?? 0;
-                $userId = is_numeric($rawId) ? (int)$rawId : 0;
+            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Login Success: $fullName");
 
-                // Add Name and Surname to log details (Safe cast for PHPStan)
-                $rawNom = $userData['nom'] ?? '';
-                $nom = is_string($rawNom) ? $rawNom : '';
-
-                $rawPrenom = $userData['prenom'] ?? '';
-                $prenom = is_string($rawPrenom) ? $rawPrenom : '';
-
-                $details = "Connexion réussie : $nom $prenom";
-
-                $stmt = $db->prepare(
-                    "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
-                     VALUES (?, 'CONNEXION', 'users', ?, ?)"
-                );
-
-                if ($stmt) {
-                    $stmt->bind_param('iis', $userId, $userId, $details);
-                    $stmt->execute();
-                    $stmt->close();
-                }
-            } catch (\Throwable $e) {
-                // Silently fail logging to avoid blocking the user login process
-                error_log("Login Audit Log Error: " . $e->getMessage());
-            }
-            // --- END AUDIT LOGGING ---
-
-            // Redirect to home page
+            // Redirect to Dashboard
             header("Location: /");
             exit();
+
         } catch (ArrayException $exceptions) {
-            // Display login form with error messages
+            // Render View with Errors
             $view = new LoginView($exceptions->getExceptions());
             echo $view->render();
             return;
@@ -174,45 +140,7 @@ class LoginPost implements ControllerInterface
     }
 
     /**
-     * Logs a failed login attempt to the database.
-     *
-     * @param int|null $userId The user ID if known, or null if unknown email.
-     * @param string $details The details of the failure.
-     * @return void
-     */
-    private function logFailure(?int $userId, string $details): void
-    {
-        try {
-            $db = Database::getConnection();
-
-            // If user ID is null (unknown email), we store 0 or use NULL logic depending on DB schema.
-            // Here we use 0 for element_id if unknown.
-            $safeUserId = $userId;
-            $elementId = $userId ?? 0;
-
-            $stmt = $db->prepare(
-                "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
-                 VALUES (?, 'ECHEC_CONNEXION', 'users', ?, ?)"
-            );
-
-            if ($stmt) {
-                // 'i' for integer, 's' for string. MySQLi handles null for 'i' correctly if nullable.
-                $stmt->bind_param('iis', $safeUserId, $elementId, $details);
-                $stmt->execute();
-                $stmt->close();
-            }
-        } catch (\Throwable $e) {
-            // Fail silently
-            error_log("Login Failure Log Error: " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Checks if this controller supports the given route and HTTP method
-     *
-     * @param string $chemin The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path is '/user/login' and method is POST
+     * Router Support Check
      */
     public static function support(string $chemin, string $method): bool
     {
