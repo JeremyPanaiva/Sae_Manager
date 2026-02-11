@@ -3,7 +3,7 @@
 namespace Controllers\Legal;
 
 use Controllers\ControllerInterface;
-use Models\Log;
+use Models\User\Log;
 
 /**
  * Class ContactPost
