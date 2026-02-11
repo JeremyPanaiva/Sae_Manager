@@ -4,7 +4,7 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\User\User;
-use Models\Log;
+use Models\User\Log;
 use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
