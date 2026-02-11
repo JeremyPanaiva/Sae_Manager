@@ -866,6 +866,4 @@ class SaeAttribution
 
         return $row ? (int)$row['responsable_id'] : null;
     }
-
-
 }
