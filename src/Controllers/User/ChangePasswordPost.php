@@ -139,16 +139,20 @@ class ChangePasswordPost implements ControllerInterface
 
             // Check rate limit (24 hours)
             if (!empty($user['last_password_change'])) {
-                $lastChange = new \DateTime($user['last_password_change']);
-                $now = new \DateTime();
-                $diff = $now->diff($lastChange);
+                $lastChangeRaw = $user['last_password_change'];
+                $lastChangeStr = is_string($lastChangeRaw) ? $lastChangeRaw : '';
 
-                // If less than 24 hours (roughly, checking days < 1 is safer/simpler or verify hours)
-                // Let's use total hours check
-                $hours = $diff->h + ($diff->days * 24);
-                if ($hours < 24) {
-                    header('Location: /user/change-password?error=wait_before_retry');
-                    exit;
+                if (!empty($lastChangeStr)) {
+                    $lastChange = new \DateTime($lastChangeStr);
+                    $now = new \DateTime();
+                    $diff = $now->diff($lastChange);
+
+                    // If less than 24 hours (roughly, checking days < 1 is safer/simpler or verify hours)
+                    $hours = $diff->h + ($diff->days * 24);
+                    if ($hours < 24) {
+                        header('Location: /user/change-password?error=wait_before_retry');
+                        exit;
+                    }
                 }
             }
 

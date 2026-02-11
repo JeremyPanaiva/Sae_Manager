@@ -50,7 +50,7 @@ class UpdateLinkController implements ControllerInterface
             strtolower($userSession['role']) !== 'etudiant'
         ) {
             header('HTTP/1.1 403 Forbidden');
-            exit("Access Denied.");
+            exit("Accès refusé.");
         }
 
         // Explicitly handle mixed types from global arrays
@@ -66,7 +66,7 @@ class UpdateLinkController implements ControllerInterface
         try {
             // URL validation
             if (!empty($githubLink) && !filter_var($githubLink, FILTER_VALIDATE_URL)) {
-                throw new \Exception("The link format is invalid. Please provide a full URL.");
+                throw new \Exception("Le format du lien est invalide. Veuillez fournir une URL complète.");
             }
 
             // 1. Identify the supervisor (responsable) via the Model to target the entire group
@@ -80,9 +80,9 @@ class UpdateLinkController implements ControllerInterface
             // 2. Update the link for the whole team using the Model method
             SaeAttribution::updateGithubLink($saeId, $responsableId, $githubLink);
 
-            $_SESSION['success_message'] = "Project link updated for the entire team.";
+            $_SESSION['success_message'] = "Lien du projet mis à jour avec succès.";
         } catch (\Exception $e) {
-            $_SESSION['error_message'] = "Update failed: " . $e->getMessage();
+            $_SESSION['error_message'] = "Échec de la mise à jour : " . $e->getMessage();
         }
 
         header('Location: /dashboard');
