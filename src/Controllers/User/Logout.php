@@ -21,7 +21,7 @@ class Logout implements ControllerInterface
     /**
      * Executes the logout logic.
      *
-     * 1. Checks if a user is currently logged in.
+     * 1. Checks if a user is currently logged in using strict type checks.
      * 2. Logs the 'DECONNEXION' event via the Log model.
      * 3. Destroys the PHP session.
      * 4. Redirects to the homepage.
@@ -34,16 +34,37 @@ class Logout implements ControllerInterface
             session_start();
         }
 
-        // Only log if a user was actually connected
-        if (isset($_SESSION['user']['id'])) {
-            $Logger = new Log();
+        // 1. Safe Session Access (Fixes: "Cannot access offset on mixed")
+        // We extract the user array into a variable and verify it IS an array.
+        $userSession = $_SESSION['user'] ?? null;
 
-            $userId = (int) $_SESSION['user']['id'];
-            $nom = $_SESSION['user']['nom'] ?? '';
-            $prenom = $_SESSION['user']['prenom'] ?? '';
+        if (is_array($userSession)) {
+            // 2. Safe ID Extraction (Fixes: "Cannot cast mixed to int")
+            $rawId = $userSession['id'] ?? 0;
 
-            // Audit: Log disconnection
-            $Logger->create($userId, 'DECONNEXION', 'users', $userId, "Logout: $nom $prenom");
+            // Only proceed if we have a valid numeric ID
+            if (is_numeric($rawId)) {
+                $userId = (int)$rawId;
+
+                // 3. Safe String Extraction (Fixes: "Part of encapsed string cannot be cast")
+                $nomRaw = $userSession['nom'] ?? '';
+                $nom = is_string($nomRaw) ? $nomRaw : '';
+
+                $prenomRaw = $userSession['prenom'] ?? '';
+                $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+
+                // Audit: Log disconnection
+                $Logger = new Log();
+
+                // We can now safely concatenate $nom and $prenom because they are strictly strings
+                $Logger->create(
+                    $userId,
+                    'DECONNEXION',
+                    'users',
+                    $userId,
+                    "Logout: $nom $prenom"
+                );
+            }
         }
 
         // Destroy Session
