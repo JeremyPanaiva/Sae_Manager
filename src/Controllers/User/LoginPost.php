@@ -14,8 +14,8 @@ use Views\User\LoginView;
  * Class LoginPost
  *
  * Handles the POST request for user authentication.
- * It validates credentials, checks account status (verified/active),
- * manages session creation, and records audit logs for security.
+ * It strictly validates input types to satisfy static analysis (PHPStan)
+ * and delegates audit logging to the Log model.
  *
  * @package Controllers\User
  */
@@ -24,31 +24,34 @@ class LoginPost implements ControllerInterface
     /**
      * Executes the login logic.
      *
-     * 1. Validates form inputs.
-     * 2. Retrieves user by email.
-     * 3. Checks specific failure scenarios (Unknown email, Unverified account, Wrong password).
-     * 4. Logs failures using the Log model.
-     * 5. On success, initializes the session and logs the connection event.
+     * 1. Sanitizes inputs.
+     * 2. Retrieves user data.
+     * 3. Safely extracts and casts database values.
+     * 4. Validates business rules (Account verified, Password correct).
+     * 5. Logs the result.
      *
      * @return void
      */
     public function control()
     {
-        // 1. Check if form is submitted
+        // 1. Check form submission
         if (!isset($_POST['ok'])) {
             return;
         }
 
-        $email = $_POST['uname'] ?? '';
-        $mdp = $_POST['psw'] ?? '';
+        // Strict input typing
+        $emailRaw = $_POST['uname'] ?? '';
+        $email = is_string($emailRaw) ? $emailRaw : '';
 
-        // Model Instantiation
+        $mdpRaw = $_POST['psw'] ?? '';
+        $mdp = is_string($mdpRaw) ? $mdpRaw : '';
+
         $User = new User();
-        $Logger = new Log(); // Audit Logger
+        $Logger = new Log();
 
         $validationExceptions = [];
 
-        // 2. Input Validation
+        // 2. Validate Inputs
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $validationExceptions[] = new ValidationException("Invalid Email Format.");
         }
@@ -71,21 +74,46 @@ class LoginPost implements ControllerInterface
 
             // --- SECURITY CHECKS ---
 
-            // CASE A: User Not Found (Unknown Email)
+            // CASE A: User Not Found
+            // FIX PHPSTAN: We removed "!is_array($userData)" because PHPStan knows
+            // that if $userData is not false, it is definitely an array.
             if (!$userData) {
-                // Audit: Log failed attempt with NULL user_id
                 $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Unknown User: $email");
 
                 $validationExceptions[] = new ValidationException("Email not found: " . $email);
                 throw new ArrayException($validationExceptions);
             }
 
-            // CASE B: Account Not Verified
-            $isVerified = (int)($userData['is_verified'] ?? 1);
-            if ($isVerified === 0) {
-                $userId = (int)$userData['id'];
+            // --- DATA NORMALIZATION ---
+            // We verify the array keys exist before using them to satisfy strict typing.
 
-                // Audit: Log attempt on unverified account
+            // Safe ID extraction
+            $rawId = $userData['id'] ?? 0;
+            $userId = is_numeric($rawId) ? (int)$rawId : 0;
+
+            // Safe Verified Status extraction
+            $rawVerified = $userData['is_verified'] ?? 1;
+            $isVerified = is_numeric($rawVerified) ? (int)$rawVerified : 1;
+
+            // Safe Password Hash extraction
+            $rawPass = $userData['mdp'] ?? '';
+            $passwordHash = is_string($rawPass) ? $rawPass : '';
+
+            // Safe Role extraction
+            $rawRole = $userData['role'] ?? 'etudiant';
+            $role = is_string($rawRole) ? strtolower(trim($rawRole)) : 'etudiant';
+
+            // Safe Name extraction
+            $nomRaw = $userData['nom'] ?? '';
+            $nom = is_string($nomRaw) ? $nomRaw : '';
+
+            $prenomRaw = $userData['prenom'] ?? '';
+            $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+
+            // --- LOGIC EXECUTION ---
+
+            // CASE B: Account Not Verified
+            if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Unverified Account: $email");
 
                 $validationExceptions[] = new ValidationException("Account not verified. Please check your emails.");
@@ -93,11 +121,7 @@ class LoginPost implements ControllerInterface
             }
 
             // CASE C: Incorrect Password
-            $passwordHash = $userData['mdp'] ?? '';
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
-                $userId = (int)$userData['id'];
-
-                // Audit: Log security failure (Critical)
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
                 $validationExceptions[] = new ValidationException("Incorrect Password.");
@@ -110,29 +134,22 @@ class LoginPost implements ControllerInterface
                 session_start();
             }
 
-            $role = strtolower(trim($userData['role'] ?? 'etudiant'));
-
-            // Set Session Data
             $_SESSION['user'] = [
-                'id' => $userData['id'],
-                'nom' => $userData['nom'],
-                'prenom' => $userData['prenom'],
+                'id' => $userId,
+                'nom' => $nom,
+                'prenom' => $prenom,
                 'mail' => $userData['mail'] ?? $email,
                 'role' => $role
             ];
 
-            // Audit: Log successful connection
-            $userId = (int)$userData['id'];
-            $fullName = ($userData['nom'] ?? '') . ' ' . ($userData['prenom'] ?? '');
+            // Audit: Log success
+            $fullName = $nom . ' ' . $prenom;
 
             $Logger->create($userId, 'CONNEXION', 'users', $userId, "Login Success: $fullName");
 
-            // Redirect to Dashboard
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
-            // Render View with Errors
             $view = new LoginView($exceptions->getExceptions());
             echo $view->render();
             return;
