@@ -127,7 +127,9 @@ class Log
 
         if (preg_match('/MSIE/i', $ua) && !preg_match('/Opera/i', $ua)) {
             $browser = 'Internet Explorer';
-        } elseif (preg_match('Firefox|FxiOS/i', $ua)) {
+        } elseif (preg_match('/Opera/i', $ua)) {
+            $browser = 'Opera';
+        } elseif (preg_match('/Firefox|FxiOS/i', $ua)) {
             $browser = 'Firefox';
         } elseif (preg_match('/Chrome|CriOS/i', $ua)) {
             $browser = 'Chrome';
@@ -135,8 +137,6 @@ class Log
             $browser = 'Safari';
         } elseif (preg_match('/Opera/i', $ua)) {
             $browser = 'Opera';
-        } elseif (preg_match('/Edg/i', $ua)) {
-            $browser = 'Edge';
         }
 
         $result = "$device ($os) - $browser";
