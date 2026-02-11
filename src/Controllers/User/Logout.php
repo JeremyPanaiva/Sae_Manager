@@ -3,92 +3,60 @@
 namespace Controllers\User;
 
 use Controllers\ControllerInterface;
-use Models\Database;
+use Models\Log;
 
 /**
- * User logout controller
+ * Class Logout
  *
- * Handles user logout by logging the event, destroying the session,
- * and redirecting the user to the home page.
+ * Handles user disconnection.
+ * It ensures the logout event is recorded in the audit logs before
+ * destroying the session and redirecting the user.
  *
  * @package Controllers\User
  */
 class Logout implements ControllerInterface
 {
-    /**
-     * Logout route path
-     *
-     * @var string
-     */
     public const PATH = "/user/logout";
 
     /**
-     * Main controller method
+     * Executes the logout logic.
      *
-     * Logs the logout action (including user name), destroys the user session,
-     * and redirects to the home page.
+     * 1. Checks if a user is currently logged in.
+     * 2. Logs the 'DECONNEXION' event via the Log model.
+     * 3. Destroys the PHP session.
+     * 4. Redirects to the homepage.
      *
      * @return void
      */
     public function control(): void
     {
-        // 1. AUDIT LOGGING: LOGOUT EVENT
-        // Must be done BEFORE destroying the session to know who is logging out.
-        try {
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
-
-            // Check if user is logged in and ID is valid before logging
-            if (
-                isset($_SESSION['user']) &&
-                is_array($_SESSION['user']) &&
-                isset($_SESSION['user']['id']) &&
-                is_numeric($_SESSION['user']['id'])
-            ) {
-                $db = Database::getConnection();
-
-                $userId = (int) $_SESSION['user']['id'];
-
-                // Add Name and Surname to log details
-                $nom = isset($_SESSION['user']['nom']) ? $_SESSION['user']['nom'] : '';
-                $prenom = isset($_SESSION['user']['prenom']) ? $_SESSION['user']['prenom'] : '';
-
-                $details = "Déconnexion de: $nom $prenom";
-
-                $stmt = $db->prepare(
-                    "INSERT INTO logs (user_id, action, table_concernee, element_id, details) 
-                     VALUES (?, 'DECONNEXION', 'users', ?, ?)"
-                );
-
-                if ($stmt) {
-                    $stmt->bind_param('iis', $userId, $userId, $details);
-                    $stmt->execute();
-                    $stmt->close();
-                }
-            }
-        } catch (\Throwable $e) {
-            // Silently fail logging to ensure logout still happens
-            error_log("Logout Audit Log Error: " . $e->getMessage());
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
 
-        // 2. Clear all session variables
-        $_SESSION = [];
+        // Only log if a user was actually connected
+        if (isset($_SESSION['user']['id'])) {
+            $Logger = new Log();
 
-        // 3. Destroy the session
+            $userId = (int) $_SESSION['user']['id'];
+            $nom = $_SESSION['user']['nom'] ?? '';
+            $prenom = $_SESSION['user']['prenom'] ?? '';
+
+            // Audit: Log disconnection
+            $Logger->create($userId, 'DECONNEXION', 'users', $userId, "Logout: $nom $prenom");
+        }
+
+        // Destroy Session
+        $_SESSION = [];
         session_destroy();
 
-        // 4. Redirect to home page
+        // Redirect
         header("Location: /");
         exit();
     }
 
     /**
-     * Checks if this controller supports the given route and HTTP method
-     *
-     * @param string $chemin The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path is '/user/logout' and method is GET
+     * Router Support Check
      */
     public static function support(string $chemin, string $method): bool
     {
