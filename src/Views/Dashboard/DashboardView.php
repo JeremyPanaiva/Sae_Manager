@@ -190,7 +190,6 @@ class DashboardView extends BaseView
                         $html .= "<p class='no-link-text'>Aucun lien GitHub ou Drive configuré.</p>";
                     }
 
-                    // Formulaire d'édition pour l'étudiant
                     $html .= "<form method='POST' action='/sae/update_link' class='link-update-form'>";
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<input type='url' name='github_link' value='" . htmlspecialchars($githubLink) . "' 
@@ -203,7 +202,7 @@ class DashboardView extends BaseView
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
                         /** @var array{expired: bool, jours?:  int, heures?: int, minutes?: int, timestamp?:  int, urgent?: bool} $countdown */
                         $countdown = $sae['countdown'];
-                        $html .= $html .= $this->generateCountdownHTML($countdown, "etudiant-" .
+                        $html .= $this->generateCountdownHTML($countdown, "etudiant-" .
                             $this->safeString($sae['sae_id'] ?? 0));
                     }
 
