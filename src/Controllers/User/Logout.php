@@ -25,7 +25,7 @@ class Logout implements ControllerInterface
     /**
      * Main controller method
      *
-     * Logs the logout action (including user name), destroys the user session,
+     * Logs the logout action (including user name), destroys the session,
      * and redirects to the home page.
      *
      * @return void
@@ -65,6 +65,19 @@ class Logout implements ControllerInterface
                     $stmt->bind_param('iis', $userId, $userId, $details);
                     $stmt->execute();
                     $stmt->close();
+                }
+
+                // --- Best-effort: clear stored session_token in users table so the old token is not left behind ---
+                try {
+                    $stmtUpd = $db->prepare("UPDATE users SET session_token = NULL WHERE id = ?");
+                    if ($stmtUpd) {
+                        $stmtUpd->bind_param('i', $userId);
+                        $stmtUpd->execute();
+                        $stmtUpd->close();
+                    }
+                } catch (\Throwable $e) {
+                    // Ignore errors here (column might not exist or permission issues)
+                    error_log('Unable to clear session_token on logout: ' . $e->getMessage());
                 }
             }
         } catch (\Throwable $e) {
