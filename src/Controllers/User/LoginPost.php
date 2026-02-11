@@ -145,7 +145,7 @@ class LoginPost implements ControllerInterface
             // Audit: Log success
             $fullName = $nom . ' ' . $prenom;
 
-            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Login Success: $fullName");
+            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de  : $fullName");
 
             header("Location: /");
             exit();
