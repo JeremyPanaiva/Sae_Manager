@@ -752,6 +752,7 @@ class SaeAttribution
 
         return $attributions;
     }
+
     /**
      * Retrieves all SAE attributions with deadline in exactly 1 day
      *
@@ -807,5 +808,46 @@ class SaeAttribution
         $stmt->close();
 
         return $attributions;
+    }
+
+    /**
+     * Retrieves the SAE information for a student assigned by a specific supervisor
+     *
+     * Used to find which SAE a student is working on under a particular supervisor.
+     * Returns the first matching SAE if multiple exist.
+     *
+     * @param int $studentId The ID of the student
+     * @param int $responsableId The ID of the supervisor
+     * @return array<string, mixed>|null SAE information (sae_id, sae_name) or null if not found
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getSaeForStudentAndResponsable(int $studentId, int $responsableId): ?array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT DISTINCT s.id as sae_id, s.titre as sae_name
+            FROM sae s
+            INNER JOIN sae_attributions sa ON s.id = sa.sae_id
+            WHERE sa.student_id = ? AND sa.responsable_id = ?
+            LIMIT 1
+        ");
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getSaeForStudentAndResponsable.");
+        }
+
+        $stmt->bind_param("ii", $studentId, $responsableId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getSaeForStudentAndResponsable.");
+        }
+
+        $saeInfo = $result->fetch_assoc();
+        $stmt->close();
+
+        return $saeInfo ?: null;
     }
 }

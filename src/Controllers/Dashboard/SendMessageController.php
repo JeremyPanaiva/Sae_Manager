@@ -5,7 +5,7 @@ namespace Controllers\Dashboard;
 use Controllers\ControllerInterface;
 use Models\User\EmailService;
 use Models\User\User;
-use Models\Database;
+use Models\Sae\SaeAttribution;
 use Shared\Exceptions\DataBaseException;
 
 /**
@@ -99,56 +99,40 @@ class SendMessageController implements ControllerInterface
                 $responsableNom = is_string($userSession['nom']) ? $userSession['nom'] : '';
                 $responsableName = $responsablePrenom . ' ' . $responsableNom;
 
-                $db = Database::getConnection();
                 $studentsBySae = [];
 
                 foreach ($studentIds as $studentId) {
-                    $stmt = $db->prepare("
-                        SELECT DISTINCT s.id as sae_id, s.titre as sae_name
-                        FROM sae s
-                        INNER JOIN sae_attributions sa ON s.id = sa.sae_id
-                        WHERE sa.student_id = ? AND sa.responsable_id = ?
-                        LIMIT 1
-                    ");
+                    $saeInfo = SaeAttribution::getSaeForStudentAndResponsable($studentId, $responsableId);
 
-                    if ($stmt === false) {
-                        error_log("Failed to prepare statement for student {$studentId}");
-                        continue;
-                    }
+                    if ($saeInfo !== null) {
+                        // Vérification stricte de la présence et du type des clés
+                        if (isset($saeInfo['sae_id'], $saeInfo['sae_name'])) {
+                            $saeId = is_numeric($saeInfo['sae_id']) ? (int)$saeInfo['sae_id'] : 0;
+                            $saeName = is_string($saeInfo['sae_name']) ? $saeInfo['sae_name'] : '';
 
-                    $stmt->bind_param("ii", $studentId, $responsableId);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
+                            // Seulement si les données sont valides
+                            if ($saeId > 0 && $saeName !== '') {
+                                if (!isset($studentsBySae[$saeId])) {
+                                    $studentsBySae[$saeId] = [
+                                        'sae_name' => $saeName,
+                                        'students' => []
+                                    ];
+                                }
 
-                    if ($result === false) {
-                        $stmt->close();
-                        continue;
-                    }
-
-                    $saeInfo = $result->fetch_assoc();
-                    $stmt->close();
-
-                    if ($saeInfo !== null && is_array($saeInfo)) {
-                        $saeId = (int)$saeInfo['sae_id'];
-                        $saeName = (string)$saeInfo['sae_name'];
-
-                        if (!isset($studentsBySae[$saeId])) {
-                            $studentsBySae[$saeId] = [
-                                'sae_name' => $saeName,
-                                'students' => []
-                            ];
+                                $studentsBySae[$saeId]['students'][] = $studentId;
+                                continue; // Passer au prochain étudiant
+                            }
                         }
-
-                        $studentsBySae[$saeId]['students'][] = $studentId;
-                    } else {
-                        if (!isset($studentsBySae[0])) {
-                            $studentsBySae[0] = [
-                                'sae_name' => null,
-                                'students' => []
-                            ];
-                        }
-                        $studentsBySae[0]['students'][] = $studentId;
                     }
+
+                    // Si on arrive ici, c'est qu'aucune SAE n'a été trouvée ou les données sont invalides
+                    if (!isset($studentsBySae[0])) {
+                        $studentsBySae[0] = [
+                            'sae_name' => null,
+                            'students' => []
+                        ];
+                    }
+                    $studentsBySae[0]['students'][] = $studentId;
                 }
 
                 $emailService = new EmailService();
