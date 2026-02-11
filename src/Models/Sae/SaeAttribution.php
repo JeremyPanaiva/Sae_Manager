@@ -840,4 +840,32 @@ class SaeAttribution
         $stmt->execute();
         $stmt->close();
     }
+
+
+    /**
+     * Retrieves the supervisor ID for a specific student and SAE.
+     *
+     * @param int $saeId
+     * @param int $studentId
+     * @return int|null The supervisor ID or null if not found.
+     */
+    public static function getResponsableId(int $saeId, int $studentId): ?int
+    {
+        $db = \Models\Database::getConnection();
+        $stmt = $db->prepare("SELECT responsable_id FROM sae_attributions WHERE sae_id = ? AND student_id = ? LIMIT 1");
+
+        if (!$stmt) {
+            return null;
+        }
+
+        $stmt->bind_param("ii", $saeId, $studentId);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        $row = $res ? $res->fetch_assoc() : null;
+        $stmt->close();
+
+        return $row ? (int)$row['responsable_id'] : null;
+    }
+
+
 }
