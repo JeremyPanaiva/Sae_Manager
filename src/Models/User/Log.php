@@ -1,7 +1,6 @@
 <?php
 
-namespace Models;
-
+namespace Models\User;
 use Models\Database;
 
 /**
