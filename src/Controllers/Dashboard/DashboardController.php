@@ -179,51 +179,6 @@ class DashboardController implements ControllerInterface
      *     urgent?: bool
      * }|null $countdown
      */
-    public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
-    {
-        if ($countdown === null) {
-            return "<span class='countdown-error'>Date invalide</span>";
-        }
-
-        if ($countdown['expired']) {
-            return "<span class='countdown-expired'>Délai expiré</span>";
-        }
-
-        $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
-
-        return
-            "<div class='countdown-container{$urgentClass}' " .
-            "data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
-            "id='countdown-{$uniqueId}'>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='jours'>" .
-            ($countdown['jours'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>jours</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='heures'>" .
-            ($countdown['heures'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>heures</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='minutes'>" .
-            ($countdown['minutes'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>minutes</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='secondes'>0</span>" .
-            "<span class='countdown-label'>secondes</span>" .
-            "</div>" .
-
-            "</div>";
-    }
 
     public static function support(string $path, string $method): bool
     {
