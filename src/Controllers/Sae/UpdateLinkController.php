@@ -4,7 +4,6 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
-use Models\Database;
 
 /**
  * UpdateLinkController
@@ -26,9 +25,9 @@ class UpdateLinkController implements ControllerInterface
     /**
      * Main controller method
      *
-     * Validates student session, retrieves the supervisor ID to identify the group,
-     * validates the URL format, and updates the 'github_link' field for all
-     * team members in the sae_attributions table.
+     * Validates student session, retrieves the supervisor ID via the Model to
+     * identify the group, validates the URL format, and triggers the update
+     * for all team members.
      *
      * @return void
      */
@@ -70,29 +69,15 @@ class UpdateLinkController implements ControllerInterface
                 throw new \Exception("The link format is invalid. Please provide a full URL.");
             }
 
-            Database::checkConnection();
-            $db = Database::getConnection();
+            // 1. Identify the supervisor (responsable) via the Model to target the entire group
+            // This replaces direct SQL queries within the controller
+            $responsableId = SaeAttribution::getResponsableId($saeId, $userId);
 
-            // 1. Identify the supervisor (responsable) to target the entire group
-            $stmt = $db->prepare("SELECT responsable_id FROM sae_attributions 
-                      WHERE sae_id = ? AND student_id = ? LIMIT 1");
-            if (!$stmt) {
-                throw new \Exception("Database error during group identification.");
-            }
-
-            $stmt->bind_param("ii", $saeId, $userId);
-            $stmt->execute();
-            $res = $stmt->get_result();
-            $row = $res ? $res->fetch_assoc() : null;
-            $stmt->close();
-
-            if (!$row) {
+            if ($responsableId === null) {
                 throw new \Exception("Assignment not found or unauthorized.");
             }
 
-            $responsableId = (int)$row['responsable_id'];
-
-            // 2. Update the link for the whole team using the updated Model method
+            // 2. Update the link for the whole team using the Model method
             SaeAttribution::updateGithubLink($saeId, $responsableId, $githubLink);
 
             $_SESSION['success_message'] = "Project link updated for the entire team.";
