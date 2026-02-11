@@ -203,7 +203,8 @@ class DashboardView extends BaseView
                     if (isset($sae['countdown']) && is_array($sae['countdown'])) {
                         /** @var array{expired: bool, jours?:  int, heures?: int, minutes?: int, timestamp?:  int, urgent?: bool} $countdown */
                         $countdown = $sae['countdown'];
-                        $html .= $html .= $this->generateCountdownHTML($countdown, "etudiant-" . $this->safeString($sae['sae_id'] ?? 0));
+                        $html .= $html .= $this->generateCountdownHTML($countdown, "etudiant-" .
+                            $this->safeString($sae['sae_id'] ?? 0));
                     }
 
                     /** @var array<int, array<string, mixed>> $todos */
@@ -740,8 +741,21 @@ class DashboardView extends BaseView
         return $html;
     }
 
-
-    public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
+    /**
+     * Generates the HTML for the project deadline countdown.
+     *
+     * @param array{
+     * expired: bool,
+     * jours?: int,
+     * heures?: int,
+     * minutes?: int,
+     * timestamp?: int,
+     * urgent?: bool
+     * }|null $countdown Countdown data calculated by the controller.
+     * @param string $uniqueId Unique identifier for the HTML element.
+     * @return string Generated HTML content.
+     */
+    public function generateCountdownHTML(?array $countdown, string $uniqueId): string
     {
         if ($countdown === null) {
             return "<span class='countdown-error'>Date invalide</span>";
@@ -752,30 +766,28 @@ class DashboardView extends BaseView
         }
 
         $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
+        $timestamp = $countdown['timestamp'] ?? 0;
+        $jours = $countdown['jours'] ?? 0;
+        $heures = $countdown['heures'] ?? 0;
+        $minutes = $countdown['minutes'] ?? 0;
 
         return
             "<div class='countdown-container{$urgentClass}' " .
-            "data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
+            "data-deadline='{$timestamp}' " .
             "id='countdown-{$uniqueId}'>" .
 
             "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='jours'>" .
-            ($countdown['jours'] ?? 0) .
-            "</span>" .
+            "<span class='countdown-value' data-type='jours'>{$jours}</span>" .
             "<span class='countdown-label'>jours</span>" .
             "</div>" .
 
             "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='heures'>" .
-            ($countdown['heures'] ?? 0) .
-            "</span>" .
+            "<span class='countdown-value' data-type='heures'>{$heures}</span>" .
             "<span class='countdown-label'>heures</span>" .
             "</div>" .
 
             "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='minutes'>" .
-            ($countdown['minutes'] ?? 0) .
-            "</span>" .
+            "<span class='countdown-value' data-type='minutes'>{$minutes}</span>" .
             "<span class='countdown-label'>minutes</span>" .
             "</div>" .
 
@@ -786,5 +798,4 @@ class DashboardView extends BaseView
 
             "</div>";
     }
-
 }
