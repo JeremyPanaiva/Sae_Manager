@@ -60,7 +60,7 @@ class ContactPost implements ControllerInterface
             'CONTACT_ENVOI',
             'contact_form',
             0,
-            "Message from: $email | Subject: $subject"
+            "Message de : $email | Subject: $subject"
         );
 
         // Redirect with success flag
