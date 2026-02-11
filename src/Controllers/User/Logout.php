@@ -62,7 +62,7 @@ class Logout implements ControllerInterface
                     'DECONNEXION',
                     'users',
                     $userId,
-                    "Logout: $nom $prenom"
+                    "Déconnexion de : $nom $prenom"
                 );
             }
         }
