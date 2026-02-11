@@ -3,7 +3,7 @@
 namespace Controllers\User;
 
 use Controllers\ControllerInterface;
-use Models\Log;
+use Models\User\Log;
 
 /**
  * Class Logout
