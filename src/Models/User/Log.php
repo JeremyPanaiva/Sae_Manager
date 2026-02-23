@@ -9,7 +9,8 @@ use Models\Database;
  *
  * Handles the creation of audit logs for security and tracking purposes.
  * It automatically captures system information (IP address, User Agent, OS)
- * to enrich the log data.
+ * to enrich the log data. Also provides static utilities for system detection
+ * to be injected into MySQL sessions for database triggers.
  *
  * @package Models\User
  */
@@ -19,7 +20,7 @@ class Log
      * Creates a new audit log entry in the database.
      *
      * This method automatically detects the user's IP address and system information
-     * (Browser/OS) before inserting the record.
+     * (Browser/OS) before inserting the record into the logs table.
      *
      * @param int|null $userId    The ID of the user performing the action (NULL if anonymous/system).
      * @param string   $action    The type of action performed (e.g., 'LOGIN', 'DELETE_TASK').
@@ -34,13 +35,11 @@ class Log
         try {
             $db = Database::getConnection();
 
-            // 1. Retrieve the client's real IP address
-            $ip = $this->getIpAddress();
+            // 1. Retrieve the client's real IP address and System Info via static methods
+            $ip = self::getIpAddress();
+            $systemInfo = self::getSystemInfo();
 
-            // 2. Parse the User Agent to get readable System Info (OS - Browser)
-            $systemInfo = $this->getSystemInfo();
-
-            // 3. Prepare the SQL Statement
+            // 2. Prepare the SQL Statement
             $stmt = $db->prepare("
                 INSERT INTO logs (user_id, action, table_concernee, element_id, details, ip_address, system_info) 
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -61,11 +60,12 @@ class Log
     /**
      * Retrieves the client's IP address.
      *
-     * Handles cases where the user is behind a proxy or load balancer.
+     * Handles cases where the user is behind a proxy or load balancer
+     * by checking forwarded headers before falling back to REMOTE_ADDR.
      *
      * @return string The detected IP address or '0.0.0.0' if undetectable.
      */
-    private function getIpAddress(): string
+    public static function getIpAddress(): string
     {
         // Check HTTP_CLIENT_IP
         $clientIp = $_SERVER['HTTP_CLIENT_IP'] ?? null;
@@ -92,51 +92,78 @@ class Log
     /**
      * Parses the HTTP User Agent to return a readable string representing the OS and Browser.
      *
-     * Examples: "iPhone (iOS) - Safari", "PC (Windows) - Chrome".
+     * Uses strict order detection to prevent false positives (e.g., detecting Edge before Chrome).
+     * Examples: "iPhone (iOS) - Safari", "PC (Windows) - Edge".
      *
-     * @return string The formatted system information.
+     * @return string The formatted system information (Max 255 chars).
      */
-    private function getSystemInfo(): string
+    public static function getSystemInfo(): string
     {
         $uaRaw = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         $ua = is_string($uaRaw) ? $uaRaw : 'Unknown';
 
+        $browser = "Unknown Browser";
+        $is_ios_browser = false;
+
+        // --- 1. Browser Detection (Order is crucial) ---
+        if (preg_match('/Edg/i', $ua)) {
+            $browser = 'Edge';
+            if (preg_match('/EdgiOS/i', $ua)) {
+                $browser = 'Edge (iOS)';
+                $is_ios_browser = true;
+            }
+        } elseif (preg_match('/OPR|Opera/i', $ua)) {
+            $browser = 'Opera';
+            if (preg_match('/OPiOS/i', $ua)) {
+                $browser = 'Opera (iOS)';
+                $is_ios_browser = true;
+            }
+        } elseif (preg_match('/Chrome|CriOS/i', $ua)) {
+            $browser = 'Chrome';
+            if (preg_match('/CriOS/i', $ua)) {
+                $browser = 'Chrome (iOS)';
+                $is_ios_browser = true;
+            }
+        } elseif (preg_match('/Firefox|FxiOS/i', $ua)) {
+            $browser = 'Firefox';
+            if (preg_match('/FxiOS/i', $ua)) {
+                $browser = 'Firefox (iOS)';
+                $is_ios_browser = true;
+            }
+        } elseif (preg_match('/Safari/i', $ua)) {
+            $browser = 'Safari';
+        } elseif (preg_match('/MSIE|Trident/i', $ua)) {
+            $browser = 'Internet Explorer';
+        }
+
         $os = "Unknown OS";
         $device = "Desktop/Unknown";
 
-        // --- Operating System & Device Detection ---
+        // --- 2. Operating System & Device Detection ---
         if (preg_match('/iphone/i', $ua)) {
             $device = "iPhone";
             $os = "iOS";
+        } elseif (preg_match('/ipad/i', $ua)) {
+            $device = "iPad";
+            $os = "iOS";
+        } elseif (preg_match('/macintosh|mac os x/i', $ua)) {
+            // Logic to detect iOS devices requesting desktop sites
+            if ($is_ios_browser) {
+                $device = "iPhone/iPad (Desktop Mode)";
+                $os = "iOS";
+            } else {
+                $device = "Mac";
+                $os = "macOS";
+            }
         } elseif (preg_match('/android/i', $ua)) {
             $device = "Smartphone";
             $os = "Android";
-        } elseif (preg_match('/macintosh|mac os x/i', $ua)) {
-            $device = "Mac";
-            $os = "macOS";
         } elseif (preg_match('/windows|win32/i', $ua)) {
             $device = "PC";
             $os = "Windows";
         } elseif (preg_match('/linux/i', $ua)) {
             $device = "PC";
             $os = "Linux";
-        }
-
-        // --- Browser Detection ---
-        $browser = "Unknown Browser";
-
-        if (preg_match('/MSIE/i', $ua) && !preg_match('/Opera/i', $ua)) {
-            $browser = 'Internet Explorer';
-        } elseif (preg_match('/Opera/i', $ua)) {
-            $browser = 'Opera';
-        } elseif (preg_match('/Firefox|FxiOS/i', $ua)) {
-            $browser = 'Firefox';
-        } elseif (preg_match('/Chrome|CriOS/i', $ua)) {
-            $browser = 'Chrome';
-        } elseif (preg_match('/Safari/i', $ua)) {
-            $browser = 'Safari';
-        } elseif (preg_match('/Opera/i', $ua)) {
-            $browser = 'Opera';
         }
 
         $result = "$device ($os) - $browser";
