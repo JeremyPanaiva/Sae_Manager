@@ -3,23 +3,14 @@
 namespace Models;
 
 use Shared\Exceptions\DataBaseException;
+use Models\User\Log;
 
 /**
  * Database connection manager
  *
- * Provides a singleton database connection using mysqli.  Handles connection
- * initialization, configuration loading from environment variables or . env file,
- * and connection health checks.
- *
- * Configuration is loaded from environment variables or a .env file in the following order:
- * 1. System environment variables (getenv)
- * 2. .env file in project root
- *
- * Required environment variables:
- * - DB_HOST: Database host
- * - DB_USER: Database username
- * - DB_PASSWORD:  Database password
- * - DB_NAME: Database name
+ * Provides a singleton database connection using mysqli. Handles connection
+ * initialization, configuration loading, and context injection (Session, IP, OS)
+ * for MySQL triggers to accurately track audit logs.
  *
  * @package Models
  */
@@ -36,9 +27,10 @@ class Database
      * Retrieves the singleton database connection instance.
      *
      * This method initializes the MySQLi connection if it doesn't exist.
-     * It also handles the "Context Injection" for your Audit Logs:
-     * It detects the connected user ID from the session ($_SESSION['user']['id'])
-     * and sends it to MySQL (@current_user_id) so your triggers can log who is acting.
+     * It also handles "Context Injection" for the Audit Logs triggers by setting:
+     * - @current_user_id
+     * - @current_user_ip
+     * - @current_user_agent
      *
      * @return \mysqli The active database connection object.
      * @throws DataBaseException If the connection fails to establish.
@@ -52,7 +44,7 @@ class Database
             $passRaw = self::parseEnvVar("DB_PASSWORD");
             $dbRaw   = self::parseEnvVar("DB_NAME");
 
-            // Type Sanitization for mysqli constructor (false -> null)
+            // Type Sanitization for mysqli constructor
             $host = ($hostRaw === false) ? null : $hostRaw;
             $user = ($userRaw === false) ? null : $userRaw;
             $pass = ($passRaw === false) ? null : $passRaw;
@@ -70,56 +62,61 @@ class Database
             }
         }
 
-        // 2. Context Injection for Audit Logs (The Fix)
-        // This runs every time you use the database.
+        // 2. Context Injection for Audit Logs (Used by SQL Triggers)
+
+        // A. Inject current User ID
         if (session_status() === PHP_SESSION_ACTIVE) {
             $userIdToLog = null;
 
-            // Option A: Check the structure defined in LoginPost.php
             if (isset($_SESSION['user']) && is_array($_SESSION['user']) && isset($_SESSION['user']['id'])) {
                 $userIdToLog = $_SESSION['user']['id'];
             } elseif (isset($_SESSION['user_id'])) {
-                // Option B: Fallback check (just in case)
                 $userIdToLog = $_SESSION['user_id'];
             }
 
-            // If we found a valid user ID, tell MySQL about it
             if ($userIdToLog !== null && is_scalar($userIdToLog)) {
                 $uid = (int) $userIdToLog;
                 self::$conn->query("SET @current_user_id = $uid");
             }
         }
 
+        // B. Inject Client IP and System Information
+        $ip = Log::getIpAddress();
+        $systemInfo = Log::getSystemInfo();
+
+        // Safe escaping to prevent SQL injection in session variables
+        $safeIp = self::$conn->real_escape_string($ip);
+        $safeSystemInfo = self::$conn->real_escape_string($systemInfo);
+
+        self::$conn->query("SET @current_user_ip = '$safeIp'");
+        self::$conn->query("SET @current_user_agent = '$safeSystemInfo'");
+
         return self::$conn;
     }
 
     /**
-     * Parses an environment variable from system or .env file
+     * Parses an environment variable from system or .env file.
      *
      * Checks system environment variables first, then falls back to .env file
-     * if the variable is not set.  Supports quoted values and ignores comments.
+     * if the variable is not set. Supports quoted values and ignores comments.
      *
-     * @param string $envVar The environment variable name to retrieve
-     * @return string|false The variable value, or false if not found
+     * @param string $envVar The environment variable name to retrieve.
+     * @return string|false The variable value, or false if not found.
      */
     public static function parseEnvVar(string $envVar)
     {
-        // Try system environment variable first
         $val = getenv($envVar);
         if ($val !== false && $val !== '') {
             return $val;
         }
 
-        // Try .env file
         $envPath = __DIR__ . '/../../.env';
-        if (! file_exists($envPath)) {
+        if (!file_exists($envPath)) {
             return $val;
         }
 
-        // Parse .env file
         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        // Check if file() succeeded
         if ($lines === false) {
             return $val;
         }
@@ -128,7 +125,6 @@ class Database
         foreach ($lines as $line) {
             $line = trim($line);
 
-            // Skip empty lines and comments
             if ($line === '' || $line[0] === '#' || $line[0] === ';') {
                 continue;
             }
@@ -136,12 +132,10 @@ class Database
                 continue;
             }
 
-            // Parse key=value pairs
             [$key, $value] = explode('=', $line, 2);
             $key = trim($key);
             $value = trim($value);
 
-            // Remove quotes from values
             if (
                 (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
                 (str_starts_with($value, "'") && str_ends_with($value, "'"))
@@ -155,26 +149,27 @@ class Database
     }
 
     /**
-     * Checks if the database connection is alive
+     * Checks if the database connection is alive.
      *
      * Verifies the database connection is established and responsive.
      * Useful for health checks and connection validation.
      *
-     * @throws DataBaseException If connection is not available or not responding
+     * @throws DataBaseException If connection is not available or not responding.
+     * @return void
      */
     public static function checkConnection(): void
     {
         try {
-            $db = self:: getConnection();
+            $db = self::getConnection();
             if (!$db->ping()) {
                 throw new DataBaseException(
-                    "Unable to connect to the database " .
+                    "Unable to connect to the database, " .
                     "please contact sae-manager@alwaysdata.net"
                 );
             }
         } catch (\Exception $e) {
             throw new DataBaseException(
-                "Unable to connect to the database " .
+                "Unable to connect to the database, " .
                 "please contact sae-manager@alwaysdata.net"
             );
         }
