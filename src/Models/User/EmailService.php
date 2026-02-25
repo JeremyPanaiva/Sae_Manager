@@ -574,7 +574,6 @@ class EmailService
      */
     private function getFromName(): string
     {
-        // @phpstan-ignore-next-line function.alreadyNarrowedType
         if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
             return $this->mailer->From;
         }
