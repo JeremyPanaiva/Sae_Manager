@@ -81,6 +81,11 @@ class ProfileController implements ControllerInterface
         $errors = [];
         $success = '';
 
+        if (isset($_SESSION['error_message'])) {
+            $errors[] = new \Exception($_SESSION['error_message']);
+            unset($_SESSION['error_message']);
+        }
+
         if (isset($_GET['success']) && $_GET['success'] === 'password_updated') {
             $success = "Mot de passe modifié avec succès.";
         }
@@ -216,9 +221,39 @@ class ProfileController implements ControllerInterface
         $userIdRaw = $_SESSION['user']['id'];
         $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
 
+        $deletePasswordRaw = $_POST['delete_password'] ?? '';
+        $deletePassword = is_string($deletePasswordRaw) ? $deletePasswordRaw : '';
+
+        if (empty($deletePassword)) {
+            $_SESSION['error_message'] = "Veuillez saisir votre mot de passe pour confirmer la suppression.";
+            header("Location: /user/profile");
+            exit;
+        }
+
         try {
             // Check database connection
             User::checkDatabaseConnection();
+
+            // Verify password
+            $conn = \Models\Database::getConnection();
+            $stmt = $conn->prepare("SELECT mdp FROM users WHERE id = ?");
+            if ($stmt === false) {
+                throw new \Exception("Erreur de préparation de la requête");
+            }
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result === false) {
+                throw new \Exception("Erreur lors de l'exécution de la requête");
+            }
+            $user = $result->fetch_assoc();
+            $stmt->close();
+
+            if (!$user || empty($user['mdp']) || !password_verify($deletePassword, (string) $user['mdp'])) {
+                $_SESSION['error_message'] = "Mot de passe incorrect. La suppression a été annulée.";
+                header("Location: /user/profile");
+                exit;
+            }
 
             // Delete user account and associated data
             User::deleteAccount($userId);
