@@ -114,8 +114,8 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // Retrieve current password hash and last change timestamp
-            $stmt = $conn->prepare("SELECT mdp, last_password_change FROM users WHERE id = ?");
+            // Retrieve current password hash, last change timestamp, and email
+            $stmt = $conn->prepare("SELECT mdp, last_password_change, mail FROM users WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
             }
@@ -179,6 +179,12 @@ class ChangePasswordPost implements ControllerInterface
             $updateStmt->bind_param("si", $hashedPassword, $userId);
             $updateStmt->execute();
             $updateStmt->close();
+
+            // Send email notification
+            if (!empty($user['mail'])) {
+                $emailService = new \Models\User\EmailService();
+                $emailService->sendPasswordChangedNotificationEmail($user['mail']);
+            }
 
             // Redirect with success message
             header('Location:  /user/profile?success=password_updated');
