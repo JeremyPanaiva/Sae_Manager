@@ -43,13 +43,13 @@ class Database
             $hostRaw = self::parseEnvVar("DB_HOST");
             $userRaw = self::parseEnvVar("DB_USER");
             $passRaw = self::parseEnvVar("DB_PASSWORD");
-            $dbRaw   = self::parseEnvVar("DB_NAME");
+            $dbRaw = self::parseEnvVar("DB_NAME");
 
             // Type Sanitization for mysqli constructor
             $host = ($hostRaw === false) ? null : $hostRaw;
             $user = ($userRaw === false) ? null : $userRaw;
             $pass = ($passRaw === false) ? null : $passRaw;
-            $db   = ($dbRaw   === false) ? null : $dbRaw;
+            $db = ($dbRaw === false) ? null : $dbRaw;
 
             try {
                 // Enable strict error reporting for MySQLi
@@ -104,7 +104,6 @@ class Database
                 $safeSystemInfo = self::$conn->real_escape_string($systemInfo);
                 self::$conn->query("SET @current_user_agent = '$safeSystemInfo'");
             }
-
         } catch (\Throwable $e) {
             // Failsafe: If injection fails, the site must not crash. We just log the error.
             error_log("Trigger Context Injection Failed: " . $e->getMessage());
