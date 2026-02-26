@@ -104,7 +104,6 @@ class Database
                 $safeSystemInfo = self::$conn->real_escape_string($systemInfo);
                 self::$conn->query("SET @current_user_agent = '$safeSystemInfo'");
             }
-
         } catch (\Throwable $e) {
             // Failsafe: If injection fails, the site must not crash. We just log the error.
             error_log("Trigger Context Injection Failed: " . $e->getMessage());
