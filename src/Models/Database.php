@@ -31,7 +31,10 @@ class Database
      * Retrieves the active database connection instance.
      *
      * Initializes the connection if it does not exist, and injects PHP
-     * context (Session, IP, User Agent) into MySQL variables for triggers.
+     * context (Session, IP, User Agent) into MySQL session variables
+     * (@current_user_id, @current_user_ip, @current_user_agent).
+     * This allows SQL triggers to accurately populate audit logs, even
+     * for local development environments (e.g., 127.0.0.1).
      *
      * @return \mysqli The active database connection object.
      * @throws DataBaseException If the connection fails to establish.
@@ -66,7 +69,6 @@ class Database
 
         // 2. CONTEXT INJECTION FOR SQL TRIGGERS
         // We inject PHP data into MySQL so triggers know WHO did WHAT and from WHERE.
-
         try {
             // A. Inject current User ID from Session
             if (session_status() === PHP_SESSION_ACTIVE) {
@@ -88,9 +90,9 @@ class Database
             $ip = Log::getIpAddress();
             $systemInfo = Log::getSystemInfo();
 
-            // Handle IP Address (Set to NULL if local/undetected to let triggers handle it)
-            // '::1' is the IPv6 equivalent of 127.0.0.1
-            if (empty($ip) || $ip === '0.0.0.0' || $ip === '127.0.0.1' || $ip === '::1') {
+            // Handle IP Address
+            // Local IPs (127.0.0.1, ::1) are now properly passed to triggers instead of being set to NULL.
+            if (empty($ip)) {
                 self::$conn->query("SET @current_user_ip = NULL");
             } else {
                 $safeIp = self::$conn->real_escape_string($ip);
