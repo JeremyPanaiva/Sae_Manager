@@ -78,15 +78,10 @@
             Entrez votre mot de passe pour confirmer.</p>
 
         <?php if (isset($_SESSION['error_message'])): ?>
-
             <div class="modal-error" id="modal-error-msg">
-
-                <?= htmlspecialchars($_SESSION['error_message']) ?>
-
+                <?= htmlspecialchars(is_string($_SESSION['error_message']) ? $_SESSION['error_message'] : '') ?>
             </div>
-
             <?php unset($_SESSION['error_message']); ?>
-
         <?php endif; ?>
 
         <form action="/user/profile/delete" method="POST">
