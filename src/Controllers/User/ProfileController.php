@@ -221,8 +221,6 @@ class ProfileController implements ControllerInterface
         $sessionMail = $_SESSION['user']['mail'] ?? '';
         $email = is_string($sessionMail) ? $sessionMail : '';
         $userData = $userModel->findByEmail($email);
-
-
         $hash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
 
         if (!$userData || !password_verify($password, $hash)) {
