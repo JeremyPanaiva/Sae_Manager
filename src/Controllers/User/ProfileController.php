@@ -162,7 +162,7 @@ class ProfileController implements ControllerInterface
                             // Log user out to force re-verification
                             session_destroy();
 
-                            header("Location: /user/login? success=email_changed");
+                            header("Location: /user/login?success=email_changed");
                             exit;
                         } else {
                             // Standard update without email change
@@ -215,6 +215,23 @@ class ProfileController implements ControllerInterface
 
         $userIdRaw = $_SESSION['user']['id'];
         $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
+        $passwordRaw = $_POST['delete_password'] ?? '';
+        $password = is_string($passwordRaw) ? $passwordRaw : '';
+        $userModel = new User();
+        $sessionMail = $_SESSION['user']['mail'] ?? '';
+        $email = is_string($sessionMail) ? $sessionMail : '';
+        $userData = $userModel->findByEmail($email);
+
+
+        $hash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
+
+        if (!$userData || !password_verify($password, $hash)) {
+            $_SESSION['error_message'] = "Mot de passe incorrect.";
+            $_SESSION['delete_error'] = true;
+            header("Location: /user/profile");
+            exit;
+        }
+
 
         try {
             // Check database connection
