@@ -77,7 +77,7 @@
         <p>Cette action est <strong>irréversible</strong>.<br>
             Entrez votre mot de passe pour confirmer.</p>
 
-        <?php if (isset($_SESSION['error_message'])): ?>
+        <?php if (isset($_SESSION['error_message'])) : ?>
             <div class="modal-error" id="modal-error-msg">
                 <?= htmlspecialchars(is_string($_SESSION['error_message']) ? $_SESSION['error_message'] : '') ?>
             </div>
