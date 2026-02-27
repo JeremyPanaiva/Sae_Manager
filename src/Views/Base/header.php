@@ -34,7 +34,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+          content="SAE Manager :  plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
 
     <script type="application/ld+json">
@@ -69,92 +69,133 @@
 </head>
 
 <body>
-    <header class="header">
-        <section class="header-content" aria-label="En-tête de la page">
-            <section class="logo">
-                <a href="/" class="logo-link">
-                    <img src="/_assets/img/SM_logo.png" alt="SAE Manager" class="logo-img">
-                </a>
-            </section>
-
-            <!-- Hamburger button (visible only on mobile) -->
-            <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-                <span class="hamburger-line"></span>
-            </button>
-
-            <section class="user-info" aria-label="Informations utilisateur">
-                <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
-                    <p>
-                        👤 <?php echo $USERNAME_KEY; ?>
-                        <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
-                    </p>
-
-                </div>
-                <div class="user-actions">
-                    <a href="/user/profile" class="btn btn-outline header-btn-transparent"
-                        style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
-                        profil</a>
-                    <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-transparent">
-                        <?php echo $CONNECTION_LINK_KEY; ?></a>
-                    <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
-                        style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
-                </div>
-            </section>
+<header class="header">
+    <section class="header-content" aria-label="En-tête de la page">
+        <section class="logo">
+            <a href="/" class="logo-link">
+                <img src="/_assets/img/SM_logo.png" alt="SAE Manager" class="logo-img">
+            </a>
         </section>
-    </header>
 
-    <nav class="nav mobile-menu" id="mobileMenu" aria-label="Navigation principale">
-        <!-- User info in mobile menu -->
-        <!-- User info in mobile menu (Only when logged in) -->
-        <div class="mobile-user-info" style="<?php echo $USER_META_STYLE; ?>">
-            <p>
-                👤
-                <?php echo $USERNAME_KEY; ?>
-                <span class="role-badge role-
+        <!-- Hamburger button (visible only on mobile) -->
+        <button class="hamburger" id="hamburger" aria-label="Menu" aria-expanded="false">
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+            <span class="hamburger-line"></span>
+        </button>
+
+        <section class="user-info" aria-label="Informations utilisateur">
+            <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
+                <p>
+                    👤 <?php echo $USERNAME_KEY; ?>
+                    <span class="role-badge role-<?php echo $ROLE_CLASS; ?>"><?php echo $ROLE_KEY; ?></span>
+                </p>
+
+            </div>
+            <div class="user-actions">
+                <!-- 🌙 Bouton Dark Mode (Desktop) -->
+                <button class="dark-mode-toggle" aria-label="Passer en mode sombre" title="Mode sombre">
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <a href="/user/profile" class="btn btn-outline header-btn-transparent"
+                   style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon
+                    profil</a>
+                <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-transparent">
+                    <?php echo $CONNECTION_LINK_KEY; ?></a>
+                <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
+                   style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
+            </div>
+        </section>
+    </section>
+</header>
+
+<nav class="nav mobile-menu" id="mobileMenu" aria-label="Navigation principale">
+    <!-- User info in mobile menu -->
+    <!-- User info in mobile menu (Only when logged in) -->
+    <div class="mobile-user-info" style="<?php echo $USER_META_STYLE; ?>">
+        <p>
+            👤
+            <?php echo $USERNAME_KEY; ?>
+            <span class="role-badge role-
             <?php echo $ROLE_CLASS; ?>">
                     <?php echo $ROLE_KEY; ?></span>
-            </p>
-        </div>
+        </p>
+    </div>
 
-        <!-- User actions when logged in -->
-        <div class="mobile-user-actions" style="<?php echo $USER_META_STYLE; ?>">
-            <a href="/user/profile" class="mobile-action-btn" style="
+    <!-- User actions when logged in -->
+    <div class="mobile-user-actions" style="<?php echo $USER_META_STYLE; ?>">
+        <a href="/user/profile" class="mobile-action-btn" style="
             <?php echo $PROFILE_BTN_STYLE; ?>">
-                Mon profil
+            Mon profil
+        </a>
+        <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
+            Se déconnecter
+        </a>
+    </div>
+
+    <!-- Guest actions when logged out -->
+    <?php if (empty($ROLE_KEY)) : ?>
+        <div class="mobile-user-actions mobile-guest-actions">
+            <a href="/user/login" class="mobile-action-btn">
+                Se connecter
             </a>
-            <a href="<?php echo $LINK_KEY; ?>" class="mobile-action-btn mobile-action-logout">
-                Se déconnecter
+            <a href="/user/register" class="mobile-action-btn" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">
+                S'inscrire
             </a>
         </div>
+    <?php endif; ?>
 
-        <!-- Guest actions when logged out -->
-        <?php if (empty($ROLE_KEY)) : ?>
-            <div class="mobile-user-actions mobile-guest-actions">
-                <a href="/user/login" class="mobile-action-btn">
-                    Se connecter
-                </a>
-                <a href="/user/register" class="mobile-action-btn" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">
-                    S'inscrire
-                </a>
-            </div>
-        <?php endif; ?>
+    <!-- Dark mode toggle in mobile menu -->
+    <div class="mobile-dark-mode">
+        <button class="dark-mode-toggle mobile-action-btn" aria-label="Passer en mode sombre" title="Mode sombre">
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            <span style="margin-left: 8px;">Mode sombre</span>
+        </button>
+    </div>
 
-        <!-- Main navigation -->
-        <ul class="nav-content" style="<?php echo $NAV_STYLE; ?>">
-            <li class="nav-item">
-                <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
-            </li>
-            <li class="nav-item">
-                <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
-            </li>
-            <li class="nav-item">
-                <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
-            </li>
-        </ul>
+    <!-- Main navigation -->
+    <ul class="nav-content" style="<?php echo $NAV_STYLE; ?>">
+        <li class="nav-item">
+            <a href="<?php echo $DASHBOARD_LINK_KEY; ?>">Tableau de bord</a>
+        </li>
+        <li class="nav-item">
+            <a href="<?php echo $SAE_LINK_KEY; ?>">Mes SAE</a>
+        </li>
+        <li class="nav-item">
+            <a href="<?php echo $USERS_LINK_KEY; ?>">Utilisateurs</a>
+        </li>
+    </ul>
 
-    </nav>
+</nav>
 
-    <!-- Hamburger menu script -->
-    <script src="/_assets/script/mobile-menu.js"></script>
+<!-- Hamburger menu script -->
+<script src="/_assets/script/mobile-menu.js"></script>
+<!-- Dark mode script -->
+<script src="/_assets/script/dark-mode.js"></script>
