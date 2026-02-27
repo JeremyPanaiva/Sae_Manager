@@ -246,6 +246,7 @@ section.main,
     padding: 35px 0;
     margin-top: auto;
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.5); /* Trait de séparation blanc plus visible */
 }
 
 .footer-content {
@@ -563,4 +564,199 @@ section.main,
     background-color: #e6ffea;
     color: #28a745; /* var(--success) fallback */
     border: 1px solid #28a745;
+}
+
+/* ================================
+   🎯 CARTES SAE - THEME NOIR FORCE
+   Cette section force le style noir pour TOUTES les cartes SAE
+================================ */
+
+/* Force absolue pour toutes les cartes SAE */
+.sae-card,
+div.sae-card,
+section .sae-card,
+.sae-page .sae-card,
+main .sae-card,
+article .sae-card {
+    background-color: #0b0b0b !important;
+    background: #0b0b0b !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Effet hover */
+.sae-card:hover {
+    box-shadow: 0 12px 32px rgba(2,6,23,0.9) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Force TOUS les textes et éléments dans les cartes SAE en blanc */
+.sae-card *,
+.sae-card h1, .sae-card h2, .sae-card h3, .sae-card h4, .sae-card h5, .sae-card h6,
+.sae-card p, .sae-card span, .sae-card div, .sae-card strong, .sae-card em,
+.sae-card label, .sae-card small, .sae-card a, .sae-card li, .sae-card td, .sae-card th {
+    color: #ffffff !important;
+}
+
+/* Titres des cartes SAE */
+.sae-card h3 {
+    color: #ffffff !important;
+    font-size: 1.3rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    font-weight: 600 !important;
+}
+
+/* Variantes avec bordures colorées */
+.sae-card.free {
+    background: #0b0b0b !important;
+    border: 2px solid #00aaff !important; /* bordure bleue */
+}
+
+.sae-card.my-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #28a745 !important; /* bordure verte */
+}
+
+.sae-card.other-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #ff4d4d !important; /* bordure rouge */
+}
+
+.sae-card.libre {
+    background: #0b0b0b !important;
+    border-left: 6px solid #4CAF50 !important; /* bordure gauche verte */
+    border-top: 1px solid rgba(255,255,255,0.15) !important;
+    border-right: 1px solid rgba(255,255,255,0.15) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+.sae-card.attribuee {
+    background: #0b0b0b !important;
+    border-left: 6px solid #FF9800 !important; /* bordure gauche orange */
+    border-top: 1px solid rgba(255,255,255,0.15) !important;
+    border-right: 1px solid rgba(255,255,255,0.15) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.15) !important;
+}
+
+/* Champs de formulaire dans les cartes SAE */
+.sae-card input, .sae-card textarea, .sae-card select {
+    background-color: #1a1a1a !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    color: #ffffff !important;
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
+}
+
+.sae-card input::placeholder, .sae-card textarea::placeholder {
+    color: rgba(255,255,255,0.6) !important;
+}
+
+/* Boutons dans les cartes SAE */
+.sae-card button, .sae-card .btn {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.8) !important;
+}
+
+/* ================================
+   🔥 FORCE MAXIMALE CARTES SAE - TOUTES LES VARIANTES
+   Cette section force ABSOLUMENT le style noir
+================================ */
+
+/* Force TOUTES les variantes possibles de cartes SAE */
+div[class*="sae-card"],
+div[class^="sae-card"],
+.sae-card,
+.sae-card.free,
+.sae-card.my-attr,
+.sae-card.other-attr,
+.sae-card.libre,
+.sae-card.attribuee,
+div.sae-card.free,
+div.sae-card.my-attr,
+div.sae-card.other-attr,
+div.sae-card.libre,
+div.sae-card.attribuee {
+    background-color: #0b0b0b !important;
+    background: #0b0b0b !important;
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Force tous les éléments enfants */
+div[class*="sae-card"] *,
+div[class^="sae-card"] *,
+.sae-card *,
+.sae-card.free *,
+.sae-card.my-attr *,
+.sae-card.other-attr *,
+.sae-card.libre *,
+.sae-card.attribuee * {
+    color: #ffffff !important;
+}
+
+/* Force spécifiquement les titres H3 */
+div[class*="sae-card"] h3,
+.sae-card h3,
+.sae-card.free h3,
+.sae-card.my-attr h3,
+.sae-card.other-attr h3 {
+    color: #ffffff !important;
+    font-size: 1.3rem !important;
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+}
+
+/* Force les paragraphes */
+div[class*="sae-card"] p,
+.sae-card p,
+.sae-card.free p,
+.sae-card.my-attr p,
+.sae-card.other-attr p {
+    color: rgba(255,255,255,0.9) !important;
+    margin: 8px 0 !important;
+}
+
+/* Force les textes en gras */
+div[class*="sae-card"] strong,
+.sae-card strong,
+.sae-card.free strong,
+.sae-card.my-attr strong,
+.sae-card.other-attr strong {
+    color: #ffffff !important;
+    font-weight: 600 !important;
+}
+
+/* Bordures spécifiques selon le statut mais fond toujours noir */
+.sae-card.free,
+div.sae-card.free {
+    background: #0b0b0b !important;
+    border: 2px solid #00aaff !important;
+}
+
+.sae-card.my-attr,
+div.sae-card.my-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #28a745 !important;
+}
+
+.sae-card.other-attr,
+div.sae-card.other-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #ff4d4d !important;
+}
+
+/* Reset absolu de tous les styles conflictuels */
+div[class*="sae-card"] {
+    background-color: #0b0b0b !important;
+    background: #0b0b0b !important;
+    color: #ffffff !important;
 }

@@ -1,0 +1,272 @@
+/* Dark mode variables and component styles
+   This file only defines [data-theme="dark"] overrides and the
+   dark mode toggle UI so it doesn't modify the existing light theme.
+*/
+
+/* Toggle button base styles (works in both themes) */
+.dark-mode-toggle {
+    background: transparent;
+    border: 1px solid var(--border-light, rgba(0,0,0,0.08));
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    margin-right: 12px;
+    color: var(--header-text, #0f172a); /* icon color uses currentColor */
+}
+
+.dark-mode-toggle:focus {
+    outline: 2px solid rgba(0,0,0,0.12);
+    outline-offset: 2px;
+}
+
+/* Target the inline SVG icons */
+.dark-mode-toggle svg.icon-sun,
+.dark-mode-toggle svg.icon-moon {
+    width: 18px;
+    height: 18px;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    position: absolute;
+    fill: currentColor;
+    stroke: currentColor;
+    opacity: 0;
+    transform: rotate(0deg) scale(0.8);
+}
+
+/* Default (light) state: show sun */
+.dark-mode-toggle svg.icon-sun { opacity: 1; transform: rotate(0deg) scale(1); }
+.dark-mode-toggle svg.icon-moon { opacity: 0; transform: rotate(15deg) scale(0.7); }
+
+/* When data-theme="dark" is active, swap icons */
+[data-theme="dark"] .dark-mode-toggle svg.icon-sun { opacity: 0; transform: rotate(-15deg) scale(0.7); }
+[data-theme="dark"] .dark-mode-toggle svg.icon-moon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+/* Dark theme variables and common element overrides */
+[data-theme="dark"] {
+    --bg-primary: #06070a;        /* page base */
+    --bg-secondary: #0b1220;      /* main background */
+    --bg-tertiary: #111827;       /* sections */
+    --bg-card: #0f1724;           /* card background slightly lighter */
+
+    --text-primary: #ffffff;      /* strong white for main text */
+    --text-secondary: #d1d5db;    /* secondary text (muted) */
+    --text-tertiary: #9ca3af;     /* tertiary */
+    --text-muted: #9aa4b2;
+
+    --border-color: rgba(255,255,255,0.04);
+    --border-light: rgba(255,255,255,0.03);
+
+    --accent-primary: #60a5fa;    /* softer blue accent for visibility */
+    --accent-hover: #3b82f6;
+    --accent-light: rgba(96,165,250,0.08);
+
+    --shadow-sm: 0 2px 6px rgba(2,6,23,0.6);
+    --shadow-md: 0 8px 24px rgba(2,6,23,0.65);
+    --shadow-lg: 0 12px 36px rgba(2,6,23,0.7);
+
+    --input-bg: #0b1220;
+    --input-border: rgba(255,255,255,0.06);
+    --input-focus: #60a5fa;
+
+    --header-bg: rgba(6,7,10,0.92);
+    --header-text: #ffffff;
+
+    --footer-bg: rgba(6,7,10,0.92);
+    --footer-text: #e6eef8;
+}
+
+/* Force readable text color for common elements in dark mode */
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] .header,
+[data-theme="dark"] .nav,
+[data-theme="dark"] .card,
+[data-theme="dark"] .mobile-menu {
+    color: var(--text-primary) !important;
+    background-color: transparent;
+}
+
+/* Backgrounds using variables so they remain easy to tweak */
+[data-theme="dark"] body {
+    background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+/* Links and buttons */
+[data-theme="dark"] a,
+[data-theme="dark"] .mainnav a {
+    color: var(--accent-primary);
+}
+[data-theme="dark"] a:hover,
+[data-theme="dark"] .mainnav a:hover {
+    color: var(--accent-hover);
+}
+
+/* Inputs */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-primary);
+}
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: rgba(255,255,255,0.45);
+}
+
+/* Buttons accent */
+[data-theme="dark"] .btn-edit-mode {
+    background: var(--accent-primary);
+    color: #0b1220;
+}
+[data-theme="dark"] .btn-edit-mode:hover {
+    background: var(--accent-hover);
+}
+
+/* Footer */
+[data-theme="dark"] footer,
+[data-theme="dark"] .footer {
+    background: var(--footer-bg);
+    color: var(--footer-text);
+}
+
+/* Improve empty states / overlays */
+[data-theme="dark"] .empty-state-content,
+[data-theme="dark"] .patients-list-overlay .patients-list-content {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Subtle divider */
+[data-theme="dark"] hr {
+    border-color: rgba(255,255,255,0.04);
+}
+
+/* Ensure charts & canvas look good */
+[data-theme="dark"] canvas {
+    background: transparent;
+}
+
+/* Keep toggle button contrasting */
+[data-theme="dark"] .dark-mode-toggle {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    color: var(--header-text);
+}
+
+/* Small helpers for text sizes */
+[data-theme="dark"] .page-title,
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .large-value {
+    color: var(--text-primary);
+}
+
+/* Ensure headings and user info in dashboard are clearly visible */
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .dashboard-legend,
+[data-theme="dark"] .dashboard-content h2,
+[data-theme="dark"] .dashboard-content h3 {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .user-line,
+[data-theme="dark"] .dashboard-section .user-info p {
+    color: var(--text-primary) !important;
+}
+
+/* Ensure home subtitle is visible in dark mode */
+[data-theme="dark"] .subtitle {
+    color: var(--text-primary) !important;
+    text-shadow: none;
+}
+
+/* Make sure small headings/subtitles inside dashboard are readable */
+[data-theme="dark"] .dashboard-card h3,
+[data-theme="dark"] .dashboard-card h4,
+[data-theme="dark"] .section-title {
+    color: var(--text-primary) !important;
+}
+
+/* Dashboard-specific overrides for dark mode */
+[data-theme="dark"] .dashboard-page {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dashboard-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    padding: 25px;
+    border-radius: 12px;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dashboard-section legend {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+[data-theme="dark"] .dashboard-section .user-info p {
+    color: var(--text-primary);
+    margin: 6px 0;
+}
+[data-theme="dark"] .dashboard-section .user-info p strong {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .dashboard-content,
+[data-theme="dark"] .dashboard-card,
+[data-theme="dark"] .todo-card,
+[data-theme="dark"] .avis-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .dashboard-card h3,
+[data-theme="dark"] .dashboard-card h4,
+[data-theme="dark"] .dashboard-card p,
+[data-theme="dark"] .dashboard-content p,
+[data-theme="dark"] .date-rendu,
+[data-theme="dark"] .todo-title,
+[data-theme="dark"] .todo-date,
+[data-theme="dark"] .avis-card p,
+[data-theme="dark"] .avis-card small {
+    color: var(--text-primary) !important;
+}
+
+/* Make links and small notes readable */
+[data-theme="dark"] .small-note,
+[data-theme="dark"] .todo-date,
+[data-theme="dark"] .avis-card small {
+    color: var(--text-secondary);
+}
+
+/* Ensure hr and subtle borders are visible */
+[data-theme="dark"] hr {
+    border-color: rgba(255,255,255,0.04);
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .dark-mode-toggle,
+    .dark-mode-toggle svg.icon-sun,
+    .dark-mode-toggle svg.icon-moon {
+        transition: none !important;
+    }
+}

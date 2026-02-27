@@ -126,9 +126,9 @@ class SaeView extends BaseView
                 /** @var array<int, array<string, mixed>> $saes */
                 $saes = $this->data['saes'] ?? [];
                 foreach ($saes as $sae) {
-                    $html .= "<div class='sae-card'>";
-                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['sae_titre'] ?? '')) . "</h3>";
-                    $html .= "<p><strong>Description :</strong> " .
+                    $html .= "<div class='sae-card' style='background: #0b0b0b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.15) !important; box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important; padding: 15px !important; margin-bottom: 15px !important; border-radius: 8px !important;'>";
+                    $html .= "<h3 style='color: #ffffff !important; font-size: 1.3rem !important; margin-top: 0 !important; margin-bottom: 10px !important;'>" . htmlspecialchars($this->safeString($sae['sae_titre'] ?? '')) . "</h3>";
+                    $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Description :</strong> " .
                         htmlspecialchars($this->safeString($sae['sae_description'] ?? '')) . "</p>";
 
                     $respNom = htmlspecialchars($this->safeString($sae['responsable_nom'] ?? 'N/A'));
@@ -187,7 +187,7 @@ class SaeView extends BaseView
                         $cardClass = "sae-card other-attr";
                     }
 
-                    $html .= "<div class='{$cardClass}'>";
+                    $html .= "<div class='{$cardClass}' style='background: #0b0b0b !important; color: #ffffff !important; border-radius: 8px !important; padding: 15px !important; margin-bottom: 15px !important; box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important;'>";
 
                     // Afficher le titre avec le nom du client
                     $titreSae = htmlspecialchars($this->safeString($sae['titre'] ?? ''));
@@ -196,21 +196,21 @@ class SaeView extends BaseView
                     $clientComplet = trim($clientPrenom . ' ' . $clientNom);
 
                     if ($clientComplet) {
-                        $html .= "<h3>{$titreSae} - {$clientComplet}</h3>";
+                        $html .= "<h3 style='color: #ffffff !important; font-size: 1.3rem !important; margin-top: 0 !important; margin-bottom: 10px !important;'>{$titreSae} - {$clientComplet}</h3>";
                     } else {
-                        $html .= "<h3>{$titreSae}</h3>";
+                        $html .= "<h3 style='color: #ffffff !important; font-size: 1.3rem !important; margin-top: 0 !important; margin-bottom: 10px !important;'>{$titreSae}</h3>";
                     }
 
-                    $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
+                    $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
 
                     $responsable = $sae['responsable_attribution'] ?? null;
                     if (is_array($responsable)) {
-                        $html .= "<p><strong>Attribué par :</strong> "
+                        $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Attribué par :</strong> "
                             . htmlspecialchars($this->safeString($responsable['nom'] ?? '') . ' ' .
                                 $this->safeString($responsable['prenom'] ?? ''))
                             . "</p>";
                     } else {
-                        $html .= "<p><strong>Attribué par :</strong> Pas attribué</p>";
+                        $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Attribué par :</strong> Pas attribué</p>";
                     }
 
                     $html .= "<form method='POST' action='/attribuer_sae' class='attribution-form'>";
@@ -322,26 +322,26 @@ class SaeView extends BaseView
                         $cardClass = "sae-card libre";
                     }
 
-                    $html .= "<div class='{$cardClass}'>";
+                    $html .= "<div class='{$cardClass}' style='background: #0b0b0b !important; color: #ffffff !important; border-radius: 8px !important; padding: 15px !important; margin-bottom: 15px !important; box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important;'>";
 
                     $html .= "<div class='sae-card-header' 
                     style='display:flex; justify-content:space-between; align-items:flex-start;'>";
                     $html .= "<div class='sae-card-info'>";
-                    $html .= "<h3>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
-                    $html .= "<p>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
-                    $html .= "<p><strong>Date de création :</strong> " .
+                    $html .= "<h3 style='color: #ffffff !important; font-size: 1.3rem !important; margin-top: 0 !important; margin-bottom: 10px !important;'>" . htmlspecialchars($this->safeString($sae['titre'] ?? '')) . "</h3>";
+                    $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'>" . htmlspecialchars($this->safeString($sae['description'] ?? '')) . "</p>";
+                    $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Date de création :</strong> " .
                         htmlspecialchars($this->safeString($sae['date_creation'] ?? '')) . "</p>";
 
                     $responsable = $sae['responsable_attribution'] ?? null;
                     if (is_array($responsable)) {
-                        $html .= "<p><strong>Attribuée par :</strong> "
+                        $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Attribuée par :</strong> "
                             . htmlspecialchars(
                                 $this->safeString($responsable['prenom'] ?? '') . " " .
                                 $this->safeString($responsable['nom'] ?? '')
                             )
                             . "</p>";
                     } else {
-                        $html .= "<p><strong>Attribuée par :</strong> <em>Non attribuée</em></p>";
+                        $html .= "<p style='color: rgba(255,255,255,0.9) !important; margin: 8px 0 !important;'><strong style='color: #ffffff !important;'>Attribuée par :</strong> <em>Non attribuée</em></p>";
                     }
                     $html .= "</div>"; // End info
 

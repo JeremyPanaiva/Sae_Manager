@@ -58,6 +58,7 @@
         }
     </script>
     <link rel="stylesheet" href="/_assets/css/index.css">
+    <link rel="stylesheet" href="/_assets/css/dark-mode.css">
 
     <link rel="icon" type="image/png" href="/_assets/img/favicon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/_assets/img/favicon/favicon.svg" />
@@ -85,6 +86,29 @@
             </button>
 
             <section class="user-info" aria-label="Informations utilisateur">
+                <!-- Dark mode toggle (sun / moon) -->
+                <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Basculer le thème" aria-pressed="false">
+                    <!-- Sun icon (visible en mode clair) -->
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                        <circle cx="12" cy="12" r="4" fill="currentColor" />
+                        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                            <line x1="12" y1="1" x2="12" y2="3" />
+                            <line x1="12" y1="21" x2="12" y2="23" />
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                            <line x1="1" y1="12" x2="3" y2="12" />
+                            <line x1="21" y1="12" x2="23" y2="12" />
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                        </g>
+                    </svg>
+
+                    <!-- Moon icon (visible en mode sombre) -->
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                        <path fill="currentColor" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                </button>
+
                 <div class="user-meta" style="<?php echo $USER_META_STYLE; ?>">
                     <p>
                         👤 <?php echo $USERNAME_KEY; ?>
@@ -158,3 +182,4 @@
 
     <!-- Hamburger menu script -->
     <script src="/_assets/script/mobile-menu.js"></script>
+    <script src="/_assets/script/dark-mode-toggle.js"></script>

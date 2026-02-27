@@ -1,0 +1,316 @@
+/* sae.css - VERSION NETTOYÉE */
+
+/* SAE page specific wrapper */
+.sae-page {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* General structure */
+.sae-page .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+/* Section SAE */
+.sae-page .sae-section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sae-page .sae-section legend {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+    padding: 0 10px;
+}
+
+/* Infos utilisateur */
+.sae-page .user-info {
+    margin-bottom: 15px;
+    font-size: 1rem;
+    color: #555;
+}
+
+.sae-page .user-info p {
+    margin: 4px 0;
+}
+
+/* Titres secondaires */
+.sae-page h2 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+/* Separators */
+.sae-page hr {
+    border: none;
+    height: 1px;
+    background-color: #ddd;
+    margin: 15px 0;
+}
+
+/* ========================================
+   CARTES SAE - THEME NOIR COMME DASHBOARD
+   ======================================== */
+
+/* Style principal des cartes SAE - FOND NOIR */
+.sae-card,
+.sae-page .sae-card {
+    background: #0b0b0b !important; /* fond noir comme dashboard */
+    color: #ffffff !important; /* texte blanc */
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    box-shadow: 0 8px 24px rgba(2,6,23,0.7) !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    border-radius: 8px !important;
+    transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+}
+
+/* Effet hover */
+.sae-card:hover,
+.sae-page .sae-card:hover {
+    box-shadow: 0 12px 32px rgba(2,6,23,0.9) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Tous les textes dans les cartes SAE - BLANC */
+.sae-card *,
+.sae-page .sae-card * {
+    color: rgba(255,255,255,0.9) !important;
+}
+
+/* Titres dans les cartes SAE */
+.sae-card h3,
+.sae-page .sae-card h3 {
+    color: #ffffff !important; /* titre en blanc pur */
+    margin-top: 0 !important;
+    font-size: 1.3rem !important;
+}
+
+/* Variants avec bordures colorées */
+.sae-card.free,
+.sae-page .sae-card.free {
+    background: #0b0b0b !important;
+    border: 2px solid #00aaff !important; /* bordure bleue */
+}
+
+.sae-card.my-attr,
+.sae-page .sae-card.my-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #28a745 !important; /* bordure verte */
+}
+
+.sae-card.other-attr,
+.sae-page .sae-card.other-attr {
+    background: #0b0b0b !important;
+    border: 2px solid #ff4d4d !important; /* bordure rouge */
+}
+
+.sae-card.libre,
+.sae-page .sae-card.libre {
+    background: #0b0b0b !important;
+    border-left: 6px solid #4CAF50 !important; /* bordure gauche verte */
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    border-right: 1px solid rgba(255,255,255,0.06) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+.sae-card.attribuee,
+.sae-page .sae-card.attribuee {
+    background: #0b0b0b !important;
+    border-left: 6px solid #FF9800 !important; /* bordure gauche orange */
+    border-top: 1px solid rgba(255,255,255,0.06) !important;
+    border-right: 1px solid rgba(255,255,255,0.06) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Champs de formulaire dans les cartes SAE */
+.sae-card input,
+.sae-card textarea,
+.sae-card select,
+.sae-page .sae-card input,
+.sae-page .sae-card textarea,
+.sae-page .sae-card select {
+    background-color: #121217 !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: #ffffff !important;
+    width: 100%;
+    padding: 8px 10px;
+    margin-top: 4px;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.sae-card input::placeholder,
+.sae-card textarea::placeholder,
+.sae-page .sae-card input::placeholder,
+.sae-page .sae-card textarea::placeholder {
+    color: rgba(255,255,255,0.45) !important;
+}
+
+/* Labels dans les cartes SAE */
+.sae-card label,
+.sae-page .sae-card label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.9) !important;
+}
+
+/* Boutons dans les cartes SAE */
+.sae-card button,
+.sae-card .btn-modifier,
+.sae-card .btn-supprimer,
+.sae-page .sae-card button,
+.sae-page .sae-card .btn-modifier,
+.sae-page .sae-card .btn-supprimer {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+/* Bouton Supprimer SAE */
+.sae-page .sae-card .btn-supprimer {
+    padding: 8px 16px;
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-bottom: 0;
+}
+
+.sae-page .sae-card .btn-supprimer:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   FORMULAIRES SAE
+   ======================================== */
+
+/* Formulaire global SAE */
+.sae-page form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* Labels */
+.sae-page form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+/* Inputs, textarea et select */
+.sae-page form input[type="text"],
+.sae-page form input[type="date"],
+.sae-page form input[type="number"],
+.sae-page form textarea,
+.sae-page form select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.sae-page form input:focus,
+.sae-page form textarea:focus,
+.sae-page form select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+/* Boutons */
+.sae-page form button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 6px;
+    background-color: #3498db;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.sae-page form button:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   MESSAGES D'ERREUR
+   ======================================== */
+
+.sae-page .form-message {
+    color: #dc3545;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.error-message {
+    background-color: #ffe6e6;
+    color: #cc0000;
+    border: 1px solid #cc0000;
+    padding: 10px 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+    .sae-page .main {
+        padding: 15px 10px;
+    }
+
+    .sae-page .sae-card {
+        padding: 12px;
+        margin-bottom: 15px;
+    }
+
+    .sae-page .sae-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .sae-page .sae-card p {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sae-page .main {
+        padding: 10px 5px;
+    }
+
+    .sae-page .sae-card {
+        padding: 10px;
+    }
+
+    .sae-page .sae-card h3 {
+        font-size: 1rem;
+    }
+
+    .sae-page .sae-card p {
+        font-size: 0.85rem;
+    }
+}

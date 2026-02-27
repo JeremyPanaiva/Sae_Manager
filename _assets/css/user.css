@@ -31,7 +31,30 @@
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
     text-align: center;
-    color: #1e1e1e;
+    color: #ffffff !important; /* Titre "Mon profil" en blanc */
+}
+
+/* Textes dans la section dashboard - EN BLANC */
+.dashboard-section p,
+.dashboard-section strong {
+    color: #ffffff !important; /* Texte blanc pour la date de création */
+}
+
+/* Date de création spécifiquement */
+.dashboard-section p strong {
+    color: #ffffff !important; /* Texte en gras en blanc */
+}
+
+/* Valeurs des champs dans le profil */
+.dashboard-section .profile-form input[type="text"],
+.dashboard-section .profile-form input[type="email"] {
+    color: #ffffff !important; /* Valeurs des champs en blanc */
+    background-color: #2c3e50 !important; /* Fond sombre pour contraste */
+}
+
+/* S'assurer que tous les textes dans dashboard-section sont en blanc */
+.dashboard-section * {
+    color: #ffffff;
 }
 
 /* =====================================
@@ -41,22 +64,41 @@
     display: block;
     margin: 10px 0 4px;
     font-weight: 500;
+    color: #ffffff !important; /* Labels "Prénom:", "Nom:", "Email:" en blanc */
 }
 
 .profile-form input[type="text"],
-.profile-form input[type="email"] {
+.profile-form input[type="email"],
+.form-control-locked {
     width: 100%;
     padding: 0.6rem 0.8rem;
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 1rem;
     box-sizing: border-box;
+    background-color: #ffffff !important; /* Fond blanc pour les champs */
+    color: #2c3e50 !important; /* Texte noir dans les champs */
 }
 
 .profile-form input:focus {
     outline: none;
     border-color: var(--amu-light-blue);
     box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.15);
+}
+
+/* Champs en lecture seule (verrouillés) */
+.form-control-locked {
+    background-color: #f8f9fa !important; /* Fond gris très clair pour les champs verrouillés */
+    color: #495057 !important; /* Texte gris foncé lisible */
+    cursor: not-allowed;
+}
+
+/* Actions du profil */
+.profile-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
 }
 
 /* =====================================
@@ -111,13 +153,16 @@
 
 .danger-zone p {
     margin-bottom: 0.8rem;
-    color: #555;
-    font-size: 0.95rem;
+    color: #2c3e50 !important; /* Texte noir foncé pour meilleure lisibilité */
+    font-size: 1rem; /* Taille légèrement plus grande */
+    font-weight: 600; /* Texte en gras pour plus de visibilité */
     line-height: 1.5;
 }
 
-.delete-form {
-    margin-top: 1.2rem;
+/* Texte en gras dans la danger zone encore plus visible */
+.danger-zone p strong {
+    color: #dc3545 !important; /* Rouge pour "définitive et irréversible" */
+    font-weight: 700;
 }
 
 /* =====================================
@@ -154,8 +199,19 @@
     font-weight: 600;
 }
 
+/* Style pour les données du tableau - TEXTE NOIR LISIBLE */
+.users td {
+    color: #2c3e50 !important; /* texte noir foncé pour bonne lisibilité */
+    background-color: var(--white);
+    font-size: 0.95rem;
+}
+
 .users tbody tr:hover {
-    background-color: var(--amu-gray);
+    background-color: #f8f9fa; /* gris très clair au survol */
+}
+
+.users tbody tr:hover td {
+    color: #1a1a1a !important; /* encore plus foncé au survol */
 }
 
 /* Force TOUS les liens dans les en-têtes à être blancs */
@@ -519,4 +575,72 @@
     display: flex;
     gap: 12px;
     justify-content: center;
+}
+
+/* =====================================
+   Messages de succès et d'erreur sur la page profil
+   ===================================== */
+
+/* Message de succès - fond vert avec texte noir pour lisibilité */
+.dashboard-section .success-message {
+    background-color: #d4edda !important; /* fond vert clair */
+    color: #155724 !important; /* texte vert foncé */
+    border: 1px solid #c3e6cb !important;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+/* Message d'erreur - fond rouge avec texte noir pour lisibilité */
+.dashboard-section .error-message {
+    background-color: #f8d7da !important; /* fond rouge clair */
+    color: #721c24 !important; /* texte rouge foncé */
+    border: 1px solid #f5c6cb !important;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 15px 0;
+    font-weight: 600;
+}
+
+/* =====================================
+   Boutons sur la page profil
+   ===================================== */
+
+/* Bouton "Modifier les informations" - style outline visible */
+.dashboard-section .btn-outline {
+    background-color: #ffffff !important; /* fond blanc */
+    color: #0066cc !important; /* texte bleu */
+    border: 2px solid #0066cc !important; /* bordure bleue */
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dashboard-section .btn-outline:hover {
+    background-color: #0066cc !important; /* fond bleu au survol */
+    color: #ffffff !important; /* texte blanc au survol */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+/* Bouton "Mettre à jour" - style primary visible */
+.dashboard-section .btn-primary {
+    background-color: #0066cc !important; /* fond bleu */
+    color: #ffffff !important; /* texte blanc */
+    border: 2px solid #0066cc !important;
+    padding: 0.7rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dashboard-section .btn-primary:hover {
+    background-color: #003366 !important; /* fond bleu plus foncé au survol */
+    border-color: #003366 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.4);
 }
