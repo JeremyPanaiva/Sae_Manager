@@ -8,13 +8,15 @@ use Models\User\Log;
 use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
+use Shared\JwtService;
 use Views\User\LoginView;
 
 /**
  * Class LoginPost
  *
  * Handles the POST request for user authentication.
- * Includes rate limiting to prevent brute-force attacks.
+ * Includes rate limiting to prevent brute-force attacks
+ * and JWT generation for automatic session expiration after 1 hour.
  *
  * @package Controllers\User
  */
@@ -31,14 +33,15 @@ class LoginPost implements ControllerInterface
     private const LOCKOUT_DURATION = 900;
 
     /**
-     * Executes the login logic with rate limiting.
+     * Executes the login logic with rate limiting and JWT session management.
      *
      * 1. Sanitizes inputs.
      * 2. Checks rate limiting (lockout).
      * 3. Retrieves user data.
      * 4. Safely extracts and casts database values.
      * 5. Validates business rules (Account verified, Password correct).
-     * 6. Logs the result.
+     * 6. Generates a JWT token valid for 1 hour.
+     * 7. Logs the result.
      *
      * @return void
      */
@@ -165,8 +168,8 @@ class LoginPost implements ControllerInterface
                     // Déclencher le blocage
                     $_SESSION[$lockoutKey] = time() + self::LOCKOUT_DURATION;
                     unset($_SESSION[$attemptsKey]);
-                    $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte bloqué après 
-                    $attempts tentatives : $email");
+                    $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte bloqué 
+                    après $attempts tentatives : $email");
 
                     $validationExceptions[] = new ValidationException(
                         "Trop de tentatives échouées. Votre accès est bloqué pendant 15 minutes."
@@ -185,17 +188,29 @@ class LoginPost implements ControllerInterface
             // Réinitialiser le compteur en cas de succès
             unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
+            // Générer un JWT valable 1 heure
+            $jwt = JwtService::generate([
+                'sub'  => $userId,
+                'role' => $role,
+                'mail' => $userData['mail'] ?? $email,
+            ]);
+
+            // Stocker le JWT en session et en base de données
+            $_SESSION['jwt_token'] = $jwt;
             $_SESSION['user'] = [
                 'id'     => $userId,
                 'nom'    => $nom,
                 'prenom' => $prenom,
                 'mail'   => $userData['mail'] ?? $email,
-                'role'   => $role
+                'role'   => $role,
             ];
+
+            // Persister le JWT en BDD pour pouvoir l'invalider côté serveur si besoin
+            $User->saveJwtToken($userId, $jwt);
 
             // Audit: Log success
             $fullName = $nom . ' ' . $prenom;
-            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de  : $fullName");
+            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de : $fullName");
 
             header("Location: /");
             exit();

@@ -4,13 +4,14 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\User\Log;
+use Models\User\User;
 
 /**
  * Class Logout
  *
  * Handles user disconnection.
- * It ensures the logout event is recorded in the audit logs before
- * destroying the session and redirecting the user.
+ * Clears the JWT token from the database, ensures the logout event is recorded
+ * in the audit logs before destroying the session and redirecting the user.
  *
  * @package Controllers\User
  */
@@ -23,8 +24,9 @@ class Logout implements ControllerInterface
      *
      * 1. Checks if a user is currently logged in using strict type checks.
      * 2. Logs the 'DECONNEXION' event via the Log model.
-     * 3. Destroys the PHP session.
-     * 4. Redirects to the homepage.
+     * 3. Invalidates the JWT token in the database.
+     * 4. Destroys the PHP session.
+     * 5. Redirects to the homepage.
      *
      * @return void
      */
@@ -55,8 +57,6 @@ class Logout implements ControllerInterface
 
                 // Audit: Log disconnection
                 $Logger = new Log();
-
-                // We can now safely concatenate $nom and $prenom because they are strictly strings
                 $Logger->create(
                     $userId,
                     'DECONNEXION',
@@ -64,6 +64,10 @@ class Logout implements ControllerInterface
                     $userId,
                     "Déconnexion de : $nom $prenom"
                 );
+
+                // 4. Invalidate JWT token in database
+                $userModel = new User();
+                $userModel->saveJwtToken($userId, '');
             }
         }
 

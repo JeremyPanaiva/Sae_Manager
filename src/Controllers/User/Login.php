@@ -43,9 +43,9 @@ class Login implements ControllerInterface
                 $successMessage = "Votre mot de passe a été réinitialisé avec succès.
                   Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'account_verified') {
-                $successMessage = "Votre compte a été vérifié avec succès.   Vous pouvez maintenant vous connecter.";
+                $successMessage = "Votre compte a été vérifié avec succès. Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'registered') {
-                $successMessage = "Inscription réussie. 
+                $successMessage = "Inscription réussie.
                 Veuillez vérifier votre email pour activer votre compte.";
             } elseif ($_GET['success'] === 'email_changed') {
                 $successMessage = "Votre email a été mis à jour.
@@ -64,6 +64,14 @@ class Login implements ControllerInterface
                 $errors[] = new \Shared\Exceptions\DataBaseException("Une erreur est
                  survenue lors de la vérification.");
             }
+        }
+
+        // --- SESSION EXPIRATION (JWT) ---
+        // Affiché quand le SessionGuard redirige avec ?expired=1
+        if (isset($_GET['expired']) && $_GET['expired'] === '1') {
+            $errors[] = new \Shared\Exceptions\ValidationException(
+                "Votre session a expiré après 1 heure d'inactivité. Veuillez vous reconnecter."
+            );
         }
 
         // Render login view with messages

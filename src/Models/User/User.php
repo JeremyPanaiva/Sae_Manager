@@ -466,6 +466,26 @@ class User
         return $result;
     }
 
+
+    /**
+     * Saves the JWT token for a user in the database.
+     *
+     * @param int    $userId The user's ID
+     * @param string $token  The JWT token to save
+     * @return void
+     */
+    public function saveJwtToken(int $userId, string $token): void
+    {
+        $conn = \Models\Database::getConnection();
+        $stmt = $conn->prepare("UPDATE users SET jwt_token = ? WHERE id = ?");
+        if ($stmt === false) {
+            return;
+        }
+        $stmt->bind_param("si", $token, $userId);
+        $stmt->execute();
+        $stmt->close();
+    }
+
     /**
      * Checks database connection
      *
