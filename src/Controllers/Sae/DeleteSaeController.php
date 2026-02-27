@@ -7,6 +7,7 @@ use Models\Sae\Sae;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\SaeAttribueException;
 use Views\Sae\SaeView;
+use Shared\SessionGuard;
 
 /**
  * SAE deletion controller
@@ -37,6 +38,7 @@ class DeleteSaeController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');

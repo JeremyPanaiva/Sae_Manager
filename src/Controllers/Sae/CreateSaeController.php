@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\Sae;
 use Models\User\User;
 use Models\User\EmailService;
+use Shared\SessionGuard;
 
 /**
  * SAE creation controller
@@ -35,6 +36,7 @@ class CreateSaeController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Ensure POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');

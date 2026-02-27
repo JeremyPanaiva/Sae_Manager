@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * Deadline Reminder Controller
@@ -39,6 +40,7 @@ class DeadlineReminderController implements ControllerInterface
      */
     public function control(): void
     {
+        SessionGuard::check();
         $this->execute();
     }
 

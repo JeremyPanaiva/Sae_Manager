@@ -5,6 +5,7 @@ namespace Controllers\Sae;
 use Controllers\ControllerInterface;
 use Models\Sae\Sae;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * SAE content update controller
@@ -33,6 +34,7 @@ class UpdateContentSaeController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Verify user is authenticated as a client
         if (
             !isset($_SESSION['user']) ||

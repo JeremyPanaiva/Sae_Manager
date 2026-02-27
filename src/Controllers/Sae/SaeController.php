@@ -7,6 +7,7 @@ use Views\Sae\SaeView;
 use Models\User\User;
 use Models\Sae\Sae;
 use Models\Sae\SaeAttribution;
+use Shared\SessionGuard;
 
 /**
  * SAE management controller
@@ -37,6 +38,7 @@ class SaeController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Verify user is authenticated
         if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             header('Location:  /login');

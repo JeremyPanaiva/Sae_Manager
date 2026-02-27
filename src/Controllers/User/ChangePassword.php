@@ -4,6 +4,7 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Views\User\ChangePasswordView;
+use Shared\SessionGuard;
 
 /**
  * Change password form controller
@@ -45,6 +46,7 @@ class ChangePassword implements ControllerInterface
      */
     public function control(): void
     {
+        SessionGuard::check();
         // Ensure session is started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

@@ -5,7 +5,7 @@ namespace Controllers\Sae;
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\DataBaseException;
-
+use Shared\SessionGuard;
 /**
  * SAE submission date update controller
  *
@@ -34,6 +34,7 @@ class UpdateSaeDateController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Start session if not already started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

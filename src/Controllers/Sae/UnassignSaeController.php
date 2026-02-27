@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\UnauthorizedSaeUnassignmentException;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * SAE unassignment controller
@@ -36,6 +37,7 @@ class UnassignSaeController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Verify user is authenticated as a supervisor
         if (
             !isset($_SESSION['user']) ||
