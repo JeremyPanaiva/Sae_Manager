@@ -31,18 +31,18 @@
     margin-bottom: 1.5rem;
     font-size: 1.8rem;
     text-align: center;
-    color: #ffffff !important; /* Titre "Mon profil" en blanc */
+    color: #000000 !important; /* Titre "Mon profil" en blanc */
 }
 
 /* Textes dans la section dashboard - EN BLANC */
 .dashboard-section p,
 .dashboard-section strong {
-    color: #ffffff !important; /* Texte blanc pour la date de création */
+    color: #003366 !important; /* Texte blanc pour la date de création */
 }
 
 /* Date de création spécifiquement */
 .dashboard-section p strong {
-    color: #ffffff !important; /* Texte en gras en blanc */
+    color: #000000 !important; /* Texte en gras en blanc */
 }
 
 /* Valeurs des champs dans le profil */
