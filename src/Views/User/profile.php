@@ -112,24 +112,70 @@
                     }
                 }
             });
-
-            function confirmDelete() {
-                return confirm('⚠️ ATTENTION : Cette action est irréversible.\n\n' +
-                    'Êtes-vous absolument certain de vouloir supprimer votre compte définitivement ?\n\n' +
-                    'Toutes vos SAE, to-do lists, avis et données personnelles seront perdues.');
-            }
         </script>
 
         <!-- Zone de suppression du compte -->
         <div class="danger-zone">
             <h3>Supprimer votre compte SAE Manager</h3>
-            <p>La suppression de votre compte est <strong>définitive et irréversible</strong>. Toutes vos données seront
-                supprimées.</p>
+            <p>La suppression de votre compte est <strong>définitive et irréversible</strong>.
+                Toutes vos données seront supprimées.</p>
 
-            <form action="/user/profile/delete" method="POST" class="delete-form"
-                style="display: flex; justify-content: center;" onsubmit="return confirmDelete();">
-                <button type="submit" class="btn btn-danger" style="min-width: 200px;">Supprimer mon compte</button>
-            </form>
+            <div style="display: flex; justify-content: center; margin-top: 15px;">
+                <button type="button" class="btn btn-danger" style="min-width: 200px;" onclick="openDeleteModal()">
+                    Supprimer mon compte
+                </button>
+            </div>
         </div>
     </section>
+
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3 style="color: var(--danger); margin-top: 0; display: flex; align-items: center; gap: 8px;">
+                ⚠️ Confirmation de suppression
+            </h3>
+
+            <p style="margin-bottom: 20px;">
+                Êtes-vous absolument certain de vouloir supprimer votre compte définitivement ?<br>
+                <strong>Toutes vos SAE, to-do lists, avis et données personnelles seront
+                    perdues.</strong>
+            </p>
+
+            <form action="/user/profile/delete" method="POST" id="deleteForm">
+                <div style="margin-bottom: 20px;">
+                    <label for="delete_password" style="font-weight: bold; margin-bottom: 8px; display: block;">
+                        Mot de passe actuel :
+                    </label>
+                    <input type="password" id="delete_password" name="delete_password" required
+                        placeholder="Saisissez votre mot de passe pour confirmer" class="form-control" style="width: 100%; box-sizing: border-box; padding: 10px; border-radius: 6px; 
+                                        border: 1px solid #ccc;">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </main>
+
+<script>
+    function openDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'flex';
+        // Clear previous input if any
+        document.getElementById('delete_password').value = '';
+        setTimeout(() => document.getElementById('delete_password').focus(), 100);
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+    }
+
+    // Close modal if user clicks outside of it
+    window.onclick = function (event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    }
+</script>

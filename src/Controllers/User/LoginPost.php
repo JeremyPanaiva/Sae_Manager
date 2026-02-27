@@ -53,10 +53,10 @@ class LoginPost implements ControllerInterface
 
         // 2. Validate Inputs
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $validationExceptions[] = new ValidationException("Format d'email invalide.");
+            $validationExceptions[] = new ValidationException("Invalid Email Format.");
         }
         if (empty($mdp)) {
-            $validationExceptions[] = new ValidationException("Le mot de passe ne peut pas être vide.");
+            $validationExceptions[] = new ValidationException("Password cannot be empty.");
         }
 
         try {
@@ -72,12 +72,20 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException($validationExceptions);
             }
 
+            // --- SECURITY CHECKS ---
+
+            // CASE A: User Not Found
+            // FIX PHPSTAN: We removed "!is_array($userData)" because PHPStan knows
+            // that if $userData is not false, it is definitely an array.
             if (!$userData) {
                 $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Unknown User: $email");
 
-                $validationExceptions[] = new ValidationException("Adresse mail introuvable: " . $email);
+                $validationExceptions[] = new ValidationException("Email not found: " . $email);
                 throw new ArrayException($validationExceptions);
             }
+
+            // --- DATA NORMALIZATION ---
+            // We verify the array keys exist before using them to satisfy strict typing.
 
             // Safe ID extraction
             $rawId = $userData['id'] ?? 0;
@@ -108,7 +116,7 @@ class LoginPost implements ControllerInterface
             if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Unverified Account: $email");
 
-                $validationExceptions[] = new ValidationException("Compte non vérifié. Veuillez consulter vos e-mails.");
+                $validationExceptions[] = new ValidationException("Account not verified. Please check your emails.");
                 throw new ArrayException($validationExceptions);
             }
 
@@ -116,7 +124,7 @@ class LoginPost implements ControllerInterface
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
-                $validationExceptions[] = new ValidationException("Mot de passe incorrect.");
+                $validationExceptions[] = new ValidationException("Incorrect Password.");
                 throw new ArrayException($validationExceptions);
             }
 
