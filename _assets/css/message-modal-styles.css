@@ -1,5 +1,10 @@
-/* Message Modal Styles */
+/* ================================
+   📨 Message Modal Styles
+================================ */
 
+/* ================================
+   🪟 Overlay principal
+================================ */
 .modal {
     display: none;
     position: fixed;
@@ -15,9 +20,12 @@
 
 @keyframes fadeIn {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to   { opacity: 1; }
 }
 
+/* ================================
+   📦 Contenu de la modale
+================================ */
 .modal-content {
     background-color: #ffffff;
     margin: 3% auto;
@@ -57,6 +65,9 @@
     padding: 30px;
 }
 
+/* ================================
+   ✖️ Bouton fermeture
+================================ */
 .close {
     color: white;
     float: right;
@@ -72,6 +83,9 @@
     transform: scale(1.2);
 }
 
+/* ================================
+   ℹ️ Info template
+================================ */
 .template-info {
     background: linear-gradient(135deg, #e3f2fd, #bbdefb);
     border-left: 4px solid #2196F3;
@@ -82,11 +96,15 @@
     color: #1565C0;
 }
 
-.form-group {
+/* ================================
+   📝 Formulaire (scoped .modal)
+   ✅ Ne touche pas au header
+================================ */
+.modal .form-group {
     margin-bottom: 25px;
 }
 
-.form-group label {
+.modal .form-group label {
     display: block;
     font-weight: 600;
     margin-bottom: 10px;
@@ -94,9 +112,9 @@
     font-size: 1rem;
 }
 
-.form-group input[type="text"],
-.form-group select,
-.form-group textarea {
+.modal .form-group input[type="text"],
+.modal .form-group select,
+.modal .form-group textarea {
     width: 100%;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
@@ -107,21 +125,23 @@
     box-sizing: border-box;
 }
 
-.form-group input[type="text"]:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+.modal .form-group input[type="text"]:focus,
+.modal .form-group select:focus,
+.modal .form-group textarea:focus {
     outline: none;
     border-color: #0066cc;
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
 }
 
-.form-group textarea {
+.modal .form-group textarea {
     min-height: 180px;
     resize: vertical;
     line-height: 1.6;
 }
 
-/* Student Selection Styles - CORRECTIONS ICI */
+/* ================================
+   👥 Sélection des étudiants
+================================ */
 .student-selection-info {
     background: #f5f5f5;
     padding: 12px 15px;
@@ -173,7 +193,6 @@
     background: #fafafa;
 }
 
-/* CORRECTION ALIGNEMENT DES CHECKBOXES */
 .student-checkbox-label {
     display: flex;
     align-items: center;
@@ -211,7 +230,9 @@
     color: #0066cc;
 }
 
-/* SAE Groups Styles */
+/* ================================
+   🗂️ Groupes SAE
+================================ */
 .sae-group {
     margin-bottom: 12px;
     border: 1px solid #e0e0e0;
@@ -271,7 +292,9 @@
     background: #f9f9f9;
 }
 
-/* Form Actions */
+/* ================================
+   🔘 Actions du formulaire
+================================ */
 .form-actions {
     display: flex;
     gap: 15px;
@@ -281,7 +304,11 @@
     border-top: 2px solid #e0e0e0;
 }
 
-.btn {
+/* ================================
+   🔘 Boutons (scoped .modal)
+   ✅ Ne touche pas au header
+================================ */
+.modal .btn {
     padding: 12px 28px;
     border: none;
     border-radius: 8px;
@@ -291,30 +318,33 @@
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-block;
 }
 
-.btn-primary {
+.modal .btn-primary {
     background: linear-gradient(135deg, #0066cc, #004080);
     color: white;
 }
 
-.btn-primary:hover {
+.modal .btn-primary:hover {
     background: linear-gradient(135deg, #0052a3, #003366);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
 }
 
-.btn-secondary {
+.modal .btn-secondary {
     background: #6c757d;
     color: white;
 }
 
-.btn-secondary:hover {
+.modal .btn-secondary:hover {
     background: #5a6268;
     transform: translateY(-2px);
 }
 
-/* Success/Error Messages */
+/* ================================
+   ✅ Messages succès / erreur
+================================ */
 .message-success {
     background: linear-gradient(135deg, #d4edda, #c3e6cb);
     border-left: 4px solid #28a745;
@@ -335,7 +365,9 @@
     font-weight: 500;
 }
 
-/* Scrollbar styling */
+/* ================================
+   🖱️ Scrollbar personnalisée
+================================ */
 .student-checkbox-list::-webkit-scrollbar {
     width: 8px;
 }
@@ -354,7 +386,9 @@
     background: #004080;
 }
 
-/* Responsive Design */
+/* ================================
+   📱 Responsive
+================================ */
 @media (max-width: 768px) {
     .modal-content {
         width: 95%;
@@ -383,22 +417,58 @@
         flex-direction: column;
     }
 
-    .btn {
+    .modal .btn {
         width: 100%;
     }
 }
 
+/* ================================
+   🔒 Scroll lock
+================================ */
 body.modal-open {
     overflow: hidden;
 }
 
-/* Espacement du bouton d'ouverture */
+/* ================================
+   📤 Bouton d'ouverture
+================================ */
 .send-message-section {
-    margin: 25px 0;
-    padding: 20px 0;
-    border-bottom: 2px solid #e0e0e0;
+    margin: 0 0 25px 0;
 }
 
-.send-message-section .btn {
-    margin: 0;
+.btn-open-message-modal {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.85rem 1.8rem;
+    background: linear-gradient(135deg, #003366, #0066cc);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 51, 102, 0.25);
+}
+
+.btn-open-message-modal:hover {
+    background: linear-gradient(135deg, #004080, #0077dd);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 51, 102, 0.35);
+    color: #ffffff;
+}
+
+.btn-open-message-modal:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 51, 102, 0.2);
+}
+
+@media (max-width: 768px) {
+    .btn-open-message-modal {
+        width: 100%;
+        justify-content: center;
+    }
 }
