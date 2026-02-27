@@ -165,7 +165,8 @@ class LoginPost implements ControllerInterface
                     // Déclencher le blocage
                     $_SESSION[$lockoutKey] = time() + self::LOCKOUT_DURATION;
                     unset($_SESSION[$attemptsKey]);
-                    $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte bloqué après $attempts tentatives : $email");
+                    $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte bloqué après 
+                    $attempts tentatives : $email");
 
                     $validationExceptions[] = new ValidationException(
                         "Trop de tentatives échouées. Votre accès est bloqué pendant 15 minutes."
@@ -198,7 +199,6 @@ class LoginPost implements ControllerInterface
 
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
             $view = new LoginView($exceptions->getExceptions());
             echo $view->render();
