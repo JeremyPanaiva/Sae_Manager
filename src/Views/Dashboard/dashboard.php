@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/_assets/css/dashboard.css">
+<link rel="stylesheet" href="/_assets/css/message-modal-styles.css">
 <script src="/_assets/script/dash.js"></script>
 <script src="/_assets/script/date-modal.js"></script>
 
