@@ -67,9 +67,12 @@ class LoginPost implements ControllerInterface
         $lockoutKey  = 'login_lockout_until_' . md5($email);
         $attemptsKey = 'login_attempts_' . md5($email);
 
-        if (isset($_SESSION[$lockoutKey]) && time() < (int)$_SESSION[$lockoutKey]) {
-            // Compte toujours bloqué : afficher le temps restant
-            $remainingSeconds = (int)$_SESSION[$lockoutKey] - time();
+        // FIX PHPSTAN (cast.int): extraire la valeur mixed de session dans une variable typée avant le cast
+        $rawLockoutUntil = $_SESSION[$lockoutKey] ?? 0;
+        $lockoutUntil    = is_numeric($rawLockoutUntil) ? (int)$rawLockoutUntil : 0;
+
+        if ($lockoutUntil > 0 && time() < $lockoutUntil) {
+            $remainingSeconds = $lockoutUntil - time();
             $remainingMinutes = (int)ceil($remainingSeconds / 60);
 
             $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Tentative sur compte bloqué : $email");
@@ -150,9 +153,12 @@ class LoginPost implements ControllerInterface
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
-                // Incrémenter le compteur de tentatives échouées
-                $_SESSION[$attemptsKey] = ($_SESSION[$attemptsKey] ?? 0) + 1;
-                $attempts  = (int)$_SESSION[$attemptsKey];
+                // FIX PHPSTAN (binaryOp.invalid): extraire et typer explicitement avant l'opération arithmétique
+                $rawAttempts  = $_SESSION[$attemptsKey] ?? 0;
+                $prevAttempts = is_numeric($rawAttempts) ? (int)$rawAttempts : 0;
+                $attempts     = $prevAttempts + 1;
+                $_SESSION[$attemptsKey] = $attempts;
+
                 $remaining = self::MAX_ATTEMPTS - $attempts;
 
                 if ($attempts >= self::MAX_ATTEMPTS) {
