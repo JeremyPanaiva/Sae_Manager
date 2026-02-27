@@ -1061,3 +1061,99 @@ body.modal-open {
         margin-top: 8px;
     }
 }
+
+/* Section Livrable */
+.deliverable-container {
+    margin: 20px 0;
+    border: 1px solid #d1d5da;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.deliverable-header {
+    background-color: #f6f8fa;
+    padding: 10px 15px;
+    border-bottom: 1px solid #d1d5da;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #003366; /* Bleu AMU */
+}
+
+.deliverable-body {
+    padding: 15px;
+}
+
+.link-display {
+    padding: 10px;
+    background: #f1f8ff;
+    border: 1px solid #c8e1ff;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.link-update-form {
+    display: flex;
+    gap: 10px;
+}
+
+.input-url {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.badge-success {
+    background-color: #28a745;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+/* Bouton aligné sur le style du projet */
+.btn-primary {
+    background-color: #003366;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #0055aa;
+}
+
+
+/* Style pour la ligne du lien GitHub */
+.github-link-item {
+    margin: 15px 0;
+    padding: 10px 15px;
+    background-color: #f6f8fa; /* Gris très clair style GitHub */
+    border-left: 4px solid #2f81f7; /* Barre bleue accentuée */
+    border-radius: 4px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Style spécifique pour le texte en gras */
+.github-link-item strong {
+    color: #24292f;
+}
+
+/* Style pour le lien lui-même */
+.github-link-item a {
+    color: #0969da;
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all; /* Évite que les longs liens dépassent du cadre */
+}
+
+.github-link-item a:hover {
+    text-decoration: underline;
+    color: #0a4da4;
+}
