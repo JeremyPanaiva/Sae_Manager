@@ -811,6 +811,91 @@ section.main,
     color: var(--dm-text-medium);
 }
 
+/* === MENTIONS LEGALES === */
+.dark-mode .legal-container {
+    background-color: var(--dm-01);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .legal-container h1,
+.dark-mode .legal-container h2 {
+    color: var(--dm-accent);
+}
+
+.dark-mode .legal-container p,
+.dark-mode .legal-container ul li {
+    color: var(--dm-text-high);
+}
+
+/* === PAGE UTILISATEURS === */
+.dark-mode .users {
+    background-color: var(--dm-01);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .users h2 {
+    color: var(--white);
+}
+
+.dark-mode .mobile-sort-controls {
+    background-color: var(--dm-02);
+}
+
+.dark-mode .mobile-sort-controls select {
+    background-color: var(--dm-01);
+    border-color: var(--dm-border);
+    color: var(--dm-text-high);
+}
+
+.dark-mode .users th {
+    background-color: var(--dm-02);
+    border-bottom: 2px solid var(--dm-border);
+}
+
+.dark-mode .users table {
+    border: 1px solid var(--white);
+    border-bottom: 1px solid var(--white);
+    border-collapse: collapse;
+}
+
+.dark-mode .users tr:last-child td {
+    border-bottom: none;
+}
+
+.dark-mode .users td {
+    border-bottom: 1px solid var(--dm-divider);
+}
+
+.dark-mode .users tbody tr:hover {
+    background-color: var(--dm-04);
+}
+
+.dark-mode .pagination a,
+.dark-mode .pagination span {
+    background-color: var(--dm-02);
+    border-color: var(--dm-border);
+    color: var(--dm-link);
+}
+
+.dark-mode .pagination a:hover {
+    background-color: var(--dm-04);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .pagination a.active {
+    background-color: var(--dm-accent);
+    color: var(--dm-on-accent);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .pagination span {
+    background-color: transparent;
+    border-color: transparent;
+    color: var(--dm-text-medium);
+}
+
+
 .dark-mode .avis-card {
     background-color: var(--dm-02);
     border-left-color: var(--dm-accent);
@@ -966,6 +1051,7 @@ section.main,
 .dark-mode input:focus,
 .dark-mode textarea:focus,
 .dark-mode select:focus {
+    background-color: var(--dm-02);
     border-color: var(--dm-accent);
     box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
     outline: none;
@@ -999,6 +1085,12 @@ section.main,
     background: var(--dm-00);
     color: var(--dm-text-high);
     border-color: var(--dm-border);
+}
+
+.dark-mode .legal-form input:focus,
+.dark-mode .legal-form textarea:focus {
+    background: var(--dm-02);
+    border-color: var(--dm-accent);
 }
 
 .dark-mode .legal-notice.success {
