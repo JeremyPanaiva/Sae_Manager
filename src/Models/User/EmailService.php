@@ -559,10 +559,11 @@ class EmailService
      */
     private function getFromEmail(): string
     {
-        // @phpstan-ignore-next-line function.alreadyNarrowedType
-        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
-            return $this->mailer->From;
+        $from = trim($this->mailer->From);
+        if ($from !== '') {
+            return $from;
         }
+
         $fromEmail = Database::parseEnvVar('FROM_EMAIL');
         return ($fromEmail !== false && !empty($fromEmail)) ? $fromEmail : 'noreply@sae-manager.com';
     }
@@ -574,11 +575,13 @@ class EmailService
      */
     private function getFromName(): string
     {
-        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
-            return $this->mailer->From;
+        $fromName = trim($this->mailer->FromName);
+        if ($fromName !== '') {
+            return $fromName;
         }
-        $fromName = Database::parseEnvVar('FROM_NAME');
-        return $fromName !== false ? $fromName : 'SAE Manager';
+
+        $fromNameEnv = Database::parseEnvVar('FROM_NAME');
+        return ($fromNameEnv !== false && $fromNameEnv !== '') ? $fromNameEnv : 'SAE Manager';
     }
 
     /**
