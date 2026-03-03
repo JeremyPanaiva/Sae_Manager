@@ -949,12 +949,24 @@ section.main,
 }
 
 .dark-mode .btn-delete-task {
+    background: transparent;
+    border: none;
+    border-radius: 50%;
     color: var(--dm-text-medium);
 }
 
 .dark-mode .btn-delete-task:hover {
     background-color: var(--dm-error-bg);
     color: var(--dm-error);
+    border-radius: 50%;
+}
+
+/* Fix for inline forms in To-Do list getting global form styles */
+.dark-mode .todo-toggle,
+.dark-mode .todo-delete {
+    background: transparent;
+    box-shadow: none;
+    border: none;
 }
 
 /* Progress bar */
