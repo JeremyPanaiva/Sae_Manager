@@ -166,8 +166,8 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // Retrieve current password hash and last change timestamp
-            $stmt = $conn->prepare("SELECT mdp, last_password_change FROM users WHERE id = ?");
+            // Retrieve current password hash, last change timestamp, and previous password hash
+            $stmt = $conn->prepare("SELECT mdp, last_password_change, previous_mdp FROM users WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
             }
@@ -245,18 +245,35 @@ class ChangePasswordPost implements ControllerInterface
                 exit;
             }
 
+            // Ensure new password is different from previous password
+            $previousPasswordHash = isset($user['previous_mdp']) && is_string($user['previous_mdp'])
+                ? $user['previous_mdp'] : '';
+            if ($previousPasswordHash !== '' && password_verify($newPassword, $previousPasswordHash)) {
+                $logger->create(
+                    $userId,
+                    'ECHEC_MODIFICATION_MDP',
+                    'users',
+                    $userId,
+                    "Ce mot de passe a déjà été utilisé. Veuillez utiliser un mot de passe différent."
+                );
+                header('Location: /user/change-password?error=previous_password');
+                exit;
+            }
+
             // Hash and update the new password (and timestamp)
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
             // Indique au Trigger SQL qu'il s'agit d'une modification classique via le profil
             $conn->query("SET @pwd_action_type = 'CHANGE'");
 
-            $updateStmt = $conn->prepare("UPDATE users SET mdp = ?, last_password_change = NOW() WHERE id = ?");
+            $updateStmt = $conn->prepare(
+                "UPDATE users SET previous_mdp = ?, mdp = ?, last_password_change = NOW() WHERE id = ?"
+            );
             if (!$updateStmt) {
                 throw new DataBaseException("Erreur de préparation SQL update");
             }
 
-            $updateStmt->bind_param("si", $hashedPassword, $userId);
+            $updateStmt->bind_param("ssi", $currentPasswordHash, $hashedPassword, $userId);
             $updateStmt->execute();
             $updateStmt->close();
 
