@@ -1259,6 +1259,14 @@ section.main,
     color: var(--dm-text-medium);
 }
 
+.dark-mode .toggle-password svg {
+    stroke: var(--dm-text-medium);
+}
+
+.dark-mode .toggle-password:hover svg {
+    stroke: var(--dm-text-high);
+}
+
 /* === CONTACT === */
 .dark-mode .legal-form {
     background: transparent;
