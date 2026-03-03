@@ -811,6 +811,62 @@ section.main,
     color: var(--dm-text-medium);
 }
 
+/* Date de rendu & Modal (Dashboard) */
+.dark-mode .date-rendu-wrapper {
+    background-color: var(--dm-01);
+    border-left-color: var(--dm-accent);
+}
+
+.dark-mode .date-value {
+    color: var(--dm-accent);
+}
+
+.dark-mode .date-modal {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.dark-mode .date-modal-content {
+    background-color: var(--dm-02);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .date-modal-content h3 {
+    color: var(--dm-text-high);
+    border-bottom-color: var(--dm-border);
+}
+
+.dark-mode .form-group label {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .form-group input[type="date"],
+.dark-mode .form-group input[type="time"] {
+    background-color: var(--dm-01);
+    color: var(--dm-text-high);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .form-group input[type="date"]:hover,
+.dark-mode .form-group input[type="time"]:hover {
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .form-group input[type="date"]::-webkit-calendar-picker-indicator,
+.dark-mode .form-group input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.7;
+}
+
+.dark-mode .btn-cancel-modal {
+    background-color: var(--dm-01);
+    border: 1px solid var(--dm-border);
+    color: var(--dm-text-high);
+}
+
+.dark-mode .btn-cancel-modal:hover {
+    background-color: var(--dm-04);
+}
+
 /* === MENTIONS LEGALES === */
 .dark-mode .legal-container {
     background-color: var(--dm-01);
