@@ -852,6 +852,26 @@ section.main,
     border-color: var(--dm-border);
 }
 
+.dark-mode .sae-page .sae-card.free {
+    border-color: #00aaff;
+}
+
+.dark-mode .sae-page .sae-card.my-attr {
+    border-color: #28a745;
+}
+
+.dark-mode .sae-page .sae-card.other-attr {
+    border-color: #ff4d4d;
+}
+
+.dark-mode .sae-page .sae-card.libre {
+    border-left-color: #4CAF50;
+}
+
+.dark-mode .sae-page .sae-card.attribuee {
+    border-left-color: #FF9800;
+}
+
 .dark-mode .sae-page .sae-card:hover {
     background-color: var(--dm-04);
 }
