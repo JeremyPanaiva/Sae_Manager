@@ -930,8 +930,8 @@ section.main,
 }
 
 .dark-mode .todo-card {
-    background-color: var(--dm-02);
-    border-color: var(--dm-border);
+    background-color: var(--dm-01);
+    border-color: transparent;
     border-left-color: var(--dm-accent);
 }
 
@@ -961,9 +961,9 @@ section.main,
     border-radius: 50%;
 }
 
-/* Fix for inline forms in To-Do list getting global form styles */
 .dark-mode .todo-toggle,
-.dark-mode .todo-delete {
+.dark-mode .todo-delete,
+.dark-mode .avis-card form {
     background: transparent;
     box-shadow: none;
     border: none;
@@ -1085,7 +1085,8 @@ section.main,
 
 
 .dark-mode .avis-card {
-    background-color: var(--dm-02);
+    background-color: var(--dm-01);
+    border-color: transparent;
     border-left-color: var(--dm-accent);
 }
 
