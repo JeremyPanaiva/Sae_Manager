@@ -15,6 +15,7 @@ use Models\User\Log;
  */
 class ContactPost implements ControllerInterface
 {
+    public const PATH = '/contact';
     /**
      * Executes the contact controller logic.
      *
