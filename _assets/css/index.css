@@ -1039,6 +1039,11 @@ section.main,
 }
 
 /* === SAE PAGE ASSIGNMENTS GRID === */
+.dark-mode .color-legend {
+    background: var(--dm-01);
+    border-left-color: var(--dm-accent);
+}
+
 .dark-mode .sae-page form {
     background-color: var(--dm-01);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
