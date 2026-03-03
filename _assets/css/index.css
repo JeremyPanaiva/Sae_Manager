@@ -1306,6 +1306,18 @@ section.main,
     border-color: var(--dm-border);
 }
 
+.dark-mode input:disabled,
+.dark-mode input[readonly],
+.dark-mode textarea:disabled,
+.dark-mode textarea[readonly],
+.dark-mode .form-control-locked {
+    background-color: var(--dm-01) !important;
+    color: var(--dm-text-medium) !important;
+    border-color: var(--dm-divider) !important;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
 .dark-mode .danger-zone {
     background: var(--dm-error-bg);
     border-color: var(--dm-error);
