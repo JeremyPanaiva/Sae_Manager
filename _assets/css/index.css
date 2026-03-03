@@ -767,11 +767,11 @@ section.main,
 }
 
 .dark-mode .footer-left p {
-    color: var(--dm-text-medium);
+    color: var(--white);
 }
 
 .dark-mode .footer-right a {
-    color: var(--dm-text-medium);
+    color: var(--white);
 }
 
 .dark-mode .footer-right a:hover {
