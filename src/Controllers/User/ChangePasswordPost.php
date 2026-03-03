@@ -251,7 +251,7 @@ class ChangePasswordPost implements ControllerInterface
             if ($previousPasswordHash !== '' && password_verify($newPassword, $previousPasswordHash)) {
                 $logger->create(
                     $userId,
-                    'ECHEC_MODIFICATION_MDP',
+                    'ECHEC_MDP_PRECEDENT',
                     'users',
                     $userId,
                     "Ce mot de passe a déjà été utilisé. Veuillez utiliser un mot de passe différent."
