@@ -632,15 +632,6 @@ section.main,
     }
 }
 
-/* ================================
-   🖤 VERSION C — NOIR DOUX
-   Base: #181a1b (gris chaud sombre)
-   Surfaces: #202325 → #2b2f31
-   Accent: Bleu ciel #38bdf8
-   Texte: #d5d1cd / #a8a29e
-   Inspiré de Notion Dark, Apple
-================================ */
-
 .dark-mode {
     --dm-00: #181a1b;
     --dm-01: #202325;
@@ -1024,6 +1015,69 @@ section.main,
 }
 
 .dark-mode .danger-zone p {
+    color: var(--dm-text-medium);
+}
+
+/* === SAE PAGE ASSIGNMENTS GRID === */
+.dark-mode .sae-page form {
+    background-color: var(--dm-01);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .section-label {
+    color: var(--dm-accent);
+}
+
+.dark-mode .btn-select-all {
+    background-color: var(--dm-02);
+    border-color: var(--dm-border);
+    color: var(--white);
+}
+
+.dark-mode .btn-select-all:hover {
+    background-color: var(--dm-04);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .students-grid {
+    background-color: var(--dm-01);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .student-card {
+    background-color: var(--dm-02);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .student-card:hover {
+    border-color: var(--dm-accent);
+    background-color: var(--dm-04);
+}
+
+.dark-mode .student-name {
+    color: var(--white);
+}
+
+.dark-mode .checkmark {
+    background-color: var(--dm-00);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .student-checkbox:checked~.checkmark {
+    background-color: var(--dm-accent);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .student-card:has(.student-checkbox:checked) {
+    background-color: rgba(56, 189, 248, 0.1);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .student-checkbox:checked~.student-name {
+    color: var(--dm-accent);
+}
+
+.dark-mode .info-message {
     color: var(--dm-text-medium);
 }
 
