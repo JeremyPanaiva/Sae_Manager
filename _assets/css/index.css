@@ -879,6 +879,114 @@ section.main,
     background-color: var(--dm-04);
 }
 
+.dark-mode .deliverable-container {
+    background-color: var(--dm-01);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .deliverable-header {
+    background-color: var(--dm-02);
+    border-bottom-color: var(--dm-border);
+    color: var(--dm-accent);
+}
+
+.dark-mode .link-display {
+    background-color: var(--dm-00);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .no-link-text {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .input-url {
+    background-color: var(--dm-00);
+    color: var(--dm-text-high);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .input-url:focus {
+    outline: none;
+    border-color: var(--dm-accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.dark-mode .github-link-item {
+    background-color: var(--dm-02);
+    border-left-color: var(--dm-accent);
+}
+
+.dark-mode .github-link-item strong {
+    color: var(--dm-text-high);
+}
+
+.dark-mode .github-link-item a {
+    color: var(--dm-link);
+}
+
+/* To-Do List */
+.dark-mode ul.todo-list li:hover {
+    background-color: transparent;
+}
+
+.dark-mode .todo-card {
+    background-color: var(--dm-02);
+    border-color: var(--dm-border);
+    border-left-color: var(--dm-accent);
+}
+
+.dark-mode .todo-title {
+    color: var(--dm-text-high);
+}
+
+.dark-mode .todo-date {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .todo-card.done {
+    opacity: 0.7;
+    border-left-color: var(--dm-success);
+}
+
+.dark-mode .btn-delete-task {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .btn-delete-task:hover {
+    background-color: var(--dm-error-bg);
+    color: var(--dm-error);
+}
+
+/* Progress bar */
+.dark-mode .progress-bar {
+    background-color: var(--dm-00);
+}
+
+/* Liste Etudiants */
+.dark-mode .student-list li {
+    color: var(--dm-text-high);
+}
+
+/* Countdown */
+.dark-mode .countdown-container {
+    background: linear-gradient(135deg, var(--dm-02) 0%, var(--dm-01) 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .countdown-box {
+    background-color: var(--dm-03);
+    color: var(--dm-text-high);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .countdown-value {
+    color: var(--dm-accent);
+}
+
+.dark-mode .countdown-label {
+    color: var(--dm-text-medium);
+}
+
 /* === MENTIONS LEGALES === */
 .dark-mode .legal-container {
     background-color: var(--dm-01);
