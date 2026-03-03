@@ -692,6 +692,18 @@ section.main,
     background: rgba(255, 255, 255, 0.05);
 }
 
+.dark-mode .header .user-actions a[href="/user/register"] {
+    background-color: var(--white);
+    color: #1e1e1e;
+    /* Dark text to contrast with white background */
+    border-color: var(--white);
+}
+
+.dark-mode .header .user-actions a[href="/user/register"]:hover {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
 .dark-mode .hamburger-line {
     background-color: var(--dm-text-high);
 }
