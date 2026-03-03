@@ -219,7 +219,7 @@ class ResetPasswordPost implements ControllerInterface
             if ($previousPasswordHash !== '' && password_verify($password, $previousPasswordHash)) {
                 $logger->create(
                     $userId,
-                    'ECHEC_REINITIALISATION_MDP',
+                    'ECHEC_MDP_PRECEDENT',
                     'users',
                     $userId,
                     "Tentative de réutilisation d'un ancien mot de passe"
