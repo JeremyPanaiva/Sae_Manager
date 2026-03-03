@@ -98,9 +98,9 @@ class ResetPasswordPost implements ControllerInterface
                 exit;
             }
 
-            // Retrieve current password hash and user ID
+            // Retrieve current password hash, previous password hash, and user ID
             $conn = Database::getConnection();
-            $stmt = $conn->prepare("SELECT id, mdp FROM users WHERE mail = ?");
+            $stmt = $conn->prepare("SELECT id, mdp, previous_mdp FROM users WHERE mail = ?");
             if (!$stmt) {
                 throw new DataBaseException("SQL prepare failed in user check.");
             }
@@ -117,7 +117,7 @@ class ResetPasswordPost implements ControllerInterface
 
             // We need the ID for accurate logging
             $userIdRaw = $row['id'] ?? 0;
-            $userId = is_numeric($userIdRaw) ? (int)$userIdRaw : 0;
+            $userId = is_numeric($userIdRaw) ? (int) $userIdRaw : 0;
 
             if ($row === null) {
                 // Edge case: Token exists but user doesn't
@@ -213,17 +213,34 @@ class ResetPasswordPost implements ControllerInterface
                 throw new SamePasswordException();
             }
 
+            // Check if new password is the same as previous password
+            $previousPasswordHash = isset($row['previous_mdp']) && is_string($row['previous_mdp'])
+                ? $row['previous_mdp'] : '';
+            if ($previousPasswordHash !== '' && password_verify($password, $previousPasswordHash)) {
+                $logger->create(
+                    $userId,
+                    'ECHEC_REINITIALISATION_MDP',
+                    'users',
+                    $userId,
+                    "Tentative de réutilisation d'un ancien mot de passe"
+                );
+                header('Location: /user/reset-password?token=' . urlencode($token) . '&error=previous_password');
+                exit;
+            }
+
             // Hash and update the new password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // Indique au Trigger SQL qu'il s'agit d'une réinitialisation (mot de passe oublié)
             $conn->query("SET @pwd_action_type = 'RESET'");
 
-            $stmt = $conn->prepare("UPDATE users SET mdp = ?, last_password_change = NOW() WHERE mail = ?");
+            $stmt = $conn->prepare(
+                "UPDATE users SET previous_mdp = ?, mdp = ?, last_password_change = NOW() WHERE mail = ?"
+            );
             if (!$stmt) {
                 throw new DataBaseException("SQL prepare failed in reset password.");
             }
-            $stmt->bind_param("ss", $hashedPassword, $email);
+            $stmt->bind_param("sss", $currentPasswordHash, $hashedPassword, $email);
             $stmt->execute();
             $stmt->close();
 
@@ -273,7 +290,7 @@ class ResetPasswordPost implements ControllerInterface
     public static function support(string $chemin, string $method): bool
     {
         return ($chemin === self::PATH ||
-                (isset($_GET['page']) && $_GET['page'] === 'reset-password'))
+            (isset($_GET['page']) && $_GET['page'] === 'reset-password'))
             && $method === "POST";
     }
 }
