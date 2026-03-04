@@ -142,6 +142,11 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le nouveau mot de passe doit être différent de l\'actuel.</div>';
                     break;
+                case 'previous_password':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Le nouveau mot de passe ne peut pas être identique au précédent.</div>';
+                    break;
             }
         }
 

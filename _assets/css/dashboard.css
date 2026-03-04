@@ -1077,7 +1077,8 @@ body.modal-open {
     display: flex;
     justify-content: space-between;
     font-weight: bold;
-    color: #003366; /* Bleu AMU */
+    color: #003366;
+    /* Bleu AMU */
 }
 
 .deliverable-body {
@@ -1131,8 +1132,10 @@ body.modal-open {
 .github-link-item {
     margin: 15px 0;
     padding: 10px 15px;
-    background-color: #f6f8fa; /* Gris très clair style GitHub */
-    border-left: 4px solid #2f81f7; /* Barre bleue accentuée */
+    background-color: #f6f8fa;
+    /* Gris très clair style GitHub */
+    border-left: 4px solid #2f81f7;
+    /* Barre bleue accentuée */
     border-radius: 4px;
     font-size: 14px;
     display: flex;
@@ -1150,7 +1153,8 @@ body.modal-open {
     color: #0969da;
     text-decoration: none;
     font-weight: 500;
-    word-break: break-all; /* Évite que les longs liens dépassent du cadre */
+    word-break: break-all;
+    /* Évite que les longs liens dépassent du cadre */
 }
 
 .github-link-item a:hover {
