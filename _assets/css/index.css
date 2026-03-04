@@ -596,7 +596,6 @@ section.main,
     transition: all 0.3s ease;
     padding: 0;
     flex-shrink: 0;
-    margin-left: 1rem;
 }
 
 .dark-mode-toggle:hover {
