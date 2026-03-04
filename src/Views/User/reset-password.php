@@ -16,6 +16,7 @@
 ?>
 
 <link rel="stylesheet" href="/_assets/css/inscription.css">
+<script src="/_assets/script/showPassword.js"></script>
 <section class="main" aria-label="Contenu principal">
 
     <form method="POST" action="?page=reset-password" onsubmit="disableSubmit(this);">
@@ -29,18 +30,35 @@
             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
 
             <label for="password">Nouveau mot de passe :</label>
-            <input type="password" id="password" name="password" minlength="8" maxlength="20"
-                pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Le mot de passe doit contenir au moins 8
-                caractères,une majuscule, une minuscule et un chiffre"
-                   required placeholder="Votre nouveau mot de passe">
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" minlength="8" maxlength="20"
+                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Le mot de passe doit contenir au moins 8
+                    caractères,une majuscule, une minuscule et un chiffre" required
+                    placeholder="Votre nouveau mot de passe">
+                <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </span>
+            </div>
             <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">
                 Minimum 8 caractères avec au moins une majuscule, une minuscule et un chiffre
             </small>
 
             <label for="confirm_password">Confirmer le mot de passe :</label>
-            <input type="password" id="confirm_password" name="confirm_password" minlength="8" maxlength="20" required
-                placeholder="Confirmez votre nouveau mot de passe">
-
+            <div class="password-wrapper">
+                <input type="password" id="confirm_password" name="confirm_password" minlength="8" maxlength="20"
+                    required placeholder="Confirmez votre nouveau mot de passe">
+                <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                        stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                </span>
+            </div>
             <input type="submit" value="Réinitialiser le mot de passe">
 
             <div class="back-link">
