@@ -148,7 +148,7 @@ class DashboardView extends BaseView
 
         switch (strtolower($this->role)) {
             /* ====================================================
-               👨‍🎓 ÉTUDIANT
+                ÉTUDIANT
             ==================================================== */
             case 'etudiant':
                 $html .= "<h2>Vos SAE attribuées</h2>";
@@ -313,7 +313,7 @@ class DashboardView extends BaseView
                 break;
 
             /* ====================================================
-               💼 CLIENT
+                CLIENT
             ==================================================== */
             case 'client':
                 $html .= "<h2>Vos SAE créées et leurs attributions</h2>";
@@ -465,7 +465,7 @@ class DashboardView extends BaseView
                 break;
 
             /* ====================================================
-               👤 RESPONSABLE
+                RESPONSABLE
             ==================================================== */
             case 'responsable':
                 $html .= "<h2>Vos SAE attribuées</h2>";

@@ -3,89 +3,63 @@
 namespace Models;
 
 use Shared\Exceptions\DataBaseException;
+use Models\User\Log;
 
 /**
- * Database connection manager
+ * Class Database
  *
- * Provides a singleton database connection using mysqli.  Handles connection
- * initialization, configuration loading from environment variables or . env file,
- * and connection health checks.
- *
- * Configuration is loaded from environment variables or a .env file in the following order:
- * 1. System environment variables (getenv)
- * 2. .env file in project root
- *
- * Required environment variables:
- * - DB_HOST: Database host
- * - DB_USER: Database username
- * - DB_PASSWORD:  Database password
- * - DB_NAME: Database name
+ * Singleton database connection manager using MySQLi.
+ * * Features:
+ * - Environment variable parsing (supports .env files).
+ * - Singleton pattern to prevent multiple simultaneous connections.
+ * - Context Injection: Automatically passes the current User ID, IP address,
+ * and System Info to MySQL session variables (@current_user_id, etc.)
+ * so that SQL Triggers can accurately populate the audit logs.
  *
  * @package Models
  */
 class Database
 {
     /**
-     * Singleton database connection instance
+     * Singleton instance of the database connection.
      *
      * @var \mysqli|null
      */
     private static $conn = null;
 
     /**
-     * Retrieves the singleton database connection instance.
+     * Retrieves the active database connection instance.
      *
-     * This method initializes the MySQLi connection if it doesn't exist (Lazy Loading).
-     * It enforces the 'utf8mb4' character set for full Unicode support.
-     *
-     * Feature: Logging Context Injection
-     * If a PHP session is active and a user is logged in, this method injects
-     * the user ID into a MySQL session variable (@current_user_id).
-     * This enables SQL triggers to automatically log the 'user_id' responsible for changes.
+     * Initializes the connection if it does not exist, and injects PHP
+     * context (Session, IP, User Agent) into MySQL session variables
+     * (@current_user_id, @current_user_ip, @current_user_agent).
+     * This allows SQL triggers to accurately populate audit logs, even
+     * for local development environments (e.g., 127.0.0.1).
      *
      * @return \mysqli The active database connection object.
      * @throws DataBaseException If the connection fails to establish.
      */
     public static function getConnection(): \mysqli
     {
-        // Singleton pattern: Only create the connection if it doesn't exist
+        // 1. SINGLETON INITIALIZATION
         if (self::$conn === null) {
-            // 1. Retrieve credentials (parseEnvVar returns string|false)
             $hostRaw = self::parseEnvVar("DB_HOST");
             $userRaw = self::parseEnvVar("DB_USER");
             $passRaw = self::parseEnvVar("DB_PASSWORD");
-            $dbRaw   = self::parseEnvVar("DB_NAME");
+            $dbRaw = self::parseEnvVar("DB_NAME");
 
-            // 2. Type sanitization for mysqli constructor
-            // mysqli expects ?string (string or null), but parseEnvVar returns false on failure.
-            // We convert 'false' to 'null' to satisfy strict typing.
+            // Type Sanitization for mysqli constructor
             $host = ($hostRaw === false) ? null : $hostRaw;
             $user = ($userRaw === false) ? null : $userRaw;
             $pass = ($passRaw === false) ? null : $passRaw;
-            $db   = ($dbRaw   === false) ? null : $dbRaw;
+            $db = ($dbRaw === false) ? null : $dbRaw;
 
             try {
-                // Enable strict error reporting: MySQL errors will throw exceptions
+                // Enable strict error reporting for MySQLi
                 mysqli_report(MYSQLI_REPORT_STRICT | MYSQLI_REPORT_ERROR);
-
-                // Initialize connection
                 self::$conn = new \mysqli($host, $user, $pass, $db);
                 self::$conn->set_charset('utf8mb4');
-
-                // 3. Context Injection for SQL Triggers (Audit Logs)
-                // We check if a session exists AND if 'user_id' is set to identify the actor.
-                if (session_status() === PHP_SESSION_ACTIVE && isset($_SESSION['user_id'])) {
-                    $sessionVal = $_SESSION['user_id'];
-
-                    // PHPStan check: ensure value is scalar (int/string) before casting
-                    if (is_scalar($sessionVal)) {
-                        $userId = (int) $sessionVal;
-                        // Set the SQL variable for the current request scope
-                        self::$conn->query("SET @current_user_id = $userId");
-                    }
-                }
             } catch (\mysqli_sql_exception $e) {
-                // Wrap native exception into a custom one for security and clarity
                 throw new DataBaseException(
                     "Unable to connect to the database. " .
                     "Please contact sae-manager@alwaysdata.net for assistance."
@@ -93,36 +67,76 @@ class Database
             }
         }
 
+        // 2. CONTEXT INJECTION FOR SQL TRIGGERS
+        // We inject PHP data into MySQL so triggers know WHO did WHAT and from WHERE.
+        try {
+            // A. Inject current User ID from Session
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                $userIdToLog = null;
+
+                if (isset($_SESSION['user']) && is_array($_SESSION['user']) && isset($_SESSION['user']['id'])) {
+                    $userIdToLog = $_SESSION['user']['id'];
+                } elseif (isset($_SESSION['user_id'])) {
+                    $userIdToLog = $_SESSION['user_id'];
+                }
+
+                if ($userIdToLog !== null && is_scalar($userIdToLog)) {
+                    $uid = (int) $userIdToLog;
+                    self::$conn->query("SET @current_user_id = $uid");
+                }
+            }
+
+            // B. Inject Client IP and System Information
+            $ip = Log::getIpAddress();
+            $systemInfo = Log::getSystemInfo();
+
+            // Handle IP Address
+            // Local IPs (127.0.0.1, ::1) are now properly passed to triggers instead of being set to NULL.
+            if (empty($ip)) {
+                self::$conn->query("SET @current_user_ip = NULL");
+            } else {
+                $safeIp = self::$conn->real_escape_string($ip);
+                self::$conn->query("SET @current_user_ip = '$safeIp'");
+            }
+
+            // Handle System Information (Set to fallback text if unknown)
+            if (empty($systemInfo) || strpos($systemInfo, 'Unknown OS') !== false) {
+                self::$conn->query("SET @current_user_agent = 'Action interne DB'");
+            } else {
+                $safeSystemInfo = self::$conn->real_escape_string($systemInfo);
+                self::$conn->query("SET @current_user_agent = '$safeSystemInfo'");
+            }
+        } catch (\Throwable $e) {
+            // Failsafe: If injection fails, the site must not crash. We just log the error.
+            error_log("Trigger Context Injection Failed: " . $e->getMessage());
+        }
+
         return self::$conn;
     }
 
     /**
-     * Parses an environment variable from system or .env file
+     * Parses an environment variable from system or .env file.
      *
-     * Checks system environment variables first, then falls back to .env file
-     * if the variable is not set.  Supports quoted values and ignores comments.
+     * Checks system environment variables first, then falls back to the .env file
+     * if the variable is not set. Supports quoted values and ignores comments.
      *
-     * @param string $envVar The environment variable name to retrieve
-     * @return string|false The variable value, or false if not found
+     * @param string $envVar The environment variable name to retrieve.
+     * @return string|false The variable value, or false if not found.
      */
     public static function parseEnvVar(string $envVar)
     {
-        // Try system environment variable first
         $val = getenv($envVar);
         if ($val !== false && $val !== '') {
             return $val;
         }
 
-        // Try .env file
         $envPath = __DIR__ . '/../../.env';
-        if (! file_exists($envPath)) {
+        if (!file_exists($envPath)) {
             return $val;
         }
 
-        // Parse .env file
         $lines = file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        // Check if file() succeeded
         if ($lines === false) {
             return $val;
         }
@@ -131,7 +145,7 @@ class Database
         foreach ($lines as $line) {
             $line = trim($line);
 
-            // Skip empty lines and comments
+            // Skip comments and empty lines
             if ($line === '' || $line[0] === '#' || $line[0] === ';') {
                 continue;
             }
@@ -139,12 +153,11 @@ class Database
                 continue;
             }
 
-            // Parse key=value pairs
             [$key, $value] = explode('=', $line, 2);
             $key = trim($key);
             $value = trim($value);
 
-            // Remove quotes from values
+            // Remove surrounding quotes if present
             if (
                 (str_starts_with($value, '"') && str_ends_with($value, '"')) ||
                 (str_starts_with($value, "'") && str_ends_with($value, "'"))
@@ -158,26 +171,27 @@ class Database
     }
 
     /**
-     * Checks if the database connection is alive
+     * Checks if the database connection is alive.
      *
      * Verifies the database connection is established and responsive.
-     * Useful for health checks and connection validation.
+     * Useful for health checks (e.g., API status endpoints).
      *
-     * @throws DataBaseException If connection is not available or not responding
+     * @throws DataBaseException If connection is not available or not responding.
+     * @return void
      */
     public static function checkConnection(): void
     {
         try {
-            $db = self:: getConnection();
+            $db = self::getConnection();
             if (!$db->ping()) {
                 throw new DataBaseException(
-                    "Unable to connect to the database " .
+                    "Unable to connect to the database, " .
                     "please contact sae-manager@alwaysdata.net"
                 );
             }
         } catch (\Exception $e) {
             throw new DataBaseException(
-                "Unable to connect to the database " .
+                "Unable to connect to the database, " .
                 "please contact sae-manager@alwaysdata.net"
             );
         }
