@@ -1554,3 +1554,60 @@ section.main,
         border-color: var(--dm-border);
     }
 }
+
+
+
+
+.session-toast {
+    position: fixed;
+    /* On relève le toast pour éviter le footer (ajuste cette valeur si ton footer est plus grand) */
+    bottom: 140px;
+
+    /* Design mobile par défaut : centré et large */
+    left: 20px;
+    right: 20px;
+    margin: 0 auto;
+    max-width: 100%;
+    text-align: center;
+
+    /* Apparence */
+    background-color: #f97316; /* Orange d'avertissement */
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+
+    /* Animation (vient du bas sur mobile) */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s;
+}
+
+/* État actif */
+.session-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+@media (min-width: 768px) {
+    .session-toast {
+        /* On le place en bas à droite */
+        left: auto;
+        right: 20px;
+        bottom: 100px; /* Ajuste si le footer PC est plus fin */
+
+        max-width: 350px;
+        text-align: left;
+
+        /* Animation (vient de la droite sur PC) */
+        transform: translateX(100%);
+    }
+
+    .session-toast.show {
+        transform: translateX(0);
+    }
+}
