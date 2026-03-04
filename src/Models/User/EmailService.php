@@ -559,10 +559,11 @@ class EmailService
      */
     private function getFromEmail(): string
     {
-        // @phpstan-ignore-next-line function.alreadyNarrowedType
-        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
-            return $this->mailer->From;
+        $from = trim($this->mailer->From);
+        if ($from !== '') {
+            return $from;
         }
+
         $fromEmail = Database::parseEnvVar('FROM_EMAIL');
         return ($fromEmail !== false && !empty($fromEmail)) ? $fromEmail : 'noreply@sae-manager.com';
     }
@@ -574,12 +575,13 @@ class EmailService
      */
     private function getFromName(): string
     {
-        // @phpstan-ignore-next-line function.alreadyNarrowedType
-        if (is_string($this->mailer->From) && !empty($this->mailer->From)) {
-            return $this->mailer->From;
+        $fromName = trim($this->mailer->FromName);
+        if ($fromName !== '') {
+            return $fromName;
         }
-        $fromName = Database::parseEnvVar('FROM_NAME');
-        return $fromName !== false ? $fromName : 'SAE Manager';
+
+        $fromNameEnv = Database::parseEnvVar('FROM_NAME');
+        return ($fromNameEnv !== false && $fromNameEnv !== '') ? $fromNameEnv : 'SAE Manager';
     }
 
     /**
@@ -942,6 +944,63 @@ class EmailService
             "L'équipe SAE Manager";
     }
 
+
+    /**
+     * Sends a password change notification email
+     *
+     * Notifies a real user that their password was changed from their profile.
+     *
+     * @param string $email User's email address
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendPasswordChangedNotificationEmail(string $email): bool
+    {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($email);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Modification de votre mot de passe - SAE Manager';
+
+            $loginLink = $this->getBaseUrl() . '/login';
+
+            $emailView = new \Views\Email\EmailView('password_changed', [
+                'LOGIN_LINK' => $loginLink
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getPasswordChangedEmailTextBody($loginLink);
+
+            $this->mailer->send();
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (password changed notification): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($email);
+        }
+    }
+
+    /**
+     * Generates plain text version of password change notification email
+     *
+     * @param string $loginLink Link to the login page
+     * @return string Plain text email body
+     */
+    private function getPasswordChangedEmailTextBody(string $loginLink): string
+    {
+        return "Bonjour,\n\n" .
+            "Le mot de passe de votre compte SAE Manager a été modifié avec succès.\n\n" .
+            "Si vous êtes à l'origine de cette modification, vous pouvez ignorer cet email.\n\n" .
+            "ATTENTION : Si vous n'avez pas modifié votre mot de passe, un tiers a peut-être accédé à votre compte. " .
+            "Veuillez réinitialiser votre mot de passe immédiatement ou contacter un administrateur.\n\n" .
+            "Accéder à mon compte : {$loginLink}\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
+
     /**
      * Sends a message from responsable to student
      *
@@ -1005,4 +1064,5 @@ class EmailService
             return $this->sendViaFallback($studentEmail);
         }
     }
+
 }
