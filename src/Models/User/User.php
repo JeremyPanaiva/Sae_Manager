@@ -231,7 +231,9 @@ class User
             $order = 'ASC';
         }
 
-        $sql = "SELECT id, nom, prenom, mail, role FROM users ORDER BY $sort $order LIMIT ? OFFSET ?";
+        $sql = "SELECT id, nom, prenom, mail, role FROM users 
+                                   WHERE is_verified = 1 
+                                   ORDER BY $sort $order LIMIT ? OFFSET ?";
         $stmt = $conn->prepare($sql);
         if (!$stmt) {
             throw new DataBaseException("Erreur de préparation SQL dans getUsersPaginated.");
@@ -267,7 +269,7 @@ class User
             throw new DataBaseException("Impossible de se connecter à la base de données.");
         }
 
-        $result = $conn->query("SELECT COUNT(*) AS total FROM users");
+        $result = $conn->query("SELECT COUNT(*) AS total FROM users WHERE is_verified = 1");
         if (!($result instanceof \mysqli_result)) {
             throw new DataBaseException("Échec de la requête SQL dans countUsers.");
         }
@@ -462,6 +464,26 @@ class User
         $stmt->close();
 
         return $result;
+    }
+
+
+    /**
+     * Saves the JWT token for a user in the database.
+     *
+     * @param int    $userId The user's ID
+     * @param string $token  The JWT token to save
+     * @return void
+     */
+    public function saveJwtToken(int $userId, string $token): void
+    {
+        $conn = \Models\Database::getConnection();
+        $stmt = $conn->prepare("UPDATE users SET jwt_token = ? WHERE id = ?");
+        if ($stmt === false) {
+            return;
+        }
+        $stmt->bind_param("si", $token, $userId);
+        $stmt->execute();
+        $stmt->close();
     }
 
     /**
