@@ -91,7 +91,8 @@ class LoginPost implements ControllerInterface
             }
 
             $userId       = isset($userData['id']) && is_numeric($userData['id']) ? (int)$userData['id'] : 0;
-            $isVerified   = isset($userData['is_verified']) && is_numeric($userData['is_verified']) ? (int)$userData['is_verified'] : 1;
+            $isVerified   = isset($userData['is_verified']) && is_numeric($userData['is_verified']) ?
+                (int)$userData['is_verified'] : 1;
             $passwordHash = isset($userData['mdp']) && is_string($userData['mdp']) ? $userData['mdp'] : '';
             $role         = isset($userData['role']) && is_string($userData['role']) ?
                 strtolower(trim($userData['role'])) : 'etudiant';
