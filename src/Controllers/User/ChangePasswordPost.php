@@ -4,7 +4,8 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\Database;
-use Models\User\Log; // Ajout de l'import pour la journalisation
+use Models\User\Log;
+use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
 
@@ -168,8 +169,8 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // Retrieve current password hash and last change timestamp
-            $stmt = $conn->prepare("SELECT mdp, last_password_change FROM users WHERE id = ?");
+            // Retrieve current password hash, last change timestamp, previous password hash, and email
+            $stmt = $conn->prepare("SELECT mdp, last_password_change, previous_mdp, mail FROM users WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
             }
@@ -197,6 +198,9 @@ class ChangePasswordPost implements ControllerInterface
                 header('Location: /user/change-password?error=wrong_password');
                 exit;
             }
+
+            // Extract email for notification
+            $userEmail = isset($user['mail']) && is_string($user['mail']) ? $user['mail'] : '';
 
             // Check rate limit (24 hours)
             if (!empty($user['last_password_change'])) {
@@ -247,20 +251,48 @@ class ChangePasswordPost implements ControllerInterface
                 exit;
             }
 
+            // Ensure new password is different from previous password
+            $previousPasswordHash = isset($user['previous_mdp']) && is_string($user['previous_mdp'])
+                ? $user['previous_mdp'] : '';
+            if ($previousPasswordHash !== '' && password_verify($newPassword, $previousPasswordHash)) {
+                $logger->create(
+                    $userId,
+                    'ECHEC_MDP_PRECEDENT',
+                    'users',
+                    $userId,
+                    "Ce mot de passe a déjà été utilisé. Veuillez utiliser un mot de passe différent."
+                );
+                header('Location: /user/change-password?error=previous_password');
+                exit;
+            }
+
             // Hash and update the new password (and timestamp)
             $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
             // Indique au Trigger SQL qu'il s'agit d'une modification classique via le profil
             $conn->query("SET @pwd_action_type = 'CHANGE'");
 
-            $updateStmt = $conn->prepare("UPDATE users SET mdp = ?, last_password_change = NOW() WHERE id = ?");
+            $updateStmt = $conn->prepare(
+                "UPDATE users SET previous_mdp = ?, mdp = ?, last_password_change = NOW() WHERE id = ?"
+            );
             if (!$updateStmt) {
                 throw new DataBaseException("Erreur de préparation SQL update");
             }
 
-            $updateStmt->bind_param("si", $hashedPassword, $userId);
+            $updateStmt->bind_param("ssi", $currentPasswordHash, $hashedPassword, $userId);
             $updateStmt->execute();
             $updateStmt->close();
+
+            // Send password change notification email
+            if (!empty($userEmail)) {
+                try {
+                    $emailService = new EmailService();
+                    $emailService->sendPasswordChangedNotificationEmail($userEmail);
+                } catch (\Exception $e) {
+                    // Log email sending error but don't fail the password change
+                    error_log("Erreur lors de l'envoi de l'email de notification changement MDP: " . $e->getMessage());
+                }
+            }
 
             // Redirect with success message (Success log handled by SQL trigger)
             header('Location: /user/profile?success=password_updated');
