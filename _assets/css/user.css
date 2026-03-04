@@ -520,3 +520,44 @@
     gap: 12px;
     justify-content: center;
 }
+
+.dark-mode .modal-box {
+    background: var(--dm-01);
+    color: var(--dm-text-high);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .modal-box h3 {
+    color: var(--dm-text-high);
+}
+
+.dark-mode .modal-box p {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .modal-error {
+    background: var(--dm-error-bg);
+    color: var(--dm-error);
+    border: 1px solid rgba(251, 113, 133, 0.25);
+}
+
+.dark-mode .modal-input {
+    background: var(--dm-00);
+    color: var(--dm-text-high);
+    border: 1px solid var(--dm-border);
+}
+
+.dark-mode .modal-input::placeholder {
+    color: var(--dm-text-disabled);
+}
+
+.dark-mode .modal-input:focus {
+    border-color: var(--dm-accent);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+}
+
+.dark-mode .modal-input.input-error {
+    border-color: var(--dm-error);
+    background: var(--dm-error-bg);
+}
+
