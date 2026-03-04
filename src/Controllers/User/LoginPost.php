@@ -8,27 +8,40 @@ use Models\User\Log;
 use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
+use Shared\JwtService;
 use Views\User\LoginView;
 
 /**
  * Class LoginPost
  *
  * Handles the POST request for user authentication.
- * It strictly validates input types to satisfy static analysis (PHPStan)
- * and delegates audit logging to the Log model.
+ * Includes rate limiting to prevent brute-force attacks
+ * and JWT generation for automatic session expiration after 1 hour.
  *
  * @package Controllers\User
  */
 class LoginPost implements ControllerInterface
 {
     /**
-     * Executes the login logic.
+     * Maximum number of failed login attempts before lockout.
+     */
+    private const MAX_ATTEMPTS = 5;
+
+    /**
+     * Lockout duration in seconds (15 minutes).
+     */
+    private const LOCKOUT_DURATION = 900;
+
+    /**
+     * Executes the login logic with rate limiting and JWT session management.
      *
      * 1. Sanitizes inputs.
-     * 2. Retrieves user data.
-     * 3. Safely extracts and casts database values.
-     * 4. Validates business rules (Account verified, Password correct).
-     * 5. Logs the result.
+     * 2. Checks rate limiting (lockout).
+     * 3. Retrieves user data.
+     * 4. Safely extracts and casts database values.
+     * 5. Validates business rules (Account verified, Password correct).
+     * 6. Generates a JWT token valid for 1 hour.
+     * 7. Logs the result.
      *
      * @return void
      */
@@ -128,28 +141,53 @@ class LoginPost implements ControllerInterface
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
-                $validationExceptions[] = new ValidationException("Incorrect Password.");
+                $rawAttempts  = $_SESSION[$attemptsKey] ?? 0;
+                $prevAttempts = is_numeric($rawAttempts) ? (int)$rawAttempts : 0;
+                $attempts     = $prevAttempts + 1;
+                $_SESSION[$attemptsKey] = $attempts;
+
+                $remaining = self::MAX_ATTEMPTS - $attempts;
+
+                if ($attempts >= self::MAX_ATTEMPTS) {
+                    // Déclencher le blocage
+                    $_SESSION[$lockoutKey] = time() + self::LOCKOUT_DURATION;
+                    unset($_SESSION[$attemptsKey]);
+                    $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte bloqué 
+                    après $attempts tentatives : $email");
+
+                    $validationExceptions[] = new ValidationException(
+                        "Trop de tentatives échouées. Votre accès est bloqué pendant 15 minutes."
+                    );
+                } else {
+                    $validationExceptions[] = new ValidationException(
+                        "Mot de passe incorrect. Il vous reste $remaining tentative(s) avant blocage."
+                    );
+                }
+
                 throw new ArrayException($validationExceptions);
             }
 
-            // --- LOGIN SUCCESS ---
+            unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
-            if (session_status() === PHP_SESSION_NONE) {
-                session_start();
-            }
+            $jwt = JwtService::generate([
+                'sub'  => $userId,
+                'role' => $role,
+                'mail' => $userData['mail'] ?? $email,
+            ]);
 
+            $_SESSION['jwt_token'] = $jwt;
             $_SESSION['user'] = [
                 'id' => $userId,
                 'nom' => $nom,
                 'prenom' => $prenom,
-                'mail' => $userData['mail'] ?? $email,
-                'role' => $role
+                'mail'   => $userData['mail'] ?? $email,
+                'role'   => $role,
             ];
 
-            // Audit: Log success
-            $fullName = $nom . ' ' . $prenom;
+            $User->saveJwtToken($userId, $jwt);
 
-            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de  : $fullName");
+            $fullName = $nom . ' ' . $prenom;
+            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de : $fullName");
 
             header("Location: /");
             exit();

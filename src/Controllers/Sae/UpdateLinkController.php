@@ -4,6 +4,7 @@ namespace Controllers\Sae;
 
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
+use Shared\SessionGuard;
 
 /**
  * UpdateLinkController
@@ -33,6 +34,7 @@ class UpdateLinkController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         // Ensure the request is sent via POST method
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /dashboard');

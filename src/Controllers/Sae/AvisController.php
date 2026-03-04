@@ -5,6 +5,7 @@ namespace Controllers\Sae;
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAvis;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * SAE feedback controller
@@ -48,6 +49,7 @@ class AvisController implements ControllerInterface
      */
     public function control()
     {
+        SessionGuard::check();
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
         $path = is_string($requestUri) ? parse_url($requestUri, PHP_URL_PATH) : null;
         $method = $_SERVER['REQUEST_METHOD'] ?? '';

@@ -9,6 +9,7 @@ use Models\User\EmailService;
 use Models\Database;
 use Views\User\ProfileView;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * Class ProfileController
@@ -59,6 +60,7 @@ class ProfileController implements ControllerInterface
      */
     public function control(): void
     {
+        SessionGuard::check();
         // Ensure session is started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

@@ -37,15 +37,14 @@ class Login implements ControllerInterface
     {
         $successMessage = '';
 
-        // Process success messages from query parameters
         if (isset($_GET['success'])) {
             if ($_GET['success'] === 'password_reset') {
                 $successMessage = "Votre mot de passe a été réinitialisé avec succès.
                   Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'account_verified') {
-                $successMessage = "Votre compte a été vérifié avec succès.   Vous pouvez maintenant vous connecter.";
+                $successMessage = "Votre compte a été vérifié avec succès. Vous pouvez maintenant vous connecter.";
             } elseif ($_GET['success'] === 'registered') {
-                $successMessage = "Inscription réussie. 
+                $successMessage = "Inscription réussie.
                 Veuillez vérifier votre email pour activer votre compte.";
             } elseif ($_GET['success'] === 'email_changed') {
                 $successMessage = "Votre email a été mis à jour.
@@ -55,7 +54,6 @@ class Login implements ControllerInterface
 
         $errors = [];
 
-        // Process error messages from query parameters
         if (isset($_GET['error'])) {
             if ($_GET['error'] === 'invalid_token') {
                 $errors[] = new \Shared\Exceptions\ValidationException("Le lien
@@ -66,7 +64,12 @@ class Login implements ControllerInterface
             }
         }
 
-        // Render login view with messages
+        if (isset($_GET['expired']) && $_GET['expired'] === '1') {
+            $errors[] = new \Shared\Exceptions\ValidationException(
+                "Votre session a expiré. Veuillez vous reconnecter."
+            );
+        }
+
         $view = new LoginView($errors, $successMessage);
         echo $view->render();
     }

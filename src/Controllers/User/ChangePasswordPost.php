@@ -7,6 +7,7 @@ use Models\Database;
 use Models\User\Log;
 use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 /**
  * Class ChangePasswordPost
@@ -60,6 +61,7 @@ class ChangePasswordPost implements ControllerInterface
      */
     public function control(): void
     {
+        SessionGuard::check();
         // Ensure session is started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

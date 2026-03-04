@@ -5,6 +5,7 @@ namespace Controllers\Dashboard;
 use Controllers\ControllerInterface;
 use Models\Sae\TodoList;
 use Shared\Exceptions\DataBaseException;
+use Shared\SessionGuard;
 
 class TodoController implements ControllerInterface
 {
@@ -14,6 +15,8 @@ class TodoController implements ControllerInterface
 
     public function control()
     {
+        SessionGuard::check();
+
         $pathString = $_SERVER['REQUEST_URI'] ?? '';
         // Vérification explicite du type pour PHPStan
         if (!is_string($pathString)) {

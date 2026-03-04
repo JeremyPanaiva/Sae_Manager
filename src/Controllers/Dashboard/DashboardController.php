@@ -8,6 +8,7 @@ use Models\Sae\TodoList;
 use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
 use Models\User\User;
+use Shared\SessionGuard;
 
 class DashboardController implements ControllerInterface
 {
@@ -15,6 +16,8 @@ class DashboardController implements ControllerInterface
 
     public function control()
     {
+        SessionGuard::check();
+
         if (!isset($_SESSION['user'])) {
             header('Location: /login');
             exit();
