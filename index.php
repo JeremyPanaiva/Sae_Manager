@@ -30,9 +30,13 @@ date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 require_once "Autoloader.php";
 \Autoloader::register();
 
+// Placed early to ensure $_SESSION is available before any controller is instantiated.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Import all controller classes
 use Controllers\Dashboard\TodoController;
-use Controllers\Dashboard\SendMessageController; // ← LIGNE AJOUTÉE
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
@@ -62,6 +66,7 @@ use Controllers\Legal\ContactPost;
 use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
+use Controllers\Sae\UpdateLinkController;
 
 // Start PHP session if not already started
 if (session_status() === PHP_SESSION_NONE) {
@@ -119,7 +124,7 @@ $controllers = [
     new ChangePassword(),
     new ChangePasswordPost(),
     new DeadlineReminderController(),
-    new SendMessageController(), // ← LIGNE AJOUTÉE
+    new UpdateLinkController(),
 ];
 
 // Extract the path from the request URI (without query string parameters)
@@ -150,3 +155,4 @@ foreach ($controllers as $controller) {
 $home = new HomeController();
 $home->control();
 exit();
+
