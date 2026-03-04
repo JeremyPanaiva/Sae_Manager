@@ -3,57 +3,84 @@
 namespace Controllers\User;
 
 use Controllers\ControllerInterface;
-use Views\Home\HomeView;
+use Models\User\Log;
+use Models\User\User;
 
 /**
- * User logout controller
+ * Class Logout
  *
- * Handles user logout by destroying the session and redirecting to the home page.
- * Clears all session data to ensure the user is fully logged out.
+ * Handles user disconnection.
+ * Clears the JWT token from the database, ensures the logout event is recorded
+ * in the audit logs before destroying the session and redirecting the user.
  *
  * @package Controllers\User
  */
 class Logout implements ControllerInterface
 {
-    /**
-     * Logout route path
-     *
-     * @var string
-     */
     public const PATH = "/user/logout";
 
     /**
-     * Main controller method
+     * Executes the logout logic.
      *
-     * Destroys the user session and redirects to the home page.
-     * Note: The view rendering after header redirect is unreachable code
-     * and could be removed.
+     * 1. Checks if a user is currently logged in using strict type checks.
+     * 2. Logs the 'DECONNEXION' event via the Log model.
+     * 3. Invalidates the JWT token in the database.
+     * 4. Destroys the PHP session.
+     * 5. Redirects to the homepage.
      *
      * @return void
      */
     public function control(): void
     {
-        // Clear all session variables
-        $_SESSION = [];
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-        // Destroy the session
+        // 1. Safe Session Access (Fixes: "Cannot access offset on mixed")
+        // We extract the user array into a variable and verify it IS an array.
+        $userSession = $_SESSION['user'] ?? null;
+
+        if (is_array($userSession)) {
+            // 2. Safe ID Extraction (Fixes: "Cannot cast mixed to int")
+            $rawId = $userSession['id'] ?? 0;
+
+            // Only proceed if we have a valid numeric ID
+            if (is_numeric($rawId)) {
+                $userId = (int)$rawId;
+
+                // 3. Safe String Extraction (Fixes: "Part of encapsed string cannot be cast")
+                $nomRaw = $userSession['nom'] ?? '';
+                $nom = is_string($nomRaw) ? $nomRaw : '';
+
+                $prenomRaw = $userSession['prenom'] ?? '';
+                $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+
+                // Audit: Log disconnection
+                $Logger = new Log();
+                $Logger->create(
+                    $userId,
+                    'DECONNEXION',
+                    'users',
+                    $userId,
+                    "Déconnexion de : $nom $prenom"
+                );
+
+                $userModel = new User();
+                $userModel->saveJwtToken($userId, '');
+            }
+        }
+
+        // Destroy Session
+        $_SESSION = [];
         session_destroy();
 
-        // Redirect to home page
+        // Redirect
         header("Location: /");
-
-        // Note: This code is unreachable due to the header redirect above
-        // Consider removing if not needed
-        $view = new HomeView();
-        echo $view->render();
+        exit();
     }
 
     /**
-     * Checks if this controller supports the given route and HTTP method
-     *
-     * @param string $chemin The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path is '/user/logout' and method is GET
+     * Router Support Check
      */
     public static function support(string $chemin, string $method): bool
     {
