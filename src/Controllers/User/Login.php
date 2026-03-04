@@ -37,7 +37,6 @@ class Login implements ControllerInterface
     {
         $successMessage = '';
 
-        // Process success messages from query parameters
         if (isset($_GET['success'])) {
             if ($_GET['success'] === 'password_reset') {
                 $successMessage = "Votre mot de passe a été réinitialisé avec succès.
@@ -55,7 +54,6 @@ class Login implements ControllerInterface
 
         $errors = [];
 
-        // Process error messages from query parameters
         if (isset($_GET['error'])) {
             if ($_GET['error'] === 'invalid_token') {
                 $errors[] = new \Shared\Exceptions\ValidationException("Le lien
@@ -66,15 +64,12 @@ class Login implements ControllerInterface
             }
         }
 
-        // --- SESSION EXPIRATION (JWT) ---
-        // Affiché quand le SessionGuard redirige avec ?expired=1
         if (isset($_GET['expired']) && $_GET['expired'] === '1') {
             $errors[] = new \Shared\Exceptions\ValidationException(
-                "Votre session a expiré après 1 heure d'inactivité. Veuillez vous reconnecter."
+                "Votre session a expiré. Veuillez vous reconnecter."
             );
         }
 
-        // Render login view with messages
         $view = new LoginView($errors, $successMessage);
         echo $view->render();
     }

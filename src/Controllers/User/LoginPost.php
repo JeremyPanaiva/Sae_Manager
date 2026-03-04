@@ -156,7 +156,6 @@ class LoginPost implements ControllerInterface
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Wrong Password for: $email");
 
-                // FIX PHPSTAN (binaryOp.invalid): extraire et typer explicitement avant l'opération arithmétique
                 $rawAttempts  = $_SESSION[$attemptsKey] ?? 0;
                 $prevAttempts = is_numeric($rawAttempts) ? (int)$rawAttempts : 0;
                 $attempts     = $prevAttempts + 1;
@@ -183,19 +182,14 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException($validationExceptions);
             }
 
-            // --- LOGIN SUCCESS ---
-
-            // Réinitialiser le compteur en cas de succès
             unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
-            // Générer un JWT valable 1 heure
             $jwt = JwtService::generate([
                 'sub'  => $userId,
                 'role' => $role,
                 'mail' => $userData['mail'] ?? $email,
             ]);
 
-            // Stocker le JWT en session et en base de données
             $_SESSION['jwt_token'] = $jwt;
             $_SESSION['user'] = [
                 'id'     => $userId,
@@ -205,10 +199,8 @@ class LoginPost implements ControllerInterface
                 'role'   => $role,
             ];
 
-            // Persister le JWT en BDD pour pouvoir l'invalider côté serveur si besoin
             $User->saveJwtToken($userId, $jwt);
 
-            // Audit: Log success
             $fullName = $nom . ' ' . $prenom;
             $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de : $fullName");
 

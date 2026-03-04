@@ -34,7 +34,6 @@ class SessionGuard
             session_start();
         }
 
-        // No active session → not authenticated (but not expired either)
         if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             if ($redirectOnFail) {
                 header('Location: /user/login');
@@ -43,7 +42,6 @@ class SessionGuard
             return false;
         }
 
-        // Extract JWT from session
         $rawToken = $_SESSION['jwt_token'] ?? null;
 
         // No JWT in session → legacy session without token, force re-login
@@ -56,7 +54,6 @@ class SessionGuard
         $payload = JwtService::validate($rawToken);
 
         if ($payload === null) {
-            // Token expired or tampered with → auto logout
             self::expireSession($redirectOnFail);
             return false;
         }
@@ -72,7 +69,6 @@ class SessionGuard
      */
     private static function expireSession(bool $redirect): void
     {
-        // Log the automatic disconnection if user data is available
         $userSession = $_SESSION['user'] ?? null;
         if (is_array($userSession)) {
             $rawId = $userSession['id'] ?? 0;

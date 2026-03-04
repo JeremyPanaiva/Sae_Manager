@@ -65,7 +65,6 @@ class Logout implements ControllerInterface
                     "Déconnexion de : $nom $prenom"
                 );
 
-                // 4. Invalidate JWT token in database
                 $userModel = new User();
                 $userModel->saveJwtToken($userId, '');
             }
