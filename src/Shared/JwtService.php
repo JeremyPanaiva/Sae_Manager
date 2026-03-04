@@ -21,7 +21,7 @@ class JwtService
     /**
      * Token lifetime in seconds (1 hour).
      */
-    public const TTL = 10;
+    public const TTL = 3600;
 
     /**
      * Generates a signed JWT for the given user payload.
