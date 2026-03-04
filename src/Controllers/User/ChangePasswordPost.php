@@ -4,7 +4,8 @@ namespace Controllers\User;
 
 use Controllers\ControllerInterface;
 use Models\Database;
-use Models\User\Log; // Ajout de l'import pour la journalisation
+use Models\User\Log;
+use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
 
 /**
@@ -166,8 +167,8 @@ class ChangePasswordPost implements ControllerInterface
         try {
             $conn = Database::getConnection();
 
-            // Retrieve current password hash, last change timestamp, and previous password hash
-            $stmt = $conn->prepare("SELECT mdp, last_password_change, previous_mdp FROM users WHERE id = ?");
+            // Retrieve current password hash, last change timestamp, previous password hash, and email
+            $stmt = $conn->prepare("SELECT mdp, last_password_change, previous_mdp, mail FROM users WHERE id = ?");
             if (!$stmt) {
                 throw new DataBaseException("Erreur de préparation SQL");
             }
@@ -195,6 +196,9 @@ class ChangePasswordPost implements ControllerInterface
                 header('Location: /user/change-password?error=wrong_password');
                 exit;
             }
+
+            // Extract email for notification
+            $userEmail = isset($user['mail']) && is_string($user['mail']) ? $user['mail'] : '';
 
             // Check rate limit (24 hours)
             if (!empty($user['last_password_change'])) {
@@ -276,6 +280,17 @@ class ChangePasswordPost implements ControllerInterface
             $updateStmt->bind_param("ssi", $currentPasswordHash, $hashedPassword, $userId);
             $updateStmt->execute();
             $updateStmt->close();
+
+            // Send password change notification email
+            if (!empty($userEmail)) {
+                try {
+                    $emailService = new EmailService();
+                    $emailService->sendPasswordChangedNotificationEmail($userEmail);
+                } catch (\Exception $e) {
+                    // Log email sending error but don't fail the password change
+                    error_log("Erreur lors de l'envoi de l'email de notification changement MDP: " . $e->getMessage());
+                }
+            }
 
             // Redirect with success message (Success log handled by SQL trigger)
             header('Location: /user/profile?success=password_updated');
