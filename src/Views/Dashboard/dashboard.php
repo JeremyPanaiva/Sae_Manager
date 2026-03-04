@@ -179,6 +179,7 @@
                                         $studentCount = count($students);
 
 
+
                                         echo '<div class="sae-group">';
                                         echo '<div class="sae-group-header" ';
                                         echo 'onclick="toggleSaeGroup(' . $saeId . ')">';

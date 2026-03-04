@@ -8,6 +8,7 @@ use Models\Sae\TodoList;
 use Models\Sae\SaeAvis;
 use Views\Dashboard\DashboardView;
 use Models\User\User;
+use Shared\SessionGuard;
 
 class DashboardController implements ControllerInterface
 {
@@ -15,6 +16,8 @@ class DashboardController implements ControllerInterface
 
     public function control()
     {
+        SessionGuard::check();
+
         if (!isset($_SESSION['user'])) {
             header('Location: /login');
             exit();
@@ -98,8 +101,11 @@ class DashboardController implements ControllerInterface
                 $saeId = $sae['id'];
                 $attributions = SaeAttribution::getAttributionsBySae($saeId);
 
+                $sae['github_link'] = !empty($attributions) ? ($attributions[0]['github_link'] ?? '') : '';
+
                 $sae['todos'] = TodoList::getBySae($saeId);
                 $sae['avis'] = SaeAvis::getBySae($saeId);
+
 
                 foreach ($attributions as &$attrib) {
                     if (isset($attrib['student_id']) && is_int($attrib['student_id'])) {
@@ -109,11 +115,15 @@ class DashboardController implements ControllerInterface
 
                 $sae['attributions'] = $attributions;
 
+
                 $dateRendu = (isset($attributions[0]['date_rendu']) && is_string($attributions[0]['date_rendu']))
                     ? $attributions[0]['date_rendu']
                     : '';
 
+
                 $sae['countdown'] = $this->calculateCountdown($dateRendu);
+
+
                 $saes[] = $sae;
             }
         }
@@ -162,61 +172,7 @@ class DashboardController implements ControllerInterface
         }
     }
 
-    /**
-     * @param array{
-     *     expired: bool,
-     *     jours?: int,
-     *     heures?: int,
-     *     minutes?: int,
-     *     timestamp?: int,
-     *     urgent?: bool
-     * }|null $countdown
-     */
-    public static function generateCountdownHTML(?array $countdown, string $uniqueId): string
-    {
-        if ($countdown === null) {
-            return "<span class='countdown-error'>Date invalide</span>";
-        }
 
-        if ($countdown['expired']) {
-            return "<span class='countdown-expired'>Délai expiré</span>";
-        }
-
-        $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
-
-        return
-            "<div class='countdown-container{$urgentClass}' " .
-            "data-deadline='" . ($countdown['timestamp'] ?? 0) . "' " .
-            "id='countdown-{$uniqueId}'>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='jours'>" .
-            ($countdown['jours'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>jours</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='heures'>" .
-            ($countdown['heures'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>heures</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='minutes'>" .
-            ($countdown['minutes'] ?? 0) .
-            "</span>" .
-            "<span class='countdown-label'>minutes</span>" .
-            "</div>" .
-
-            "<div class='countdown-box'>" .
-            "<span class='countdown-value' data-type='secondes'>0</span>" .
-            "<span class='countdown-label'>secondes</span>" .
-            "</div>" .
-
-            "</div>";
-    }
 
     public static function support(string $path, string $method): bool
     {
