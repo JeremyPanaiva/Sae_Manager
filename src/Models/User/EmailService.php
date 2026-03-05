@@ -1064,5 +1064,4 @@ class EmailService
             return $this->sendViaFallback($studentEmail);
         }
     }
-
 }
