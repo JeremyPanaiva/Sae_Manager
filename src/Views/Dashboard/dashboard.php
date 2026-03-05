@@ -8,6 +8,11 @@
  * @var string $ROLE_KEY
  * @var string $USERNAME_KEY
  * @var string $CONTENT_KEY
+ * @var array<int, array{
+ *     sae_id:int,
+ *     sae_name:string,
+ *     students:array<int, array{id:int, prenom:string, nom:string}>
+ * }> $MESSAGE_RECIPIENTS_KEY
  */
 ?>
 
@@ -78,160 +83,68 @@
 
                 <div class="student-checkbox-list">
                     <?php
-                    $responsableId = 0;
-                    if (
-                        isset($_SESSION['user']) &&
-                        is_array($_SESSION['user']) &&
-                        isset($_SESSION['user']['id'])
-                    ) {
-                        $sessionId = $_SESSION['user']['id'];
-                        $responsableId = is_numeric($sessionId) ? (int)$sessionId : 0;
-                    }
+                    $messageRecipients = $MESSAGE_RECIPIENTS_KEY ?? [];
 
-                    if ($responsableId === 0) {
-                        echo '<p style="color: red;">❌ Erreur: Session invalide</p>';
+                    if (empty($messageRecipients)) {
+                        echo '<p style="color: #666; font-style: italic;">';
+                        echo 'Aucune SAE trouvée pour ce responsable.';
+                        echo '</p>';
                     } else {
-                        try {
-                            $db = \Models\Database::getConnection();
+                        foreach ($messageRecipients as $saeData) {
+                            $saeId = isset($saeData['sae_id']) ? (int) $saeData['sae_id'] : 0;
+                            $saeName = htmlspecialchars((string) ($saeData['sae_name'] ?? 'SAE'));
+                            $students = $saeData['students'] ?? [];
 
-                            $sqlSae = "SELECT DISTINCT s.id as sae_id, s.titre as nom_sae 
-                                       FROM sae s
-                                       INNER JOIN sae_attributions sa ON s.id = sa.sae_id
-                                       WHERE sa.responsable_id = ?
-                                       ORDER BY s.titre";
-
-                            $stmtSae = $db->prepare($sqlSae);
-
-                            if (!$stmtSae) {
-                                $errorMsg = "Erreur préparation requête SAE: " . $db->error;
-                                throw new Exception($errorMsg);
+                            if ($saeId <= 0 || !is_array($students) || empty($students)) {
+                                continue;
                             }
 
-                            $stmtSae->bind_param("i", $responsableId);
+                            $studentCount = count($students);
 
-                            if (!$stmtSae->execute()) {
-                                $errorMsg = "Erreur exécution requête SAE: "
-                                    . $stmtSae->error;
-                                throw new Exception($errorMsg);
-                            }
+                            echo '<div class="sae-group">';
+                            echo '<div class="sae-group-header" ';
+                            echo 'onclick="toggleSaeGroup(' . $saeId . ')">';
+                            echo '<span class="sae-toggle-icon" ';
+                            echo 'id="toggle-icon-' . $saeId . '">▼</span>';
+                            echo '<strong>' . $saeName . '</strong>';
+                            echo '<span class="sae-student-count">';
+                            echo '(' . $studentCount . ' étudiant';
+                            echo ($studentCount > 1 ? 's' : '') . ')';
+                            echo '</span>';
+                            echo '<button type="button" ';
+                            echo 'class="btn-select-sae" ';
+                            echo 'onclick="event.stopPropagation(); ';
+                            echo 'toggleSaeSelection(' . $saeId . ')">';
+                            echo 'Sélectionner tous</button>';
+                            echo '</div>';
 
-                            $resultSae = $stmtSae->get_result();
+                            echo '<div class="sae-group-students" ';
+                            echo 'id="sae-students-' . $saeId . '" ';
+                            echo 'style="display: none;">';
 
-                            if ($resultSae === false) {
-                                $errorMsg = "Erreur récupération résultat SAE: "
-                                    . $stmtSae->error;
-                                throw new Exception($errorMsg);
-                            }
+                            foreach ($students as $student) {
+                                $studentId = htmlspecialchars((string) ((int) ($student['id'] ?? 0)));
+                                $studentName = htmlspecialchars(
+                                    (string) ($student['prenom'] ?? '')
+                                    . ' '
+                                    . (string) ($student['nom'] ?? '')
+                                );
 
-                            $saes = $resultSae->fetch_all(MYSQLI_ASSOC);
-                            $stmtSae->close();
-
-                            if (empty($saes)) {
-                                $msg = 'Aucune SAE trouvée pour ce responsable.';
-                                echo '<p style="color: #666; font-style: italic;">';
-                                echo $msg . '</p>';
-                            } else {
-                                foreach ($saes as $sae) {
-                                    $saeId = (int)$sae['sae_id'];
-                                    $saeName = htmlspecialchars($sae['nom_sae']);
-
-                                    $sqlStudents = "SELECT DISTINCT u.id, u.prenom, u.nom
-                                                    FROM users u
-                                                    INNER JOIN sae_attributions sa 
-                                                    ON u.id = sa.student_id
-                                                    WHERE sa.sae_id = ? 
-                                                    AND u.role = 'Etudiant'
-                                                    ORDER BY u.nom, u.prenom";
-
-                                    $stmtStudents = $db->prepare($sqlStudents);
-
-                                    if (!$stmtStudents) {
-                                        $logMsg = "Erreur préparation requête étudiants "
-                                            . "pour SAE {$saeId}: " . $db->error;
-                                        error_log($logMsg);
-                                        continue;
-                                    }
-
-                                    $stmtStudents->bind_param("i", $saeId);
-
-                                    if (!$stmtStudents->execute()) {
-                                        $logMsg = "Erreur exécution requête étudiants "
-                                            . "pour SAE {$saeId}: " . $stmtStudents->error;
-                                        error_log($logMsg);
-                                        $stmtStudents->close();
-                                        continue;
-                                    }
-
-                                    $resultStudents = $stmtStudents->get_result();
-
-                                    if ($resultStudents === false) {
-                                        $logMsg = "Erreur récupération étudiants "
-                                            . "pour SAE {$saeId}: " . $stmtStudents->error;
-                                        error_log($logMsg);
-                                        $stmtStudents->close();
-                                        continue;
-                                    }
-
-                                    $students = $resultStudents->fetch_all(MYSQLI_ASSOC);
-                                    $stmtStudents->close();
-
-                                    if (!empty($students)) {
-                                        $studentCount = count($students);
-
-
-
-                                        echo '<div class="sae-group">';
-                                        echo '<div class="sae-group-header" ';
-                                        echo 'onclick="toggleSaeGroup(' . $saeId . ')">';
-                                        echo '<span class="sae-toggle-icon" ';
-                                        echo 'id="toggle-icon-' . $saeId . '">▼</span>';
-                                        echo '<strong>' . $saeName . '</strong>';
-                                        echo '<span class="sae-student-count">';
-                                        echo '(' . $studentCount . ' étudiant';
-                                        echo ($studentCount > 1 ? 's' : '') . ')';
-                                        echo '</span>';
-                                        echo '<button type="button" ';
-                                        echo 'class="btn-select-sae" ';
-                                        echo 'onclick="event.stopPropagation(); ';
-                                        echo 'toggleSaeSelection(' . $saeId . ')">';
-                                        echo 'Sélectionner tous</button>';
-                                        echo '</div>';
-
-                                        echo '<div class="sae-group-students" ';
-                                        echo 'id="sae-students-' . $saeId . '" ';
-                                        echo 'style="display: none;">';
-
-                                        foreach ($students as $student) {
-                                            $studentId = htmlspecialchars(
-                                                (string)$student['id']
-                                            );
-                                            $studentName = htmlspecialchars(
-                                                $student['prenom'] . ' ' . $student['nom']
-                                            );
-
-                                            echo '<label class="student-checkbox-label">';
-                                            echo '<input type="checkbox" ';
-                                            echo 'name="student_id[]" ';
-                                            echo 'value="' . $studentId . '" ';
-                                            echo 'class="student-checkbox ';
-                                            echo 'sae-' . $saeId . '-checkbox">';
-                                            echo '<span>' . $studentName . '</span>';
-                                            echo '</label>';
-                                        }
-
-                                        echo '</div>';
-                                        echo '</div>';
-                                    }
+                                if ($studentId === '0' || trim($studentName) === '') {
+                                    continue;
                                 }
+
+                                echo '<label class="student-checkbox-label">';
+                                echo '<input type="checkbox" ';
+                                echo 'name="student_id[]" ';
+                                echo 'value="' . $studentId . '" ';
+                                echo 'class="student-checkbox sae-' . $saeId . '-checkbox">';
+                                echo '<span>' . $studentName . '</span>';
+                                echo '</label>';
                             }
-                        } catch (\Shared\Exceptions\DataBaseException $e) {
-                            error_log('DatabaseException in message modal: ' . $e->getMessage());
-                            echo '<p style="color: red;">';
-                            echo '❌ Erreur de connexion à la base de données.</p>';
-                        } catch (\Throwable $e) {
-                            error_log('Error loading students by SAE: ' . $e->getMessage());
-                            echo '<p style="color: red;">❌ Erreur: ';
-                            echo htmlspecialchars($e->getMessage()) . '</p>';
+
+                            echo '</div>';
+                            echo '</div>';
                         }
                     }
                     ?>
@@ -430,22 +343,3 @@
         }
     });
 </script>
-
-<?php
-if (isset($_GET['success'])) {
-    if ($_GET['success'] === 'message_sent') {
-        echo '<div class="message-success">';
-        echo '✅ Le message a été envoyé avec succès !</div>';
-    } elseif ($_GET['success'] === 'messages_sent') {
-        $count = isset($_GET['count']) ? (int)$_GET['count'] : 0;
-        echo '<div class="message-success">';
-        echo '✅ Le message a été envoyé à ' . $count;
-        echo ' étudiant(s) avec succès !</div>';
-    }
-}
-
-if (isset($_GET['error'])) {
-    echo '<div class="message-error">';
-    echo '❌ Une erreur est survenue lors de l\'envoi du message.</div>';
-}
-?>
