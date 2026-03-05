@@ -500,7 +500,7 @@ class DashboardView extends BaseView
                         document.getElementById(\"messageModal\").style.display=\"block\";
                         document.body.classList.add(\"modal-open\");
                     '>
-                    ✉️&nbsp; Envoyer un message à un étudiant
+                     Envoyer un message à un étudiant
                 </button>";
                 $html .= "</div>";
 
