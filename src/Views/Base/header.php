@@ -25,13 +25,22 @@
  * @author JeremyPanaiva & mohamedDriouchi
  */
 
-// --- LOGIQUE DE SESSION POUR LE COMPTE À REBOURS JS ---
+// --- SESSION LOGIC FOR JS COUNTDOWN ---
 $jwtExp = 0;
-if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
-    $parts = explode('.', $_SESSION['jwt_token']);
+$jwtToken = $_SESSION['jwt_token'] ?? '';
+
+if (is_string($jwtToken) && $jwtToken !== '') {
+    $parts = explode('.', $jwtToken);
+
     if (count($parts) === 3) {
-        $payload = json_decode(base64_decode(strtr($parts[1], '-_', '+/')), true);
-        $jwtExp = $payload['exp'] ?? 0;
+        $decodedStr = base64_decode(strtr($parts[1], '-_', '+/'));
+        $payload = json_decode((string)$decodedStr, true);
+
+        if (is_array($payload)) {
+            $exp = $payload['exp'] ?? 0;
+
+            $jwtExp = is_numeric($exp) ? (int)$exp : 0;
+        }
     }
 }
 ?>
@@ -42,8 +51,9 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="SAE Manager : plateforme de suivi et de gestion des SAE pour les étudiants et enseignants d'AMU.">
-    <link rel="canonical" href="<?php echo $CANONICAL_URL; ?>">
+    <meta name="description" content="SAE Manager : plateforme de suivi
+    et de gestion des SAE pour les étudiants et enseignants d'AMU.">
+    <link rel="canonical" href="<?php echo htmlspecialchars($CANONICAL_URL, ENT_QUOTES); ?>">
 
     <script type="application/ld+json">
         {
@@ -76,7 +86,7 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
     <title>SAE Manager</title>
 </head>
 
-<body data-session-exp="<?php echo $jwtExp; ?>">
+<body data-session-exp="<?php echo (int)$jwtExp; ?>">
 <header class="header">
     <section class="header-content" aria-label="En-tête de la page">
         <section class="logo">
@@ -100,12 +110,17 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
             </div>
 
             <div class="user-actions">
-                <a href="/user/profile" class="btn btn-outline header-btn-transparent" style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon profil</a>
-                <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-logout"><?php echo $CONNECTION_LINK_KEY; ?></a>
-                <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
+                <a href="/user/profile" class="btn btn-outline header-btn-transparent"
+                   style="<?php echo $PROFILE_BTN_STYLE; ?>">Mon profil</a>
+                <a href="<?php echo $LINK_KEY; ?>" class="btn btn-outline header-btn-logout">
+                    <?php echo $CONNECTION_LINK_KEY; ?></a>
+                <a href="<?php echo $INSCRIPTION_LINK_KEY; ?>" class="btn btn-outline"
+                   style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
 
                 <button class="dark-mode-toggle" aria-label="Passer en mode sombre" title="Mode sombre">
-                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -116,7 +131,9 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
                         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
-                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                    <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
                 </button>
@@ -141,13 +158,16 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
     <?php if (empty($ROLE_KEY)) : ?>
         <div class="mobile-user-actions mobile-guest-actions">
             <a href="/user/login" class="mobile-action-btn">Se connecter</a>
-            <a href="/user/register" class="mobile-action-btn" style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
+            <a href="/user/register" class="mobile-action-btn"
+               style="<?php echo $INSCRIPTION_STYLE_KEY; ?>">S'inscrire</a>
         </div>
     <?php endif; ?>
 
     <div class="mobile-dark-mode">
         <button class="dark-mode-toggle mobile-action-btn" aria-label="Passer en mode sombre" title="Mode sombre">
-            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="5"></circle>
                 <line x1="12" y1="1" x2="12" y2="3"></line>
                 <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -158,7 +178,9 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
                 <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                 <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
-            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+            <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
             <span style="margin-left: 8px;">Mode sombre</span>
@@ -182,5 +204,4 @@ if (isset($_SESSION['jwt_token']) && !empty($_SESSION['jwt_token'])) {
 
 <script src="/_assets/script/mobile-menu.js"></script>
 <script src="/_assets/script/dark-mode.js"></script>
-
 <script src="/_assets/script/session-timeout.js"></script>

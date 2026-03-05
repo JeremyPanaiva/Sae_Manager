@@ -1637,14 +1637,10 @@ section.main,
 
     /* --- Comportement Urgent (1 min) --- */
     .session-toast.toast-urgent {
-        /* On le recentre en haut de l'écran (ne reste pas bloqué à droite) */
-        left: 0;
-        right: 0;
-        margin: 0 auto;
-        max-width: 500px;
-        text-align: center;
-
-        /* On remplace l'animation venant de la droite par celle venant du haut */
+        bottom: auto;
+        top: 110px; /* On descend un peu plus pour éviter la barre de nav (augmente si besoin) */
+        background-color: #ef4444;
+        pointer-events: none; /* MAGIE : Les clics passent à travers le message ! */
         transform: translateY(-20px);
     }
 

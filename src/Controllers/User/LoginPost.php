@@ -29,7 +29,7 @@ class LoginPost implements ControllerInterface
     private const LOCKOUT_DURATION = 900;
 
     /**
-     * Executes the login logic with rate limiting and JWT session management.
+     * Executes the login logic with rate limiting and session management.
      *
      * @return void
      */
@@ -46,31 +46,35 @@ class LoginPost implements ControllerInterface
         $Logger = new Log();
         $validationExceptions = [];
 
+        // Create unique session keys based on the email hash
         $emailHash = md5($email);
         $attemptsKey = "login_attempts_" . $emailHash;
         $lockoutKey = "login_lockout_" . $emailHash;
 
+        // 1. Check if the account is currently locked out
         if (isset($_SESSION[$lockoutKey]) && is_numeric($_SESSION[$lockoutKey])) {
             $lockoutTime = (int)$_SESSION[$lockoutKey];
             if (time() < $lockoutTime) {
                 $remainingSeconds = $lockoutTime - time();
                 $minutes = (int)ceil($remainingSeconds / 60);
 
+                // UI Error in French
                 $view = new LoginView([
-                    new ValidationException("Too many attempts. Please try again in approximately $minutes minutes.")
+                    new ValidationException("Trop de tentatives. Veuillez réessayer dans environ $minutes minute(s).")
                 ]);
                 echo $view->render();
                 return;
             }
         }
 
+        // 2. Validate field formats
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Invalid Email Format: $email");
-            $validationExceptions[] = new ValidationException("Invalid email format.");
+            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Invalid email format: $email");
+            $validationExceptions[] = new ValidationException("Le format de l'adresse email est invalide.");
         }
 
         if (empty($mdp)) {
-            $validationExceptions[] = new ValidationException("Password cannot be empty.");
+            $validationExceptions[] = new ValidationException("Le mot de passe ne peut pas être vide.");
         }
 
         try {
@@ -78,16 +82,18 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException($validationExceptions);
             }
 
+            // 3. Retrieve user from database
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
                 $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0, "DB Error: " . $dbEx->getMessage());
-                throw new ArrayException([new ValidationException("System error during login.")]);
+                throw new ArrayException([new ValidationException("Erreur système lors de la connexion.")]);
             }
 
+            // 4. Email does not exist in the database
             if (!$userData) {
                 $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Unknown user: $email");
-                throw new ArrayException([new ValidationException("Invalid credentials.")]);
+                throw new ArrayException([new ValidationException("Adresse email invalide ou inconnue.")]);
             }
 
             $userId       = isset($userData['id']) && is_numeric($userData['id']) ? (int)$userData['id'] : 0;
@@ -99,11 +105,14 @@ class LoginPost implements ControllerInterface
             $nom          = isset($userData['nom']) && is_string($userData['nom']) ? $userData['nom'] : '';
             $prenom       = isset($userData['prenom']) && is_string($userData['prenom']) ? $userData['prenom'] : '';
 
+            // 5. Check if the account is verified
             if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Unverified account: $email");
-                throw new ArrayException([new ValidationException("Account not verified. Please check your emails.")]);
+                throw new ArrayException([new ValidationException("Compte 
+                non vérifié. Veuillez consulter vos emails.")]);
             }
 
+            // 6. Incorrect password
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $sessionAttempts = isset($_SESSION[$attemptsKey]) &&
                 is_numeric($_SESSION[$attemptsKey]) ? (int)$_SESSION[$attemptsKey] : 0;
@@ -118,23 +127,28 @@ class LoginPost implements ControllerInterface
                     "Wrong password ($attempts/" . self::MAX_ATTEMPTS . "): $email"
                 );
 
+                // If max attempts reached, lock the account
                 if ($attempts >= self::MAX_ATTEMPTS) {
                     $_SESSION[$lockoutKey] = time() + self::LOCKOUT_DURATION;
                     unset($_SESSION[$attemptsKey]);
 
                     throw new ArrayException([
-                        new ValidationException("Too many failed attempts. Your access is blocked for 15 minutes.")
+                        new ValidationException("Trop de tentatives échouées. 
+                        Votre accès est bloqué pendant 15 minutes.")
                     ]);
                 }
 
+                // Otherwise, warn the user
                 $remaining = self::MAX_ATTEMPTS - $attempts;
                 throw new ArrayException([
-                    new ValidationException("Invalid credentials. $remaining attempt(s) remaining.")
+                    new ValidationException("Mauvais mot de passe. Il vous reste $remaining tentative(s).")
                 ]);
             }
 
+            // 7. Success: reset error counters
             unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
+            // Generate JWT and setup session
             $jwt = JwtService::generate([
                 'sub'  => $userId,
                 'role' => $role,
