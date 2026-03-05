@@ -33,12 +33,9 @@
 <div id="messageModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeMessageModal()">&times;</span>
-        <h2>📧 Envoyer un message à un étudiant</h2>
+        <h2> Envoyer un message à un étudiant</h2>
 
-        <div class="template-info">
-            💡 Astuce : Sélectionnez un message pré-rempli ci-dessous,
-            puis modifiez-le selon vos besoins.
-        </div>
+
 
         <form
                 action="/dashboard/send-message"
