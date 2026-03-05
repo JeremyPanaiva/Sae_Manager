@@ -919,14 +919,22 @@ class SaeAttribution
             throw new DataBaseException("Échec de récupération du résultat dans getMessageRecipientsByResponsable.");
         }
 
-        /** @var array<int, array<string, mixed>> $rows */
+        /**
+         * @var array<int, array{
+         *     sae_id: int|string,
+         *     sae_name: string,
+         *     student_id: int|string,
+         *     prenom: string,
+         *     nom: string
+         * }> $rows
+         */
         $rows = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
         $grouped = [];
 
         foreach ($rows as $row) {
-            $saeId = isset($row['sae_id']) ? (int) $row['sae_id'] : 0;
+            $saeId = (int) $row['sae_id'];
             if ($saeId <= 0) {
                 continue;
             }
@@ -934,15 +942,15 @@ class SaeAttribution
             if (!isset($grouped[$saeId])) {
                 $grouped[$saeId] = [
                     'sae_id' => $saeId,
-                    'sae_name' => isset($row['sae_name']) ? (string) $row['sae_name'] : '',
+                    'sae_name' => $row['sae_name'],
                     'students' => [],
                 ];
             }
 
             $grouped[$saeId]['students'][] = [
-                'id' => isset($row['student_id']) ? (int) $row['student_id'] : 0,
-                'prenom' => isset($row['prenom']) ? (string) $row['prenom'] : '',
-                'nom' => isset($row['nom']) ? (string) $row['nom'] : '',
+                'id' => (int) $row['student_id'],
+                'prenom' => $row['prenom'],
+                'nom' => $row['nom'],
             ];
         }
 
