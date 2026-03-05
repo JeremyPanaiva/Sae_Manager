@@ -481,7 +481,9 @@ class DashboardView extends BaseView
                         $html .= "<div class='message-success'>Le message a été envoyé avec succès !</div>";
                     } elseif ($_GET['success'] === 'messages_sent') {
                         $count = isset($_GET['count']) ? (int) $_GET['count'] : 0;
-                        $html .= "<div class='message-success'>Le message a été envoyé à {$count} étudiant(s) avec succès !</div>";
+                        $html .= "<div class='message-success'>"
+                            . "Le message a été envoyé à {$count} étudiant(s) avec succès !"
+                            . "</div>";
                     }
                 }
 
