@@ -37,6 +37,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Import all controller classes
 use Controllers\Dashboard\TodoController;
+use Controllers\Dashboard\SendMessageController;
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
@@ -125,6 +126,7 @@ $controllers = [
     new ChangePasswordPost(),
     new DeadlineReminderController(),
     new UpdateLinkController(),
+    new SendMessageController(),
 ];
 
 // Extract the path from the request URI (without query string parameters)
