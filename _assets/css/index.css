@@ -1556,39 +1556,31 @@ section.main,
 }
 
 
-
 /* =========================================
    Alerte de session (Toast) - Base (5 min)
    ========================================= */
 
 .session-toast {
     position: fixed;
-    /* On relève le toast pour éviter le footer sur mobile */
     bottom: 140px;
-
-    /* Design mobile par défaut : centré et large */
     left: 20px;
     right: 20px;
     margin: 0 auto;
     max-width: 100%;
     text-align: center;
-
-    /* Apparence */
-    background-color: #f97316; /* Orange d'avertissement */
+    background-color: #f97316;
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     z-index: 9999;
 
-    /* Animation (vient du bas sur mobile) */
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
     transition: opacity 0.4s ease, transform 0.4s ease, visibility 0.4s, background-color 0.4s;
 }
 
-/* État actif par défaut */
 .session-toast.show {
     opacity: 1;
     visibility: visible;
@@ -1596,21 +1588,29 @@ section.main,
 }
 
 /* =========================================
-   Mode Urgent (1 minute) - Sous le header
+   Mode Urgent (1 minute) - CENTRÉ AU MILIEU
    ========================================= */
 
 .session-toast.toast-urgent {
-    bottom: auto; /* On annule le positionnement en bas */
-    top: 80px; /* À AJUSTER : Modifie ça selon la hauteur réelle de ton header */
-    background-color: #ef4444; /* Rouge vif pour l'urgence */
+    /* Annule le positionnement en bas */
+    bottom: auto;
 
-    /* Animation (vient du haut) */
-    transform: translateY(-20px);
+    /* Positionnement pile au centre de la fenêtre */
+    top: 21%;
+    left: 50%;
+    right: auto;
+    margin: 0;
+    width: 90%;
+    max-width: 400px;
+
+    background-color: #ef4444;
+    cursor: pointer; /* Indique que c'est cliquable */
+    transform: translate(-50%, -50%) scale(0.9);
 }
 
-/* État actif du mode urgent */
 .session-toast.toast-urgent.show {
-    transform: translateY(0);
+    /* Effet d'apparition "Pop !" au centre */
+    transform: translate(-50%, -50%) scale(1);
 }
 
 /* =========================================
@@ -1618,16 +1618,13 @@ section.main,
    ========================================= */
 @media (min-width: 768px) {
 
-    /* --- Comportement de base (5 min) --- */
+    /* Le message de 5 min se met en bas à droite */
     .session-toast {
-        /* On le place en bas à droite */
         left: auto;
         right: 20px;
-        bottom: 100px; /* Ajusté pour éviter le footer PC */
+        bottom: 100px;
         max-width: 350px;
         text-align: left;
-
-        /* Animation (vient de la droite sur PC) */
         transform: translateX(100%);
     }
 
@@ -1635,16 +1632,15 @@ section.main,
         transform: translateX(0);
     }
 
-    /* --- Comportement Urgent (1 min) --- */
+    /* MAIS le message urgent de 1 min reste TOUJOURS au milieu */
     .session-toast.toast-urgent {
-        bottom: auto;
-        top: 110px; /* On descend un peu plus pour éviter la barre de nav (augmente si besoin) */
-        background-color: #ef4444;
-        pointer-events: none; /* MAGIE : Les clics passent à travers le message ! */
-        transform: translateY(-20px);
+        left: 50%;
+        right: auto;
+        text-align: center;
+        transform: translate(-50%, -50%) scale(0.9);
     }
 
     .session-toast.toast-urgent.show {
-        transform: translateY(0);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
