@@ -3,6 +3,7 @@
 namespace Shared;
 
 use Models\User\Log;
+use Models\User\User;
 
 /**
  * SessionGuard
@@ -70,18 +71,25 @@ class SessionGuard
     private static function expireSession(bool $redirect): void
     {
         $userSession = $_SESSION['user'] ?? null;
+
         if (is_array($userSession)) {
             $rawId = $userSession['id'] ?? 0;
             $userId = is_numeric($rawId) ? (int)$rawId : 0;
 
             if ($userId > 0) {
+                $nomRaw = $userSession['nom'] ?? '';
+                $nom = is_string($nomRaw) ? $nomRaw : '';
+
+                $prenomRaw = $userSession['prenom'] ?? '';
+                $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+
                 $logger = new Log();
                 $logger->create(
                     $userId,
                     'DECONNEXION',
                     'users',
                     $userId,
-                    'Session expirée automatiquement après 1 heure d\'inactivité'
+                    "Session expirée pour : $nom $prenom"
                 );
             }
         }

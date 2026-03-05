@@ -69,7 +69,7 @@ class LoginPost implements ControllerInterface
 
         // 2. Validate field formats
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Invalid email format: $email");
+            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Format d'email invalide : $email");
             $validationExceptions[] = new ValidationException("Le format de l'adresse email est invalide.");
         }
 
@@ -86,13 +86,13 @@ class LoginPost implements ControllerInterface
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0, "DB Error: " . $dbEx->getMessage());
+                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0, "Erreur BDD : " . $dbEx->getMessage());
                 throw new ArrayException([new ValidationException("Erreur système lors de la connexion.")]);
             }
 
             // 4. Email does not exist in the database
             if (!$userData) {
-                $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Unknown user: $email");
+                $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Email introuvable : $email");
                 throw new ArrayException([new ValidationException("Adresse email invalide ou inconnue.")]);
             }
 
@@ -107,9 +107,9 @@ class LoginPost implements ControllerInterface
 
             // 5. Check if the account is verified
             if ($isVerified === 0) {
-                $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Unverified account: $email");
-                throw new ArrayException([new ValidationException("Compte 
-                non vérifié. Veuillez consulter vos emails.")]);
+                $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte non vérifié : $email");
+                throw new ArrayException([new ValidationException("Compte non 
+                vérifié. Veuillez consulter vos emails.")]);
             }
 
             // 6. Incorrect password
@@ -124,10 +124,9 @@ class LoginPost implements ControllerInterface
                     'ECHEC_CONNEXION',
                     'users',
                     $userId,
-                    "Wrong password ($attempts/" . self::MAX_ATTEMPTS . "): $email"
+                    "Mauvais mot de passe ($attempts/" . self::MAX_ATTEMPTS . ") : $email"
                 );
 
-                // If max attempts reached, lock the account
                 if ($attempts >= self::MAX_ATTEMPTS) {
                     $_SESSION[$lockoutKey] = time() + self::LOCKOUT_DURATION;
                     unset($_SESSION[$attemptsKey]);
@@ -148,7 +147,6 @@ class LoginPost implements ControllerInterface
             // 7. Success: reset error counters
             unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
-            // Generate JWT and setup session
             $jwt = JwtService::generate([
                 'sub'  => $userId,
                 'role' => $role,
@@ -166,7 +164,7 @@ class LoginPost implements ControllerInterface
 
             $User->saveJwtToken($userId, $jwt);
 
-            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Successful login: $nom $prenom");
+            $Logger->create($userId, 'CONNEXION', 'users', $userId, "Connexion de : $nom $prenom");
 
             header("Location: /");
             exit();
