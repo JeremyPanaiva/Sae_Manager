@@ -83,7 +83,7 @@
 
                 <div class="student-checkbox-list">
                     <?php
-                    $messageRecipients = $MESSAGE_RECIPIENTS_KEY ?? [];
+                    $messageRecipients = $MESSAGE_RECIPIENTS_KEY;
 
                     if (empty($messageRecipients)) {
                         echo '<p style="color: #666; font-style: italic;">';
@@ -91,11 +91,11 @@
                         echo '</p>';
                     } else {
                         foreach ($messageRecipients as $saeData) {
-                            $saeId = isset($saeData['sae_id']) ? (int) $saeData['sae_id'] : 0;
-                            $saeName = htmlspecialchars((string) ($saeData['sae_name'] ?? 'SAE'));
-                            $students = $saeData['students'] ?? [];
+                            $saeId = (int) $saeData['sae_id'];
+                            $saeName = htmlspecialchars((string) $saeData['sae_name']);
+                            $students = $saeData['students'];
 
-                            if ($saeId <= 0 || !is_array($students) || empty($students)) {
+                            if ($saeId <= 0 || empty($students)) {
                                 continue;
                             }
 
@@ -123,11 +123,11 @@
                             echo 'style="display: none;">';
 
                             foreach ($students as $student) {
-                                $studentId = htmlspecialchars((string) ((int) ($student['id'] ?? 0)));
+                                $studentId = htmlspecialchars((string) ((int) $student['id']));
                                 $studentName = htmlspecialchars(
-                                    (string) ($student['prenom'] ?? '')
+                                    (string) $student['prenom']
                                     . ' '
-                                    . (string) ($student['nom'] ?? '')
+                                    . (string) $student['nom']
                                 );
 
                                 if ($studentId === '0' || trim($studentName) === '') {
