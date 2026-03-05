@@ -41,6 +41,11 @@ class DashboardView extends BaseView
     public const ROLE_KEY = 'ROLE_KEY';
 
     /**
+     * Template data key for message recipients grouped by SAE
+     */
+    public const MESSAGE_RECIPIENTS_KEY = 'MESSAGE_RECIPIENTS_KEY';
+
+    /**
      * Page title
      *
      * @var string
@@ -88,6 +93,7 @@ class DashboardView extends BaseView
         $this->data[self::TITLE_KEY]    = $this->title;
         $this->data[self::USERNAME_KEY] = $this->username;
         $this->data[self::ROLE_KEY]     = $this->role;
+        $this->data[self::MESSAGE_RECIPIENTS_KEY] = $this->data['message_recipients'] ?? [];
         $this->data[self::CONTENT_KEY]  = $this->buildContentHtml();
     }
 
@@ -469,6 +475,19 @@ class DashboardView extends BaseView
             ==================================================== */
             case 'responsable':
                 $html .= "<h2>Vos SAE attribuées</h2>";
+
+                if (isset($_GET['success'])) {
+                    if ($_GET['success'] === 'message_sent') {
+                        $html .= "<div class='message-success'>Le message a été envoyé avec succès !</div>";
+                    } elseif ($_GET['success'] === 'messages_sent') {
+                        $count = isset($_GET['count']) ? (int) $_GET['count'] : 0;
+                        $html .= "<div class='message-success'>Le message a été envoyé à {$count} étudiant(s) avec succès !</div>";
+                    }
+                }
+
+                if (isset($_GET['error'])) {
+                    $html .= "<div class='message-error'>❌ Une erreur est survenue lors de l'envoi du message.</div>";
+                }
 
                 // ✅ Bouton envoyer un message — dans le thème du site
                 $html .= "<div class='send-message-section'>";
