@@ -882,4 +882,70 @@ class SaeAttribution
 
         return $saeInfo ?: null;
     }
+
+    /**
+     * Retrieves message recipients grouped by SAE for a specific supervisor.
+     *
+     * @param int $responsableId
+     * @return array<int, array{
+     *     sae_id: int,
+     *     sae_name: string,
+     *     students: array<int, array{id: int, prenom: string, nom: string}>
+     * }>
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getMessageRecipientsByResponsable(int $responsableId): array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare(
+            "SELECT s.id AS sae_id, s.titre AS sae_name, u.id AS student_id, u.prenom, u.nom
+             FROM sae_attributions sa
+             INNER JOIN sae s ON s.id = sa.sae_id
+             INNER JOIN users u ON u.id = sa.student_id
+             WHERE sa.responsable_id = ? AND u.role = 'Etudiant'
+             ORDER BY s.titre, u.nom, u.prenom"
+        );
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getMessageRecipientsByResponsable.");
+        }
+
+        $stmt->bind_param("i", $responsableId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getMessageRecipientsByResponsable.");
+        }
+
+        /** @var array<int, array<string, mixed>> $rows */
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        $grouped = [];
+
+        foreach ($rows as $row) {
+            $saeId = isset($row['sae_id']) ? (int) $row['sae_id'] : 0;
+            if ($saeId <= 0) {
+                continue;
+            }
+
+            if (!isset($grouped[$saeId])) {
+                $grouped[$saeId] = [
+                    'sae_id' => $saeId,
+                    'sae_name' => isset($row['sae_name']) ? (string) $row['sae_name'] : '',
+                    'students' => [],
+                ];
+            }
+
+            $grouped[$saeId]['students'][] = [
+                'id' => isset($row['student_id']) ? (int) $row['student_id'] : 0,
+                'prenom' => isset($row['prenom']) ? (string) $row['prenom'] : '',
+                'nom' => isset($row['nom']) ? (string) $row['nom'] : '',
+            ];
+        }
+
+        return array_values($grouped);
+    }
 }
