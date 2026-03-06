@@ -51,10 +51,11 @@ class ChangePasswordPost implements ControllerInterface
      * (e.g., wrong current password, weak new password).
      *
      * Password requirements:
-     * - Minimum 8 characters
+     * - Between 12 and 30 characters
      * - At least one uppercase letter
      * - At least one lowercase letter
      * - At least one digit
+     * - At least one special character or punctuation
      * - Must differ from current password
      *
      * @return void
@@ -114,16 +115,16 @@ class ChangePasswordPost implements ControllerInterface
             exit;
         }
 
-        // Validate minimum password length
-        if (strlen($newPassword) < 8) {
+        // Validate password length
+        if (strlen($newPassword) < 12 || strlen($newPassword) > 30) {
             $logger->create(
                 $userId,
                 'ECHEC_MODIFICATION_MDP',
                 'users',
                 $userId,
-                "Nouveau mot de passe trop court"
+                "Nouveau mot de passe non conforme"
             );
-            header('Location: /user/change-password?error=password_too_short');
+            header('Location: /user/change-password?error=password_length');
             exit;
         }
 
@@ -163,6 +164,19 @@ class ChangePasswordPost implements ControllerInterface
                 "Nouveau mot de passe sans chiffre"
             );
             header('Location: /user/change-password?error=password_no_digit');
+            exit;
+        }
+
+        // Validate password contains special character
+        if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $newPassword)) {
+            $logger->create(
+                $userId,
+                'ECHEC_MODIFICATION_MDP',
+                'users',
+                $userId,
+                "Nouveau mot de passe sans caractère spécial"
+            );
+            header('Location: /user/change-password?error=password_no_special');
             exit;
         }
 

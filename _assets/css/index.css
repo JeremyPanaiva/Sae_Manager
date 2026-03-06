@@ -1,5 +1,5 @@
 /* ================================
-   🎨 Palette AMU
+  Palette AMU
 ================================ */
 :root {
     --amu-blue: #003366;
@@ -13,7 +13,7 @@
 }
 
 /* ================================
-   🌐 Structure globale (pour header/footer)
+   Structure globale (pour header/footer)
 ================================ */
 * {
     margin: 0;
@@ -42,7 +42,7 @@ body {
 }
 
 /* ================================
-   🧭 Header
+   Header
 ================================ */
 main,
 section.main,
@@ -91,7 +91,7 @@ section.main,
 }
 
 /* ================================
-   👤 Zone utilisateur
+   Zone utilisateur
 ================================ */
 .user-info {
     display: flex;
@@ -112,7 +112,7 @@ section.main,
 }
 
 /* ================================
-   🔘 Boutons généraux du header
+   Boutons généraux du header
 ================================ */
 .btn {
     padding: 0.5rem 1.1rem;
@@ -175,7 +175,7 @@ section.main,
 
 
 /* ================================
-   📑 Navigation
+   Navigation
 ================================ */
 .nav {
     background: var(--white);
@@ -219,7 +219,7 @@ section.main,
 
 
 /* ================================
-   🏷️ Badge rôle utilisateur
+   Badge rôle utilisateur
 ================================ */
 .role-badge {
     display: inline-block;
@@ -249,7 +249,7 @@ section.main,
 }
 
 /* ================================
-   ⚙️ Footer
+   Footer
 ================================ */
 .footer {
     background: var(--amu-blue);
@@ -292,7 +292,7 @@ section.main,
 }
 
 /* ================================
-   📱 Responsive
+   Responsive
 ================================ */
 @media (max-width: 768px) {
     .header-content {
@@ -435,7 +435,7 @@ section.main,
 }
 
 /* ================================
-   📱 Responsive Mobile Hamburger
+   Responsive Mobile Hamburger
 ================================ */
 
 @media (max-width: 780px) {

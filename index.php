@@ -30,9 +30,14 @@ date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 require_once "Autoloader.php";
 \Autoloader::register();
 
+// Placed early to ensure $_SESSION is available before any controller is instantiated.
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Import all controller classes
 use Controllers\Dashboard\TodoController;
+use Controllers\Dashboard\SendMessageController;
 use Controllers\Home\HomeController;
 use Controllers\Legal\ContactController;
 use Controllers\Legal\PlanDuSiteController;
@@ -66,7 +71,7 @@ use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
 use Controllers\Sae\UpdateLinkController;
 
-
+// Start PHP session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -123,6 +128,7 @@ $controllers = [
     new ChangePasswordPost(),
     new DeadlineReminderController(),
     new UpdateLinkController(),
+    new SendMessageController(),
     new WeeklyArchiveController(),
     new DailyExportController(),
 ];

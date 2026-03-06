@@ -38,10 +38,11 @@ class ResetPasswordPost implements ControllerInterface
      * and logs any security violations.
      *
      * Password requirements:
-     * - Minimum 8 characters
+     * - Between 12 and 30 characters
      * - At least one uppercase letter
      * - At least one lowercase letter
      * - At least one digit
+     * - At least one special character or punctuation
      * - Must differ from current password
      *
      * @return void
@@ -147,16 +148,16 @@ class ResetPasswordPost implements ControllerInterface
                 exit;
             }
 
-            // Validate minimum password length
-            if (strlen($password) < 8) {
+            // Validate password length
+            if (strlen($password) < 12 || strlen($password) > 30) {
                 $logger->create(
                     $userId,
                     'ECHEC_REINITIALISATION_MDP',
                     'users',
                     $userId,
-                    "Nouveau mot de passe trop court"
+                    "Nouveau mot de passe non conforme"
                 );
-                header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_too_short');
+                header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_length');
                 exit;
             }
 
@@ -196,6 +197,19 @@ class ResetPasswordPost implements ControllerInterface
                     "Nouveau mot de passe sans chiffre"
                 );
                 header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_digit');
+                exit;
+            }
+
+            // Validate password contains special character
+            if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $password)) {
+                $logger->create(
+                    $userId,
+                    'ECHEC_REINITIALISATION_MDP',
+                    'users',
+                    $userId,
+                    "Nouveau mot de passe sans caractère spécial"
+                );
+                header('Location: /user/reset-password?token=' . urlencode($token) . '&error=password_no_special');
                 exit;
             }
 
