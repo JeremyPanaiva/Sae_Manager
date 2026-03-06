@@ -51,12 +51,14 @@ class DashboardController implements ControllerInterface
      * @param string $role
      *
      * @return array{
-     *     saes: array<int, array<string, mixed>>
+     *     saes: array<int, array<string, mixed>>,
+     *     message_recipients: array<int, array<string, mixed>>
      * }
      */
     private function prepareDashboardData(int $userId, string $role): array
     {
         $saes = [];
+        $messageRecipients = [];
 
         if ($role === 'etudiant') {
             $saes = SaeAttribution::getSaeForStudent($userId);
@@ -76,6 +78,7 @@ class DashboardController implements ControllerInterface
             }
         } elseif ($role === 'responsable') {
             $saes = SaeAttribution::getSaeForResponsable($userId);
+            $messageRecipients = SaeAttribution::getMessageRecipientsByResponsable($userId);
 
             foreach ($saes as &$sae) {
                 $saeId = (isset($sae['sae_id']) && is_int($sae['sae_id'])) ? $sae['sae_id'] : null;
@@ -128,7 +131,7 @@ class DashboardController implements ControllerInterface
             }
         }
 
-        return ['saes' => $saes];
+        return ['saes' => $saes, 'message_recipients' => $messageRecipients];
     }
 
     /**

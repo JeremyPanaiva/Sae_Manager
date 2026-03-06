@@ -484,9 +484,6 @@ class SaeAttribution
     /**
      * Verifies that the supervisor is authorized to unassign a student
      *
-     * Checks that the supervisor making the unassignment request is the same
-     * supervisor who originally assigned the student to the SAE.
-     *
      * @param int $saeId The ID of the SAE
      * @param int $responsableId The ID of the supervisor requesting unassignment
      * @param int $studentId The ID of the student to unassign
@@ -579,8 +576,6 @@ class SaeAttribution
     /**
      * Retrieves all SAE assigned to a specific student
      *
-     * Includes information about the supervisor, client, and submission deadline.
-     *
      * @param int $studentId The ID of the student
      * @return array<int, array<string, mixed>> Array of SAE with complete assignment details
      * @throws DataBaseException If database operation fails
@@ -659,8 +654,6 @@ class SaeAttribution
     /**
      * Retrieves students for a specific attribution
      *
-     * Returns the student associated with a given attribution ID.
-     *
      * @param int $attribId The ID of the attribution
      * @return array<int, array<string, mixed>> Array containing student information
      * @throws DataBaseException If database operation fails
@@ -693,7 +686,6 @@ class SaeAttribution
         }
 
         $students = $result->fetch_all(MYSQLI_ASSOC);
-
         $stmt->close();
 
         return $students;
@@ -702,17 +694,12 @@ class SaeAttribution
     /**
      * Retrieves all SAE attributions with deadline in exactly 3 days
      *
-     * Returns attributions where the submission deadline (date_rendu) is exactly 3 days
-     * from today. Used for sending reminder emails to students.
-     *
      * @return array<int, array<string, mixed>> Array of attributions with student, SAE, and supervisor info
      * @throws DataBaseException If database operation fails
      */
     public static function getAttributionsWithDeadlineIn3Days(): array
     {
         $db = Database::getConnection();
-
-        // Calculate the date that is exactly 3 days from now
         $targetDate = date('Y-m-d', strtotime('+3 days'));
 
         $stmt = $db->prepare("
@@ -754,12 +741,9 @@ class SaeAttribution
 
         return $attributions;
     }
+
     /**
      * Retrieves all SAE attributions with deadline in exactly 1 day
-     *
-     * Returns attributions where the submission deadline (date_rendu) is exactly 1 day
-     * from today. Used for sending urgent reminder emails to students.
-     * Note: Since deadline is at 8:0, students still have the full day to submit.
      *
      * @return array<int, array<string, mixed>> Array of attributions with student, SAE, and supervisor info
      * @throws DataBaseException If database operation fails
@@ -767,8 +751,6 @@ class SaeAttribution
     public static function getAttributionsWithDeadlineIn1Day(): array
     {
         $db = Database::getConnection();
-
-        // Calculate the date that is exactly 1 day from now
         $targetDate = date('Y-m-d', strtotime('+1 day'));
 
         $stmt = $db->prepare("
@@ -814,13 +796,8 @@ class SaeAttribution
     /**
      * Updates the project delivery link (GitHub/Drive) for all students in a group.
      *
-     * This method ensures that when one student updates the link, it is reflected
-     * [cite_start]for the entire team assigned to the same SAE by the same supervisor[cite: 382].
-     * Since the link is stored in the sae_attributions table, it will be
-     * [cite_start]automatically removed if the assignment is deleted due to CASCADE constraints[cite: 279, 382].
-     *
-     * [cite_start]@param int $saeId The ID of the SAE[cite: 269].
-     * [cite_start]@param int $responsableId The ID of the supervisor managing the group[cite: 270].
+     * @param int $saeId The ID of the SAE
+     * @param int $responsableId The ID of the supervisor managing the group
      * @param string|null $link The URL of the repository or shared folder.
      * @return void
      * @throws \Shared\Exceptions\DataBaseException If the SQL statement cannot be prepared or executed.
@@ -829,7 +806,6 @@ class SaeAttribution
     {
         $db = \Models\Database::getConnection();
 
-        // We update by sae_id AND responsable_id to target the whole group assignment
         $stmt = $db->prepare("UPDATE sae_attributions SET github_link = ? WHERE sae_id = ? AND responsable_id = ?");
 
         if (!$stmt) {
@@ -840,7 +816,6 @@ class SaeAttribution
         $stmt->execute();
         $stmt->close();
     }
-
 
     /**
      * Retrieves the supervisor ID for a specific student and SAE.
@@ -865,5 +840,120 @@ class SaeAttribution
         $stmt->close();
 
         return $row ? (int)$row['responsable_id'] : null;
+    }
+
+    /**
+     * Retrieves the SAE information for a student assigned by a specific supervisor
+     *
+     * Used to find which SAE a student is working on under a particular supervisor.
+     * Returns the first matching SAE if multiple exist.
+     *
+     * @param int $studentId The ID of the student
+     * @param int $responsableId The ID of the supervisor
+     * @return array<string, mixed>|null SAE information (sae_id, sae_name) or null if not found
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getSaeForStudentAndResponsable(int $studentId, int $responsableId): ?array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare("
+            SELECT DISTINCT s.id as sae_id, s.titre as sae_name
+            FROM sae s
+            INNER JOIN sae_attributions sa ON s.id = sa.sae_id
+            WHERE sa.student_id = ? AND sa.responsable_id = ?
+            LIMIT 1
+        ");
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getSaeForStudentAndResponsable.");
+        }
+
+        $stmt->bind_param("ii", $studentId, $responsableId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getSaeForStudentAndResponsable.");
+        }
+
+        $saeInfo = $result->fetch_assoc();
+        $stmt->close();
+
+        return $saeInfo ?: null;
+    }
+
+    /**
+     * Retrieves message recipients grouped by SAE for a specific supervisor.
+     *
+     * @param int $responsableId
+     * @return array<int, array{
+     *     sae_id: int,
+     *     sae_name: string,
+     *     students: array<int, array{id: int, prenom: string, nom: string}>
+     * }>
+     * @throws DataBaseException If database operation fails
+     */
+    public static function getMessageRecipientsByResponsable(int $responsableId): array
+    {
+        $db = Database::getConnection();
+
+        $stmt = $db->prepare(
+            "SELECT s.id AS sae_id, s.titre AS sae_name, u.id AS student_id, u.prenom, u.nom
+             FROM sae_attributions sa
+             INNER JOIN sae s ON s.id = sa.sae_id
+             INNER JOIN users u ON u.id = sa.student_id
+             WHERE sa.responsable_id = ? AND u.role = 'Etudiant'
+             ORDER BY s.titre, u.nom, u.prenom"
+        );
+
+        if (!$stmt) {
+            throw new DataBaseException("Erreur de préparation SQL dans getMessageRecipientsByResponsable.");
+        }
+
+        $stmt->bind_param("i", $responsableId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            throw new DataBaseException("Échec de récupération du résultat dans getMessageRecipientsByResponsable.");
+        }
+
+        /**
+         * @var array<int, array{
+         *     sae_id: int|string,
+         *     sae_name: string,
+         *     student_id: int|string,
+         *     prenom: string,
+         *     nom: string
+         * }> $rows
+         */
+        $rows = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        $grouped = [];
+
+        foreach ($rows as $row) {
+            $saeId = (int) $row['sae_id'];
+            if ($saeId <= 0) {
+                continue;
+            }
+
+            if (!isset($grouped[$saeId])) {
+                $grouped[$saeId] = [
+                    'sae_id' => $saeId,
+                    'sae_name' => $row['sae_name'],
+                    'students' => [],
+                ];
+            }
+
+            $grouped[$saeId]['students'][] = [
+                'id' => (int) $row['student_id'],
+                'prenom' => $row['prenom'],
+                'nom' => $row['nom'],
+            ];
+        }
+
+        return array_values($grouped);
     }
 }
