@@ -201,7 +201,7 @@ class ResetPasswordPost implements ControllerInterface
             }
 
             // Validate password contains special character
-            if (!preg_match('/[^a-zA-Z0-9]/', $password)) {
+            if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $password)) {
                 $logger->create(
                     $userId,
                     'ECHEC_REINITIALISATION_MDP',
