@@ -218,3 +218,4 @@ class DeadlineReminderController implements ControllerInterface
         return $token !== false ? $token : '';
     }
 }
+
