@@ -194,12 +194,12 @@ class RegisterPost implements ControllerInterface
     /**
      * Checks if this controller supports the given route and HTTP method.
      *
-     * @param string $path   The requested route path.
+     * @param string $chemin The requested route path.
      * @param string $method The HTTP method (GET, POST, etc.).
      * @return bool True if path is '/user/register' and method is POST.
      */
-    public static function support(string $path, string $method): bool
+    public static function support(string $chemin, string $method): bool
     {
-        return $path === "/user/register" && $method === "POST";
+        return $chemin === "/user/register" && $method === "POST";
     }
 }
