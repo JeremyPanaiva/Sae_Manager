@@ -21,12 +21,13 @@ class WeeklyArchiveController implements ControllerInterface
      *
      * @param string $chemin The requested route path.
      * @param string $method The HTTP method.
-     * @return bool True if the route is '/logs/weekly-archive' and method is 'GET', false otherwise.
+     * @return bool True if the route is '/cron/weekly-archive' and the method is 'GET', false otherwise.
      */
     public static function support(string $chemin, string $method): bool
     {
-        return $chemin === '/logs/weekly-archive' && $method === 'GET';
+        return $chemin === '/cron/weekly-archive' && $method === 'GET';
     }
+
 
     /**
      * Main controller execution method.
