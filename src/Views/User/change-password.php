@@ -25,9 +25,9 @@
 
             <label for="new_password">Nouveau mot de passe :</label>
             <div class="password-wrapper">
-                <input type="password" id="new_password" name="new_password" minlength="8" maxlength="20"
-                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}" title="Le mot de passe doit contenir au moins 8 caractères,
-                       une majuscule, une minuscule et un chiffre" required placeholder="Nouveau mot de passe">
+                <input type="password" id="new_password" name="new_password" minlength="12" maxlength="30"
+                    pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{12,}" title="Le mot de passe doit contenir entre 12 et 30 caractères,
+                       une majuscule, une minuscule, un chiffre et un caractère spécial" required placeholder="Nouveau mot de passe">
                 <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                         stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -37,7 +37,7 @@
                 </span>
             </div>
             <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">
-                Minimum 8 caractères avec au moins une majuscule, une minuscule et un chiffre
+                Minimum 12 caractères avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial
             </small>
 
             <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
