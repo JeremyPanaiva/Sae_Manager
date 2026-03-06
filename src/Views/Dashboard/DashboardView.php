@@ -314,7 +314,7 @@ class DashboardView extends BaseView
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
 
-                    $html .= "</div>"; // end dashboard-card
+                    $html .= "</div>";
                 }
                 break;
 
@@ -466,7 +466,7 @@ class DashboardView extends BaseView
                     $html .= "<button type='submit'>Envoyer</button>";
                     $html .= "</form>";
 
-                    $html .= "</div>"; // end dashboard-card
+                    $html .= "</div>";
                 }
                 break;
 
@@ -491,7 +491,6 @@ class DashboardView extends BaseView
                     $html .= "<div class='message-error'>❌ Une erreur est survenue lors de l'envoi du message.</div>";
                 }
 
-                // ✅ Bouton envoyer un message — dans le thème du site
                 $html .= "<div class='send-message-section'>";
                 $html .= "<button
                     type='button'
@@ -691,7 +690,7 @@ class DashboardView extends BaseView
                     $html .= "<button type='submit'>Envoyer</button>";
                     $html .= "</form>";
 
-                    $html .= "</div>"; // end dashboard-card
+                    $html .= "</div>"; 
                 }
 
                 $html .= "<script>
