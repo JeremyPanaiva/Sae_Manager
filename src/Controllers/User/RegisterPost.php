@@ -126,7 +126,8 @@ class RegisterPost implements ControllerInterface
                 "Mot de passe non conforme (caractère spécial manquant) pour : $email"
             );
             $validationExceptions[] = new ValidationException(
-                "Le mot de passe doit contenir au moins un des caractères spéciaux suivants : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
+                "Le mot de passe doit contenir au moins un des caractères spéciaux suivants : "
+                . "! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
             );
         }
 
