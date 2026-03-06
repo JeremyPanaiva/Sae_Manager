@@ -131,7 +131,7 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                 case 'password_no_special':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
-                    Le mot de passe doit contenir au moins un caractère spécial ou signe de ponctuation.</div>';
+                    Le mot de passe doit contenir au moins l\'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]</div>';
                     break;
                 case 'invalid_token':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
