@@ -68,7 +68,8 @@ class DailyExportController implements ControllerInterface
                 $file = fopen($filename, 'w');
 
                 if ($file !== false) {
-                    fputcsv($file, ['id', 'user_id', 'action', 'table_concernee', 'element_id', 'details', 'ip_address', 'system_info', 'date_action']);
+                    fputcsv($file, ['id', 'user_id', 'action', 'table_concernee', 'element_id',
+                        'details', 'ip_address', 'system_info', 'date_action']);
 
                     $idsToDelete = [];
                     while ($row = $result->fetch_assoc()) {
