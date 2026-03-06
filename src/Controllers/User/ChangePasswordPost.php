@@ -168,7 +168,7 @@ class ChangePasswordPost implements ControllerInterface
         }
 
         // Validate password contains special character
-        if (!preg_match('/[^a-zA-Z0-9]/', $newPassword)) {
+        if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $newPassword)) {
             $logger->create(
                 $userId,
                 'ECHEC_MODIFICATION_MDP',
