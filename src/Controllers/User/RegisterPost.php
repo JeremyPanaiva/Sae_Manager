@@ -117,7 +117,7 @@ class RegisterPost implements ControllerInterface
         }
 
         // Validate password contains special character
-        if (!preg_match('/[^a-zA-Z0-9]/', $mdp)) {
+        if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $mdp)) {
             $logger->create(
                 null,
                 'ECHEC_INSCRIPTION',
@@ -126,7 +126,7 @@ class RegisterPost implements ControllerInterface
                 "Mot de passe non conforme (caractère spécial manquant) pour : $email"
             );
             $validationExceptions[] = new ValidationException(
-                "Le mot de passe doit contenir au moins un caractère spécial ou signe de ponctuation."
+                "Le mot de passe doit contenir au moins un des caractères spéciaux suivants : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
             );
         }
 
