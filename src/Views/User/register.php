@@ -36,7 +36,8 @@
       <div class="password-wrapper">
         <input type="password" id="mdp" name="mdp" required minlength="12" maxlength="30"
           pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+€£µ§?/\\|{}\[\]]).{12,}"
-          title="Le mot de passe doit contenir entre 12 et 30 caractères, une majuscule, une minuscule, un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
+          title="Le mot de passe doit contenir entre 12 et 30 caractères, une majuscule, une minuscule,
+          un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
           placeholder="Votre mot de passe">
         <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000"
@@ -47,7 +48,8 @@
         </span>
       </div>
       <small style="color: #6c757d; font-size: 0.85rem; margin-top: -0.5rem;">
-        Le mot de passe doit contenir entre 12 et 30 caractères avec une majuscule, une minuscule, un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \ | { } [ ]
+        Le mot de passe doit contenir entre 12 et 30 caractères avec une majuscule, une minuscule,
+        un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \ | { } [ ]
       </small>
 
       <label for="role">Rôle :</label>
