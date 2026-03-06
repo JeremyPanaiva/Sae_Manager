@@ -28,20 +28,19 @@ class DailyExportController implements ControllerInterface
         return $chemin === '/cron/daily-export' && $method === 'GET';
     }
 
-
     /**
      * Main controller execution method.
      *
-     * Validates the security token, queries the previous day's logs,
+     * Validates the security token via environment variables, queries the previous day's logs,
      * writes them into a CSV file, and purges the exported rows from the database.
      *
      * @return void
      */
     public function control(): void
     {
-        $validToken = 'eff686a19e04dd1ac6ebabedb5bd65fbb63c5d5d19980b5f7c261d2527c35a55';
+        $validToken = $_ENV['TOKEN'] ?? getenv('TOKEN');
 
-        if (!isset($_GET['token']) || $_GET['token'] !== $validToken) {
+        if (empty($validToken) || !isset($_GET['token']) || $_GET['token'] !== $validToken) {
             http_response_code(403);
             die('Access denied.');
         }
@@ -63,7 +62,6 @@ class DailyExportController implements ControllerInterface
 
             $result = $db->query($query);
 
-            // PHPStan Fix: Verify that $result is strictly an instance of mysqli_result
             if ($result instanceof \mysqli_result && $result->num_rows > 0) {
                 $filename = $currentWeekDir . 'logs_' . $yesterday . '.csv';
                 $file = fopen($filename, 'w');
@@ -75,7 +73,6 @@ class DailyExportController implements ControllerInterface
                     $idsToDelete = [];
                     while ($row = $result->fetch_assoc()) {
                         fputcsv($file, $row);
-                        // Ensure ID is cast to int for strict typing
                         if (isset($row['id'])) {
                             $idsToDelete[] = (int) $row['id'];
                         }
