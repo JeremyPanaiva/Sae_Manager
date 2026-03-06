@@ -34,10 +34,11 @@ class RegisterPost implements ControllerInterface
      * Displays validation errors on failure.
      *
      * Password requirements:
-     * - Between 8 and 20 characters
+     * - Between 12 and 30 characters
      * - At least one uppercase letter
      * - At least one lowercase letter
      * - At least one digit
+     * - At least one special character or punctuation
      *
      * @return void
      */
@@ -60,7 +61,7 @@ class RegisterPost implements ControllerInterface
         $validationExceptions = [];
 
         // Validate password length
-        if (strlen($mdp) < 8 || strlen($mdp) > 20) {
+        if (strlen($mdp) < 12 || strlen($mdp) > 30) {
             $logger->create(
                 null,
                 'ECHEC_INSCRIPTION',
@@ -69,7 +70,7 @@ class RegisterPost implements ControllerInterface
                 "Mot de passe non conforme (longueur) pour : $email"
             );
             $validationExceptions[] = new ValidationException(
-                "Le mot de passe doit contenir entre 8 et 20 caractères."
+                "Le mot de passe doit contenir entre 12 et 30 caractères."
             );
         }
 
@@ -112,6 +113,20 @@ class RegisterPost implements ControllerInterface
             );
             $validationExceptions[] = new ValidationException(
                 "Le mot de passe doit contenir au moins un chiffre."
+            );
+        }
+
+        // Validate password contains special character
+        if (!preg_match('/[^a-zA-Z0-9]/', $mdp)) {
+            $logger->create(
+                null,
+                'ECHEC_INSCRIPTION',
+                'users',
+                0,
+                "Mot de passe non conforme (caractère spécial manquant) pour : $email"
+            );
+            $validationExceptions[] = new ValidationException(
+                "Le mot de passe doit contenir au moins un caractère spécial ou signe de ponctuation."
             );
         }
 
