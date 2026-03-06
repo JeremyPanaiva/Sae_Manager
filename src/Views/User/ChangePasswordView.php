@@ -78,7 +78,8 @@ class ChangePasswordView extends BaseView
                 'password_no_uppercase' => "Le mot de passe doit contenir au moins une lettre majuscule.",
                 'password_no_lowercase' => "Le mot de passe doit contenir au moins une lettre minuscule.",
                 'password_no_digit' => "Le mot de passe doit contenir au moins un chiffre.",
-                'password_no_special' => "Le mot de passe doit contenir au moins l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]",
+                'password_no_special' => "Le mot de passe doit contenir au moins l'un de ces caractères spéciaux : "
+                    . "! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]",
                 'same_password' => "Le nouveau mot de passe doit être différent de l'ancien.",
                 'previous_password' => "Le nouveau mot de passe ne peut pas être identique au mot de passe précédent.",
                 'wait_before_retry' => "Par mesure de sécurité, vous ne pouvez changer votre mot de passe qu'une fois 
