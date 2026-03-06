@@ -21,12 +21,13 @@ class DailyExportController implements ControllerInterface
      *
      * @param string $chemin The requested route path.
      * @param string $method The HTTP method.
-     * @return bool True if the route is '/logs/daily-export' and method is 'GET', false otherwise.
+     * @return bool True if the route is '/cron/daily-export' and the method is 'GET', false otherwise.
      */
     public static function support(string $chemin, string $method): bool
     {
-        return $chemin === '/logs/daily-export' && $method === 'GET';
+        return $chemin === '/cron/daily-export' && $method === 'GET';
     }
+
 
     /**
      * Main controller execution method.
