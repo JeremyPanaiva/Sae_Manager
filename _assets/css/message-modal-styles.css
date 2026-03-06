@@ -71,12 +71,13 @@
 .close {
     color: white;
     float: right;
-    font-size: 32px;
+    font-size: 40px;
     font-weight: bold;
     line-height: 1;
     cursor: pointer;
     transition: transform 0.2s ease;
-    margin-right: 15px; /* ← déplacé un peu à gauche */
+    margin-right: 15px;
+    margin-top: 10px;
 }
 
 .close:hover,
