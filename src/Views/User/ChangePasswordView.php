@@ -13,7 +13,7 @@ use Views\Base\BaseView;
  * Handles various password validation states:
  * - Wrong current password
  * - Password mismatch
- * - Password complexity requirements (length, uppercase, lowercase, digit)
+ * - Password complexity requirements (length, uppercase, lowercase, digit, special character)
  * - Same password as current
  * - Database errors
  *
@@ -47,10 +47,12 @@ class ChangePasswordView extends BaseView
      * Error states:
      * - wrong_password: Current password is incorrect
      * - passwords_dont_match: New passwords don't match
-     * - password_too_short: Password must be at least 8 characters
+     * - password_too_short: Password must be at least 12 characters
+     * - password_length: Password must be between 12 and 30 characters
      * - password_no_uppercase: Password must contain uppercase letter
      * - password_no_lowercase: Password must contain lowercase letter
      * - password_no_digit: Password must contain digit
+     * - password_no_special: Password must contain special character
      * - same_password: New password must differ from old
      * - database_error: Technical error occurred
      *
@@ -71,10 +73,13 @@ class ChangePasswordView extends BaseView
             $msg = match ($error) {
                 'wrong_password' => "L'ancien mot de passe est incorrect.",
                 'passwords_dont_match' => "Les nouveaux mots de passe ne correspondent pas.",
-                'password_too_short' => "Le nouveau mot de passe doit faire au moins 8 caractères.",
+                'password_too_short' => "Le nouveau mot de passe doit faire au moins 12 caractères.",
+                'password_length' => "Le mot de passe doit contenir entre 12 et 30 caractères.",
                 'password_no_uppercase' => "Le mot de passe doit contenir au moins une lettre majuscule.",
                 'password_no_lowercase' => "Le mot de passe doit contenir au moins une lettre minuscule.",
                 'password_no_digit' => "Le mot de passe doit contenir au moins un chiffre.",
+                'password_no_special' => "Le mot de passe doit contenir au moins l'un de ces caractères spéciaux : "
+                    . "! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]",
                 'same_password' => "Le nouveau mot de passe doit être différent de l'ancien.",
                 'previous_password' => "Le nouveau mot de passe ne peut pas être identique au mot de passe précédent.",
                 'wait_before_retry' => "Par mesure de sécurité, vous ne pouvez changer votre mot de passe qu'une fois 

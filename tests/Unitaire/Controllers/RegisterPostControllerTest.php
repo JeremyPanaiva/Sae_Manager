@@ -46,7 +46,7 @@ class RegisterPostControllerTest extends TestCase
 
         // We expect a redirection or error handling.
         $this->assertEquals('short', $_POST['mdp']);
-        $this->assertLessThan(8, strlen($_POST['mdp']));
+        $this->assertLessThan(12, strlen($_POST['mdp']));
     }
 
     public function testValidatesEmailFormat(): void

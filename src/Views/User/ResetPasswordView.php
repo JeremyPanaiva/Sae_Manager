@@ -73,7 +73,8 @@ class ResetPasswordView extends BaseView
      * Handles the following error states:
      * - missing_fields: Required fields not provided
      * - passwords_dont_match: Password and confirmation don't match
-     * - password_too_short: Password must be at least 8 characters
+     * - password_too_short: Password must be at least 12 characters
+     * - password_length: Password must be between 12 and 30 characters
      * - password_no_uppercase: Password must contain uppercase letter
      * - password_no_lowercase: Password must contain lowercase letter
      * - password_no_digit: Password must contain digit
@@ -105,7 +106,12 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                 case 'password_too_short':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
-                    Le mot de passe doit contenir au moins 8 caractères.</div>';
+                    Le mot de passe doit contenir au moins 12 caractères.</div>';
+                    break;
+                case 'password_length':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Le mot de passe doit contenir entre 12 et 30 caractères.</div>';
                     break;
                 case 'password_no_uppercase':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
@@ -121,6 +127,12 @@ border: 1px solid #f5c6cb; border-radius: 4px;">
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
                     border: 1px solid #f5c6cb; border-radius: 4px;">
                     Le mot de passe doit contenir au moins un chiffre.</div>';
+                    break;
+                case 'password_no_special':
+                    $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background: #f8d7da; 
+                    border: 1px solid #f5c6cb; border-radius: 4px;">
+                    Le mot de passe doit contenir au moins l\'un de ces caractères spéciaux : '
+                    . '! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]</div>';
                     break;
                 case 'invalid_token':
                     $errorMessage = '<div style="color: red; margin: 10px 0; padding: 10px; background:  #f8d7da; 
