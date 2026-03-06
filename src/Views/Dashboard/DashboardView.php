@@ -690,7 +690,7 @@ class DashboardView extends BaseView
                     $html .= "<button type='submit'>Envoyer</button>";
                     $html .= "</form>";
 
-                    $html .= "</div>"; 
+                    $html .= "</div>";
                 }
 
                 $html .= "<script>
