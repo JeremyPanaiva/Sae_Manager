@@ -9,6 +9,7 @@ use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
 use Shared\JwtService;
+use Shared\CsrfGuard;
 use Views\User\LoginView;
 
 /**
@@ -37,6 +38,12 @@ class LoginPost implements ControllerInterface
     {
         if (!isset($_POST['ok'])) {
             return;
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         $email = isset($_POST['uname']) && is_string($_POST['uname']) ? trim($_POST['uname']) : '';
