@@ -12,6 +12,7 @@ class CsrfGuard
 {
     /**
      * Generates a CSRF token and stores it in the session.
+     * Reuses existing token if already generated in this session.
      */
     public static function generateToken(): string
     {
@@ -19,11 +20,17 @@ class CsrfGuard
             session_start();
         }
 
-        $token = bin2hex(random_bytes(32));
-        $_SESSION['csrf_token'] = $token;
-        $_SESSION['csrf_token_time'] = time();
+        // Generate token only if not already present or if expired
+        if (
+            !isset($_SESSION['csrf_token']) ||
+            !is_string($_SESSION['csrf_token']) ||
+            empty($_SESSION['csrf_token'])
+        ) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            $_SESSION['csrf_token_time'] = time();
+        }
 
-        return $token;
+        return $_SESSION['csrf_token'];
     }
 
     /**

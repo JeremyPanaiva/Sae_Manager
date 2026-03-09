@@ -2,6 +2,7 @@
 <link rel="stylesheet" href="/_assets/css/message-modal-styles.css">
 <script src="/_assets/script/dash.js"></script>
 <script src="/_assets/script/date-modal.js"></script>
+<script src="/_assets/script/message-modals.js"></script>
 
 <?php
 /**
