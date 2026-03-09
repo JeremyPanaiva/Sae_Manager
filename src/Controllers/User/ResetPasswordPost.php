@@ -8,6 +8,7 @@ use Models\Database;
 use Models\User\Log; // Ajout de l'import pour la journalisation
 use Shared\Exceptions\DataBaseException;
 use Shared\Exceptions\SamePasswordException;
+use Shared\CsrfGuard;
 
 /**
  * Class ResetPasswordPost
@@ -53,6 +54,12 @@ class ResetPasswordPost implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /user/forgot-password');
             exit;
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         $logger = new Log(); // Instanciation du logger
