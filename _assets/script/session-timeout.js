@@ -46,8 +46,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (timeLeft <= -1) {
             clearInterval(interval);
+            clearInterval(concurrentCheckInterval);
             sessionStorage.removeItem(key5min);
             sessionStorage.removeItem(key1min);
+
+            // Prevent redirect loop: don't redirect if already on login page
+            if (window.location.pathname === '/user/login') return;
             window.location.href = '/user/login?expired=1'; // Redirection vers login si fini
 
         } else if (timeLeft <= 60 && !warning1MinShown) {
@@ -72,6 +76,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 if (data.valid === false) {
                     clearInterval(concurrentCheckInterval);
                     clearInterval(interval);
+
+                    // Prevent redirect loop: don't redirect if already on login page
+                    if (window.location.pathname === '/user/login') return;
                     window.location.href = '/user/login?error=concurrent_login';
                 }
             })
