@@ -12,14 +12,15 @@ use Shared\Exceptions\DataBaseException;
  *
  * Handles the GDPR/CNIL compliance process for inactive accounts.
  * This script is designed to be executed via a monthly cron job.
- * Step 1: Sends a warning email to users inactive for 35 months.
- * Step 2: Permanently deletes accounts inactive for 36 months or more.
+ * * Step 1: Sends a warning email to users inactive for 35 months.
+ * Step 2: Sends a deletion confirmation email, then permanently deletes accounts
+ * inactive for 36 months or more.
  *
  * @package Controllers\User
  */
 class InactiveUserCleanupController implements ControllerInterface
 {
-    /** @var int Inactivity threshold for warning email (in months) */
+    /** @var int Inactivity threshold for the warning email (in months) */
     private const WARNING_MONTHS = 35;
 
     /** @var int Inactivity threshold for account deletion (in months) */
@@ -51,7 +52,8 @@ class InactiveUserCleanupController implements ControllerInterface
      * Executes the cleanup and warning process.
      *
      * Validates the security token, sends warning emails to accounts
-     * inactive for 35 months, and deletes accounts inactive for 36 months.
+     * inactive for 35 months, notifies users slated for deletion,
+     * and permanently removes accounts inactive for 36 months.
      *
      * @return void
      */
@@ -80,7 +82,8 @@ class InactiveUserCleanupController implements ControllerInterface
         try {
             $emailService = new EmailService();
 
-            // STEP 1: WARNINGS (35 MONTHS)
+
+            // STEP 1: WARNINGS (35 MONTHS INACTIVE)
             echo $logPrefix . " --- Vérification des comptes inactifs depuis " . self::WARNING_MONTHS . " mois ---\n";
             $usersToWarn = User::getUsersForInactivityWarning(self::WARNING_MONTHS);
 
@@ -91,7 +94,6 @@ class InactiveUserCleanupController implements ControllerInterface
                 echo $logPrefix . " " . count($usersToWarn) . " utilisateur(s) à avertir trouvé(s).\n";
 
                 foreach ($usersToWarn as $user) {
-                    // Type-safe extraction to satisfy static analyzers (PHPStan/Psalm)
                     $email  = isset($user['mail']) && is_string($user['mail']) ? $user['mail'] : '';
                     $prenom = isset($user['prenom']) && is_string($user['prenom']) ? $user['prenom'] : '';
                     $nom    = isset($user['nom']) && is_string($user['nom']) ? $user['nom'] : '';
@@ -112,27 +114,65 @@ class InactiveUserCleanupController implements ControllerInterface
                         echo $logPrefix . " ✗ [AVERTISSEMENT] Erreur pour {$email}: " . $e->getMessage() . "\n";
                     }
 
-                    // 0.5 second delay to prevent SMTP throttling
+
                     usleep(500000);
                 }
             } else {
                 echo $logPrefix . " Aucun utilisateur à avertir ce mois-ci.\n";
             }
 
-            // STEP 2: DELETIONS (36 MONTHS)
+            // ==========================================================
+            // STEP 2: DELETIONS & NOTIFICATIONS (36 MONTHS INACTIVE)
+            // ==========================================================
             echo $logPrefix . " --- Suppression des comptes inactifs depuis " . self::DELETION_MONTHS . " mois ---\n";
-            $deletedCount = User::deleteInactiveAccounts(self::DELETION_MONTHS);
+            $usersToDelete = User::getUsersForDeletion(self::DELETION_MONTHS);
 
-            if ($deletedCount > 0) {
-                echo $logPrefix . " ✓ SUCCÈS : {$deletedCount} compte(s) inactif(s) supprimé(s) définitivement.\n";
+            $deletionMailSuccess = 0;
+            $deletionMailFailure = 0;
+            $deletedCount = 0;
+
+            if (!empty($usersToDelete)) {
+                echo $logPrefix . " " . count($usersToDelete) . " utilisateur(s) à supprimer trouvé(s).\n";
+
+
+                foreach ($usersToDelete as $user) {
+                    $email  = isset($user['mail']) && is_string($user['mail']) ? $user['mail'] : '';
+                    $prenom = isset($user['prenom']) && is_string($user['prenom']) ? $user['prenom'] : '';
+                    $nom    = isset($user['nom']) && is_string($user['nom']) ? $user['nom'] : '';
+
+                    $fullName = trim($prenom . ' ' . $nom);
+
+                    try {
+                        $sent = $emailService->sendAccountDeletedNotificationEmail($email, $fullName);
+                        if ($sent) {
+                            $deletionMailSuccess++;
+                            echo $logPrefix . " ✓ [SUPPRESSION] Email d'adieu envoyé à {$fullName} ({$email})\n";
+                        } else {
+                            $deletionMailFailure++;
+                            echo $logPrefix . " ✗ [SUPPRESSION] Échec d'envoi à {$fullName} ({$email})\n";
+                        }
+                    } catch (\Exception $e) {
+                        $deletionMailFailure++;
+                        echo $logPrefix . " ✗ [SUPPRESSION] Erreur mail pour {$email}: " . $e->getMessage() . "\n";
+                    }
+
+
+                    usleep(500000);
+                }
+
+                // 2.B: Actual database deletion process
+                $deletedCount = User::deleteInactiveAccounts(self::DELETION_MONTHS);
+                echo $logPrefix . " ✓ SUCCÈS : {$deletedCount} compte(s) inactif(s) supprimé(s)
+                 définitivement de la base.\n";
             } else {
                 echo $logPrefix . " ℹ INFORMATION : Aucun compte à supprimer ce mois-ci.\n";
             }
 
-            // SUMMARY
-            echo $logPrefix . " ==========================================\n";
+
             echo $logPrefix . " Résumé Avertissements : {$warningSuccess} envoyé(s), {$warningFailure} échec(s)\n";
-            echo $logPrefix . " Résumé Suppressions   : {$deletedCount} compte(s) supprimé(s)\n";
+            echo $logPrefix . " Résumé Emails Adieu   : {$deletionMailSuccess} envoyé(s),
+             {$deletionMailFailure} échec(s)\n";
+            echo $logPrefix . " Résumé Suppressions   : {$deletedCount} compte(s) supprimé(s) en BDD\n";
             echo $logPrefix . " Script terminé avec succès\n";
 
             http_response_code(200);

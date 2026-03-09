@@ -519,8 +519,7 @@ class User
      *
      * This method is used by the automated cleanup script to comply with
      * GDPR data retention policies (e.g., deleting accounts inactive for 36 months).
-     * Note: Relying on ON DELETE CASCADE in the database schema to clean up
-     * related records (logs, attributions, etc.).
+     * It sets a MySQL variable to let the trigger know it's a GDPR deletion.
      *
      * @param int $months The threshold of inactivity in months (e.g., 36).
      * @return int The number of user accounts successfully deleted.
@@ -530,6 +529,8 @@ class User
     {
         try {
             $conn = Database::getConnection();
+
+            $conn->query("SET @deletion_reason = 'RGPD'");
 
             $stmt = $conn->prepare("DELETE FROM users WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)");
 
@@ -543,11 +544,14 @@ class User
             $affectedRows = (int) $stmt->affected_rows;
             $stmt->close();
 
+            $conn->query("SET @deletion_reason = NULL");
+
             return max(0, $affectedRows);
         } catch (\Throwable $e) {
             throw new DataBaseException("Error deleting inactive accounts: " . $e->getMessage());
         }
     }
+
 
     /**
      * Retrieves users who have been inactive for a specific number of months
@@ -589,6 +593,44 @@ class User
             return $users;
         } catch (\Throwable $e) {
             throw new DataBaseException("Error retrieving users for inactivity warning: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Retrieves users who are scheduled for immediate deletion due to inactivity.
+     *
+     * @param int $months The inactivity threshold in months (e.g., 36)
+     * @return array<int, array<string, mixed>> Array of users to delete
+     * @throws DataBaseException If database connection or query fails
+     */
+    public static function getUsersForDeletion(int $months): array
+    {
+        try {
+            $conn = Database::getConnection();
+
+            $stmt = $conn->prepare(
+                "SELECT id, nom, prenom, mail FROM users 
+                 WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)"
+            );
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in getUsersForDeletion.");
+            }
+
+            $stmt->bind_param("i", $months);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result === false) {
+                throw new DataBaseException("Failed to get result in getUsersForDeletion.");
+            }
+
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            return $users;
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error retrieving users for deletion: " . $e->getMessage());
         }
     }
 
