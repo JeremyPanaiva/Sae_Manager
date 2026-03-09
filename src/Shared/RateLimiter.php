@@ -31,7 +31,7 @@ class RateLimiter
 
         $_SESSION[$key] = array_filter(
             $_SESSION[$key],
-            fn($timestamp) => ($now - $timestamp) < $windowSeconds
+            fn($timestamp) => is_int($timestamp) && ($now - $timestamp) < $windowSeconds
         );
 
         if (count($_SESSION[$key]) >= $maxAttempts) {

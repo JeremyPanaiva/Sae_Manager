@@ -45,10 +45,14 @@ class CsrfGuard
         }
 
         $submittedToken = $_POST['csrf_token'] ?? '';
-        $sessionToken = $_SESSION['csrf_token'] ?? '';
-        $tokenTime = $_SESSION['csrf_token_time'] ?? 0;
+        $sessionToken = isset($_SESSION['csrf_token']) && is_string($_SESSION['csrf_token'])
+            ? $_SESSION['csrf_token']
+            : '';
+        $tokenTime = isset($_SESSION['csrf_token_time']) && is_int($_SESSION['csrf_token_time'])
+            ? $_SESSION['csrf_token_time']
+            : 0;
 
-        if (time() - (int)$tokenTime > 3600) {
+        if (time() - $tokenTime > 3600) {
             return false;
         }
 
