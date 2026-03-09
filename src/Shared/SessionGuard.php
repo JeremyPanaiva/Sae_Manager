@@ -9,25 +9,22 @@ use Models\User\User;
  * SessionGuard
  *
  * Middleware-like guard that validates the JWT stored in the session on every
- * protected request. Automatically logs out and redirects if the token is
- * expired or invalid.
- *
- * Usage (add at the top of every protected controller):
- *   SessionGuard::check();
+ * protected request. It also ensures session uniqueness by comparing the
+ * current token with the one stored in the database (preventing concurrent logins).
  *
  * @package Shared
  */
 class SessionGuard
 {
     /**
-     * Validates the current session JWT.
+     * Validates the current session JWT and checks for concurrent login.
      *
-     * If valid → does nothing (request continues normally).
-     * If expired or invalid → destroys the session and redirects to /user/login?expired=1.
+     * If valid and unique → does nothing.
+     * If expired, invalid, or overridden by a newer login → destroys the session
+     * and redirects the user.
      *
      * @param bool $redirectOnFail Whether to redirect on failure (default: true).
-     *                             Set to false to only return the result without redirecting.
-     * @return bool True if session is valid, false otherwise.
+     * @return bool True if session is valid and unique, false otherwise.
      */
     public static function check(bool $redirectOnFail = true): bool
     {
@@ -35,6 +32,7 @@ class SessionGuard
             session_start();
         }
 
+        // 1. Basic session existence check
         if (!isset($_SESSION['user']) || !is_array($_SESSION['user'])) {
             if ($redirectOnFail) {
                 header('Location: /user/login');
@@ -45,13 +43,13 @@ class SessionGuard
 
         $rawToken = $_SESSION['jwt_token'] ?? null;
 
-        // No JWT in session → legacy session without token, force re-login
+        // 2. Token presence check
         if (!is_string($rawToken) || $rawToken === '') {
             self::expireSession($redirectOnFail);
             return false;
         }
 
-        // Validate JWT
+        // 3. Cryptographic JWT validation (Signature & Expiry)
         $payload = JwtService::validate($rawToken);
 
         if ($payload === null) {
@@ -59,7 +57,52 @@ class SessionGuard
             return false;
         }
 
+        // 4. Concurrent Session Check (Single Device Enforcement)
+        $rawId = $_SESSION['user']['id'] ?? 0;
+        $userId = is_numeric($rawId) ? (int)$rawId : 0;
+
+        if ($userId > 0) {
+            $userModel = new User();
+            $storedToken = $userModel->getStoredJwtToken($userId);
+
+            /**
+             * If the token in the database doesn't match the session token,
+             * it means the user has logged in from a more recent device/browser.
+             */
+            if ($storedToken !== null && $storedToken !== $rawToken) {
+                self::handleConcurrentLogout($userId, $redirectOnFail);
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    /**
+     * Handles logout specifically when a concurrent session is detected.
+     *
+     * @param int $userId The user ID to log.
+     * @param bool $redirect Whether to redirect to the login page.
+     * @return void
+     */
+    private static function handleConcurrentLogout(int $userId, bool $redirect): void
+    {
+        $logger = new Log();
+        $logger->create(
+            $userId,
+            'SESSION_CONCURRENTE',
+            'users',
+            $userId,
+            "Session revoked: Connection detected on another device."
+        );
+
+        $_SESSION = [];
+        session_destroy();
+
+        if ($redirect) {
+            header('Location: /user/login?error=concurrent_login');
+            exit;
+        }
     }
 
     /**
@@ -77,11 +120,9 @@ class SessionGuard
             $userId = is_numeric($rawId) ? (int)$rawId : 0;
 
             if ($userId > 0) {
-                $nomRaw = $userSession['nom'] ?? '';
-                $nom = is_string($nomRaw) ? $nomRaw : '';
-
-                $prenomRaw = $userSession['prenom'] ?? '';
-                $prenom = is_string($prenomRaw) ? $prenomRaw : '';
+                $nom = isset($userSession['nom']) && is_string($userSession['nom']) ? $userSession['nom'] : '';
+                $prenom = isset($userSession['prenom']) &&
+                is_string($userSession['prenom']) ? $userSession['prenom'] : '';
 
                 $logger = new Log();
                 $logger->create(
@@ -89,7 +130,7 @@ class SessionGuard
                     'DECONNEXION',
                     'users',
                     $userId,
-                    "Session expirée pour : $nom $prenom"
+                    "Session expired for: $nom $prenom"
                 );
             }
         }
