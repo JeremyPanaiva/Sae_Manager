@@ -93,7 +93,7 @@ class SessionGuard
             'SESSION_CONCURRENTE',
             'users',
             $userId,
-            "Session revoked: Connection detected on another device."
+            "Security: Session revoked due to concurrent login on another device."
         );
 
         $_SESSION = [];
@@ -106,7 +106,7 @@ class SessionGuard
     }
 
     /**
-     * Destroys the session and redirects to login with an expiration notice.
+     * Destroys the session and logs the expiration event.
      *
      * @param bool $redirect Whether to redirect after destroying the session.
      * @return void
@@ -120,17 +120,13 @@ class SessionGuard
             $userId = is_numeric($rawId) ? (int)$rawId : 0;
 
             if ($userId > 0) {
-                $nom = isset($userSession['nom']) && is_string($userSession['nom']) ? $userSession['nom'] : '';
-                $prenom = isset($userSession['prenom']) &&
-                is_string($userSession['prenom']) ? $userSession['prenom'] : '';
-
                 $logger = new Log();
                 $logger->create(
                     $userId,
-                    'DECONNEXION',
+                    'SESSION_EXPIREE',
                     'users',
                     $userId,
-                    "Session expired for: $nom $prenom"
+                    "System: Session automatically expired (TTL reached)."
                 );
             }
         }
