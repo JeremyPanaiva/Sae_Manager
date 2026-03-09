@@ -7,6 +7,7 @@ use Models\Sae\SaeAttribution;
 use Shared\Exceptions\UnauthorizedSaeUnassignmentException;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE unassignment controller
@@ -51,6 +52,12 @@ class UnassignSaeController implements ControllerInterface
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
+
             // Extract form data
             $saeIdRaw = $_POST['sae_id'] ?? 0;
             $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
