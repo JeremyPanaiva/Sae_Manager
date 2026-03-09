@@ -3,8 +3,8 @@
 namespace Shared;
 
 /**
- * InputValidator - Validation centralisée des entrées utilisateur.
- * Conforme à OWASP Input Validation Cheat Sheet.
+ * InputValidator - Centralized user input validation.
+ * Compliant with OWASP Input Validation Cheat Sheet.
  */
 class InputValidator
 {
@@ -32,4 +32,3 @@ class InputValidator
         return preg_replace('/[^a-zA-Z0-9._-]/', '_', $filename) ?? 'file';
     }
 }
-

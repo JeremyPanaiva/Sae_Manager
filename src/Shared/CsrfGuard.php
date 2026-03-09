@@ -3,15 +3,15 @@
 namespace Shared;
 
 /**
- * CsrfGuard - Protection contre les attaques Cross-Site Request Forgery
+ * CsrfGuard - Protection against Cross-Site Request Forgery attacks
  *
- * Génère et valide des tokens CSRF pour chaque formulaire POST.
- * Conforme à OWASP CSRF Prevention Cheat Sheet.
+ * Generates and validates CSRF tokens for each POST form.
+ * Compliant with OWASP CSRF Prevention Cheat Sheet.
  */
 class CsrfGuard
 {
     /**
-     * Génère un token CSRF et le stocke en session.
+     * Generates a CSRF token and stores it in the session.
      */
     public static function generateToken(): string
     {
@@ -27,7 +27,7 @@ class CsrfGuard
     }
 
     /**
-     * Retourne le champ HTML hidden à inclure dans chaque formulaire.
+     * Returns the hidden HTML field to include in each form.
      */
     public static function getHiddenField(): string
     {
@@ -36,7 +36,7 @@ class CsrfGuard
     }
 
     /**
-     * Valide le token CSRF soumis (durée max : 1h).
+     * Validates the submitted CSRF token (max duration: 1 hour).
      */
     public static function validate(): bool
     {
@@ -48,7 +48,6 @@ class CsrfGuard
         $sessionToken = $_SESSION['csrf_token'] ?? '';
         $tokenTime = $_SESSION['csrf_token_time'] ?? 0;
 
-        // Token expiré après 1 heure
         if (time() - (int)$tokenTime > 3600) {
             return false;
         }
@@ -58,4 +57,3 @@ class CsrfGuard
             && hash_equals($sessionToken, $submittedToken);
     }
 }
-

@@ -23,15 +23,15 @@
  * @package Root
  */
 
-// Set application timezone from environment variable or default to Europe/Paris
+
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 
-// Include and register the autoloader for automatic class loading
+
 require_once "Autoloader.php";
 \Autoloader::register();
 
 
-// Import all controller classes
+
 use Controllers\Dashboard\TodoController;
 use Controllers\Dashboard\SendMessageController;
 use Controllers\Home\HomeController;
@@ -75,20 +75,18 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
 header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';");
 
-// Sécuriser les cookies de session
 if (session_status() === PHP_SESSION_NONE) {
     session_set_cookie_params([
         'lifetime' => 0,
         'path'     => '/',
         'domain'   => '',
-        'secure'   => true,       // HTTPS uniquement
-        'httponly'  => true,       // Pas accessible via JavaScript
-        'samesite'  => 'Strict',  // Protection CSRF supplémentaire
+        'secure'   => true,
+        'httponly'  => true,
+        'samesite'  => 'Strict',
     ]);
     session_start();
 }
 
-// Enable detailed error reporting for local development environments
 if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
@@ -145,7 +143,6 @@ $controllers = [
     new SendMessageController(),
 ];
 
-// Extract the path from the request URI (without query string parameters)
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 

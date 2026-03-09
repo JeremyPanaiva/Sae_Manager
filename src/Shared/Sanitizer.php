@@ -3,13 +3,13 @@
 namespace Shared;
 
 /**
- * Sanitizer - Utilitaires d'échappement pour prévenir les attaques XSS.
- * Conforme à OWASP XSS Prevention Cheat Sheet.
+ * Sanitizer - Escaping utilities to prevent XSS attacks.
+ * Compliant with OWASP XSS Prevention Cheat Sheet.
  */
 class Sanitizer
 {
     /**
-     * Échappe une chaîne pour un affichage HTML sécurisé.
+     * Escapes a string for safe HTML display.
      */
     public static function escapeHtml(string $value): string
     {
@@ -17,7 +17,7 @@ class Sanitizer
     }
 
     /**
-     * Échappe pour un attribut HTML.
+     * Escapes a string for use in an HTML attribute.
      */
     public static function escapeAttr(string $value): string
     {
@@ -25,11 +25,10 @@ class Sanitizer
     }
 
     /**
-     * Échappe pour du JavaScript inline.
+     * Escapes a string for inline JavaScript.
      */
     public static function escapeJs(string $value): string
     {
         return json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     }
 }
-

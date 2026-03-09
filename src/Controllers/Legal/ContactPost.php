@@ -28,31 +28,26 @@ class ContactPost implements ControllerInterface
      */
     public function control()
     {
-        // Validation CSRF
         if (!CsrfGuard::validate()) {
             http_response_code(403);
-            die('Requête invalide (CSRF).');
+            die('Invalid request (CSRF).');
         }
 
-        // 1. Strict Input Typing (Fixes: "Part of encapsed string cannot be cast to string")
-        // We ensure variables are strictly strings before using them.
+
         $emailRaw = $_POST['email'] ?? '';
         $email = is_string($emailRaw) ? $emailRaw : '';
 
         $subjectRaw = $_POST['subject'] ?? '';
         $subject = is_string($subjectRaw) ? $subjectRaw : 'No Subject';
 
-        // (Insert your email sending logic here)
 
-        // 2. Audit Logging
         $Logger = new Log();
 
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // 3. Safe Session Access (Fixes: "Cannot access offset 'id' on mixed")
-        // We must verify that $_SESSION['user'] is an array before accessing keys.
+
         $userId = null;
 
         if (isset($_SESSION['user']) && is_array($_SESSION['user'])) {
@@ -61,8 +56,7 @@ class ContactPost implements ControllerInterface
             }
         }
 
-        // Create the log entry
-        // We use 0 as element_id because this is a generic action not tied to a specific DB row.
+
         $Logger->create(
             $userId,
             'CONTACT_ENVOI',
@@ -71,7 +65,6 @@ class ContactPost implements ControllerInterface
             "Message de : $email | Subject: $subject"
         );
 
-        // Redirect with success flag
         header("Location: /contact?success=1");
         exit();
     }

@@ -3,18 +3,18 @@
 namespace Shared;
 
 /**
- * RateLimiter - Protection contre les abus et le flooding.
- * Utilise les sessions pour limiter le nombre de requêtes par IP.
+ * RateLimiter - Protection against abuse and request flooding.
+ * Uses sessions to limit the number of requests per IP.
  */
 class RateLimiter
 {
     /**
-     * Vérifie si l'IP actuelle dépasse la limite de requêtes.
+     * Checks if the current IP exceeds the request limit.
      *
-     * @param string $action   Nom de l'action (ex: 'contact_form')
-     * @param int    $maxAttempts Nombre max de tentatives
-     * @param int    $windowSeconds Fenêtre de temps en secondes
-     * @return bool True si autorisé, false si bloqué
+     * @param string $action   Action name (e.g. 'contact_form')
+     * @param int    $maxAttempts Maximum number of attempts
+     * @param int    $windowSeconds Time window in seconds
+     * @return bool True if allowed, false if blocked
      */
     public static function check(string $action, int $maxAttempts = 10, int $windowSeconds = 60): bool
     {
@@ -29,18 +29,16 @@ class RateLimiter
             $_SESSION[$key] = [];
         }
 
-        // Nettoyer les anciennes entrées
         $_SESSION[$key] = array_filter(
             $_SESSION[$key],
             fn($timestamp) => ($now - $timestamp) < $windowSeconds
         );
 
         if (count($_SESSION[$key]) >= $maxAttempts) {
-            return false; // Bloqué
+            return false;
         }
 
         $_SESSION[$key][] = $now;
-        return true; // Autorisé
+        return true;
     }
 }
-
