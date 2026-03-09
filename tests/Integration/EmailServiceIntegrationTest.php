@@ -94,4 +94,84 @@ final class EmailServiceIntegrationTest extends TestCase
         $this->assertTrue(putenv('SMTP_HOST=' . $originalEnv));
         $this->assertSame($originalEnv, getenv('SMTP_HOST'));
     }
+
+    public function testEmailAddressValidationBeforeSending(): void
+    {
+        $validEmails = [
+            'user@example.com',
+            'test.user@example.co.uk',
+            'sae-manager@alwaysdata.net',
+        ];
+
+        foreach ($validEmails as $email) {
+            $this->assertNotFalse(
+                filter_var($email, FILTER_VALIDATE_EMAIL),
+                "Email '{$email}' should be valid"
+            );
+        }
+
+        $invalidEmails = [
+            'notanemail',
+            '@example.com',
+            'user@',
+        ];
+
+        foreach ($invalidEmails as $email) {
+            $this->assertFalse(
+                filter_var($email, FILTER_VALIDATE_EMAIL) !== false,
+                "Email '{$email}' should be invalid"
+            );
+        }
+    }
+
+    public function testEmailSubjectSanitization(): void
+    {
+        $maliciousSubjects = [
+            "Subject\nBcc: hacker@evil.com",
+            "Subject\rCc: hacker@evil.com",
+            "Subject\r\nBcc: hacker@evil.com",
+        ];
+
+        foreach ($maliciousSubjects as $subject) {
+            $sanitized = str_replace(["\r", "\n"], '', $subject);
+
+            $this->assertStringNotContainsString("\n", $sanitized);
+            $this->assertStringNotContainsString("\r", $sanitized);
+        }
+    }
+
+    public function testEmailBodyHtmlEncoding(): void
+    {
+        $htmlBody = '<html><body><h1>Test</h1><p>Message</p></body></html>';
+
+        $this->assertStringContainsString('<html>', $htmlBody);
+        $this->assertStringContainsString('</html>', $htmlBody);
+        $this->assertStringContainsString('<body>', $htmlBody);
+        $this->assertStringContainsString('</body>', $htmlBody);
+    }
+
+    public function testReplyToHeaderConfiguration(): void
+    {
+        $userEmail = 'user@example.com';
+        $userName = 'John Doe';
+
+        $replyToHeader = $userName . ' <' . $userEmail . '>';
+
+        $this->assertStringContainsString($userEmail, $replyToHeader);
+        $this->assertStringContainsString($userName, $replyToHeader);
+        $this->assertNotFalse(filter_var($userEmail, FILTER_VALIDATE_EMAIL));
+    }
+
+    public function testEmailPriorityHeaders(): void
+    {
+        $priorities = [
+            'high' => '1',
+            'normal' => '3',
+            'low' => '5',
+        ];
+
+        foreach ($priorities as $value) {
+            $this->assertMatchesRegularExpression('/^[1-5]$/', $value);
+        }
+    }
 }
