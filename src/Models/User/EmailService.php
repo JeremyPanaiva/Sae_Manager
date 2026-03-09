@@ -1064,4 +1064,70 @@ class EmailService
             return $this->sendViaFallback($studentEmail);
         }
     }
+
+    /**
+     * Sends a warning email for an inactive account
+     *
+     * Notifies a user that their account will be deleted in 1 month due to
+     * prolonged inactivity (GDPR/CNIL compliance), unless they log in.
+     *
+     * @param string $userEmail User's email address
+     * @param string $userName User's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendInactiveAccountWarningEmail(string $userEmail, string $userName): bool
+    {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($userEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Avis de suppression de compte pour inactivité - SAE Manager';
+
+            $loginLink = $this->getBaseUrl() . '/user/login';
+
+            $emailView = new EmailView('inactive_account_warning', [
+                'USER_NAME' => $userName,
+                'LOGIN_LINK' => $loginLink
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getInactiveAccountWarningEmailTextBody($userName, $loginLink);
+
+            $this->mailer->send();
+            error_log("Email d'avertissement d'inactivité (J-30) envoyé à {$userEmail}");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (inactive account warning): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($userEmail);
+        }
+    }
+
+    /**
+     * Generates plain text version of the inactive account warning email
+     *
+     * @param string $userName User's name
+     * @param string $loginLink Link to the login page
+     * @return string Plain text email body
+     */
+    private function getInactiveAccountWarningEmailTextBody(string $userName, string $loginLink): string
+    {
+        return "Bonjour {$userName},\n\n" .
+            "Conformément au Règlement Général sur la Protection des Données (RGPD), " .
+            "nous vous informons que votre compte SAE Manager est inactif depuis près de 3 ans.\n\n" .
+            "Afin de protéger vos données personnelles, votre compte et toutes les données " .
+            "associées seront définitivement supprimés dans 30 jours.\n\n" .
+            "Si vous souhaitez conserver votre compte, il vous suffit de vous y connecter " .
+            "avant ce délai en utilisant le lien suivant :\n" .
+            "{$loginLink}\n\n" .
+            "Si vous ne souhaitez plus utiliser nos services, aucune action de votre part " .
+            "n'est requise.\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
+
 }
