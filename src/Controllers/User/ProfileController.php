@@ -10,6 +10,7 @@ use Models\Database;
 use Views\User\ProfileView;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * Class ProfileController
@@ -77,6 +78,11 @@ class ProfileController implements ControllerInterface
 
         // Route to account deletion handler
         if ($path === self::PATH_DELETE && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
             $this->handleDelete();
             return;
         }
@@ -106,6 +112,12 @@ class ProfileController implements ControllerInterface
 
         // Handle profile update (POST request)
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($errors)) {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
+
             // Extract and sanitize form data
             $nomRaw = $_POST['nom'] ?? '';
             $nom = is_string($nomRaw) ? trim($nomRaw) : '';
