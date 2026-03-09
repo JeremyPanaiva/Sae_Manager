@@ -1129,5 +1129,4 @@ class EmailService
             "Cordialement,\n" .
             "L'équipe SAE Manager";
     }
-
 }
