@@ -46,6 +46,7 @@ use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
 use Controllers\Sae\UpdateContentSaeController;
 use Controllers\Sae\UpdateSaeDateController;
+use Controllers\User\CheckSessionSync;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
 use Controllers\User\ProfileController;
@@ -129,6 +130,7 @@ $controllers = [
     new DailyExportController(),
     new SendMessageController(),
     new InactiveUserCleanupController(),
+    new CheckSessionSync(),
 ];
 
 // Extract the path from the request URI
