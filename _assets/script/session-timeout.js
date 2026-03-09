@@ -14,14 +14,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let warning1MinShown = sessionStorage.getItem(key1min) === 'true';
     let hideTimeout;
 
-    // --- NOUVEAUTÉ : Faire disparaître le message au clic ---
     toast.addEventListener('click', function() {
         toast.classList.remove('show');
         if (hideTimeout) clearTimeout(hideTimeout);
     });
 
     function showWarning(message, isUrgent = false) {
-        // On ajoute une petite mention pour dire que c'est cliquable
         toast.innerHTML = '<strong>⚠️ Attention :</strong> ' + message +
             '<br><small style="opacity: 0.8; font-size: 0.8em;">(Cliquez pour masquer)</small>';
 
@@ -33,10 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         toast.classList.add('show');
 
-        // On nettoie l'ancien timer s'il y en a un
         if (hideTimeout) clearTimeout(hideTimeout);
 
-        // --- NOUVEAUTÉ : 30s pour l'urgent, 10s pour le normal ---
         const timeToDisplay = isUrgent ? 30000 : 10000;
 
         hideTimeout = setTimeout(() => {
@@ -52,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
             clearInterval(interval);
             sessionStorage.removeItem(key5min);
             sessionStorage.removeItem(key1min);
-            window.location.href = '/user/profile';
+            window.location.href = '/user/login?expired=1'; // Redirection vers login si fini
 
         } else if (timeLeft <= 60 && !warning1MinShown) {
             warning1MinShown = true;
@@ -65,4 +61,22 @@ document.addEventListener("DOMContentLoaded", function() {
             showWarning("Votre session expirera dans 5 minutes. Pensez à sauvegarder.", false);
         }
     }, 1000);
+
+    const concurrentCheckInterval = setInterval(() => {
+        fetch('/user/check-session-sync')
+            .then(response => {
+                if (!response.ok) throw new Error();
+                return response.json();
+            })
+            .then(data => {
+                if (data.valid === false) {
+                    clearInterval(concurrentCheckInterval);
+                    clearInterval(interval);
+                    window.location.href = '/user/login?error=concurrent_login';
+                }
+            })
+            .catch(err => {
+                console.warn("Vérification de session en attente...");
+            });
+    }, 20000);
 });

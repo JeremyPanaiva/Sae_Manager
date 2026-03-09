@@ -634,6 +634,48 @@ class User
         }
     }
 
+    /**
+     * Retrieves the current stored JWT token for a specific user.
+     *
+     * Used to detect concurrent sessions by comparing the session's token
+     * with the one stored in the database.
+     *
+     * @param int $userId The unique identifier of the user.
+     * @return string|null The stored JWT token or null if not found.
+     * @throws DataBaseException If database connection or query fails.
+     */
+    public function getStoredJwtToken(int $userId): ?string
+    {
+        try {
+            $conn = Database::getConnection();
+            $stmt = $conn->prepare("SELECT jwt_token FROM users WHERE id = ? LIMIT 1");
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in getStoredJwtToken.");
+            }
+
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+
+            // Fix: Explicitly check if $result is a mysqli_result object before calling fetch_assoc()
+            if (!($result instanceof \mysqli_result)) {
+                $stmt->close();
+                return null;
+            }
+
+            $row = $result->fetch_assoc();
+            $stmt->close();
+
+            return isset($row['jwt_token']) && is_string($row['jwt_token']) ? $row['jwt_token'] : null;
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error retrieving stored JWT: " . $e->getMessage());
+        }
+    }
+
+
+
 
 
     /**

@@ -4,6 +4,7 @@
  * View: Legal notice
  *
  * Displays legal information, terms, privacy policy, and credits for SAE Manager.
+ * Content focuses on institutional transparency and GDPR compliance.
  *
  * @package SaeManager\Views\Legal
  * @author JeremyPanaiva & mohamedDriouchi
@@ -69,30 +70,43 @@
 
         <article class="legal-section">
             <h2 class="legal-subtitle">
-                3. Protection des données (RGPD) & Cookies
+                3. Protection des données (RGPD) & Confidentialité
             </h2>
             <p>
-                Conformément au Règlement Général sur la Protection des Données (RGPD),
-                voici les modalités de traitement :
+                Conformément au Règlement Général sur la Protection des Données (RGPD)
+                et aux recommandations de la CNIL, nous appliquons une politique de
+                minimisation et de sécurisation des données :
             </p>
             <ul class="legal-list">
                 <li>
-                    <strong>Données collectées :</strong>
-                    Le site ne collecte aucune donnée sensible. Seules les
-                    informations nécessaires au fonctionnement des comptes de test
-                    (nom, prénom, e-mail, adresse IP) sont traitées.
+                    <strong>Finalité de la collecte :</strong>
+                    Le traitement des données (nom, prénom, e-mail) a pour unique but
+                    la gestion des projets, l'affectation des étudiants et le suivi
+                    pédagogique au sein de la plateforme.
                 </li>
                 <li>
-                    <strong>Sécurité :</strong>
-                    Les mots de passe sont hachés (<code>password_hash</code>).
-                    Aucune donnée n'est transmise à des tiers.
+                    <strong>Durée de conservation :</strong>
+                    Afin de respecter le droit à l'oubli, tout compte utilisateur
+                    <strong>inactif pendant une durée de 3 ans</strong> est automatiquement
+                    supprimé. Une notification préalable est envoyée par e-mail avant
+                    la suppression définitive.
+                </li>
+                <li>
+                    <strong>Traçabilité et Sécurité :</strong>
+                    Les journaux d'activité liés à la sécurité du site sont conservés
+                    pour une durée maximale d'un an avant destruction. Les accès sont
+                    sécurisés par des protocoles de chiffrement standards.
+                </li>
+                <li>
+                    <strong>Transmission des données :</strong>
+                    Aucune information personnelle n'est cédée, vendue ou transmise à
+                    des tiers. Les données sont hébergées exclusivement en France.
                 </li>
                 <li>
                     <strong>Cookies :</strong>
-                    Le site utilise exclusivement des
-                    <strong>cookies de session techniques</strong> (PHPSESSID),
-                    strictement nécessaires au maintien de la connexion et
-                    dispensés de consentement préalable par la CNIL.
+                    Ce site utilise uniquement des <strong>cookies techniques</strong>
+                    nécessaires au maintien de votre session d'authentification.
+                    Aucun cookie de traçage publicitaire n'est utilisé.
                 </li>
             </ul>
         </article>
@@ -102,11 +116,12 @@
             <p>
                 Vous disposez d'un droit d'accès, de rectification et de
                 <strong>suppression totale</strong> de vos données personnelles.
-                Ces droits peuvent être exercés via votre espace "Profil".
+                Ces droits peuvent être exercés directement via votre espace "Profil"
+                ou en contactant l'équipe pédagogique.
             </p>
             <p>
                 Pour toute question relative au site ou pour exercer vos droits,
-                vous pouvez nous contacter à :
+                vous pouvez nous contacter à l'adresse suivante :
                 <a href="mailto:sae-manager@alwaysdata.net">
                     sae-manager@alwaysdata.net
                 </a>.
