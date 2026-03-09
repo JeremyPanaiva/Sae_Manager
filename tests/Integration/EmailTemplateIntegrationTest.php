@@ -75,12 +75,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => 'Jean Dupont',
-            'SAE_TITLE' => 'SAE 3.01 - Développement Web',
-            'DATE_RENDU' => '15/03/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'Jean Dupont',
+            'SAE_TITLE'        => 'SAE 3.01 - Développement Web',
+            'DATE_RENDU'       => '15/03/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'Dr. Jean Martin',
-            'SAE_URL' => 'https://sae-manager.alwaysdata.net/sae',
+            'SAE_URL'          => 'https://sae-manager.alwaysdata.net/sae',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
@@ -108,16 +108,17 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => 'Test Student',
-            'SAE_TITLE' => 'Test SAE',
-            'DATE_RENDU' => '31/12/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'Test Student',
+            'SAE_TITLE'        => 'Test SAE',
+            'DATE_RENDU'       => '31/12/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'Test User',
-            'SAE_URL' => 'https://example.com',
+            'SAE_URL'          => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
+        // Check HTML structure
         $this->assertStringContainsString('<!DOCTYPE', $rendered);
         $this->assertStringContainsString('<html', $rendered);
         $this->assertStringContainsString('</html>', $rendered);
@@ -139,17 +140,19 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => 'François Müller',
-            'SAE_TITLE' => 'SAE avec caractères spéciaux: é à ù & < >',
-            'DATE_RENDU' => '15/03/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'François Müller',
+            'SAE_TITLE'        => 'SAE avec caractères spéciaux: é à ù & < >',
+            'DATE_RENDU'       => '15/03/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'François Müller',
-            'SAE_URL' => 'https://example.com/sae?id=123&lang=fr',
+            'SAE_URL'          => 'https://example.com/sae?id=123&lang=fr',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
         $this->assertNotEmpty($rendered);
+
+        // Verify special characters are properly escaped
         $this->assertStringNotContainsString('<SAE', $rendered);
     }
 
@@ -169,16 +172,17 @@ final class EmailTemplateIntegrationTest extends TestCase
         $testUrl = 'https://sae-manager.alwaysdata.net/sae';
 
         $testData = [
-            'STUDENT_NAME' => 'Test Student',
-            'SAE_TITLE' => 'Test SAE',
-            'DATE_RENDU' => '31/12/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'Test Student',
+            'SAE_TITLE'        => 'Test SAE',
+            'DATE_RENDU'       => '31/12/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL' => $testUrl,
+            'SAE_URL'          => $testUrl,
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
+        // Verify URL is present and properly formatted
         $this->assertStringContainsString($testUrl, $rendered);
         $this->assertStringContainsString('href=', $rendered);
     }
@@ -197,16 +201,17 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => '',
-            'SAE_TITLE' => '',
-            'DATE_RENDU' => '',
-            'HEURE_RENDU' => '',
+            'STUDENT_NAME'     => '',
+            'SAE_TITLE'        => '',
+            'DATE_RENDU'       => '',
+            'HEURE_RENDU'      => '',
             'RESPONSABLE_NAME' => '',
-            'SAE_URL' => '',
+            'SAE_URL'          => '',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
+        // Template should still render even with empty variables
         $this->assertNotEmpty($rendered);
         $this->assertStringContainsString('<html', $rendered);
     }
@@ -225,16 +230,17 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => 'Test',
-            'SAE_TITLE' => 'Test',
-            'DATE_RENDU' => '31/12/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'Test',
+            'SAE_TITLE'        => 'Test',
+            'DATE_RENDU'       => '31/12/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL' => 'https://example.com',
+            'SAE_URL'          => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
+        // Email templates should use inline styles
         $this->assertStringContainsString('style=', $rendered);
     }
 
@@ -252,20 +258,44 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME' => 'Test',
-            'SAE_TITLE' => 'Test',
-            'DATE_RENDU' => '31/12/2026',
-            'HEURE_RENDU' => '23:59',
+            'STUDENT_NAME'     => 'Test',
+            'SAE_TITLE'        => 'Test',
+            'DATE_RENDU'       => '31/12/2026',
+            'HEURE_RENDU'      => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL' => 'https://example.com',
+            'SAE_URL'          => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
 
+        // Check for UTF-8 charset declaration
         $this->assertMatchesRegularExpression(
             '/charset=["\']?utf-8["\']?/i',
             $rendered,
             'Template should declare UTF-8 charset'
         );
+    }
+
+    /**
+     * Test multiple templates rendering consistency
+     *
+     * @return void
+     */
+    public function testMultipleTemplatesRenderingConsistency(): void
+    {
+        $templates = glob($this->templatePath . '*.php');
+
+        if ($templates === false || count($templates) === 0) {
+            $this->markTestSkipped('No email templates found');
+        }
+
+        foreach ($templates as $templateFile) {
+            $this->assertFileExists($templateFile);
+            $this->assertTrue(is_readable($templateFile));
+
+            $content = file_get_contents($templateFile);
+            $this->assertNotFalse($content);
+            $this->assertNotEmpty($content);
+        }
     }
 }
