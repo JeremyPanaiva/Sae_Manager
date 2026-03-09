@@ -26,15 +26,9 @@ final class ErrorHandlingIntegrationTest extends TestCase
 
     public function testExceptionCanBeCaught(): void
     {
-        $caught = false;
+        $this->expectException(DataBaseException::class);
+        $this->expectExceptionMessage('Test error');
 
-        try {
-            throw new DataBaseException('Test error');
-        } catch (DataBaseException $e) {
-            $caught = true;
-            $this->assertSame('Test error', $e->getMessage());
-        }
-
-        $this->assertTrue($caught);
+        throw new DataBaseException('Test error');
     }
 }
