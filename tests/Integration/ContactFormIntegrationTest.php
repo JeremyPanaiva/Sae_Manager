@@ -17,7 +17,6 @@ use PHPUnit\Framework\TestCase;
  */
 final class ContactFormIntegrationTest extends TestCase
 {
-
     /**
      * Original $_POST data backup
      *
