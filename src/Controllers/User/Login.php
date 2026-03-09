@@ -36,6 +36,18 @@ class Login implements ControllerInterface
      */
     public function control(): void
     {
+        // --- Destroy any leftover session to prevent redirect loops ---
+        if (
+            (isset($_GET['expired']) && $_GET['expired'] === '1') ||
+            (isset($_GET['error']) && $_GET['error'] === 'concurrent_login')
+        ) {
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+            $_SESSION = [];
+            session_destroy();
+        }
+
         $successMessage = '';
 
         // --- Handle Success Messages ---
