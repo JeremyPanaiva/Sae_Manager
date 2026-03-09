@@ -4,6 +4,7 @@ namespace Controllers\Legal;
 
 use Controllers\ControllerInterface;
 use Models\User\Log;
+use Shared\CsrfGuard;
 
 /**
  * Class ContactPost
@@ -27,6 +28,12 @@ class ContactPost implements ControllerInterface
      */
     public function control()
     {
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
+        }
+
         // 1. Strict Input Typing (Fixes: "Part of encapsed string cannot be cast to string")
         // We ensure variables are strictly strings before using them.
         $emailRaw = $_POST['email'] ?? '';
