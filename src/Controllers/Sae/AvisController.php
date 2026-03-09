@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\SaeAvis;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE feedback controller
@@ -53,6 +54,12 @@ class AvisController implements ControllerInterface
         $requestUri = $_SERVER['REQUEST_URI'] ?? '';
         $path = is_string($requestUri) ? parse_url($requestUri, PHP_URL_PATH) : null;
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
+
+        // Validation CSRF pour toutes les requêtes POST
+        if ($method === 'POST' && !CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
+        }
 
         try {
             // Route to appropriate handler based on path

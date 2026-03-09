@@ -10,6 +10,7 @@ use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\EmailAlreadyExistsException;
 use Shared\Exceptions\DataBaseException;
+use Shared\CsrfGuard;
 use Views\User\RegisterView;
 
 /**
@@ -44,12 +45,15 @@ class RegisterPost implements ControllerInterface
      */
     public function control(): void
     {
-        // Check if form was submitted
         if (!isset($_POST['ok'])) {
             return;
         }
 
-        // Extract form data safely
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Invalid request (CSRF).');
+        }
+
         $lastName = $_POST['nom'] ?? '';
         $firstName = $_POST['prenom'] ?? '';
         $email = $_POST['mail'] ?? '';
@@ -60,7 +64,6 @@ class RegisterPost implements ControllerInterface
         $logger = new Log();
         $validationExceptions = [];
 
-        // Validate password length
         if (strlen($mdp) < 12 || strlen($mdp) > 30) {
             $logger->create(
                 null,
@@ -74,7 +77,6 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        // Validate password contains uppercase letter
         if (!preg_match('/[A-Z]/', $mdp)) {
             $logger->create(
                 null,
@@ -88,7 +90,6 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        // Validate password contains lowercase letter
         if (!preg_match('/[a-z]/', $mdp)) {
             $logger->create(
                 null,
@@ -102,7 +103,6 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        // Validate password contains digit
         if (!preg_match('/[0-9]/', $mdp)) {
             $logger->create(
                 null,
@@ -116,7 +116,6 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        // Validate password contains special character
         if (!preg_match('/[!@#$%^&*()_+€£µ§?\\/\\[\\]|{}]/', $mdp)) {
             $logger->create(
                 null,
@@ -131,7 +130,6 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        // Validate email format
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $logger->create(
                 null,
@@ -146,14 +144,11 @@ class RegisterPost implements ControllerInterface
         }
 
         try {
-            // Check if email already exists in database
             try {
                 $userModel->emailExists($email);
             } catch (DataBaseException $dbEx) {
-                // Wrap database exception
                 throw new ArrayException([new ValidationException($dbEx->getMessage())]);
             } catch (EmailAlreadyExistsException $e) {
-                // Email is already registered
                 $logger->create(
                     null,
                     'ECHEC_INSCRIPTION',
@@ -166,26 +161,20 @@ class RegisterPost implements ControllerInterface
                 );
             }
 
-            // If validation errors exist, throw exception to display them
             if (!empty($validationExceptions)) {
                 throw new ArrayException($validationExceptions);
             }
 
-            // Generate verification token
             $verificationToken = bin2hex(random_bytes(32));
 
-            // Register user with verification token
             $userModel->register($firstName, $lastName, $email, $mdp, $role, $verificationToken);
 
-            // Send account verification email
             $emailService = new EmailService();
             $emailService->sendAccountVerificationEmail($email, $verificationToken);
 
-            // Redirect to login with success message
             header("Location: /user/login?success=registered");
             exit();
         } catch (ArrayException $exceptions) {
-            // Display registration form with validation errors
             $view = new RegisterView($exceptions->getExceptions());
             echo $view->render();
         }

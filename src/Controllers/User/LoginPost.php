@@ -9,6 +9,7 @@ use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\DataBaseException;
 use Shared\JwtService;
+use Shared\CsrfGuard;
 use Views\User\LoginView;
 
 /**
@@ -47,7 +48,11 @@ class LoginPost implements ControllerInterface
             return;
         }
 
-        // Sanitize and retrieve form data
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Invalid request (CSRF).');
+        }
+
         $email = isset($_POST['uname']) && is_string($_POST['uname']) ? trim($_POST['uname']) : '';
         $mdp = isset($_POST['psw']) && is_string($_POST['psw']) ? $_POST['psw'] : '';
 
@@ -76,7 +81,6 @@ class LoginPost implements ControllerInterface
             }
         }
 
-        // 2. Validate input field formats
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Format d'email invalide : $email");
             $validationExceptions[] = new ValidationException("Le format de l'adresse email est invalide.");
@@ -92,7 +96,6 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException($validationExceptions);
             }
 
-            // 3. Retrieve user from the database
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
@@ -100,7 +103,6 @@ class LoginPost implements ControllerInterface
                 throw new ArrayException([new ValidationException("Erreur système lors de la connexion.")]);
             }
 
-            // 4. Check if the email exists in the database
             if (!$userData) {
                 $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Email introuvable : $email");
                 throw new ArrayException([new ValidationException("Adresse email invalide ou inconnue.")]);
@@ -116,14 +118,12 @@ class LoginPost implements ControllerInterface
             $nom          = isset($userData['nom']) && is_string($userData['nom']) ? $userData['nom'] : '';
             $prenom       = isset($userData['prenom']) && is_string($userData['prenom']) ? $userData['prenom'] : '';
 
-            // 5. Check account verification status
             if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte non vérifié : $email");
                 throw new ArrayException([new ValidationException("Compte non vérifié.
                  Veuillez consulter vos emails.")]);
             }
 
-            // 6. Check password validity
             if ($passwordHash === '' || !password_verify($mdp, $passwordHash)) {
                 $sessionAttempts = isset($_SESSION[$attemptsKey]) &&
                 is_numeric($_SESSION[$attemptsKey]) ? (int)$_SESSION[$attemptsKey] : 0;
@@ -149,18 +149,12 @@ class LoginPost implements ControllerInterface
                     ]);
                 }
 
-                // Warn the user about the remaining number of attempts
                 $remaining = self::MAX_ATTEMPTS - $attempts;
                 throw new ArrayException([
                     new ValidationException("Mauvais mot de passe. Il vous reste $remaining tentative(s).")
                 ]);
             }
 
-            // ==========================================================
-            // 7. SUCCESS: The user is authenticated
-            // ==========================================================
-
-            // Reset login error counters
             unset($_SESSION[$attemptsKey], $_SESSION[$lockoutKey]);
 
             // Update last connection date for GDPR compliance tracking

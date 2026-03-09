@@ -20,6 +20,7 @@
 <section class="main" aria-label="Contenu principal">
 
     <form method="POST" action="?page=reset-password" onsubmit="disableSubmit(this);">
+        <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
         <fieldset>
             <legend>Nouveau mot de passe</legend>
 

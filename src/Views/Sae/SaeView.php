@@ -214,6 +214,7 @@ class SaeView extends BaseView
                     }
 
                     $html .= "<form method='POST' action='/attribuer_sae' class='attribution-form'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<label class='section-label'>Attribuer à :</label>";
 
                     if (empty($sae['etudiants_disponibles'])) {
@@ -257,6 +258,7 @@ class SaeView extends BaseView
                     $html .= "</form>";
 
                     $html .= "<form method='POST' action='/unassign_sae' class='remove-form attribution-form'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<label class='section-label'>Retirer de la SAE (vos attributions uniquement) :</label>";
 
                     if (empty($sae['etudiants_attribues'])) {
@@ -306,6 +308,7 @@ class SaeView extends BaseView
             case 'client':
                 $html .= "<h2>Créer une nouvelle SAE</h2>";
                 $html .= "<form method='POST' action='/creer_sae'>";
+                $html .= \Shared\CsrfGuard::getHiddenField();
                 $html .= "<label>Titre :</label><input type='text' name='titre' required>";
                 $html .= "<label>Description :</label><textarea name='description' required></textarea>";
                 $html .= "<button type='submit'>Créer SAE</button>";
@@ -355,6 +358,7 @@ class SaeView extends BaseView
 
                     $html .= "<form method='POST' action='/delete_sae' class='form-action-simple'
                         onsubmit='return confirm(\"Supprimer cette SAE ?\");' style='margin:0;'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
                     $html .= "<button type='submit' class='btn-supprimer' style='width:100%'>Supprimer</button>";
                     $html .= "</form>";
@@ -366,6 +370,7 @@ class SaeView extends BaseView
                     $html .= "<div id='edit-" . $this->safeString($sae['id'] ?? 0) .
                         "' class='edit-form' style='display:none;'>";
                     $html .= "<form method='POST' action='/update_sae' class='form-edit-sae'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='" . $this->safeString($sae['id'] ?? 0) . "'>";
 
                     $html .= "<div class='form-group'>";

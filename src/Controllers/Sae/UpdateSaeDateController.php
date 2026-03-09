@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE submission date update controller
@@ -45,6 +46,12 @@ class UpdateSaeDateController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /dashboard');
             exit();
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Verify user is authenticated as a supervisor
