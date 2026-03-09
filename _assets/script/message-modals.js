@@ -113,13 +113,13 @@ function loadTemplate() {
  * Validates the message form before submission
  */
 function validateMessageForm() {
-    const studentId = document.getElementById('studentSelect').value;
+    // Check if at least one student is selected
+    const selectedStudents = document.querySelectorAll('input[name="student_id[]"]:checked');
     const subject = document.getElementById('messageSubject').value.trim();
     const message = document.getElementById('messageContent').value.trim();
 
-    if (!studentId) {
-        showFormError('Veuillez sélectionner un étudiant.');
-        document.getElementById('studentSelect').focus();
+    if (selectedStudents.length === 0) {
+        showFormError('Veuillez sélectionner au moins un étudiant.');
         return false;
     }
 
@@ -148,6 +148,56 @@ function validateMessageForm() {
     }
 
     return true;
+}
+
+/**
+ * Selects all students across all SAE groups
+ */
+function selectAllStudents() {
+    const checkboxes = document.querySelectorAll('input[name="student_id[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+/**
+ * Deselects all students across all SAE groups
+ */
+function deselectAllStudents() {
+    const checkboxes = document.querySelectorAll('input[name="student_id[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+/**
+ * Toggles the visibility of a SAE group's students
+ */
+function toggleSaeGroup(saeId) {
+    const groupStudents = document.getElementById('sae-students-' + saeId);
+    const toggleIcon = document.getElementById('toggle-icon-' + saeId);
+
+    if (groupStudents) {
+        if (groupStudents.style.display === 'none') {
+            groupStudents.style.display = 'block';
+            if (toggleIcon) toggleIcon.textContent = '▼';
+        } else {
+            groupStudents.style.display = 'none';
+            if (toggleIcon) toggleIcon.textContent = '▶';
+        }
+    }
+}
+
+/**
+ * Toggles selection of all students in a specific SAE
+ */
+function toggleSaeSelection(saeId) {
+    const checkboxes = document.querySelectorAll('.sae-' + saeId + '-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = !allChecked;
+    });
 }
 
 /**
