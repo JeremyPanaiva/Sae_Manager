@@ -1129,4 +1129,61 @@ class EmailService
             "Cordialement,\n" .
             "L'équipe SAE Manager";
     }
+
+    /**
+     * Sends an account deletion confirmation email
+     *
+     * Notifies a user that their account and data have just been permanently
+     * deleted due to prolonged inactivity (GDPR compliance).
+     *
+     * @param string $userEmail User's email address
+     * @param string $userName User's name
+     * @return bool True if email was sent successfully
+     * @throws DataBaseException If both SMTP and fallback methods fail
+     */
+    public function sendAccountDeletedNotificationEmail(string $userEmail, string $userName): bool
+    {
+        try {
+            $this->mailer->clearAddresses();
+            $this->mailer->clearAttachments();
+
+            $this->mailer->addAddress($userEmail);
+            $this->mailer->isHTML(true);
+            $this->mailer->Subject = 'Confirmation de suppression de votre compte - SAE Manager';
+
+            $emailView = new \Views\Email\EmailView('account_deleted', [
+                'USER_NAME' => $userName
+            ]);
+
+            $this->mailer->Body = $emailView->render();
+            $this->mailer->AltBody = $this->getAccountDeletedEmailTextBody($userName);
+
+            $this->mailer->send();
+            error_log("Email de confirmation de suppression (J-36) envoyé à {$userEmail}");
+            return true;
+        } catch (Exception $e) {
+            error_log('PHPMailer SMTP exception (account deleted notification): ' . $e->getMessage());
+
+            // Fallback to local mail() function
+            return $this->sendViaFallback($userEmail);
+        }
+    }
+
+    /**
+     * Generates plain text version of the account deletion email
+     *
+     * @param string $userName User's name
+     * @return string Plain text email body
+     */
+    private function getAccountDeletedEmailTextBody(string $userName): string
+    {
+        return "Bonjour {$userName},\n\n" .
+            "Conformément à notre politique de conservation des données (RGPD) et suite à notre précédent message, " .
+            "nous vous confirmons que votre compte SAE Manager a été
+             définitivement supprimé en raison d'une inactivité prolongée (plus de 3 ans).\n\n" .
+            "Toutes vos données personnelles et historiques associés ont été effacés de nos systèmes.\n\n" .
+            "Si vous souhaitez utiliser à nouveau nos services à l'avenir, vous devrez créer un nouveau compte.\n\n" .
+            "Cordialement,\n" .
+            "L'équipe SAE Manager";
+    }
 }
