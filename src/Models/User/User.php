@@ -487,6 +487,74 @@ class User
     }
 
     /**
+     * Updates the last connection timestamp for a specific user.
+     *
+     * This method is called upon successful login to track user activity
+     * for GDPR/CNIL compliance, allowing the identification of inactive accounts.
+     *
+     * @param int $userId The unique identifier of the user.
+     * @return void
+     * @throws DataBaseException If the database update query fails.
+     */
+    public function updateLastConnection(int $userId): void
+    {
+        try {
+            $conn = Database::getConnection();
+            $stmt = $conn->prepare("UPDATE users SET last_connection = NOW() WHERE id = ?");
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in updateLastConnection.");
+            }
+
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $stmt->close();
+
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error updating last connection: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Deletes user accounts that have been inactive for a specified number of months.
+     *
+     * This method is used by the automated cleanup script to comply with
+     * GDPR data retention policies (e.g., deleting accounts inactive for 36 months).
+     * Note: Relying on ON DELETE CASCADE in the database schema to clean up
+     * related records (logs, attributions, etc.).
+     *
+     * @param int $months The threshold of inactivity in months (e.g., 36).
+     * @return int The number of user accounts successfully deleted.
+     * @throws DataBaseException If the database deletion query fails.
+     */
+    public static function deleteInactiveAccounts(int $months): int
+    {
+        try {
+            $conn = Database::getConnection();
+
+            // Delete users whose last connection is older than X months
+            $stmt = $conn->prepare("DELETE FROM users WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)");
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in deleteInactiveAccounts.");
+            }
+
+            $stmt->bind_param("i", $months);
+            $stmt->execute();
+
+            // Get the number of affected rows before closing the statement
+            $deletedCount = $stmt->affected_rows;
+            $stmt->close();
+
+            return $deletedCount;
+
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error deleting inactive accounts: " . $e->getMessage());
+        }
+    }
+
+
+    /**
      * Checks database connection
      *
      * @throws DataBaseException If connection check fails
@@ -495,4 +563,6 @@ class User
     {
         Database::checkConnection();
     }
+
+
 }
