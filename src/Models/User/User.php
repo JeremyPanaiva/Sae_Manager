@@ -553,6 +553,51 @@ class User
         }
     }
 
+    /**
+     * Retrieves users who have been inactive for a specific number of months
+     * to send them a warning email before account deletion.
+     *
+     * Selects users whose last connection is older than X months but newer than X+1 months.
+     *
+     * @param int $months The inactivity threshold in months (e.g., 35)
+     * @return array<int, array<string, mixed>> Array of users
+     * @throws DataBaseException If database connection or query fails
+     */
+    public static function getUsersForInactivityWarning(int $months): array
+    {
+        try {
+            $conn = Database::getConnection();
+
+            // Select users inactive for between $months and $months + 1
+            $stmt = $conn->prepare(
+                "SELECT id, nom, prenom, mail FROM users 
+                 WHERE last_connection <= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                 AND last_connection > DATE_SUB(NOW(), INTERVAL (? + 1) MONTH)"
+            );
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in getUsersForInactivityWarning.");
+            }
+
+            $stmt->bind_param("ii", $months, $months);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result === false) {
+                throw new DataBaseException("Failed to get result in getUsersForInactivityWarning.");
+            }
+
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            return $users;
+
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error retrieving users for inactivity warning: " . $e->getMessage());
+        }
+    }
+
+
 
     /**
      * Checks database connection
