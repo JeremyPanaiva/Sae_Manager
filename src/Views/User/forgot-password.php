@@ -29,6 +29,7 @@
     <section class="main" aria-label="Contenu principal">
 
         <form method="POST" action="/user/forgot-password">
+            <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
             <fieldset>
                 <legend>Mot de passe oublié</legend>
 
