@@ -10,6 +10,7 @@ use Shared\Exceptions\ArrayException;
 use Shared\Exceptions\ValidationException;
 use Shared\Exceptions\EmailAlreadyExistsException;
 use Shared\Exceptions\DataBaseException;
+use Shared\CsrfGuard;
 use Views\User\RegisterView;
 
 /**
@@ -47,6 +48,12 @@ class RegisterPost implements ControllerInterface
         // Check if form was submitted
         if (!isset($_POST['ok'])) {
             return;
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Extract form data safely
