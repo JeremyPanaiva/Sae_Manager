@@ -4,6 +4,7 @@
 
 <section class="main" aria-label="Contenu principal">
     <form action="/user/change-password" method="POST">
+        <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
         <fieldset>
             <legend>Changer mon mot de passe</legend>
 
