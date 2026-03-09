@@ -66,6 +66,7 @@ use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
 use Controllers\Sae\UpdateLinkController;
+use Controllers\User\InactiveUserCleanupController;
 
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -127,6 +128,7 @@ $controllers = [
     new WeeklyArchiveController(),
     new DailyExportController(),
     new SendMessageController(),
+    new InactiveUserCleanupController(),
 ];
 
 // Extract the path from the request URI
