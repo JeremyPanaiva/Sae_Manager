@@ -5,6 +5,7 @@ namespace Controllers\Sae;
 use Controllers\ControllerInterface;
 use Models\Sae\SaeAttribution;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * UpdateLinkController
@@ -39,6 +40,12 @@ class UpdateLinkController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /dashboard');
             exit();
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         /** @var array<string, mixed>|null $userSession */

@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\Sae;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE content update controller
@@ -48,6 +49,12 @@ class UpdateContentSaeController implements ControllerInterface
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
+
             // Extract and sanitize form data
             $saeIdRaw = $_POST['sae_id'] ?? 0;
             $saeId = is_numeric($saeIdRaw) ? (int)$saeIdRaw : 0;

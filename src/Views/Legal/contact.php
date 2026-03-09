@@ -30,6 +30,7 @@
             <p>Remplissez le formulaire ci-dessous pour nous contacter.</p>
 
             <form method="POST" action="/contact" class="legal-form" novalidate>
+                <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
                 <div class="legal-form-group">
                     <label for="contact-email">Votre email</label>
                     <input type="email" id="contact-email" name="email" required placeholder="votre.email@example.com">

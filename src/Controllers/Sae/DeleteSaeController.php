@@ -8,6 +8,7 @@ use Models\Sae\SaeAttribution;
 use Shared\Exceptions\SaeAttribueException;
 use Views\Sae\SaeView;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE deletion controller
@@ -43,6 +44,12 @@ class DeleteSaeController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');
             exit();
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Verify user is authenticated as a client

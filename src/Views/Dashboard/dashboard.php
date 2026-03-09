@@ -42,6 +42,7 @@
                 method="POST"
                 onsubmit="return validateMessageForm()"
         >
+            <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
 
             <div class="form-group">
                 <label for="messageTemplate">Message pré-rempli :</label>

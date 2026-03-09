@@ -8,6 +8,7 @@ use Models\User\Log;
 use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * Class ChangePasswordPost
@@ -66,6 +67,12 @@ class ChangePasswordPost implements ControllerInterface
         // Ensure session is started
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Verify user is authenticated

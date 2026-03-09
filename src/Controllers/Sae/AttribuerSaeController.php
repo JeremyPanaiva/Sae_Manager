@@ -10,6 +10,7 @@ use Models\User\EmailService;
 use Shared\Exceptions\SaeAlreadyAssignedException;
 use Shared\Exceptions\StudentAlreadyAssignedException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 /**
  * SAE assignment controller
@@ -44,6 +45,12 @@ class AttribuerSaeController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');
             exit();
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Verify user is authenticated as a supervisor
