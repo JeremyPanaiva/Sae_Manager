@@ -509,7 +509,6 @@ class User
             $stmt->bind_param("i", $userId);
             $stmt->execute();
             $stmt->close();
-
         } catch (\Throwable $e) {
             throw new DataBaseException("Error updating last connection: " . $e->getMessage());
         }
@@ -532,7 +531,6 @@ class User
         try {
             $conn = Database::getConnection();
 
-            // Delete users whose last connection is older than X months
             $stmt = $conn->prepare("DELETE FROM users WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)");
 
             if (!$stmt) {
@@ -542,12 +540,10 @@ class User
             $stmt->bind_param("i", $months);
             $stmt->execute();
 
-            // Get the number of affected rows before closing the statement
-            $deletedCount = $stmt->affected_rows;
+            $affectedRows = (int) $stmt->affected_rows;
             $stmt->close();
 
-            return $deletedCount;
-
+            return max(0, $affectedRows);
         } catch (\Throwable $e) {
             throw new DataBaseException("Error deleting inactive accounts: " . $e->getMessage());
         }
@@ -591,7 +587,6 @@ class User
             $stmt->close();
 
             return $users;
-
         } catch (\Throwable $e) {
             throw new DataBaseException("Error retrieving users for inactivity warning: " . $e->getMessage());
         }
@@ -608,6 +603,4 @@ class User
     {
         Database::checkConnection();
     }
-
-
 }
