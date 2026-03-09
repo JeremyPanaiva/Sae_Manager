@@ -31,10 +31,7 @@ class ProfileControllerTest extends TestCase
      */
     public function testEmailSentAfterPasswordChange(): void
     {
-        // Verify that the method exists in EmailService
-        $this->assertTrue(method_exists(EmailService::class, 'sendPasswordChangedNotificationEmail'));
-
-        // Verify that it is a public method
+        // ReflectionMethod échouera si la méthode n'existe pas.
         $reflection = new \ReflectionMethod(EmailService::class, 'sendPasswordChangedNotificationEmail');
         $this->assertTrue($reflection->isPublic());
 
@@ -63,8 +60,7 @@ class ProfileControllerTest extends TestCase
         // Verify that ProfileController exists with deletion method
         $this->assertTrue(class_exists('Controllers\User\ProfileController'));
 
-        // Verify that the deletion path is correctly defined
-        $this->assertTrue(defined('Controllers\User\ProfileController::PATH_DELETE'));
+        // constant() échouera si PATH_DELETE n'existe pas.
         $this->assertEquals('/user/profile/delete', constant('Controllers\User\ProfileController::PATH_DELETE'));
 
         // Verify that the controller supports POST on the deletion path
@@ -80,6 +76,3 @@ class ProfileControllerTest extends TestCase
         $this->assertTrue(password_verify($submittedPassword, $hashedPassword));
     }
 }
-
-
-
