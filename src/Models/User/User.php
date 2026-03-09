@@ -487,6 +487,156 @@ class User
     }
 
     /**
+     * Updates the last connection timestamp for a specific user.
+     *
+     * This method is called upon successful login to track user activity
+     * for GDPR/CNIL compliance, allowing the identification of inactive accounts.
+     *
+     * @param int $userId The unique identifier of the user.
+     * @return void
+     * @throws DataBaseException If the database update query fails.
+     */
+    public function updateLastConnection(int $userId): void
+    {
+        try {
+            $conn = Database::getConnection();
+            $stmt = $conn->prepare("UPDATE users SET last_connection = NOW() WHERE id = ?");
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in updateLastConnection.");
+            }
+
+            $stmt->bind_param("i", $userId);
+            $stmt->execute();
+            $stmt->close();
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error updating last connection: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Deletes user accounts that have been inactive for a specified number of months.
+     *
+     * This method is used by the automated cleanup script to comply with
+     * GDPR data retention policies (e.g., deleting accounts inactive for 36 months).
+     * It sets a MySQL variable to let the trigger know it's a GDPR deletion.
+     *
+     * @param int $months The threshold of inactivity in months (e.g., 36).
+     * @return int The number of user accounts successfully deleted.
+     * @throws DataBaseException If the database deletion query fails.
+     */
+    public static function deleteInactiveAccounts(int $months): int
+    {
+        try {
+            $conn = Database::getConnection();
+
+            $conn->query("SET @deletion_reason = 'RGPD'");
+
+            $stmt = $conn->prepare("DELETE FROM users WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)");
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in deleteInactiveAccounts.");
+            }
+
+            $stmt->bind_param("i", $months);
+            $stmt->execute();
+
+            $affectedRows = (int) $stmt->affected_rows;
+            $stmt->close();
+
+            $conn->query("SET @deletion_reason = NULL");
+
+            return max(0, $affectedRows);
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error deleting inactive accounts: " . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Retrieves users who have been inactive for a specific number of months
+     * to send them a warning email before account deletion.
+     *
+     * Selects users whose last connection is older than X months but newer than X+1 months.
+     *
+     * @param int $months The inactivity threshold in months (e.g., 35)
+     * @return array<int, array<string, mixed>> Array of users
+     * @throws DataBaseException If database connection or query fails
+     */
+    public static function getUsersForInactivityWarning(int $months): array
+    {
+        try {
+            $conn = Database::getConnection();
+
+            // Select users inactive for between $months and $months + 1
+            $stmt = $conn->prepare(
+                "SELECT id, nom, prenom, mail FROM users 
+                 WHERE last_connection <= DATE_SUB(NOW(), INTERVAL ? MONTH) 
+                 AND last_connection > DATE_SUB(NOW(), INTERVAL (? + 1) MONTH)"
+            );
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in getUsersForInactivityWarning.");
+            }
+
+            $stmt->bind_param("ii", $months, $months);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result === false) {
+                throw new DataBaseException("Failed to get result in getUsersForInactivityWarning.");
+            }
+
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            return $users;
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error retrieving users for inactivity warning: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Retrieves users who are scheduled for immediate deletion due to inactivity.
+     *
+     * @param int $months The inactivity threshold in months (e.g., 36)
+     * @return array<int, array<string, mixed>> Array of users to delete
+     * @throws DataBaseException If database connection or query fails
+     */
+    public static function getUsersForDeletion(int $months): array
+    {
+        try {
+            $conn = Database::getConnection();
+
+            $stmt = $conn->prepare(
+                "SELECT id, nom, prenom, mail FROM users 
+                 WHERE last_connection < DATE_SUB(NOW(), INTERVAL ? MONTH)"
+            );
+
+            if (!$stmt) {
+                throw new DataBaseException("Error preparing SQL in getUsersForDeletion.");
+            }
+
+            $stmt->bind_param("i", $months);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result === false) {
+                throw new DataBaseException("Failed to get result in getUsersForDeletion.");
+            }
+
+            $users = $result->fetch_all(MYSQLI_ASSOC);
+            $stmt->close();
+
+            return $users;
+        } catch (\Throwable $e) {
+            throw new DataBaseException("Error retrieving users for deletion: " . $e->getMessage());
+        }
+    }
+
+
+
+    /**
      * Checks database connection
      *
      * @throws DataBaseException If connection check fails

@@ -52,7 +52,6 @@ class WeeklyArchiveController implements ControllerInterface
             mkdir($archiveDir, 0755, true);
         }
 
-        // 1. Zip the CSV files
         $csvFiles = glob($currentWeekDir . '*.csv');
 
         if ($csvFiles !== false && !empty($csvFiles)) {

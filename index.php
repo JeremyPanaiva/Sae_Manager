@@ -66,6 +66,7 @@ use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
 use Controllers\Sae\UpdateLinkController;
+use Controllers\User\InactiveUserCleanupController;
 
 // === OWASP Security Headers ===
 header('X-Content-Type-Options: nosniff');
@@ -141,8 +142,10 @@ $controllers = [
     new WeeklyArchiveController(),
     new DailyExportController(),
     new SendMessageController(),
+    new InactiveUserCleanupController(),
 ];
 
+// Extract the path from the request URI
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
