@@ -6,6 +6,7 @@ use Controllers\ControllerInterface;
 use Models\Sae\TodoList;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
+use Shared\CsrfGuard;
 
 class TodoController implements ControllerInterface
 {
@@ -28,6 +29,12 @@ class TodoController implements ControllerInterface
         $method = $_SERVER['REQUEST_METHOD'] ?? '';
 
         if ($method === 'POST') {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
+
             try {
                 if ($path === self::PATH_ADD) {
                     $this->handleAdd();
