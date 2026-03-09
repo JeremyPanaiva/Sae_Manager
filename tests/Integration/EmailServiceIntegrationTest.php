@@ -25,6 +25,13 @@ final class EmailServiceIntegrationTest extends TestCase
      */
     private ?EmailService $emailService = null;
 
+    /**
+     * Saved environment values to restore after each test.
+     *
+     * @var array<string, string|false>
+     */
+    private array $envBackup = [];
+
 
     /**
      * Set up test environment
@@ -61,6 +68,16 @@ final class EmailServiceIntegrationTest extends TestCase
      */
     protected function tearDown(): void
     {
+        foreach ($this->envBackup as $key => $value) {
+            if ($value === false) {
+                putenv($key);
+                continue;
+            }
+
+            putenv($key . '=' . $value);
+        }
+
+        $this->envBackup = [];
         $this->emailService = null;
         parent::tearDown();
     }
