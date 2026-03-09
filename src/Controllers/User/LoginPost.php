@@ -119,7 +119,8 @@ class LoginPost implements ControllerInterface
             // 5. Check account verification status
             if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte non vérifié : $email");
-                throw new ArrayException([new ValidationException("Compte non vérifié. Veuillez consulter vos emails.")]);
+                throw new ArrayException([new ValidationException("Compte non vérifié.
+                 Veuillez consulter vos emails.")]);
             }
 
             // 6. Check password validity
@@ -143,7 +144,8 @@ class LoginPost implements ControllerInterface
                     unset($_SESSION[$attemptsKey]);
 
                     throw new ArrayException([
-                        new ValidationException("Trop de tentatives échouées. Votre accès est bloqué pendant 15 minutes.")
+                        new ValidationException("Trop de tentatives échouées. Votre accès
+                         est bloqué pendant 15 minutes.")
                     ]);
                 }
 
@@ -188,7 +190,6 @@ class LoginPost implements ControllerInterface
             // Redirect to dashboard / home page
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
             // Display errors caught during the process
             $view = new LoginView($exceptions->getExceptions());
