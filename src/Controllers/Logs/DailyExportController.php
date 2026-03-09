@@ -101,4 +101,3 @@ class DailyExportController implements ControllerInterface
         }
     }
 }
-
