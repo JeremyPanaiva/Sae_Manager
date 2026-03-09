@@ -16,9 +16,18 @@ use PHPUnit\Framework\TestCase;
  */
 final class EmailTemplateIntegrationTest extends TestCase
 {
-    /** @var string */
+    /**
+     * Path to email templates directory
+     *
+     * @var string
+     */
     private string $templatePath = '';
 
+    /**
+     * Set up test environment
+     *
+     * @return void
+     */
     protected function setUp(): void
     {
         parent::setUp();
@@ -31,9 +40,11 @@ final class EmailTemplateIntegrationTest extends TestCase
     }
 
     /**
-     * @param string $templateFile
-     * @param array<string, string> $variables
-     * @return string
+     * Render template with given variables
+     *
+     * @param string $templateFile Template file path
+     * @param array<string, string> $variables Variables to extract
+     * @return string Rendered template
      */
     private function renderTemplate(string $templateFile, array $variables): string
     {
@@ -50,6 +61,11 @@ final class EmailTemplateIntegrationTest extends TestCase
         return $output !== false ? $output : '';
     }
 
+    /**
+     * Test urgent deadline reminder template rendering
+     *
+     * @return void
+     */
     public function testUrgentDeadlineReminderTemplateRendering(): void
     {
         $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
@@ -59,12 +75,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME'     => 'Jean Dupont',
-            'SAE_TITLE'        => 'SAE 3.01 - Développement Web',
-            'DATE_RENDU'       => '15/03/2026',
-            'HEURE_RENDU'      => '23:59',
+            'STUDENT_NAME' => 'Jean Dupont',
+            'SAE_TITLE' => 'SAE 3.01 - Développement Web',
+            'DATE_RENDU' => '15/03/2026',
+            'HEURE_RENDU' => '23:59',
             'RESPONSABLE_NAME' => 'Dr. Jean Martin',
-            'SAE_URL'          => 'https://sae-manager.alwaysdata.net/sae',
+            'SAE_URL' => 'https://sae-manager.alwaysdata.net/sae',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
@@ -78,6 +94,11 @@ final class EmailTemplateIntegrationTest extends TestCase
         $this->assertStringContainsString($testData['SAE_URL'], $rendered);
     }
 
+    /**
+     * Test template HTML structure validity
+     *
+     * @return void
+     */
     public function testTemplateHtmlStructureValidity(): void
     {
         $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
@@ -87,12 +108,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME'     => 'Test Student',
-            'SAE_TITLE'        => 'Test SAE',
-            'DATE_RENDU'       => '31/12/2026',
-            'HEURE_RENDU'      => '23:59',
+            'STUDENT_NAME' => 'Test Student',
+            'SAE_TITLE' => 'Test SAE',
+            'DATE_RENDU' => '31/12/2026',
+            'HEURE_RENDU' => '23:59',
             'RESPONSABLE_NAME' => 'Test User',
-            'SAE_URL'          => 'https://example.com',
+            'SAE_URL' => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
@@ -104,6 +125,39 @@ final class EmailTemplateIntegrationTest extends TestCase
         $this->assertStringContainsString('</body>', $rendered);
     }
 
+    /**
+     * Test template with special characters
+     *
+     * @return void
+     */
+    public function testTemplateWithSpecialCharacters(): void
+    {
+        $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
+
+        if (!file_exists($templateFile)) {
+            $this->markTestSkipped('Template file not found');
+        }
+
+        $testData = [
+            'STUDENT_NAME' => 'François Müller',
+            'SAE_TITLE' => 'SAE avec caractères spéciaux: é à ù & < >',
+            'DATE_RENDU' => '15/03/2026',
+            'HEURE_RENDU' => '23:59',
+            'RESPONSABLE_NAME' => 'François Müller',
+            'SAE_URL' => 'https://example.com/sae?id=123&lang=fr',
+        ];
+
+        $rendered = $this->renderTemplate($templateFile, $testData);
+
+        $this->assertNotEmpty($rendered);
+        $this->assertStringNotContainsString('<SAE', $rendered);
+    }
+
+    /**
+     * Test template link functionality
+     *
+     * @return void
+     */
     public function testTemplateLinkFunctionality(): void
     {
         $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
@@ -115,12 +169,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         $testUrl = 'https://sae-manager.alwaysdata.net/sae';
 
         $testData = [
-            'STUDENT_NAME'     => 'Test Student',
-            'SAE_TITLE'        => 'Test SAE',
-            'DATE_RENDU'       => '31/12/2026',
-            'HEURE_RENDU'      => '23:59',
+            'STUDENT_NAME' => 'Test Student',
+            'SAE_TITLE' => 'Test SAE',
+            'DATE_RENDU' => '31/12/2026',
+            'HEURE_RENDU' => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL'          => $testUrl,
+            'SAE_URL' => $testUrl,
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
@@ -129,6 +183,39 @@ final class EmailTemplateIntegrationTest extends TestCase
         $this->assertStringContainsString('href=', $rendered);
     }
 
+    /**
+     * Test template with empty variables
+     *
+     * @return void
+     */
+    public function testTemplateWithEmptyVariables(): void
+    {
+        $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
+
+        if (!file_exists($templateFile)) {
+            $this->markTestSkipped('Template file not found');
+        }
+
+        $testData = [
+            'STUDENT_NAME' => '',
+            'SAE_TITLE' => '',
+            'DATE_RENDU' => '',
+            'HEURE_RENDU' => '',
+            'RESPONSABLE_NAME' => '',
+            'SAE_URL' => '',
+        ];
+
+        $rendered = $this->renderTemplate($templateFile, $testData);
+
+        $this->assertNotEmpty($rendered);
+        $this->assertStringContainsString('<html', $rendered);
+    }
+
+    /**
+     * Test template CSS inline styles
+     *
+     * @return void
+     */
     public function testTemplateCssInlineStyles(): void
     {
         $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
@@ -138,12 +225,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME'     => 'Test',
-            'SAE_TITLE'        => 'Test',
-            'DATE_RENDU'       => '31/12/2026',
-            'HEURE_RENDU'      => '23:59',
+            'STUDENT_NAME' => 'Test',
+            'SAE_TITLE' => 'Test',
+            'DATE_RENDU' => '31/12/2026',
+            'HEURE_RENDU' => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL'          => 'https://example.com',
+            'SAE_URL' => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
@@ -151,6 +238,11 @@ final class EmailTemplateIntegrationTest extends TestCase
         $this->assertStringContainsString('style=', $rendered);
     }
 
+    /**
+     * Test template character encoding
+     *
+     * @return void
+     */
     public function testTemplateCharacterEncoding(): void
     {
         $templateFile = $this->templatePath . 'urgent_deadline_reminder.php';
@@ -160,12 +252,12 @@ final class EmailTemplateIntegrationTest extends TestCase
         }
 
         $testData = [
-            'STUDENT_NAME'     => 'Test',
-            'SAE_TITLE'        => 'Test',
-            'DATE_RENDU'       => '31/12/2026',
-            'HEURE_RENDU'      => '23:59',
+            'STUDENT_NAME' => 'Test',
+            'SAE_TITLE' => 'Test',
+            'DATE_RENDU' => '31/12/2026',
+            'HEURE_RENDU' => '23:59',
             'RESPONSABLE_NAME' => 'Test',
-            'SAE_URL'          => 'https://example.com',
+            'SAE_URL' => 'https://example.com',
         ];
 
         $rendered = $this->renderTemplate($templateFile, $testData);
