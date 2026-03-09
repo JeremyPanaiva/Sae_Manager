@@ -31,6 +31,7 @@
         <p><strong>Date de création du compte : </strong> <?= $date_creation ?></p>
 
         <form action="/user/profile" method="POST" class="profile-form">
+            <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
             <label for="prenom">Prénom :</label>
             <input type="text" id="prenom" name="prenom" value="<?= $prenom ?>" required readonly
                    class="form-control-locked">
@@ -85,6 +86,7 @@
         <?php endif; ?>
 
         <form action="/user/profile/delete" method="POST">
+            <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
             <input type="password" name="delete_password" id="modal-password" required
                    placeholder="Votre mot de passe"
                    class="modal-input <?= isset($_SESSION['delete_error']) ? 'input-error' : '' ?>">
