@@ -501,10 +501,7 @@ class DashboardView extends BaseView
                 $html .= "<button
                     type='button'
                     class='btn-open-message-modal'
-                    onclick='
-                        document.getElementById(\"messageModal\").style.display=\"block\";
-                        document.body.classList.add(\"modal-open\");
-                    '>
+                    onclick='openMessageModal()'>
                      Envoyer un message à un étudiant
                 </button>";
                 $html .= "</div>";
