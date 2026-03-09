@@ -547,7 +547,6 @@ class User
             $conn->query("SET @deletion_reason = NULL");
 
             return max(0, $affectedRows);
-
         } catch (\Throwable $e) {
             throw new DataBaseException("Error deleting inactive accounts: " . $e->getMessage());
         }
