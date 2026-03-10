@@ -491,9 +491,12 @@ class EmailService
             . "{$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
-    private function textSaeCreation(string $responsableNom,
-                                     string $clientNom, string $saeTitle, string $saeDescription): string
-    {
+    private function textSaeCreation(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
         return "Bonjour {$responsableNom},\n\nUne nouvelle SAE a été créée par {$clientNom}.\n\n"
             . "TITRE : {$saeTitle}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\n\n"
@@ -515,9 +518,12 @@ class EmailService
             . "{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
     }
 
-    private function textClientAssignment(string $clientNom,
-                                          string $saeTitre, string $studentNames, string $responsableNom): string
-    {
+    private function textClientAssignment(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNames,
+        string $responsableNom
+    ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
         return "Bonjour {$clientNom},\n\nUn ou plusieurs étudiants ont été affectés à votre SAE par 
         {$responsableNom}.\n\n"
@@ -525,9 +531,13 @@ class EmailService
             . "{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
-    private function textDeadlineReminder(string $studentNom, string $saeTitre,
-                                          string $dateRendu, string $heureRendu, string $responsableNom): string
-    {
+    private function textDeadlineReminder(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $heureRendu,
+        string $responsableNom
+    ): string {
         $saeUrl    = $this->getBaseUrl() . '/sae';
         $textHeure = $heureRendu ? " à $heureRendu" : "";
         return "Bonjour {$studentNom},\n\nRAPPEL : Il ne vous reste que 3 JOURS avant le rendu !\n\n"
@@ -535,20 +545,26 @@ class EmailService
             . "Accéder à vos SAE : {$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
     }
 
-    private function textUrgentDeadlineReminder(string $studentNom, string $saeTitre,
-                                                string $dateRendu, string $responsableNom, string $heureRendu): string
-    {
+    private function textUrgentDeadlineReminder(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom,
+        string $heureRendu
+    ): string {
         $saeUrl    = $this->getBaseUrl() . '/sae';
         $precision = $heureRendu ? " à {$heureRendu}" : "";
         return "Bonjour {$studentNom},\n\n🚨 Il ne vous reste qu'UN SEUL JOUR !\n\n"
-            . "SAE : {$saeTitre}\nDATE DE RENDU : DEMAIN ({$dateRendu}){$precision}\nRESPONSABLE : {$responsableNom}\n\n"
+            . "SAE : {$saeTitre}\nDATE DE RENDU : DEMAIN ({$dateRendu}){$precision}\nRESPONSABLE : 
+            {$responsableNom}\n\n"
             . "Accéder à vos SAE : {$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
     private function textPasswordChanged(string $loginLink): string
     {
         return "Bonjour,\n\nVotre mot de passe SAE Manager a été modifié avec succès.\n\n"
-            . "Si vous n'êtes pas à l'origine de cette modification, réinitialisez votre mot de passe immédiatement.\n\n"
+            . "Si vous n'êtes pas à l'origine de cette modification, 
+            réinitialisez votre mot de passe immédiatement.\n\n"
             . "Accéder à mon compte : {$loginLink}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
