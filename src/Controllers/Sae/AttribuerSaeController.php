@@ -174,19 +174,22 @@ class AttribuerSaeController implements ControllerInterface
             // Build success message
             $nbEtudiants = count($studentNames);
             if ($nbEtudiants === 1) {
-                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » a été attribué avec succès à la SAE « $saeTitre ». Des notifications par email ont été envoyées.";
+                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » a été attribué avec succès à la SAE « 
+                $saeTitre ». Des notifications par email ont été envoyées.";
             } else {
-                $listeEtudiants = implode(', ', array_slice($studentNames, 0, -1)) . ' et ' . end($studentNames);
-                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « $saeTitre » : $listeEtudiants. Des notifications par email ont été envoyées.";
+                $listeEtudiants = implode(', ',
+                        array_slice($studentNames, 0, -1)) . ' et ' . end($studentNames);
+                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « 
+                $saeTitre » : $listeEtudiants. Des notifications par email ont été envoyées.";
             }
 
             header('Location: /sae');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
             $_SESSION['error_message'] = $e->getMessage();
         } catch (SaeAlreadyAssignedException $e) {
-            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
+            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « 
+            {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
         } catch (StudentAlreadyAssignedException $e) {
             $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
         } catch (\Exception $e) {

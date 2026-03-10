@@ -177,7 +177,6 @@ class SendMessageController implements ControllerInterface
                             $failCount++;
                             error_log("Exception sending message to {$studentName}: " . $e->getMessage());
                         }
-
                     } catch (DataBaseException $e) {
                         $invalidCount++;
                         error_log("Database error getting student {$studentId}: " . $e->getMessage());
@@ -194,12 +193,12 @@ class SendMessageController implements ControllerInterface
                 header('Location: /dashboard?success=' . $param);
             } elseif ($successCount > 0 && ($failCount > 0 || $invalidCount > 0)) {
                 $totalFailed = $failCount + $invalidCount;
-                header('Location: /dashboard?warning=partial_success&sent=' . $successCount . '&failed=' . $totalFailed);
+                header('Location: 
+                /dashboard?warning=partial_success&sent=' . $successCount . '&failed=' . $totalFailed);
             } else {
                 $errorParam = $invalidCount > 0 ? 'invalid_student' : 'mail_failed';
                 header('Location: /dashboard?error=' . $errorParam);
             }
-
         } catch (DataBaseException $e) {
             error_log('Database error in SendMessageController: ' . $e->getMessage());
             header('Location: /dashboard?error=database');
