@@ -107,7 +107,6 @@ class CreateSaeController implements ControllerInterface
 
             header('Location: /sae?success=sae_created');
             exit();
-
         } catch (\Exception $e) {
             error_log("Erreur lors de la création de la SAE: " . $e->getMessage());
             header('Location: /sae?error=creation_failed');

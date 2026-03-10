@@ -74,7 +74,6 @@ class UnassignSaeController implements ControllerInterface
                 }
 
                 $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
-
             } catch (UnauthorizedSaeUnassignmentException $e) {
                 $_SESSION['error_message'] = $e->getMessage();
             } catch (DataBaseException $e) {

@@ -90,11 +90,11 @@ class UpdateSaeDateController implements ControllerInterface
 
             $formattedDate = date('d/m/Y', $timestamp);
             $formattedTime = date('H:i', $timestamp);
-            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} à {$formattedTime} !";
+            $_SESSION['success_message'] = "La date de rendu a été modifiée avec succès pour le {$formattedDate} à 
+            {$formattedTime} !";
 
             header('Location: /dashboard');
             exit();
-
         } catch (DataBaseException $e) {
             $_SESSION['error_message'] = "Erreur de base de données : " . $e->getMessage();
             header('Location: /dashboard');
