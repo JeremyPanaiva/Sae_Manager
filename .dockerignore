@@ -1,0 +1,9 @@
+.git
+.github
+.gitignore
+.env
+doc/
+tests/
+phpunit.xml
+README.md
+docker-compose.yml

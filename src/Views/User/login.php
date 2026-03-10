@@ -20,6 +20,7 @@
 
 <section class="main" aria-label="Contenu principal">
     <form method="POST" action="/user/login">
+        <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
         <fieldset>
             <?= $SUCCESS_MESSAGE_KEY ?>
             <?= $ERRORS_KEY ?>

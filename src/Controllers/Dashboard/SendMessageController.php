@@ -7,6 +7,7 @@ use Models\User\EmailService;
 use Models\User\User;
 use Models\Sae\SaeAttribution;
 use Shared\Exceptions\DataBaseException;
+use Shared\CsrfGuard;
 
 /**
  * Send Message Controller
@@ -50,6 +51,12 @@ class SendMessageController implements ControllerInterface
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Validation CSRF
+            if (!CsrfGuard::validate()) {
+                http_response_code(403);
+                die('Requête invalide (CSRF).');
+            }
+
             $studentIds = $_POST['student_id'] ?? [];
 
             if (!is_array($studentIds)) {

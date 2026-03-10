@@ -19,6 +19,7 @@
 
 <section class="main" aria-label="Contenu principal">
   <form action="/user/register" method="post">
+    <?php echo \Shared\CsrfGuard::getHiddenField(); ?>
     <fieldset>
       <?= $ERRORS_KEY ?>
       <legend>Inscription</legend>

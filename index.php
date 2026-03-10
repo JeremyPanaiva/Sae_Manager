@@ -23,19 +23,15 @@
  * @package Root
  */
 
-// Set application timezone from environment variable or default to Europe/Paris
+
 date_default_timezone_set(getenv('APP_TIMEZONE') ?: 'Europe/Paris');
 
-// Include and register the autoloader for automatic class loading
+
 require_once "Autoloader.php";
 \Autoloader::register();
 
-// Placed early to ensure $_SESSION is available before any controller is instantiated.
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
 
-// Import all controller classes
+
 use Controllers\Dashboard\TodoController;
 use Controllers\Dashboard\SendMessageController;
 use Controllers\Home\HomeController;
@@ -50,6 +46,7 @@ use Controllers\Sae\SaeController;
 use Controllers\Sae\UnassignSaeController;
 use Controllers\Sae\UpdateContentSaeController;
 use Controllers\Sae\UpdateSaeDateController;
+use Controllers\User\CheckSessionSync;
 use Controllers\User\Login;
 use Controllers\User\LoginPost;
 use Controllers\User\ProfileController;
@@ -70,13 +67,28 @@ use Controllers\Sae\AvisController;
 use Controllers\User\ChangePassword;
 use Controllers\User\ChangePasswordPost;
 use Controllers\Sae\UpdateLinkController;
+use Controllers\User\InactiveUserCleanupController;
 
-// Start PHP session if not already started
+// === OWASP Security Headers ===
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: DENY');
+header('X-XSS-Protection: 1; mode=block');
+header('Referrer-Policy: strict-origin-when-cross-origin');
+header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self';");
+
 if (session_status() === PHP_SESSION_NONE) {
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'domain'   => '',
+        'secure'   => true,
+        'httponly'  => true,
+        'samesite'  => 'Strict',
+    ]);
     session_start();
 }
 
-// Enable detailed error reporting for local development environments
 if (isset($_SERVER['HTTP_HOST']) && (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false || strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false)) {
     ini_set('display_errors', '1');
     ini_set('display_startup_errors', '1');
@@ -128,12 +140,14 @@ $controllers = [
     new ChangePasswordPost(),
     new DeadlineReminderController(),
     new UpdateLinkController(),
+    new WeeklyArchiveController(),
+    new DailyExportController(),
     new SendMessageController(),
     new WeeklyArchiveController(),
     new DailyExportController(),
 ];
 
-// Extract the path from the request URI (without query string parameters)
+// Extract the path from the request URI
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 

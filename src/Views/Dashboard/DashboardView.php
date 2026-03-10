@@ -184,6 +184,7 @@ class DashboardView extends BaseView
                         $html .= "<p class='no-link-text'>Aucun lien GitHub ou Drive configuré.</p>";
                     }
                     $html .= "<form method='POST' action='/sae/update_link' class='link-update-form'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<input type='url' name='github_link' value='" . htmlspecialchars($githubLink) . "'
                         placeholder='https://github.com/votre-projet' class='input-url'>";
@@ -215,6 +216,7 @@ class DashboardView extends BaseView
 
                     // Ajouter tâche
                     $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
                     $html .= "<button type='submit'>Ajouter</button>";
@@ -236,6 +238,7 @@ class DashboardView extends BaseView
                             $html .= "<div class='todo-left-section'>";
                             $html .= "<form method='POST' action='/todo/toggle' class='todo-toggle'
                                 style='margin:0; flex:0;'>";
+                            $html .= \Shared\CsrfGuard::getHiddenField();
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<input type='hidden' name='fait' value='" . ($fait ? 0 : 1) . "'>";
                             $html .= "<input type='checkbox' class='todo-checkbox'
@@ -262,6 +265,7 @@ class DashboardView extends BaseView
                             $html .= "</div></div>";
                             $html .= "<div class='todo-actions'>";
                             $html .= "<form method='POST' action='/todo/delete' class='todo-delete' style='margin:0;'>";
+                            $html .= \Shared\CsrfGuard::getHiddenField();
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<button type='submit' class='btn-delete-task'
                                 onclick='return confirm(\"Supprimer cette tâche ?\");'
@@ -446,6 +450,7 @@ class DashboardView extends BaseView
 
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
+                                $html .= \Shared\CsrfGuard::getHiddenField();
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
                                 $html .= "<button type='submit' class='avis-btn-supprimer'
                                     style='color:red; background:none; border:none; cursor:pointer;'
@@ -461,6 +466,7 @@ class DashboardView extends BaseView
 
                     $html .= "<h4>Ajouter un avis</h4>";
                     $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
                     $html .= "<button type='submit'>Envoyer</button>";
@@ -495,10 +501,7 @@ class DashboardView extends BaseView
                 $html .= "<button
                     type='button'
                     class='btn-open-message-modal'
-                    onclick='
-                        document.getElementById(\"messageModal\").style.display=\"block\";
-                        document.body.classList.add(\"modal-open\");
-                    '>
+                    onclick='openMessageModal()'>
                      Envoyer un message à un étudiant
                 </button>";
                 $html .= "</div>";
@@ -576,6 +579,7 @@ class DashboardView extends BaseView
                     $html .= "<span class='date-modal-close'>&times;</span>";
                     $html .= "<h3>Modifier la date et l'heure de rendu</h3>";
                     $html .= "<form method='POST' action='/sae/update_date'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<div class='date-time-inputs'>";
                     $html .= "<div class='input-wrapper'><div class='form-group'>";
@@ -670,6 +674,7 @@ class DashboardView extends BaseView
 
                             if ((int) $this->safeString($avisData['user_id'] ?? 0) === $currentUserId) {
                                 $html .= "<form method='POST' action='/sae/avis/delete' style='display:inline;'>";
+                                $html .= \Shared\CsrfGuard::getHiddenField();
                                 $html .= "<input type='hidden' name='avis_id' value='{$avisId}'>";
                                 $html .= "<button type='submit' class='avis-btn-supprimer'
                                     style='color:red; background:none; border:none; cursor:pointer;'
@@ -685,6 +690,7 @@ class DashboardView extends BaseView
 
                     $html .= "<h4>Ajouter un avis</h4>";
                     $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
                     $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
                     $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
                     $html .= "<button type='submit'>Envoyer</button>";

@@ -7,6 +7,7 @@ use Models\User\User;
 use Models\User\PasswordResetToken;
 use Models\User\EmailService;
 use Shared\Exceptions\DataBaseException;
+use Shared\CsrfGuard;
 
 /**
  * Forgot password submission controller
@@ -40,6 +41,12 @@ class ForgotPasswordPost implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /user/forgot-password');
             exit;
+        }
+
+        // Validation CSRF
+        if (!CsrfGuard::validate()) {
+            http_response_code(403);
+            die('Requête invalide (CSRF).');
         }
 
         // Extract and validate email

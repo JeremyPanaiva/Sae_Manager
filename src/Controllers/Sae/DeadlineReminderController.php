@@ -214,7 +214,7 @@ class DeadlineReminderController implements ControllerInterface
      */
     private function getSecretToken(): string
     {
-        $token = \Models\Database::parseEnvVar('DEADLINE_REMINDER_TOKEN');
+        $token = \Models\Database::parseEnvVar('TOKEN');
         return $token !== false ? $token : '';
     }
 }
