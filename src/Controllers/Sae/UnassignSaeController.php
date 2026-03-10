@@ -8,6 +8,7 @@ use Shared\Exceptions\UnauthorizedSaeUnassignmentException;
 use Shared\Exceptions\DataBaseException;
 use Shared\SessionGuard;
 use Shared\CsrfGuard;
+use Shared\RoleGuard;
 
 /**
  * SAE unassignment controller
@@ -15,6 +16,7 @@ use Shared\CsrfGuard;
  * Handles the removal of student assignments from SAE by supervisors (responsables).
  * Verifies that only the supervisor who originally assigned students can unassign them.
  * Associated data (todos, feedback) are automatically deleted via database CASCADE rules.
+ * Role verification is delegated to RoleGuard.
  *
  * @package Controllers\Sae
  */
@@ -36,35 +38,25 @@ class UnassignSaeController implements ControllerInterface
      *
      * @return void
      */
-    public function control()
+    public function control(): void
     {
         SessionGuard::check();
+
         // Verify user is authenticated as a supervisor
-        if (
-            !isset($_SESSION['user']) ||
-            !is_array($_SESSION['user']) ||
-            !isset($_SESSION['user']['role']) ||
-            !is_string($_SESSION['user']['role']) ||
-            strtolower($_SESSION['user']['role']) !== 'responsable'
-        ) {
-            header('Location: /login');
-            exit();
-        }
+        RoleGuard::requireRole('responsable');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Validation CSRF
             if (!CsrfGuard::validate()) {
                 http_response_code(403);
                 die('Requête invalide (CSRF).');
             }
 
-            // Extract form data
-            $saeIdRaw = $_POST['sae_id'] ?? 0;
-            $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
-            $studentsRaw = $_POST['etudiants'] ?? [];
-            $students = is_array($studentsRaw) ? $studentsRaw : [];
-            $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
-            $responsableId = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
+            $saeIdRaw         = $_POST['sae_id']    ?? 0;
+            $saeId            = is_numeric($saeIdRaw)       ? (int) $saeIdRaw       : 0;
+            $studentsRaw      = $_POST['etudiants']  ?? [];
+            $students         = is_array($studentsRaw)      ? $studentsRaw          : [];
+            $responsableIdRaw = $_SESSION['user']['id']     ?? 0;
+            $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
 
             if (empty($students)) {
                 $_SESSION['error_message'] = "Veuillez sélectionner au moins un étudiant à retirer.";
@@ -73,46 +65,35 @@ class UnassignSaeController implements ControllerInterface
             }
 
             try {
-                // Check database connection
                 \Models\Database::checkConnection();
 
-                // Process each student unassignment
                 foreach ($students as $studentId) {
                     $studentIdInt = is_numeric($studentId) ? (int) $studentId : 0;
-
-                    // Verify that the current supervisor is the one who assigned this student
                     SaeAttribution::checkResponsableOwnership($saeId, $responsableId, $studentIdInt);
-
-                    // Remove student assignment from SAE
-                    // Associated entries in todo_list and sae_avis will be automatically deleted via ON DELETE CASCADE
                     SaeAttribution::removeFromStudent($saeId, $studentIdInt);
                 }
 
-                // Set success message in session
                 $_SESSION['success_message'] = "Étudiant(s) retiré(s) avec succès de la SAE.";
+
             } catch (UnauthorizedSaeUnassignmentException $e) {
-                // Supervisor is not authorized to unassign these students
                 $_SESSION['error_message'] = $e->getMessage();
             } catch (DataBaseException $e) {
-                // Database connection or operation error
                 $_SESSION['error_message'] = $e->getMessage();
             } catch (\Exception $e) {
-                // Generic error handling
                 $_SESSION['error_message'] = $e->getMessage();
             }
         }
 
-        // Redirect to SAE management page
         header('Location: /sae');
         exit();
     }
 
     /**
-     * Checks if this controller supports the given route and HTTP method
+     * Checks if this controller supports the given route and HTTP method.
      *
-     * @param string $path The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path is '/unassign_sae' and method is POST
+     * @param string $path   The requested route path.
+     * @param string $method The HTTP method (GET, POST, etc.).
+     * @return bool True if path is '/unassign_sae' and method is POST.
      */
     public static function support(string $path, string $method): bool
     {
