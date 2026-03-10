@@ -87,10 +87,8 @@ class SessionGuard
      */
     private static function handleConcurrentLogout(int $userId, bool $redirect): void
     {
-        // Récupération du nom/prénom depuis la session
-        $firstName = $_SESSION['user']['firstname'] ?? 'Utilisateur';
-        $lastName  = $_SESSION['user']['lastname'] ?? '';
-        $fullName  = trim("$firstName $lastName");
+        $nom    = $_SESSION['user']['nom'] ?? '';
+        $prenom = $_SESSION['user']['prenom'] ?? 'Utilisateur';
 
         $logger = new Log();
         $logger->create(
@@ -98,9 +96,8 @@ class SessionGuard
             'SESSION_CONCURRENTE',
             'users',
             $userId,
-            "Déconnecté ($fullName) : Connexion sur un autre appareil."
+            "Déconnecté : $nom $prenom (Connexion sur un autre appareil)"
         );
-
         $_SESSION = [];
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_destroy();
