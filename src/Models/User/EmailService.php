@@ -80,8 +80,7 @@ class EmailService
         string $clientNom,
         string $saeTitle,
         string $saeDescription
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -117,8 +116,7 @@ class EmailService
         string $responsableNom,
         string $clientNom,
         string $dateRendu = ''
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -146,7 +144,12 @@ class EmailService
             ]);
             $this->mailer->Body = $emailView->render();
             $this->mailer->AltBody = $this->textStudentAssignment(
-                $studentNom, $saeTitre, $saeDescription, $responsableNom, $clientNom, $dateRenduFormatted
+                $studentNom,
+                $saeTitre,
+                $saeDescription,
+                $responsableNom,
+                $clientNom,
+                $dateRenduFormatted
             );
 
             $this->mailer->send();
@@ -164,8 +167,7 @@ class EmailService
         string $saeTitre,
         string $studentNom,
         string $responsableNom
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -241,8 +243,7 @@ class EmailService
         string $saeTitre,
         string $dateRendu,
         string $responsableNom
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -271,7 +272,11 @@ class EmailService
             ]);
             $this->mailer->Body = $emailView->render();
             $this->mailer->AltBody = $this->textDeadlineReminder(
-                $studentNom, $saeTitre, $dateRenduFormatted, $heureRendu, $responsableNom
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $heureRendu,
+                $responsableNom
             );
 
             $this->mailer->send();
@@ -289,8 +294,7 @@ class EmailService
         string $saeTitre,
         string $dateRendu,
         string $responsableNom
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -319,7 +323,11 @@ class EmailService
             ]);
             $this->mailer->Body = $emailView->render();
             $this->mailer->AltBody = $this->textUrgentDeadlineReminder(
-                $studentNom, $saeTitre, $dateRenduFormatted, $responsableNom, $heureRendu
+                $studentNom,
+                $saeTitre,
+                $dateRenduFormatted,
+                $responsableNom,
+                $heureRendu
             );
 
             $this->mailer->send();
@@ -360,8 +368,7 @@ class EmailService
         string $subject,
         string $message,
         string $responsableName
-    ): bool
-    {
+    ): bool {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
@@ -376,7 +383,8 @@ class EmailService
                 'SUBJECT' => $subject,
             ]);
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = "Bonjour {$studentName},\n\n{$message}\n\nCordialement,\n{$responsableName}\nResponsable SAE Manager";
+            $this->mailer->AltBody = "Bonjour {$studentName},\n\n{$message}\n\nCordialement,\n
+            {$responsableName}\nResponsable SAE Manager";
 
             $this->mailer->send();
             return true;
@@ -459,9 +467,12 @@ class EmailService
         if ($appUrl !== false && !empty($appUrl)) {
             return rtrim($appUrl, '/');
         }
-        $protocol   = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host       = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-        $scriptName = isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+        $protocol   = isset($_SERVER['HTTPS']) &&
+        $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host       = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']) ?
+            $_SERVER['HTTP_HOST'] : 'localhost';
+        $scriptName = isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME']) ?
+            $_SERVER['SCRIPT_NAME'] : '';
         $path       = $scriptName !== '' ? dirname($scriptName) : '';
         return $protocol . '://' . $host . $path;
     }
@@ -480,7 +491,8 @@ class EmailService
             . "{$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
-    private function textSaeCreation(string $responsableNom, string $clientNom, string $saeTitle, string $saeDescription): string
+    private function textSaeCreation(string $responsableNom,
+                                     string $clientNom, string $saeTitle, string $saeDescription): string
     {
         $saeUrl = $this->getBaseUrl() . '/sae';
         return "Bonjour {$responsableNom},\n\nUne nouvelle SAE a été créée par {$clientNom}.\n\n"
@@ -489,8 +501,12 @@ class EmailService
     }
 
     private function textStudentAssignment(
-        string $studentNom, string $saeTitre, string $saeDescription,
-        string $responsableNom, string $clientNom, string $dateRendu
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
     ): string {
         $saeUrl = $this->getBaseUrl() . '/sae';
         return "Bonjour {$studentNom},\n\nVous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\n"
@@ -499,15 +515,18 @@ class EmailService
             . "{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
     }
 
-    private function textClientAssignment(string $clientNom, string $saeTitre, string $studentNames, string $responsableNom): string
+    private function textClientAssignment(string $clientNom,
+                                          string $saeTitre, string $studentNames, string $responsableNom): string
     {
         $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$clientNom},\n\nUn ou plusieurs étudiants ont été affectés à votre SAE par {$responsableNom}.\n\n"
+        return "Bonjour {$clientNom},\n\nUn ou plusieurs étudiants ont été affectés à votre SAE par 
+        {$responsableNom}.\n\n"
             . "SAE : {$saeTitre}\nÉTUDIANT(S) : {$studentNames}\nRESPONSABLE : {$responsableNom}\n\n"
             . "{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
     }
 
-    private function textDeadlineReminder(string $studentNom, string $saeTitre, string $dateRendu, string $heureRendu, string $responsableNom): string
+    private function textDeadlineReminder(string $studentNom, string $saeTitre,
+                                          string $dateRendu, string $heureRendu, string $responsableNom): string
     {
         $saeUrl    = $this->getBaseUrl() . '/sae';
         $textHeure = $heureRendu ? " à $heureRendu" : "";
@@ -516,7 +535,8 @@ class EmailService
             . "Accéder à vos SAE : {$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
     }
 
-    private function textUrgentDeadlineReminder(string $studentNom, string $saeTitre, string $dateRendu, string $responsableNom, string $heureRendu): string
+    private function textUrgentDeadlineReminder(string $studentNom, string $saeTitre,
+                                                string $dateRendu, string $responsableNom, string $heureRendu): string
     {
         $saeUrl    = $this->getBaseUrl() . '/sae';
         $precision = $heureRendu ? " à {$heureRendu}" : "";
