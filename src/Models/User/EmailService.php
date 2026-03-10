@@ -6,13 +6,13 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Models\Database;
 use Shared\Exceptions\DataBaseException;
-use Shared\Services\Email\SmtpMailerFactory;
-use Shared\Services\Email\FallbackMailer;
+use Shared\Services\Email\SmtpConfiguration;
+use Shared\Services\Email\LocalMailFallback;
 use Views\Email\EmailView;
 
 /**
  * Handles all application email sending.
- * Delegates SMTP config to SmtpMailerFactory and fallback to FallbackMailer.
+ * Delegates SMTP config to SmtpConfiguration and fallback to LocalMailFallback.
  *
  * @package Models\User
  */
@@ -23,7 +23,7 @@ class EmailService
     /** @throws DataBaseException If SMTP configuration fails */
     public function __construct()
     {
-        $this->mailer = SmtpMailerFactory::create();
+        $this->mailer = SmtpConfiguration::create();
     }
 
 
@@ -46,7 +46,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (password_reset): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $email);
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
@@ -69,7 +69,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (account_verification): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $email);
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
@@ -104,7 +104,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (sae_creation): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $responsableEmail);
+            return LocalMailFallback::send($this->mailer, $responsableEmail);
         }
     }
 
@@ -153,7 +153,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (student_assignment): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $studentEmail);
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
@@ -188,7 +188,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (client_assignment): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $clientEmail);
+            return LocalMailFallback::send($this->mailer, $clientEmail);
         }
     }
 
@@ -223,9 +223,9 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (contact): ' . $e->getMessage());
-            return FallbackMailer::sendContact(
-                SmtpMailerFactory::getFromEmail($this->mailer),
-                SmtpMailerFactory::getFromName($this->mailer),
+            return LocalMailFallback::sendContact(
+                SmtpConfiguration::getFromEmail($this->mailer),
+                SmtpConfiguration::getFromName($this->mailer),
                 $fromUserEmail,
                 $to,
                 '[Contact] ' . $safeSubject,
@@ -278,7 +278,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (deadline_reminder): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $studentEmail);
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
@@ -326,7 +326,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (urgent_deadline_reminder): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $studentEmail);
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
@@ -349,7 +349,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (password_changed): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $email);
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
@@ -382,7 +382,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (responsable_message): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $studentEmail);
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
@@ -412,7 +412,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (inactive_account_warning): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $userEmail);
+            return LocalMailFallback::send($this->mailer, $userEmail);
         }
     }
 
@@ -438,7 +438,7 @@ class EmailService
             return true;
         } catch (Exception $e) {
             error_log('EmailService SMTP (account_deleted): ' . $e->getMessage());
-            return FallbackMailer::send($this->mailer, $userEmail);
+            return LocalMailFallback::send($this->mailer, $userEmail);
         }
     }
 
