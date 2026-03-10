@@ -89,20 +89,17 @@ class DeleteSaeController implements ControllerInterface
 
             header('Location: /sae?success=sae_deleted');
             exit();
-
         } catch (\Shared\Exceptions\DataBaseException $e) {
             $data = ['saes' => [], 'error_message' => $e->getMessage()];
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (SaeAttribueException $e) {
             $saes = $this->getSaesWithResponsable($clientId);
             $data = ['saes' => $saes, 'error_message' => $e->getMessage()];
             $view = new SaeView("Gestion des SAE", $data, $username, $role);
             echo $view->render();
             exit();
-
         } catch (\Throwable $e) {
             $saes = $this->getSaesWithResponsable($clientId);
             $data = ['saes' => $saes, 'error_message' => $e->getMessage()];

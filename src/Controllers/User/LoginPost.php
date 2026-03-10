@@ -61,7 +61,8 @@ class LoginPost implements ControllerInterface
 
         // 2. Input validation
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Format d'email invalide : $email");
+            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0,
+                "Format d'email invalide : $email");
             $validationExceptions[] = new ValidationException("Le format de l'adresse email est invalide.");
         }
 
@@ -77,7 +78,8 @@ class LoginPost implements ControllerInterface
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0, "Erreur BDD : " . $dbEx->getMessage());
+                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0,
+                    "Erreur BDD : " . $dbEx->getMessage());
                 throw new ArrayException([new ValidationException("Erreur système lors de la connexion.")]);
             }
 
@@ -87,12 +89,18 @@ class LoginPost implements ControllerInterface
             }
 
             // Securely extract user data
-            $userId       = isset($userData['id'])          && is_numeric($userData['id'])          ? (int) $userData['id']                  : 0;
-            $isVerified   = isset($userData['is_verified']) && is_numeric($userData['is_verified']) ? (int) $userData['is_verified']          : 1;
-            $passwordHash = isset($userData['mdp'])         && is_string($userData['mdp'])          ? $userData['mdp']                       : '';
-            $role         = isset($userData['role'])        && is_string($userData['role'])         ? strtolower(trim($userData['role']))     : 'etudiant';
-            $nom          = isset($userData['nom'])         && is_string($userData['nom'])          ? $userData['nom']                       : '';
-            $prenom       = isset($userData['prenom'])      && is_string($userData['prenom'])       ? $userData['prenom']                    : '';
+            $userId       = isset($userData['id'])          && is_numeric($userData['id'])
+                ? (int) $userData['id']                  : 0;
+            $isVerified   = isset($userData['is_verified']) && is_numeric($userData['is_verified'])
+                ? (int) $userData['is_verified']          : 1;
+            $passwordHash = isset($userData['mdp'])         && is_string($userData['mdp'])
+                ? $userData['mdp']                       : '';
+            $role         = isset($userData['role'])        && is_string($userData['role'])
+                ? strtolower(trim($userData['role']))     : 'etudiant';
+            $nom          = isset($userData['nom'])         && is_string($userData['nom'])
+                ? $userData['nom']                       : '';
+            $prenom       = isset($userData['prenom'])      && is_string($userData['prenom'])
+                ? $userData['prenom']                    : '';
 
             if ($isVerified === 0) {
                 $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte non vérifié : $email");
@@ -153,7 +161,6 @@ class LoginPost implements ControllerInterface
 
             header("Location: /");
             exit();
-
         } catch (ArrayException $exceptions) {
             $view = new LoginView($exceptions->getExceptions());
             echo $view->render();

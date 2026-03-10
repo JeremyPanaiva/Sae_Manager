@@ -111,7 +111,6 @@ class RegisterPost implements ControllerInterface
 
             header("Location: /user/login?success=registered");
             exit();
-
         } catch (ArrayException $exceptions) {
             $view = new RegisterView($exceptions->getExceptions());
             echo $view->render();
