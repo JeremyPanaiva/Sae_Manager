@@ -11,6 +11,7 @@ use Shared\Exceptions\SaeAlreadyAssignedException;
 use Shared\Exceptions\StudentAlreadyAssignedException;
 use Shared\SessionGuard;
 use Shared\CsrfGuard;
+use Shared\RoleGuard;
 
 /**
  * SAE assignment controller
@@ -18,6 +19,7 @@ use Shared\CsrfGuard;
  * Handles the assignment of students to SAE (Situation d'Apprentissage et d'Évaluation)
  * by supervisors (responsables). Sends email notifications to assigned students and
  * the client who created the SAE.
+ * Role verification is delegated to RoleGuard.
  *
  * @package Controllers\Sae
  */
@@ -38,51 +40,37 @@ class AttribuerSaeController implements ControllerInterface
      *
      * @return void
      */
-    public function control()
+    public function control(): void
     {
         SessionGuard::check();
-        // Ensure POST method
+
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             header('Location: /sae');
             exit();
         }
 
-        // Validation CSRF
         if (!CsrfGuard::validate()) {
             http_response_code(403);
             die('Requête invalide (CSRF).');
         }
 
         // Verify user is authenticated as a supervisor
-        if (
-            !isset($_SESSION['user']) ||
-            !is_array($_SESSION['user']) ||
-            !isset($_SESSION['user']['role']) ||
-            !is_string($_SESSION['user']['role']) ||
-            strtolower($_SESSION['user']['role']) !== 'responsable'
-        ) {
-            header('HTTP/1.1 403 Forbidden');
-            echo "Accès refusé";
-            exit();
-        }
+        RoleGuard::requireRoleOrForbid('responsable');
 
         // Extract form data
-        $saeIdRaw = $_POST['sae_id'] ?? 0;
-        $saeId = is_numeric($saeIdRaw) ? (int) $saeIdRaw : 0;
-        $etudiantsRaw = $_POST['etudiants'] ?? [];
-        $etudiants = is_array($etudiantsRaw) ? $etudiantsRaw : [];
-        $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
-        $responsableId = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
+        $saeIdRaw         = $_POST['sae_id']    ?? 0;
+        $saeId            = is_numeric($saeIdRaw)         ? (int) $saeIdRaw         : 0;
+        $etudiantsRaw     = $_POST['etudiants'] ?? [];
+        $responsableIdRaw = $_SESSION['user']['id']       ?? 0;
+        $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
 
         try {
-            // Check database connection
             \Models\Database::checkConnection();
 
-            // Assign students to SAE
-            $etudiants = is_array($etudiantsRaw) ?
-                array_map(fn($id) => is_numeric($id) ? (int) $id : 0, $etudiantsRaw) : [];
+            $etudiants = is_array($etudiantsRaw)
+                ? array_map(fn($id) => is_numeric($id) ? (int) $id : 0, $etudiantsRaw)
+                : [];
 
-            // ERROR Check: Ensure at least one student is selected
             if (empty($etudiants)) {
                 $_SESSION['error_message'] = "Veuillez sélectionner au moins un étudiant à attribuer.";
                 header('Location: /sae');
@@ -93,88 +81,59 @@ class AttribuerSaeController implements ControllerInterface
 
             // Retrieve SAE information
             $saeInfo = Sae::getById($saeId);
-
             if (!$saeInfo) {
                 throw new \Exception("SAE non trouvée");
             }
 
-            $saeTitreRaw = $saeInfo['titre'] ?? 'la SAE';
-            $saeTitre = is_string($saeTitreRaw) ? $saeTitreRaw : 'la SAE';
-            $saeDescriptionRaw = $saeInfo['description'] ?? '';
-            $saeDescription = is_string($saeDescriptionRaw) ? $saeDescriptionRaw : '';
-            $clientIdRaw = $saeInfo['client_id'] ?? null;
-            $clientId = is_numeric($clientIdRaw) ? (int) $clientIdRaw : null;
-
-
-            // Debug logging
-            error_log("SAE ID: {$saeId}");
-            error_log("SAE Titre: {$saeTitre}");
-            error_log("Client ID trouvé: " . ($clientId !== null ? (string) $clientId : 'NULL'));
+            $saeTitre      = is_string($saeInfo['titre']       ?? null) ? $saeInfo['titre']       : 'la SAE';
+            $saeDescription = is_string($saeInfo['description'] ?? null) ? $saeInfo['description'] : '';
+            $clientIdRaw   = $saeInfo['client_id'] ?? null;
+            $clientId      = is_numeric($clientIdRaw) ? (int) $clientIdRaw : null;
 
             // Retrieve client information
-            $clientNom = 'Client';
+            $clientNom   = 'Client';
             $clientEmail = '';
 
             if ($clientId !== null) {
                 $clientInfo = User::getById($clientId);
-                error_log("Client Info: " . json_encode($clientInfo));
-
                 if ($clientInfo) {
-                    $prenomClientRaw = $clientInfo['prenom'] ?? '';
-                    $prenomClient = is_string($prenomClientRaw) ? $prenomClientRaw : '';
-                    $nomClientRaw = $clientInfo['nom'] ?? '';
-                    $nomClient = is_string($nomClientRaw) ? $nomClientRaw : '';
-                    $clientNom = trim($prenomClient . ' ' . $nomClient);
-                    $clientEmailRaw = $clientInfo['mail'] ?? '';
-                    $clientEmail = is_string($clientEmailRaw) ? $clientEmailRaw : '';
-                    error_log("Client Email trouvé:  {$clientEmail}");
-                } else {
-                    error_log("Client non trouvé pour l'ID: " . (string) $clientId);
+                    $prenomClient = is_string($clientInfo['prenom'] ?? null) ? $clientInfo['prenom'] : '';
+                    $nomClient    = is_string($clientInfo['nom']    ?? null) ? $clientInfo['nom']    : '';
+                    $clientNom    = trim($prenomClient . ' ' . $nomClient);
+                    $clientEmail  = is_string($clientInfo['mail']   ?? null) ? $clientInfo['mail']   : '';
                 }
-            } else {
-                error_log("Aucun client_id dans la SAE");
             }
 
             // Retrieve supervisor information
             $responsableInfo = User::getById($responsableId);
-            $prenomResponsableRaw = $responsableInfo['prenom'] ?? '';
-            $prenomResponsable = $responsableInfo && is_string($prenomResponsableRaw)
-                ? $prenomResponsableRaw : '';
-            $nomResponsableRaw = $responsableInfo['nom'] ?? '';
-            $nomResponsable = $responsableInfo && is_string($nomResponsableRaw) ? $nomResponsableRaw : '';
-            $responsableNom = $responsableInfo ? trim($prenomResponsable . ' ' . $nomResponsable) : 'Responsable';
+            $prenomResponsable = $responsableInfo && is_string($responsableInfo['prenom'] ?? null)
+                ? $responsableInfo['prenom'] : '';
+            $nomResponsable    = $responsableInfo && is_string($responsableInfo['nom']    ?? null)
+                ? $responsableInfo['nom']    : '';
+            $responsableNom    = $responsableInfo ? trim($prenomResponsable . ' ' . $nomResponsable) : 'Responsable';
 
             // Retrieve submission deadline
-            $dateRendu = '';
+            $dateRendu   = '';
             $attributions = SaeAttribution::getAttributionsBySae($saeId);
             if (!empty($attributions)) {
-                $dateRenduRaw = $attributions[0]['date_rendu'] ?? '';
-                $dateRendu = is_string($dateRenduRaw) ? $dateRenduRaw : '';
+                $dateRendu = is_string($attributions[0]['date_rendu'] ?? null) ? $attributions[0]['date_rendu'] : '';
             }
 
-            // Process each assigned student
+            // Process each assigned student and send notifications
             $studentNames = [];
 
             foreach ($etudiants as $studentId) {
                 $student = User::getById((int) $studentId);
                 if ($student) {
-                    $prenomStudentRaw = $student['prenom'] ?? '';
-                    $prenomStudent = is_string($prenomStudentRaw) ? $prenomStudentRaw : '';
-                    $nomStudentRaw = $student['nom'] ?? '';
-                    $nomStudent = is_string($nomStudentRaw) ? $nomStudentRaw : '';
+                    $prenomStudent   = is_string($student['prenom'] ?? null) ? $student['prenom'] : '';
+                    $nomStudent      = is_string($student['nom']    ?? null) ? $student['nom']    : '';
                     $studentFullName = trim($prenomStudent . ' ' . $nomStudent);
-                    $studentNames[] = $studentFullName;
-                    $studentEmailRaw = $student['mail'] ?? '';
-                    $studentEmail = is_string($studentEmailRaw) ? $studentEmailRaw : '';
+                    $studentNames[]  = $studentFullName;
+                    $studentEmail    = is_string($student['mail']   ?? null) ? $student['mail']   : '';
 
-                    error_log("Étudiant: {$studentFullName} - Email: {$studentEmail}");
-
-                    // Send email notification to student
                     if (!empty($studentEmail)) {
                         try {
-                            error_log("Création d'une nouvelle instance EmailService pour l'étudiant");
                             $emailServiceStudent = new EmailService();
-
                             $emailServiceStudent->sendStudentAssignmentNotification(
                                 $studentEmail,
                                 $studentFullName,
@@ -184,33 +143,21 @@ class AttribuerSaeController implements ControllerInterface
                                 $clientNom,
                                 $dateRendu
                             );
-                            error_log("Email envoyé à l'étudiant: {$studentEmail}");
-
-                            // Free memory
                             unset($emailServiceStudent);
                         } catch (\Exception $e) {
-                            error_log("Erreur lors de l'envoi de l'email à l'étudiant 
-                            {$studentEmail}: " . $e->getMessage());
-                            error_log("Stack trace: " . $e->getTraceAsString());
+                            error_log("Erreur email étudiant {$studentEmail}: " . $e->getMessage());
                         }
-                    } else {
-                        error_log("Pas d'email pour l'étudiant: {$studentFullName}");
                     }
 
-                    // Prevent SMTP issues with rate limiting
-                    usleep(200000); // 0.2 second delay between student emails
+                    usleep(200000); // 0.2s delay between emails
                 }
             }
 
-            // Send SINGLE email notification to client with ALL student names
+            // Send single summary email to client
             if (!empty($clientEmail) && !empty($studentNames)) {
                 try {
-                    $studentListString = implode(', ', $studentNames);
-                    error_log("Création d'une nouvelle instance EmailService pour le client (Récapitulatif)");
-                    error_log("Tentative d'envoi email au client: {$clientEmail} pour étudiants: {$studentListString}");
-
+                    $studentListString  = implode(', ', $studentNames);
                     $emailServiceClient = new EmailService();
-
                     $emailServiceClient->sendClientStudentAssignmentNotification(
                         $clientEmail,
                         $clientNom,
@@ -218,62 +165,45 @@ class AttribuerSaeController implements ControllerInterface
                         $studentListString,
                         $responsableNom
                     );
-
-                    error_log("✅ Email envoyé au client: {$clientEmail}");
                     unset($emailServiceClient);
                 } catch (\Exception $e) {
-                    error_log("ERREUR lors de l'envoi de l'email au client {$clientEmail}: " . $e->getMessage());
-                    error_log("Stack trace: " . $e->getTraceAsString());
-                }
-            } else {
-                if (empty($clientEmail)) {
-                    error_log("Pas d'email client disponible.");
+                    error_log("Erreur email client {$clientEmail}: " . $e->getMessage());
                 }
             }
 
             // Build success message
             $nbEtudiants = count($studentNames);
             if ($nbEtudiants === 1) {
-                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » 
-                a été attribué avec succès à la SAE « $saeTitre ». Des notifications par email ont été envoyées.";
+                $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » a été attribué avec succès à la SAE « $saeTitre ». Des notifications par email ont été envoyées.";
             } else {
                 $listeEtudiants = implode(', ', array_slice($studentNames, 0, -1)) . ' et ' . end($studentNames);
-                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été 
-                attribués avec succès à la SAE « $saeTitre » : 
-                $listeEtudiants. Des notifications par email ont été envoyées.";
+                $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « $saeTitre » : $listeEtudiants. Des notifications par email ont été envoyées.";
             }
 
             header('Location: /sae');
             exit();
+
         } catch (\Shared\Exceptions\DataBaseException $e) {
-            // Database connection error
             $_SESSION['error_message'] = $e->getMessage();
         } catch (SaeAlreadyAssignedException $e) {
-            // SAE already assigned to another supervisor
-            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » :
-             elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
+            $_SESSION['error_message'] = "Impossible d'attribuer la SAE « {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
         } catch (StudentAlreadyAssignedException $e) {
-            // Student already assigned to this SAE
-            $_SESSION['error_message'] = "L'étudiant 
-            « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
+            $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
         } catch (\Exception $e) {
-            // Generic error handling
-            error_log("❌ Erreur générale dans AttribuerSaeController: " . $e->getMessage());
-            error_log("Stack trace: " . $e->getTraceAsString());
+            error_log("Erreur générale AttribuerSaeController: " . $e->getMessage());
             $_SESSION['error_message'] = "Une erreur est survenue lors de l'affectation.";
         }
 
-        // Redirect with error message
         header('Location: /sae');
         exit();
     }
 
     /**
-     * Checks if this controller supports the given route and HTTP method
+     * Checks if this controller supports the given route and HTTP method.
      *
-     * @param string $path The requested route path
-     * @param string $method The HTTP method (GET, POST, etc.)
-     * @return bool True if path is '/attribuer_sae' and method is POST
+     * @param string $path   The requested route path.
+     * @param string $method The HTTP method (GET, POST, etc.).
+     * @return bool True if path is '/attribuer_sae' and method is POST.
      */
     public static function support(string $path, string $method): bool
     {
