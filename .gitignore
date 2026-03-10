@@ -44,6 +44,8 @@
 # *.iml
 # *.ipr
 
+docker/
+
 # CMake
 cmake-build-*/
 
