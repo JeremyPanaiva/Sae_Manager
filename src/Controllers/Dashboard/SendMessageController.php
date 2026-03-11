@@ -77,9 +77,9 @@ class SendMessageController implements ControllerInterface
         }
 
         try {
-            $userSession = $_SESSION['user'];
+            $user = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
 
-            $responsableIdRaw = $userSession['id'] ?? 0;
+            $responsableIdRaw = $user['id'] ?? 0;
             $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
 
             if ($responsableId === 0) {
@@ -87,8 +87,8 @@ class SendMessageController implements ControllerInterface
                 exit();
             }
 
-            $responsablePrenom = is_string($userSession['prenom'] ?? null) ? $userSession['prenom'] : '';
-            $responsableNom    = is_string($userSession['nom']    ?? null) ? $userSession['nom']    : '';
+            $responsablePrenom = is_string($user['prenom'] ?? null) ? (string) $user['prenom'] : '';
+            $responsableNom    = is_string($user['nom']    ?? null) ? (string) $user['nom']    : '';
             $responsableName   = $responsablePrenom . ' ' . $responsableNom;
 
             // Group students by SAE
@@ -100,8 +100,8 @@ class SendMessageController implements ControllerInterface
                     $saeInfo !== null &&
                     isset($saeInfo['sae_id'], $saeInfo['sae_name'])
                 ) {
-                    $saeId   = is_numeric($saeInfo['sae_id'])   ? (int) $saeInfo['sae_id']   : 0;
-                    $saeName = is_string($saeInfo['sae_name'])  ? $saeInfo['sae_name']        : '';
+                    $saeId   = is_numeric($saeInfo['sae_id'])  ? (int) $saeInfo['sae_id']  : 0;
+                    $saeName = is_string($saeInfo['sae_name']) ? $saeInfo['sae_name']       : '';
 
                     if ($saeId > 0 && $saeName !== '') {
                         if (!isset($studentsBySae[$saeId])) {
@@ -125,7 +125,8 @@ class SendMessageController implements ControllerInterface
             $invalidCount = 0;
 
             foreach ($studentsBySae as $saeId => $saeData) {
-                $saeName             = $saeData['sae_name'];
+                $saeName             = is_string($saeData['sae_name'] ?? null) ? (string)
+                $saeData['sae_name'] : null;
                 $studentsInSae       = $saeData['students'];
                 $personalizedSubject = $saeName !== null ? "[SAE: {$saeName}] {$subject}" : $subject;
 
@@ -142,7 +143,9 @@ class SendMessageController implements ControllerInterface
                         $studentRole = is_string($student['role'] ?? null) ? strtolower($student['role']) : '';
                         if ($studentRole !== 'etudiant') {
                             $invalidCount++;
-                            error_log("User {$studentId} is not a student: " . ($student['role'] ?? 'unknown'));
+                            error_log("User {$studentId} is not a student: " . (is_string(
+                                $student['role'] ?? null
+                            ) ? $student['role'] : 'unknown'));
                             continue;
                         }
 
@@ -193,8 +196,8 @@ class SendMessageController implements ControllerInterface
                 header('Location: /dashboard?success=' . $param);
             } elseif ($successCount > 0 && ($failCount > 0 || $invalidCount > 0)) {
                 $totalFailed = $failCount + $invalidCount;
-                header('Location: 
-                /dashboard?warning=partial_success&sent=' . $successCount . '&failed=' . $totalFailed);
+                header('Location: /dashboard?warning=partial_success&sent=' .
+                    $successCount . '&failed=' . $totalFailed);
             } else {
                 $errorParam = $invalidCount > 0 ? 'invalid_student' : 'mail_failed';
                 header('Location: /dashboard?error=' . $errorParam);
