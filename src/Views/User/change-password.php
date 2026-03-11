@@ -41,11 +41,20 @@
                     </svg>
                 </span>
             </div>
-            <small style="display:block; margin-bottom:15px; color:#666; font-size:0.9em;">
-                Minimum 12 caractères avec au moins une majuscule, une minuscule,
-                un chiffre et l'un de ces caractères spéciaux :
-                ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \ | { } [ ]
-            </small>
+            <div id="password-error" style="display:none; color:#c0392b; font-size:0.9em; margin-bottom:15px;">
+                Le mot de passe doit contenir entre 12 et 30 caractères, une majuscule, une minuscule,
+                un chiffre et un caractère spécial (! @ # $ % ^ &amp; * …).
+            </div>
+            <script>
+                document.getElementById('new_password').addEventListener('invalid', function() {
+                    document.getElementById('password-error').style.display = 'block';
+                });
+                document.getElementById('new_password').addEventListener('input', function() {
+                    if (this.validity.valid) {
+                        document.getElementById('password-error').style.display = 'none';
+                    }
+                });
+            </script>
 
             <label for="confirm_password">Confirmer le nouveau mot de passe :</label>
             <div class="password-wrapper">
