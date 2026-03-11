@@ -57,7 +57,8 @@ class DeleteSaeController implements ControllerInterface
         RoleGuard::requireRoleOrForbid('client');
 
         // Extract client and SAE identifiers
-        $clientIdRaw = $_SESSION['user']['id'] ?? 0;
+        $user        = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+        $clientIdRaw = $user['id']    ?? 0;
         $clientId    = is_numeric($clientIdRaw) ? (int) $clientIdRaw : 0;
         $saeIdRaw    = $_POST['sae_id']         ?? 0;
         $saeId       = is_numeric($saeIdRaw)    ? (int) $saeIdRaw    : 0;
@@ -68,10 +69,10 @@ class DeleteSaeController implements ControllerInterface
         }
 
         // Store user information for view rendering
-        $nom      = is_string($_SESSION['user']['nom']    ?? null) ? $_SESSION['user']['nom']    : '';
-        $prenom   = is_string($_SESSION['user']['prenom'] ?? null) ? $_SESSION['user']['prenom'] : '';
+        $nom      = is_string($user['nom']    ?? null) ? (string) $user['nom']    : '';
+        $prenom   = is_string($user['prenom'] ?? null) ? (string) $user['prenom'] : '';
         $username = $nom . ' ' . $prenom;
-        $role     = (string) $_SESSION['user']['role'];
+        $role     = is_string($user['role']   ?? null) ? (string) $user['role']   : '';
 
         try {
             $sae = Sae::getById($saeId);
