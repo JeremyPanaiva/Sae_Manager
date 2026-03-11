@@ -54,13 +54,14 @@ class UpdateSaeDateController implements ControllerInterface
         RoleGuard::requireRole('responsable', '/dashboard');
 
         try {
-            $responsableIdRaw = $_SESSION['user']['id'] ?? 0;
+            $user             = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+            $responsableIdRaw = $user['id'] ?? 0;
             $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
-            $saeIdRaw         = $_POST['sae_id']        ?? 0;
-            $saeId            = is_numeric($saeIdRaw)   ? (int) $saeIdRaw   : 0;
+            $saeIdRaw         = $_POST['sae_id']       ?? 0;
+            $saeId            = is_numeric($saeIdRaw)  ? (int) $saeIdRaw  : 0;
 
-            $newDate = is_string($_POST['date_rendu']   ?? null) ? trim($_POST['date_rendu'])          : '';
-            $newTime = is_string($_POST['heure_rendu']  ?? null) ? trim($_POST['heure_rendu'])         : '20:00';
+            $newDate = is_string($_POST['date_rendu']  ?? null) ? trim($_POST['date_rendu'])  : '';
+            $newTime = is_string($_POST['heure_rendu'] ?? null) ? trim($_POST['heure_rendu']) : '20:00';
 
             // Combine date and time
             $newDateTime = '';
