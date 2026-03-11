@@ -37,8 +37,8 @@
       <div class="password-wrapper">
         <input type="password" id="mdp" name="mdp" required minlength="12" maxlength="30"
           pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+€£µ§?/\\|{}\[\]]).{12,}"
-          title="Le mot de passe doit contenir entre 12 et 30 caractères, une majuscule, une minuscule,
-          un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
+          title="Le mot de passe doit contenir entre 12 et 30 caractères, comprenant au moins une majuscule,
+          une minuscule, un chiffre et un caractère spécial."
           placeholder="Votre mot de passe">
         <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000"
@@ -48,10 +48,19 @@
           </svg>
         </span>
       </div>
-      <small style="color: #6c757d; font-size: 0.85rem; margin-top: -0.5rem;">
-        Le mot de passe doit contenir entre 12 et 30 caractères avec une majuscule, une minuscule,
-        un chiffre et l'un de ces caractères spéciaux : ! @ # $ % ^ & * ( ) _ + € £ µ § ? / \ | { } [ ]
-      </small>
+
+      <label for="confirm_mdp">Confirmer le mot de passe :</label>
+      <div class="password-wrapper">
+        <input type="password" id="confirm_mdp" name="confirm_mdp" required minlength="12" maxlength="30"
+          title="Veuillez confirmer votre mot de passe" placeholder="Confirmez votre mot de passe">
+        <span class="toggle-password" aria-label="Afficher/masquer le mot de passe">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#000"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </span>
+      </div>
 
       <label for="role">Rôle :</label>
       <select id="role" name="role" required>
