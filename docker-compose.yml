@@ -10,7 +10,7 @@ services:
       dockerfile: Dockerfile
     container_name: sae-manager-web
     ports:
-      - "8080:80"          # Accès via http://localhost:8080
+      - "8080:80" # Accès via http://localhost:8080
     environment:
       # Connexion à la BDD
       DB_HOST: db
@@ -26,6 +26,9 @@ services:
       FROM_EMAIL: ${FROM_EMAIL:-}
       FROM_NAME: ${FROM_NAME:-}
       APP_URL: ${APP_URL:-http://localhost:8080}
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
     depends_on:
       db:
         condition: service_healthy
@@ -50,7 +53,7 @@ services:
       - db_data:/var/lib/mysql
       - ./docker/init-db:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -65,7 +68,7 @@ services:
     image: phpmyadmin:latest
     container_name: sae-manager-phpmyadmin
     ports:
-      - "8081:80"          # http://localhost:8081
+      - "8081:80" # http://localhost:8081
     environment:
       PMA_HOST: db
       PMA_PORT: 3306
@@ -78,6 +81,7 @@ services:
 
 volumes:
   db_data:
+
 
 networks:
   sae-network:
