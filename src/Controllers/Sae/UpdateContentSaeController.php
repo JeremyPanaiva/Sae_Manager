@@ -48,14 +48,15 @@ class UpdateContentSaeController implements ControllerInterface
                 die('Requête invalide (CSRF).');
             }
 
-            $saeIdRaw       = $_POST['sae_id']      ?? 0;
-            $saeId          = is_numeric($saeIdRaw)       ? (int) $saeIdRaw       : 0;
-            $titreRaw       = $_POST['titre']        ?? '';
-            $titre          = is_string($titreRaw)        ? trim($titreRaw)        : '';
-            $descriptionRaw = $_POST['description']  ?? '';
-            $description    = is_string($descriptionRaw)  ? trim($descriptionRaw)  : '';
-            $clientIdRaw    = $_SESSION['user']['id'] ?? 0;
-            $clientId       = is_numeric($clientIdRaw)    ? (int) $clientIdRaw    : 0;
+            $user           = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+            $saeIdRaw       = $_POST['sae_id']     ?? 0;
+            $saeId          = is_numeric($saeIdRaw)      ? (int) $saeIdRaw      : 0;
+            $titreRaw       = $_POST['titre']       ?? '';
+            $titre          = is_string($titreRaw)       ? trim($titreRaw)       : '';
+            $descriptionRaw = $_POST['description'] ?? '';
+            $description    = is_string($descriptionRaw) ? trim($descriptionRaw) : '';
+            $clientIdRaw    = $user['id']           ?? 0;
+            $clientId       = is_numeric($clientIdRaw)   ? (int) $clientIdRaw   : 0;
 
             try {
                 Sae::update($clientId, $saeId, $titre, $description);
