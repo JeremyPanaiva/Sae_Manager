@@ -48,15 +48,16 @@ class UnassignSaeController implements ControllerInterface
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!CsrfGuard::validate()) {
                 http_response_code(403);
-                die('Requête invalide (CSRF).');
+                die('Requ��te invalide (CSRF).');
             }
 
-            $saeIdRaw         = $_POST['sae_id']    ?? 0;
-            $saeId            = is_numeric($saeIdRaw)       ? (int) $saeIdRaw       : 0;
-            $studentsRaw      = $_POST['etudiants']  ?? [];
-            $students         = is_array($studentsRaw)      ? $studentsRaw          : [];
-            $responsableIdRaw = $_SESSION['user']['id']     ?? 0;
-            $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
+            $user             = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+            $saeIdRaw         = $_POST['sae_id']   ?? 0;
+            $saeId            = is_numeric($saeIdRaw)          ? (int) $saeIdRaw          : 0;
+            $studentsRaw      = $_POST['etudiants'] ?? [];
+            $students         = is_array($studentsRaw)         ? $studentsRaw             : [];
+            $responsableIdRaw = $user['id']         ?? 0;
+            $responsableId    = is_numeric($responsableIdRaw)  ? (int) $responsableIdRaw  : 0;
 
             if (empty($students)) {
                 $_SESSION['error_message'] = "Veuillez sélectionner au moins un étudiant à retirer.";
