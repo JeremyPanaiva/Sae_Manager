@@ -58,11 +58,25 @@ class RegisterPost implements ControllerInterface
         $firstName = $_POST['prenom'] ?? '';
         $email = $_POST['mail'] ?? '';
         $mdp = $_POST['mdp'] ?? '';
+        $confirm_mdp = $_POST['confirm_mdp'] ?? '';
         $role = $_POST['role'] ?? 'etudiant';
 
         $userModel = new User();
         $logger = new Log();
         $validationExceptions = [];
+
+        if ($mdp !== $confirm_mdp) {
+            $logger->create(
+                null,
+                'ECHEC_INSCRIPTION',
+                'users',
+                0,
+                "Les mots de passe ne correspondent pas pour : $email"
+            );
+            $validationExceptions[] = new ValidationException(
+                "Les mots de passe ne correspondent pas."
+            );
+        }
 
         if (strlen($mdp) < 12 || strlen($mdp) > 30) {
             $logger->create(
@@ -125,8 +139,7 @@ class RegisterPost implements ControllerInterface
                 "Mot de passe non conforme (caractère spécial manquant) pour : $email"
             );
             $validationExceptions[] = new ValidationException(
-                "Le mot de passe doit contenir au moins un des caractères spéciaux suivants : "
-                . "! @ # $ % ^ & * ( ) _ + € £ µ § ? / \\ | { } [ ]"
+                "Le mot de passe doit contenir au moins un caractère spécial."
             );
         }
 

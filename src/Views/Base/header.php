@@ -51,6 +51,18 @@ if (is_string($jwtToken) && $jwtToken !== '') {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function() {
+            var s = localStorage.getItem('sae-manager-theme');
+            var d = s ? s === 'dark' : window.matchMedia &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (d) {
+                document.documentElement.classList.add('dark-mode');
+                document.documentElement.style.backgroundColor = '#181a1b';
+                document.documentElement.style.colorScheme = 'dark';
+            }
+        })();
+    </script>
     <meta name="description" content="SAE Manager : plateforme de suivi
     et de gestion des SAE pour les étudiants et enseignants d'AMU.">
     <link rel="canonical" href="<?php echo htmlspecialchars($CANONICAL_URL, ENT_QUOTES); ?>">

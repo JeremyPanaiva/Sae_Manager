@@ -59,25 +59,8 @@
 
             <div class="form-group">
                 <label>Étudiants destinataires : *</label>
-                <div class="student-selection-info">
-                    <small>Sélectionnez les étudiants par SAE :</small>
-                </div>
-
-                <div class="checkbox-controls">
-                    <button
-                            type="button"
-                            class="btn-select-all"
-                            onclick="selectAllStudents()"
-                    >
-                        Tout sélectionner
-                    </button>
-                    <button
-                            type="button"
-                            class="btn-deselect-all"
-                            onclick="deselectAllStudents()"
-                    >
-                        Tout désélectionner
-                    </button>
+                <div class="student-selection-info no-border">
+                    <small>Sélectionnez les étudiants par SAE</small>
                 </div>
 
                 <div class="student-checkbox-list">
@@ -148,6 +131,25 @@
                     }
                     ?>
                 </div>
+
+
+
+                <div class="checkbox-controls mt-2">
+                    <button
+                            type="button"
+                            class="btn-select-all"
+                            onclick="selectAllStudents()"
+                    >
+                        Tout sélectionner
+                    </button>
+                    <button
+                            type="button"
+                            class="btn-deselect-all"
+                            onclick="deselectAllStudents()"
+                    >
+                        Tout désélectionner
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
@@ -183,7 +185,7 @@
     </div>
 </div>
 
-<link rel="stylesheet" href="/_assets/css/message-modal.css">
+
 
 <script>
     const messageTemplates = {

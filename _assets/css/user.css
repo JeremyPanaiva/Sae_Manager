@@ -139,6 +139,7 @@
 .users table {
     width: 100%;
     border-collapse: collapse;
+    border: 1px solid var(--amu-blue);
 }
 
 .users th,
@@ -146,6 +147,10 @@
     padding: 0.8rem;
     text-align: left;
     border-bottom: 1px solid #ddd;
+}
+
+.users tr:last-child td {
+    border-bottom: 1px solid var(--amu-blue);
 }
 
 .users th {
@@ -190,9 +195,9 @@
 }
 
 .users th a.sort-link.active {
-    font-weight: 700;
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
+    text-shadow: 0 0 .65px white, 0 0 .65px white;
 }
 
 .users th a.sort-link.active:hover {
@@ -202,7 +207,7 @@
 /* =====================================
    Pastilles de rôles dans le tableau
    ===================================== */
-.role-badge {
+.users .role-badge {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 12px;
@@ -212,20 +217,20 @@
     text-transform: capitalize;
 }
 
-.role-etudiant {
+.users .role-etudiant {
     background-color: #007bff;
 }
 
-.role-responsable {
+.users .role-responsable {
     background-color: #28a745;
 }
 
-.role-client {
+.users .role-client {
     background-color: #ffc107;
     color: #000;
 }
 
-.role-inconnu {
+.users .role-inconnu {
     background-color: var(--amu-dark-gray);
 }
 
@@ -468,8 +473,15 @@
 }
 
 @keyframes modalIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to   { transform: scale(1);    opacity: 1; }
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .modal-box h3 {
@@ -560,4 +572,3 @@
     border-color: var(--dm-error);
     background: var(--dm-error-bg);
 }
-
