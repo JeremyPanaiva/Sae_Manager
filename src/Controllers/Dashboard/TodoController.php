@@ -78,11 +78,12 @@ class TodoController implements ControllerInterface
     {
         RoleGuard::requireRole('etudiant');
 
-        $saeId = isset($_POST['sae_id']) && is_numeric($_POST['sae_id']) ? (int) $_POST['sae_id'] : 0;
-        $titre = isset($_POST['titre'])  && is_scalar($_POST['titre'])   ? trim(strval($_POST['titre'])) : '';
+        $user   = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+        $saeId  = isset($_POST['sae_id']) && is_numeric($_POST['sae_id']) ? (int) $_POST['sae_id'] : 0;
+        $titre  = isset($_POST['titre'])  && is_scalar($_POST['titre'])   ? trim(strval($_POST['titre'])) : '';
 
         if ($saeId > 0 && $titre !== '') {
-            $userId = isset($_SESSION['user']['id']) ? (int) $_SESSION['user']['id'] : null;
+            $userId = isset($user['id']) && is_numeric($user['id']) ? (int) $user['id'] : null;
             TodoList::addTask($saeId, $titre, $userId);
         }
 
