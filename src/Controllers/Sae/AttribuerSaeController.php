@@ -58,10 +58,11 @@ class AttribuerSaeController implements ControllerInterface
         RoleGuard::requireRoleOrForbid('responsable');
 
         // Extract form data
+        $user             = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
         $saeIdRaw         = $_POST['sae_id']    ?? 0;
         $saeId            = is_numeric($saeIdRaw)         ? (int) $saeIdRaw         : 0;
         $etudiantsRaw     = $_POST['etudiants'] ?? [];
-        $responsableIdRaw = $_SESSION['user']['id']       ?? 0;
+        $responsableIdRaw = $user['id']         ?? 0;
         $responsableId    = is_numeric($responsableIdRaw) ? (int) $responsableIdRaw : 0;
 
         try {
@@ -177,8 +178,10 @@ class AttribuerSaeController implements ControllerInterface
                 $_SESSION['success_message'] = "L'étudiant « {$studentNames[0]} » a été attribué avec succès à la SAE « 
                 $saeTitre ». Des notifications par email ont été envoyées.";
             } else {
-                $listeEtudiants = implode(', ',
-                        array_slice($studentNames, 0, -1)) . ' et ' . end($studentNames);
+                $listeEtudiants = implode(
+                    ', ',
+                    array_slice($studentNames, 0, -1)
+                ) . ' et ' . end($studentNames);
                 $_SESSION['success_message'] = "$nbEtudiants étudiants ont été attribués avec succès à la SAE « 
                 $saeTitre » : $listeEtudiants. Des notifications par email ont été envoyées.";
             }
@@ -191,7 +194,8 @@ class AttribuerSaeController implements ControllerInterface
             $_SESSION['error_message'] = "Impossible d'attribuer la SAE « 
             {$e->getSae()} » : elle a déjà été attribuée par le responsable « {$e->getResponsable()} ».";
         } catch (StudentAlreadyAssignedException $e) {
-            $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « {$e->getSae()} ».";
+            $_SESSION['error_message'] = "L'étudiant « {$e->getStudent()} » est déjà assigné à la SAE « 
+            {$e->getSae()} ».";
         } catch (\Exception $e) {
             error_log("Erreur générale AttribuerSaeController: " . $e->getMessage());
             $_SESSION['error_message'] = "Une erreur est survenue lors de l'affectation.";
