@@ -660,9 +660,8 @@ section.main,
     --dm-warning: #fde68a;
 }
 
-.dark-mode {
-    transition: background-color 0.35s ease, color 0.35s ease;
-}
+/* Transition is added dynamically via JS on toggle, not here,
+   to avoid a flash of light mode on page load. */
 
 /* === BODY === */
 .dark-mode,
@@ -803,8 +802,7 @@ section.main,
 
 .dark-mode .dashboard-card {
     background-color: var(--dm-02);
-    border-color: var(--dm-border);
-    border-left-color: var(--dm-accent);
+    border: 1px solid var(--dm-border);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
 
@@ -839,6 +837,15 @@ section.main,
 .dark-mode .date-modal-content {
     background-color: var(--dm-02);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.dark-mode .date-time-inputs {
+    background-color: var(--dm-02);
+}
+
+.dark-mode .date-modal-content form {
+    background-color: var(--dm-02);
+    box-shadow: none;
 }
 
 .dark-mode .date-modal-content h3 {
@@ -910,6 +917,17 @@ section.main,
     box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
 }
 
+.dark-mode .depot-input,
+.dark-mode .depot-input:not([readonly]) {
+    background-color: var(--dm-00) !important;
+    color: var(--dm-text-high) !important;
+    border-color: var(--dm-border);
+}
+
+.dark-mode .depot-input:not([readonly]) {
+    border-color: var(--dm-accent) !important;
+}
+
 .dark-mode .github-link-item {
     background-color: var(--dm-02);
     border-left-color: var(--dm-accent);
@@ -929,9 +947,9 @@ section.main,
 }
 
 .dark-mode .todo-card {
-    background-color: var(--dm-01);
-    border-color: transparent;
-    border-left-color: var(--dm-accent);
+    background-color: var(--dm-02);
+    border: 1px solid var(--dm-border);
+    border-left: 4px solid var(--dm-accent);
 }
 
 .dark-mode .todo-title {
@@ -943,8 +961,17 @@ section.main,
 }
 
 .dark-mode .todo-card.done {
-    opacity: 0.7;
     border-left-color: var(--dm-success);
+    background-color: var(--dm-02);
+}
+
+.dark-mode .todo-card.done .todo-title {
+    color: var(--dm-text-medium);
+    text-decoration: line-through;
+}
+
+.dark-mode .todo-card.done .todo-date {
+    color: var(--dm-text-medium);
 }
 
 .dark-mode .btn-delete-task {
@@ -962,10 +989,18 @@ section.main,
 
 .dark-mode .todo-toggle,
 .dark-mode .todo-delete,
-.dark-mode .avis-card form {
+.dark-mode .todo-add,
+.dark-mode .avis-card form,
+.dark-mode .avis-add {
     background: transparent;
     box-shadow: none;
     border: none;
+}
+
+.dark-mode .todo-add input[type="text"] {
+    background-color: var(--dm-00);
+    color: var(--dm-text-high);
+    border: 1px solid var(--white);
 }
 
 /* Progress bar */
@@ -980,12 +1015,12 @@ section.main,
 
 /* Countdown */
 .dark-mode .countdown-container {
-    background: linear-gradient(135deg, var(--dm-02) 0%, var(--dm-01) 100%);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(135deg, var(--dm-01) 0%, var(--dm-00) 100%);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
 }
 
 .dark-mode .countdown-box {
-    background-color: var(--dm-03);
+    background-color: var(--dm-04);
     color: var(--dm-text-high);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -1018,7 +1053,6 @@ section.main,
 .dark-mode .users {
     background-color: var(--dm-01);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-    border-color: var(--dm-border);
 }
 
 .dark-mode .users h2 {
@@ -1036,18 +1070,17 @@ section.main,
 }
 
 .dark-mode .users th {
-    background-color: var(--dm-02);
+    background-color: var(--dm-04);
     border-bottom: 2px solid var(--dm-border);
 }
 
 .dark-mode .users table {
     border: 1px solid var(--white);
-    border-bottom: 1px solid var(--white);
     border-collapse: collapse;
 }
 
 .dark-mode .users tr:last-child td {
-    border-bottom: none;
+    border-bottom: 1px solid var(--white);
 }
 
 .dark-mode .users td {
@@ -1340,13 +1373,29 @@ section.main,
 
 /* === SAE PAGE ASSIGNMENTS GRID === */
 .dark-mode .color-legend {
-    background: var(--dm-01);
-    border-left-color: var(--dm-accent);
+    background: var(--dm-02);
 }
 
 .dark-mode .sae-page form {
     background-color: var(--dm-01);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode .sae-page form label {
+    color: var(--white);
+}
+
+.dark-mode .sae-page form input[type="text"],
+.dark-mode .sae-page form textarea {
+    background-color: var(--dm-00);
+    color: var(--dm-text-high);
+    border: 1px solid var(--dm-border);
+}
+
+.dark-mode .sae-page form input[type="text"]:focus,
+.dark-mode .sae-page form textarea:focus {
+    border-color: var(--dm-accent);
+    outline: none;
 }
 
 .dark-mode .section-label {
@@ -1572,7 +1621,7 @@ section.main,
     color: white;
     padding: 15px 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 9999;
 
     opacity: 0;
@@ -1604,7 +1653,8 @@ section.main,
     max-width: 400px;
 
     background-color: #ef4444;
-    cursor: pointer; /* Indique que c'est cliquable */
+    cursor: pointer;
+    /* Indique que c'est cliquable */
     transform: translate(-50%, -50%) scale(0.9);
 }
 
@@ -1618,7 +1668,6 @@ section.main,
    ========================================= */
 @media (min-width: 768px) {
 
-    /* Le message de 5 min se met en bas à droite */
     .session-toast {
         left: auto;
         right: 20px;
@@ -1632,7 +1681,6 @@ section.main,
         transform: translateX(0);
     }
 
-    /* MAIS le message urgent de 1 min reste TOUJOURS au milieu */
     .session-toast.toast-urgent {
         left: 50%;
         right: auto;
@@ -1643,4 +1691,127 @@ section.main,
     .session-toast.toast-urgent.show {
         transform: translate(-50%, -50%) scale(1);
     }
+}
+
+/* === MODALE MESSAGE (Dark Mode) === */
+.dark-mode .modal-content {
+    background-color: var(--dm-01);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.dark-mode .modal-content h2 {
+    background: linear-gradient(135deg, var(--dm-02), var(--dm-04));
+    color: var(--dm-text-high);
+    border-bottom: 1px solid var(--dm-border);
+}
+
+.dark-mode .modal .form-group label {
+    color: var(--dm-text-high);
+}
+
+.dark-mode .modal .form-group input[type="text"],
+.dark-mode .modal .form-group select,
+.dark-mode .modal .form-group textarea {
+    background: var(--dm-00);
+    color: var(--dm-text-high);
+    border-color: var(--dm-border);
+    transition: none !important;
+}
+
+.dark-mode .modal .form-group input[type="text"]:focus,
+.dark-mode .modal .form-group select:focus,
+.dark-mode .modal .form-group textarea:focus {
+    background: var(--dm-02);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .student-selection-info {
+    background: var(--dm-02);
+    border: 1px solid var(--dm-border);
+}
+
+.dark-mode .student-selection-info.no-border {
+    background: transparent;
+    border: none;
+}
+
+.dark-mode .student-selection-info small {
+    color: var(--dm-text-medium);
+}
+
+.dark-mode .btn-select-all,
+.dark-mode .btn-deselect-all {
+    background: var(--dm-02);
+    border-color: var(--dm-border);
+    color: var(--dm-text-high);
+}
+
+.dark-mode .btn-select-all:hover {
+    background: var(--dm-accent);
+    border-color: var(--dm-accent);
+    color: var(--dm-on-accent);
+}
+
+.dark-mode .btn-deselect-all:hover {
+    background: var(--dm-error);
+    border-color: var(--dm-error);
+    color: #1c1917;
+}
+
+.dark-mode .student-checkbox-list {
+    background: var(--dm-00);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .student-checkbox-label {
+    background: var(--dm-02);
+    border-color: var(--dm-border);
+}
+
+.dark-mode .student-checkbox-label:hover {
+    background: var(--dm-04);
+    border-color: var(--dm-accent);
+}
+
+.dark-mode .student-checkbox-label span {
+    color: var(--dm-text-high);
+}
+
+/* Scrollbars Mode Sombre */
+.dark-mode .student-checkbox-list::-webkit-scrollbar-track {
+    background: var(--dm-01);
+}
+
+.dark-mode .modal-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 12px 0;
+}
+
+.dark-mode .student-checkbox-list::-webkit-scrollbar-thumb,
+.dark-mode .modal-content::-webkit-scrollbar-thumb {
+    background: var(--dm-04);
+}
+
+.dark-mode .student-checkbox-list::-webkit-scrollbar-thumb:hover,
+.dark-mode .modal-content::-webkit-scrollbar-thumb:hover {
+    background: var(--dm-06);
+}
+
+.dark-mode .sae-group {
+    background: transparent;
+    border-color: var(--dm-border);
+}
+
+.dark-mode .sae-group-header {
+    background: var(--dm-04);
+    color: var(--dm-text-high);
+    border-bottom: 1px solid var(--dm-border);
+}
+
+.dark-mode .sae-group-header:hover {
+    background: var(--dm-06);
+}
+
+.dark-mode .sae-group-students {
+    background: var(--dm-01);
 }

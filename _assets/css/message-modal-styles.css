@@ -19,8 +19,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 /* ================================
@@ -45,6 +50,7 @@
         transform: translateY(-50px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -113,7 +119,6 @@
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 1rem;
-    transition: all 0.3s ease;
     font-family: inherit;
     box-sizing: border-box;
 }
@@ -136,10 +141,18 @@
     Sélection des étudiants
 ================================ */
 .student-selection-info {
-    background: #f5f5f5;
     padding: 12px 15px;
-    border-radius: 8px;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
+}
+
+.student-selection-info.no-border {
+    background: transparent;
+    border: none;
+    padding: 0 5px;
+}
+
+.checkbox-controls.mt-2 {
+    margin-top: 10px;
 }
 
 .student-selection-info small {
@@ -218,7 +231,7 @@
     color: #333;
 }
 
-.student-checkbox-label input[type="checkbox"]:checked + span {
+.student-checkbox-label input[type="checkbox"]:checked+span {
     font-weight: 600;
     color: #0066cc;
 }
@@ -361,7 +374,8 @@
 /* ================================
    Scrollbar personnalisée
 ================================ */
-.student-checkbox-list::-webkit-scrollbar {
+.student-checkbox-list::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
     width: 8px;
 }
 
@@ -370,13 +384,27 @@
     border-radius: 4px;
 }
 
+.modal-content::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 12px 0;
+}
+
 .student-checkbox-list::-webkit-scrollbar-thumb {
     background: #0066cc;
     border-radius: 4px;
 }
 
+.modal-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
 .student-checkbox-list::-webkit-scrollbar-thumb:hover {
     background: #004080;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.4);
 }
 
 /* ================================

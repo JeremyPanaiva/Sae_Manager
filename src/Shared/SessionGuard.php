@@ -68,10 +68,6 @@ class SessionGuard
             $userModel   = new User();
             $storedToken = $userModel->getStoredJwtToken($userId);
 
-            /**
-             * If the token in the database doesn't match the session token,
-             * it means the user has logged in from a more recent device/browser.
-             */
             if ($storedToken !== null && $storedToken !== $rawToken) {
                 self::handleConcurrentLogout($userId, $redirectOnFail);
                 return false;
@@ -100,13 +96,10 @@ class SessionGuard
             'SESSION_CONCURRENTE',
             'users',
             $userId,
-            "Déconnecté : {$nom} {$prenom} (Connexion sur un autre appareil)"
+            "Déconnexion : " . $nom . " " . $prenom . " (Connexion détectée sur un autre appareil)"
         );
 
-        $_SESSION = [];
-        if (session_status() === PHP_SESSION_ACTIVE) {
-            session_destroy();
-        }
+        self::clearSession();
 
         if ($redirect) {
             header('Location: /user/login?error=concurrent_login');
@@ -122,11 +115,17 @@ class SessionGuard
      */
     private static function expireSession(bool $redirect): void
     {
-        $userSession = $_SESSION['user'] ?? null;
+        $userData = $_SESSION['user'] ?? null;
 
-        if (is_array($userSession)) {
-            $rawId  = $userSession['id'] ?? 0;
-            $userId = is_numeric($rawId) ? (int) $rawId : 0;
+        if (is_array($userData)) {
+            $rawId = $userData['id'] ?? 0;
+            $userId = is_numeric($rawId) ? (int)$rawId : 0;
+
+            $rawNom = $userData['nom'] ?? '';
+            $nom = is_string($rawNom) ? $rawNom : '';
+
+            $rawPrenom = $userData['prenom'] ?? '';
+            $prenom = is_string($rawPrenom) ? $rawPrenom : 'Utilisateur';
 
             if ($userId > 0) {
                 $logger = new Log();
@@ -135,17 +134,29 @@ class SessionGuard
                     'SESSION_EXPIREE',
                     'users',
                     $userId,
-                    "System: Session automatically expired (TTL reached)."
+                    "Système : Session de " . $nom . " " . $prenom . " expirée automatiquement."
                 );
             }
         }
 
-        $_SESSION = [];
-        session_destroy();
+        self::clearSession();
 
         if ($redirect) {
             header('Location: /user/login?expired=1');
             exit;
+        }
+    }
+
+    /**
+     * Properly clears and destroys the session.
+     *
+     * @return void
+     */
+    private static function clearSession(): void
+    {
+        $_SESSION = [];
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
         }
     }
 }

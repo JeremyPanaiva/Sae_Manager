@@ -360,7 +360,6 @@
     font-size: 0.85em;
     padding: 10px 14px;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-left: 4px solid #6c757d;
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -735,15 +734,22 @@
 
 .form-actions {
     display: flex;
-    gap: 12px;
+    justify-content: center;
+    align-items: center;
+    position: relative;
     margin-top: 15px;
 }
 
 .sae-page .btn-valider {
     background-color: #28a745;
-    /* Green */
     color: white;
-    flex: 1;
+    flex: 0 0 auto;
+    min-width: 200px;
+    padding: 10px 32px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .sae-page .btn-valider:hover {
@@ -752,9 +758,9 @@
 
 .sae-page .btn-annuler {
     background-color: #95a5a6;
-    /* Gray */
     color: white;
-    flex: 0 0 auto;
+    position: absolute;
+    right: 0;
     padding: 10px 15px;
     border: none;
     border-radius: 6px;
@@ -786,4 +792,14 @@
     border-radius: 0;
     gap: 0;
     margin: 0;
+}
+
+/* Bouton "Créer SAE" */
+form[action='/creer_sae'] button[type='submit'] {
+    width: auto;
+    min-width: 200px;
+    padding: 10px 32px;
+    color: #000;
+    display: block;
+    margin: 0 auto;
 }

@@ -21,26 +21,26 @@ class WeeklyArchiveController implements ControllerInterface
      *
      * @param string $chemin The requested route path.
      * @param string $method The HTTP method.
-     * @return bool True if the route is '/cron/weekly-archive' and the method is 'GET', false otherwise.
+     * @return bool True if the route is '/logs/weekly-archive' and method is 'GET', false otherwise.
      */
     public static function support(string $chemin, string $method): bool
     {
-        return $chemin === '/cron/weekly-archive' && $method === 'GET';
+        return $chemin === '/logs/weekly-archive' && $method === 'GET';
     }
 
     /**
      * Main controller execution method.
      *
-     * Validates the security token via environment variables, compresses existing CSV files
-     * into a ZIP archive, deletes the original CSV files, and removes ZIP files older than 365 days.
+     * Validates the security token, compresses existing CSV files into a ZIP archive,
+     * deletes the original CSV files, and removes ZIP files older than 365 days.
      *
      * @return void
      */
     public function control(): void
     {
-        $validToken = $_ENV['TOKEN'] ?? getenv('TOKEN');
+        $validToken = 'eff686a19e04dd1ac6ebabedb5bd65fbb63c5d5d19980b5f7c261d2527c35a55';
 
-        if (empty($validToken) || !isset($_GET['token']) || $_GET['token'] !== $validToken) {
+        if (!isset($_GET['token']) || $_GET['token'] !== $validToken) {
             http_response_code(403);
             die('Access denied.');
         }
@@ -52,6 +52,7 @@ class WeeklyArchiveController implements ControllerInterface
             mkdir($archiveDir, 0755, true);
         }
 
+        // 1. Zip the CSV files
         $csvFiles = glob($currentWeekDir . '*.csv');
 
         if ($csvFiles !== false && !empty($csvFiles)) {
@@ -66,6 +67,7 @@ class WeeklyArchiveController implements ControllerInterface
                 }
                 $zip->close();
 
+                // Remove original CSV files after successful archiving
                 foreach ($csvFiles as $file) {
                     unlink($file);
                 }

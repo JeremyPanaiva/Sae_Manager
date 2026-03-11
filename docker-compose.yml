@@ -1,0 +1,88 @@
+version: "3.8"
+
+services:
+  # ─────────────────────────────────────────────
+  # Conteneur 1 : Application PHP + Apache
+  # ─────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sae-manager-web
+    ports:
+      - "8080:80" # Accès via http://localhost:8080
+    environment:
+      # Connexion à la BDD
+      DB_HOST: db
+      DB_USER: ${DB_USER:-sae_user}
+      DB_PASSWORD: ${DB_PASSWORD:-sae_password}
+      DB_NAME: ${DB_NAME:-sae_manager}
+      # Configuration SMTP
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_SECURE: ${SMTP_SECURE:-}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      FROM_EMAIL: ${FROM_EMAIL:-}
+      FROM_NAME: ${FROM_NAME:-}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+    volumes:
+      - .:/var/www/html
+      - /var/www/html/vendor
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sae-network
+
+  # ─────────────────────────────────────────────
+  # Conteneur 2 : Base de données MySQL
+  # ─────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: sae-manager-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-sae_manager}
+      MYSQL_USER: ${DB_USER:-sae_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-sae_password}
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root_password}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - sae-network
+
+  # ─────────────────────────────────────────────
+  # gestion BDD phpMyAdmin
+  # ─────────────────────────────────────────────
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sae-manager-phpmyadmin
+    ports:
+      - "8081:80" # http://localhost:8081
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_password}
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - sae-network
+
+volumes:
+  db_data:
+
+
+networks:
+  sae-network:
+    driver: bridge

@@ -22,6 +22,41 @@ A web application for **tracking SAEs** (Situations d’Apprentissage et d’Év
 
 ---
 
+## 🐳 Docker (recommended for local development)
+
+This project can be run locally using Docker (PHP/Apache + MySQL + phpMyAdmin).
+
+### Prerequisites
+- Docker + Docker Compose (v2)
+
+### Setup
+1. Clone the repository
+2. Create your environment file:
+   ```bash
+   cp .env.dist .env
+   ```
+3. Add the shared SQL dump (provided separately) here:
+   ```bash
+   docker/init-db/01-init.sql
+   ```
+4. Start the containers:
+   ```bash
+   docker compose up --build -d
+   ```
+
+### Access
+- App: http://localhost:8080
+- phpMyAdmin: http://localhost:8081
+
+### Reset database (re-import the SQL dump)
+> MySQL init scripts are executed only on the first initialization of the database volume.
+```bash
+docker compose down -v
+docker compose up --build -d
+```
+
+---
+
 ## 🗂️ Project Structure
 
 ```bash
@@ -49,7 +84,7 @@ A web application for **tracking SAEs** (Situations d’Apprentissage et d’Év
 
 ---
 
-### ⚙️ Quick start for local development
+### ⚙️ Quick start for local development (without Docker)
 
 1. **Clone or download** the repository.
 2. **Install dependencies:**

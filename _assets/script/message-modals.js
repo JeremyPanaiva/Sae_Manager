@@ -94,14 +94,7 @@ function loadTemplate() {
         subjectInput.value = messageTemplates[selectedTemplate].subject;
         messageTextarea.value = messageTemplates[selectedTemplate].message;
 
-        // Animation subtile pour indiquer le changement
-        subjectInput.style.backgroundColor = '#e3f2fd';
-        messageTextarea.style.backgroundColor = '#e3f2fd';
-
-        setTimeout(() => {
-            subjectInput.style.backgroundColor = '';
-            messageTextarea.style.backgroundColor = '';
-        }, 500);
+        // Animation handled by CSS (if any), removing hardcoded colors which break dark mode
     } else {
         // Si aucun template sélectionné, vider les champs
         subjectInput.value = '';

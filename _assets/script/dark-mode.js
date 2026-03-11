@@ -69,6 +69,10 @@
         const isDark = getInitialTheme();
         applyThemeInstant(isDark);
 
+        // Remove the inline backgroundColor set by the anti-flash script in header.php
+        document.documentElement.style.backgroundColor = '';
+        document.documentElement.style.colorScheme = '';
+
         // Met à jour tous les boutons toggle (desktop + mobile)
         const toggleButtons = document.querySelectorAll('.dark-mode-toggle');
         toggleButtons.forEach(function (btn) {
@@ -101,10 +105,4 @@
             });
         }
     });
-
-    // Appliquer immédiatement pour éviter le flash blanc
-    const isDark = getInitialTheme();
-    applyThemeInstant(isDark);
 })();
-
-

@@ -44,9 +44,10 @@ class RegisterPost implements ControllerInterface
 
         $lastName  = $_POST['nom']    ?? '';
         $firstName = $_POST['prenom'] ?? '';
-        $email     = $_POST['mail']   ?? '';
-        $mdp       = $_POST['mdp']    ?? '';
-        $role      = $_POST['role']   ?? 'etudiant';
+        $email = $_POST['mail'] ?? '';
+        $mdp = $_POST['mdp'] ?? '';
+        $confirm_mdp = $_POST['confirm_mdp'] ?? '';
+        $role = $_POST['role'] ?? 'etudiant';
 
         $userModel = new User();
         $logger    = new Log();
@@ -55,6 +56,20 @@ class RegisterPost implements ControllerInterface
         // 1. Delegate password validation to PasswordValidator
         $passwordErrors = PasswordValidator::validate($mdp);
         if (!empty($passwordErrors)) {
+        if ($mdp !== $confirm_mdp) {
+            $logger->create(
+                null,
+                'ECHEC_INSCRIPTION',
+                'users',
+                0,
+                "Les mots de passe ne correspondent pas pour : $email"
+            );
+            $validationExceptions[] = new ValidationException(
+                "Les mots de passe ne correspondent pas."
+            );
+        }
+
+        if (strlen($mdp) < 12 || strlen($mdp) > 30) {
             $logger->create(
                 null,
                 'ECHEC_INSCRIPTION',
