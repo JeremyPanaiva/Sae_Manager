@@ -3,14 +3,14 @@
 namespace Controllers\User;
 
 use Controllers\ControllerInterface;
-use Models\User\User;
 use Models\User\EmailService;
 use Models\User\Log;
-use Shared\Exceptions\ArrayException;
-use Shared\Exceptions\ValidationException;
-use Shared\Exceptions\EmailAlreadyExistsException;
-use Shared\Exceptions\DataBaseException;
+use Models\User\User;
 use Shared\CsrfGuard;
+use Shared\Exceptions\ArrayException;
+use Shared\Exceptions\DataBaseException;
+use Shared\Exceptions\EmailAlreadyExistsException;
+use Shared\Exceptions\ValidationException;
 use Shared\PasswordValidator;
 use Views\User\RegisterView;
 
