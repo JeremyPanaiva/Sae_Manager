@@ -85,16 +85,16 @@ class DashboardView extends BaseView
     {
         parent::__construct();
 
-        $this->title    = $title;
-        $this->data     = $data;
+        $this->title = $title;
+        $this->data = $data;
         $this->username = $username;
-        $this->role     = $role;
+        $this->role = $role;
 
-        $this->data[self::TITLE_KEY]    = $this->title;
+        $this->data[self::TITLE_KEY] = $this->title;
         $this->data[self::USERNAME_KEY] = $this->username;
-        $this->data[self::ROLE_KEY]     = $this->role;
+        $this->data[self::ROLE_KEY] = $this->role;
         $this->data[self::MESSAGE_RECIPIENTS_KEY] = $this->data['message_recipients'] ?? [];
-        $this->data[self::CONTENT_KEY]  = $this->buildContentHtml();
+        $this->data[self::CONTENT_KEY] = $this->buildContentHtml();
     }
 
     /**
@@ -130,7 +130,7 @@ class DashboardView extends BaseView
      */
     private function buildContentHtml(): string
     {
-        $html        = '';
+        $html = '';
         $currentUser = (array) ($_SESSION['user'] ?? []);
 
         $errorMessage = $this->data['error_message'] ?? $_SESSION['error_message'] ?? null;
@@ -164,12 +164,14 @@ class DashboardView extends BaseView
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    $saeId    = $this->safeString($sae['sae_id'] ?? 0);
+                    $saeId = $this->safeString($sae['sae_id'] ?? 0);
                     $titreSae = htmlspecialchars($this->safeString($sae['sae_titre'] ?? 'Titre inconnu'));
                     $html .= "<h3>{$titreSae}</h3>";
 
                     // Section livrable
                     $githubLink = $this->safeString($sae['github_link'] ?? '');
+                    $safeLink = htmlspecialchars($githubLink);
+                    $safeId = $this->safeString($sae['sae_id'] ?? 0);
                     $html .= "<div class='deliverable-container'>";
                     $html .= "<div class='deliverable-header'>";
                     $html .= "<span><i class='fas fa-code-branch'></i> Dépôt du projet</span>";
@@ -178,18 +180,61 @@ class DashboardView extends BaseView
                     }
                     $html .= "</div>";
                     $html .= "<div class='deliverable-body'>";
-                    if (!empty($githubLink)) {
-                        $html .= "<div class='link-display'>" . $this->rendreLiensCliquables($githubLink) . "</div>";
-                    } else {
-                        $html .= "<p class='no-link-text'>Aucun lien GitHub ou Drive configuré.</p>";
-                    }
-                    $html .= "<form method='POST' action='/sae/update_link' class='link-update-form'>";
+
+                    // Inline edit UX
+                    $html .= "<div class='depot-row' id='depot-row-{$safeId}'>";
+                    $html .= "  <input type='url' id='depot-input-{$safeId}'
+                                    class='input-url depot-input'
+                                    value='{$safeLink}'
+                                    placeholder='https://github.com/votre-projet'
+                                    readonly>";
+                    $html .= "  <button type='button' class='btn-depot-modifier' id='depot-btn-modifier-{$safeId}'
+                                    onclick='depotStartEdit(\"{$safeId}\")'>Modifier</button>";
+                    $html .= "  <form method='POST' action='/sae/update_link' class='depot-save-form'
+                                    id='depot-save-form-{$safeId}' style='display:none; margin:0;'>";
                     $html .= \Shared\CsrfGuard::getHiddenField();
-                    $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<input type='url' name='github_link' value='" . htmlspecialchars($githubLink) . "'
-                        placeholder='https://github.com/votre-projet' class='input-url'>";
-                    $html .= "<button type='submit' class='btn-primary'>Enregistrer</button>";
-                    $html .= "</form>";
+                    $html .= "    <input type='hidden' name='sae_id' value='{$safeId}'>";
+                    $html .= "    <input type='hidden' name='github_link' id='depot-hidden-{$safeId}'>";
+                    $html .= "    <button type='submit' class='btn-depot-save'>Enregistrer</button>";
+                    $html .= "  </form>";
+                    $html .= "  <form method='POST' action='/sae/update_link' class='depot-delete-form'
+                                    id='depot-delete-form-{$safeId}' style='display:none; margin:0;'>";
+                    $html .= \Shared\CsrfGuard::getHiddenField();
+                    $html .= "    <input type='hidden' name='sae_id' value='{$safeId}'>";
+                    $html .= "    <input type='hidden' name='github_link' value=''>";
+                    $html .= "    <button type='submit' class='btn-depot-delete'
+                                            onclick=\"return confirm(" .
+                                            "'Supprimer le lien du dépôt ?')\">Supprimer</button>";
+                    $html .= "  </form>";
+                    $html .= "</div>";
+
+                    $html .= "<script>
+                    function depotStartEdit(id) {
+                        var input = document.getElementById('depot-input-' + id);
+                        var btnModifier = document.getElementById('depot-btn-modifier-' + id);
+                        var saveForm = document.getElementById('depot-save-form-' + id);
+                        var deleteForm = document.getElementById('depot-delete-form-' + id);
+                        input.removeAttribute('readonly');
+                        input.focus();
+                        btnModifier.style.display = 'none';
+                        saveForm.style.display = 'inline';
+                        deleteForm.style.display = 'inline';
+                        saveForm.querySelector('#depot-hidden-' + id) || (
+                            saveForm.querySelector('input[name=github_link]').id = 'depot-hidden-' + id
+                        );
+                        input.addEventListener('input', function() {
+                            document.getElementById('depot-hidden-' + id).value = input.value;
+                        });
+                        document.getElementById('depot-hidden-' + id).value = input.value;
+                    }
+                    // Init hidden value
+                    (function(){
+                        var h = document.getElementById('depot-hidden-{$safeId}');
+                        var i = document.getElementById('depot-input-{$safeId}');
+                        if (h && i) h.value = i.value;
+                    })();
+                    </script>";
+
                     $html .= "</div></div>";
 
                     // Countdown
@@ -204,10 +249,10 @@ class DashboardView extends BaseView
 
                     // Avancement
                     /** @var array<int, array<string, mixed>> $todos */
-                    $todos      = $sae['todos'] ?? [];
+                    $todos = $sae['todos'] ?? [];
                     $totalTasks = count($todos);
-                    $doneTasks  = count(array_filter($todos, fn($task) => !empty($task['fait'])));
-                    $percent    = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
+                    $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                    $percent = $totalTasks > 0 ? round(($doneTasks / $totalTasks) * 100) : 0;
 
                     $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
                     $html .= "<div class='progress-bar'>"
@@ -215,24 +260,31 @@ class DashboardView extends BaseView
                         . "</div>";
 
                     // Ajouter tâche
-                    $html .= "<form method='POST' action='/todo/add' class='todo-add'>";
+                    $html .= "<div class='deliverable-container' style='margin-top: 20px;'>";
+                    $html .= "  <div class='deliverable-header'>";
+                    $html .= "    <span><i class='fas fa-tasks'></i> Tâches à faire</span>";
+                    $html .= "  </div>";
+                    $html .= "  <div class='deliverable-body'>";
+                    $html .= "    <form method='POST' action='/todo/add' class='todo-add'>";
                     $html .= \Shared\CsrfGuard::getHiddenField();
-                    $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
-                    $html .= "<button type='submit'>Ajouter</button>";
-                    $html .= "</form>";
+                    $html .= "    <input type='hidden' name='sae_id' value='{$saeId}'>";
+                    $html .= "    <input type='text' name='titre' placeholder='Nouvelle tâche...' required>";
+                    $html .= "    <button type='submit'>Ajouter</button>";
+                    $html .= "    </form>";
+                    $html .= "  </div>";
+                    $html .= "</div>";
 
                     // Liste tâches
                     if ($totalTasks > 0) {
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
-                            $taskId          = $this->safeString($task['id'] ?? 0);
-                            $taskTitre       = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $taskId = $this->safeString($task['id'] ?? 0);
+                            $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
                             $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
-                            $timestampC      = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
-                            $dateCreation    = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
-                            $fait            = !empty($task['fait']);
-                            $checked         = $fait ? 'checked' : '';
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
+                            $fait = !empty($task['fait']);
+                            $checked = $fait ? 'checked' : '';
 
                             $html .= "<li><div class='todo-card" . ($fait ? " done" : "") . "'>";
                             $html .= "<div class='todo-left-section'>";
@@ -247,10 +299,10 @@ class DashboardView extends BaseView
                             $html .= "<div class='todo-info'>";
                             $html .= "<span class='todo-title'>{$taskTitre}</span>";
 
-                            $metaInfo     = [];
-                            $nomAuteur    = $this->safeString($task['nom'] ?? '');
+                            $metaInfo = [];
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
                             $prenomAuteur = $this->safeString($task['prenom'] ?? '');
-                            $roleAuteur   = ucfirst($this->safeString($task['role'] ?? ''));
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
                             if ($dateCreation) {
                                 $metaInfo[] = $dateCreation;
                             }
@@ -269,7 +321,7 @@ class DashboardView extends BaseView
                             $html .= "<input type='hidden' name='task_id' value='{$taskId}'>";
                             $html .= "<button type='submit' class='btn-delete-task'
                                 onclick='return confirm(\"Supprimer cette tâche ?\");'
-                                title='Supprimer'></button>";
+                                title='Supprimer'>&#x00D7;</button>";
                             $html .= "</form></div>";
                             $html .= "</div></li>";
                         }
@@ -299,14 +351,14 @@ class DashboardView extends BaseView
                     if (!empty($avisList)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($avisList as $avis) {
-                            $nomAuteur    = htmlspecialchars($this->safeString($avis['nom'] ?? 'Inconnu'));
+                            $nomAuteur = htmlspecialchars($this->safeString($avis['nom'] ?? 'Inconnu'));
                             $prenomAuteur = htmlspecialchars($this->safeString($avis['prenom'] ?? ''));
-                            $roleAuteur   = htmlspecialchars(ucfirst($this->safeString($avis['role'] ?? '')));
-                            $message      = htmlspecialchars($this->safeString($avis['message'] ?? ''));
-                            $message      = $this->rendreLiensCliquables($message);
-                            $dateAvisRaw  = $this->safeString($avis['date_envoi'] ?? '');
-                            $timestampA   = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
-                            $dateAvis     = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
+                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avis['role'] ?? '')));
+                            $message = htmlspecialchars($this->safeString($avis['message'] ?? ''));
+                            $message = $this->rendreLiensCliquables($message);
+                            $dateAvisRaw = $this->safeString($avis['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
 
                             $html .= "<div class='avis-card'>";
                             $html .= "<p><strong>{$nomAuteur} {$prenomAuteur} ({$roleAuteur}) :</strong> 
@@ -333,12 +385,12 @@ class DashboardView extends BaseView
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    $saeId    = $this->safeString($sae['id'] ?? 0);
+                    $saeId = $this->safeString($sae['id'] ?? 0);
                     $titreSae = htmlspecialchars($this->safeString($sae['titre'] ?? 'Titre inconnu'));
                     $html .= "<h3>{$titreSae}</h3>";
 
                     $allEtudiants = [];
-                    $dateRendu    = null;
+                    $dateRendu = null;
 
                     /** @var array<int, array<string, mixed>> $allTodos */
                     $allTodos = $sae['todos'] ?? [];
@@ -382,30 +434,35 @@ class DashboardView extends BaseView
 
                     if (!empty($allTodos)) {
                         $totalTasks = count($allTodos);
-                        $doneTasks  = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
-                        $percent    = (int) round(($doneTasks / $totalTasks) * 100);
+                        $doneTasks = count(array_filter($allTodos, fn($task) => !empty($task['fait'])));
+                        $percent = (int) round(($doneTasks / $totalTasks) * 100);
 
-                        $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
-                        $html .= "<div class='progress-bar'>"
+                        $html .= "<div class='deliverable-container' style='margin-top: 20px;'>";
+                        $html .= "  <div class='deliverable-header'>";
+                        $html .= "    <span><i class='fas fa-tasks'></i> Tâches à faire</span>";
+                        $html .= "  </div>";
+                        $html .= "  <div class='deliverable-body'>";
+                        $html .= "    <p><strong>Avancement :</strong> {$percent}%</p>";
+                        $html .= "    <div class='progress-bar'>"
                             . "<div class='progress-fill' style='width: {$percent}%;'></div>"
                             . "</div>";
 
                         $html .= "<ul class='todo-list'>";
                         foreach ($allTodos as $task) {
-                            $taskTitre       = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
                             $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
-                            $timestampC      = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
-                            $dateCreation    = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
-                            $fait            = !empty($task['fait']);
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
+                            $fait = !empty($task['fait']);
 
                             $html .= "<li><div class='todo-card" . ($fait ? " done" : "") . "'>";
                             $html .= "<div class='todo-info'>";
                             $html .= "<span class='todo-title'>{$taskTitre}</span>";
 
-                            $metaInfo     = [];
-                            $nomAuteur    = $this->safeString($task['nom'] ?? '');
+                            $metaInfo = [];
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
                             $prenomAuteur = $this->safeString($task['prenom'] ?? '');
-                            $roleAuteur   = ucfirst($this->safeString($task['role'] ?? ''));
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
                             if ($dateCreation) {
                                 $metaInfo[] = $dateCreation;
                             }
@@ -424,6 +481,8 @@ class DashboardView extends BaseView
                             $html .= "</div></li>";
                         }
                         $html .= "</ul>";
+                        $html .= "  </div>";
+                        $html .= "</div>";
                     } else {
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
@@ -431,16 +490,16 @@ class DashboardView extends BaseView
                     if (!empty($allAvis)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($allAvis as $avis) {
-                            $avisData      = (array) $avis;
-                            $nomAuteur     = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
-                            $prenomAuteur  = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
-                            $roleAuteur    = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
-                            $message       = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
-                            $messageRendu  = $this->rendreLiensCliquables($message);
-                            $dateAvisRaw   = $this->safeString($avisData['date_envoi'] ?? '');
-                            $timestampA    = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
-                            $dateAvis      = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
-                            $avisId        = $this->safeString($avisData['id'] ?? 0);
+                            $avisData = (array) $avis;
+                            $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
+                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
+                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
+                            $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
+                            $messageRendu = $this->rendreLiensCliquables($message);
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
+                            $avisId = $this->safeString($avisData['id'] ?? 0);
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
                             $html .= "<div class='avis-card'>";
@@ -464,13 +523,19 @@ class DashboardView extends BaseView
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
 
-                    $html .= "<h4>Ajouter un avis</h4>";
-                    $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= "<div class='deliverable-container' style='margin-top: 20px;'>";
+                    $html .= "  <div class='deliverable-header'>";
+                    $html .= "    <span><i class='fas fa-comment-alt'></i> Ajouter un avis</span>";
+                    $html .= "  </div>";
+                    $html .= "  <div class='deliverable-body'>";
+                    $html .= "    <form method='POST' action='/sae/avis/add' class='avis-add'>";
                     $html .= \Shared\CsrfGuard::getHiddenField();
-                    $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
-                    $html .= "<button type='submit'>Envoyer</button>";
-                    $html .= "</form>";
+                    $html .= "    <input type='hidden' name='sae_id' value='{$saeId}'>";
+                    $html .= "    <textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                    $html .= "    <button type='submit'>Envoyer</button>";
+                    $html .= "    </form>";
+                    $html .= "  </div>";
+                    $html .= "</div>";
 
                     $html .= "</div>";
                 }
@@ -511,7 +576,7 @@ class DashboardView extends BaseView
                 foreach ($saes as $sae) {
                     $html .= "<div class='dashboard-card'>";
 
-                    $saeId    = $this->safeString($sae['sae_id'] ?? 0);
+                    $saeId = $this->safeString($sae['sae_id'] ?? 0);
                     $titreSae = htmlspecialchars($this->safeString($sae['sae_titre'] ?? 'Titre inconnu'));
                     $html .= "<h3>{$titreSae}</h3>";
 
@@ -537,8 +602,8 @@ class DashboardView extends BaseView
 
                     // Date rendu
                     $dateRendu = htmlspecialchars($this->safeString($sae['date_rendu'] ?? ''));
-                    $dateOnly  = '';
-                    $timeOnly  = '20:00';
+                    $dateOnly = '';
+                    $timeOnly = '20:00';
                     if (!empty($dateRendu)) {
                         $timestamp = strtotime($dateRendu);
                         if ($timestamp !== false) {
@@ -603,9 +668,14 @@ class DashboardView extends BaseView
                     $todos = $sae['todos'] ?? [];
                     if (!empty($todos)) {
                         $totalTasks = count($todos);
-                        $doneTasks  = count(array_filter($todos, fn($task) => !empty($task['fait'])));
-                        $percent    = round(($doneTasks / $totalTasks) * 100);
+                        $doneTasks = count(array_filter($todos, fn($task) => !empty($task['fait'])));
+                        $percent = round(($doneTasks / $totalTasks) * 100);
 
+                        $html .= "<div class='deliverable-container' style='margin-top: 20px;'>";
+                        $html .= "  <div class='deliverable-header'>";
+                        $html .= "    <span><i class='fas fa-tasks'></i> Tâches à faire</span>";
+                        $html .= "  </div>";
+                        $html .= "  <div class='deliverable-body'>";
                         $html .= "<p><strong>Avancement :</strong> {$percent}%</p>";
                         $html .= "<div class='progress-bar'>"
                             . "<div class='progress-fill' style='width: {$percent}%;'></div>"
@@ -613,20 +683,20 @@ class DashboardView extends BaseView
 
                         $html .= "<ul class='todo-list'>";
                         foreach ($todos as $task) {
-                            $taskTitre       = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
+                            $taskTitre = htmlspecialchars($this->safeString($task['titre'] ?? 'Tâche'));
                             $dateCreationRaw = $this->safeString($task['date_creation'] ?? '');
-                            $timestampC      = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
-                            $dateCreation    = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
-                            $fait            = !empty($task['fait']);
+                            $timestampC = !empty($dateCreationRaw) ? strtotime($dateCreationRaw) : false;
+                            $dateCreation = ($timestampC !== false) ? date('d/m/Y à H:i', $timestampC) : '';
+                            $fait = !empty($task['fait']);
 
                             $html .= "<li><div class='todo-card" . ($fait ? " done" : "") . "'>";
                             $html .= "<div class='todo-info'>";
                             $html .= "<span class='todo-title'>{$taskTitre}</span>";
 
-                            $metaInfo     = [];
-                            $nomAuteur    = $this->safeString($task['nom'] ?? '');
+                            $metaInfo = [];
+                            $nomAuteur = $this->safeString($task['nom'] ?? '');
                             $prenomAuteur = $this->safeString($task['prenom'] ?? '');
-                            $roleAuteur   = ucfirst($this->safeString($task['role'] ?? ''));
+                            $roleAuteur = ucfirst($this->safeString($task['role'] ?? ''));
                             if ($dateCreation) {
                                 $metaInfo[] = $dateCreation;
                             }
@@ -645,6 +715,8 @@ class DashboardView extends BaseView
                             $html .= "</div></li>";
                         }
                         $html .= "</ul>";
+                        $html .= "  </div>";
+                        $html .= "</div>";
                     } else {
                         $html .= "<p>Aucune tâche pour cette SAE.</p>";
                     }
@@ -655,16 +727,16 @@ class DashboardView extends BaseView
                     if (!empty($avisList)) {
                         $html .= "<h4>Remarques</h4>";
                         foreach ($avisList as $avis) {
-                            $avisData      = (array) $avis;
-                            $nomAuteur     = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
-                            $prenomAuteur  = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
-                            $roleAuteur    = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
-                            $message       = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
-                            $messageRendu  = $this->rendreLiensCliquables($message);
-                            $dateAvisRaw   = $this->safeString($avisData['date_envoi'] ?? '');
-                            $timestampA    = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
-                            $dateAvis      = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
-                            $avisId        = $this->safeString($avisData['id'] ?? 0);
+                            $avisData = (array) $avis;
+                            $nomAuteur = htmlspecialchars($this->safeString($avisData['nom'] ?? 'Inconnu'));
+                            $prenomAuteur = htmlspecialchars($this->safeString($avisData['prenom'] ?? ''));
+                            $roleAuteur = htmlspecialchars(ucfirst($this->safeString($avisData['role'] ?? '')));
+                            $message = htmlspecialchars($this->safeString($avisData['message'] ?? ''));
+                            $messageRendu = $this->rendreLiensCliquables($message);
+                            $dateAvisRaw = $this->safeString($avisData['date_envoi'] ?? '');
+                            $timestampA = !empty($dateAvisRaw) ? strtotime($dateAvisRaw) : false;
+                            $dateAvis = ($timestampA !== false) ? date('d/m/Y à H:i', $timestampA) : '';
+                            $avisId = $this->safeString($avisData['id'] ?? 0);
                             $currentUserId = (int) $this->safeString($currentUser['id'] ?? 0);
 
                             $html .= "<div class='avis-card'>";
@@ -688,13 +760,19 @@ class DashboardView extends BaseView
                         $html .= "<p>Aucun avis pour cette SAE.</p>";
                     }
 
-                    $html .= "<h4>Ajouter un avis</h4>";
-                    $html .= "<form method='POST' action='/sae/avis/add' class='avis-add'>";
+                    $html .= "<div class='deliverable-container' style='margin-top: 20px;'>";
+                    $html .= "  <div class='deliverable-header'>";
+                    $html .= "    <span><i class='fas fa-comment-alt'></i> Ajouter un avis</span>";
+                    $html .= "  </div>";
+                    $html .= "  <div class='deliverable-body'>";
+                    $html .= "    <form method='POST' action='/sae/avis/add' class='avis-add'>";
                     $html .= \Shared\CsrfGuard::getHiddenField();
-                    $html .= "<input type='hidden' name='sae_id' value='{$saeId}'>";
-                    $html .= "<textarea name='message' placeholder='Votre remarque...' required></textarea>";
-                    $html .= "<button type='submit'>Envoyer</button>";
-                    $html .= "</form>";
+                    $html .= "    <input type='hidden' name='sae_id' value='{$saeId}'>";
+                    $html .= "    <textarea name='message' placeholder='Votre remarque...' required></textarea>";
+                    $html .= "    <button type='submit'>Envoyer</button>";
+                    $html .= "    </form>";
+                    $html .= "  </div>";
+                    $html .= "</div>";
 
                     $html .= "</div>";
                 }
@@ -756,10 +834,10 @@ class DashboardView extends BaseView
         }
 
         $urgentClass = !empty($countdown['urgent']) ? ' urgent' : '';
-        $timestamp   = $countdown['timestamp'] ?? 0;
-        $jours       = $countdown['jours'] ?? 0;
-        $heures      = $countdown['heures'] ?? 0;
-        $minutes     = $countdown['minutes'] ?? 0;
+        $timestamp = $countdown['timestamp'] ?? 0;
+        $jours = $countdown['jours'] ?? 0;
+        $heures = $countdown['heures'] ?? 0;
+        $minutes = $countdown['minutes'] ?? 0;
 
         return
             "<div class='countdown-container{$urgentClass}' data-deadline='{$timestamp}' id='countdown-{$uniqueId}'>" .
