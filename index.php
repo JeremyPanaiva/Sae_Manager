@@ -143,8 +143,8 @@ $controllers = [
     new WeeklyArchiveController(),
     new DailyExportController(),
     new SendMessageController(),
-    new InactiveUserCleanupController(),
-    new CheckSessionSync(),
+    new WeeklyArchiveController(),
+    new DailyExportController(),
 ];
 
 // Extract the path from the request URI
