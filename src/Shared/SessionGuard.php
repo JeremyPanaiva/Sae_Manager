@@ -58,11 +58,14 @@ class SessionGuard
         }
 
         // 4. Concurrent Session Check (Single Device Enforcement)
-        $rawId = $_SESSION['user']['id'] ?? 0;
-        $userId = is_numeric($rawId) ? (int)$rawId : 0;
+        // $_SESSION['user'] is guaranteed to be an array by the check at step 1
+        /** @var array<string, mixed> $sessionUser */
+        $sessionUser = $_SESSION['user'];
+        $rawId       = $sessionUser['id'] ?? 0;
+        $userId      = is_numeric($rawId) ? (int) $rawId : 0;
 
         if ($userId > 0) {
-            $userModel = new User();
+            $userModel   = new User();
             $storedToken = $userModel->getStoredJwtToken($userId);
 
             /**
@@ -87,8 +90,9 @@ class SessionGuard
      */
     private static function handleConcurrentLogout(int $userId, bool $redirect): void
     {
-        $nom    = $_SESSION['user']['nom'] ?? '';
-        $prenom = $_SESSION['user']['prenom'] ?? 'Utilisateur';
+        $user   = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+        $nom    = is_string($user['nom']    ?? null) ? (string) $user['nom']    : '';
+        $prenom = is_string($user['prenom'] ?? null) ? (string) $user['prenom'] : 'Utilisateur';
 
         $logger = new Log();
         $logger->create(
@@ -96,8 +100,9 @@ class SessionGuard
             'SESSION_CONCURRENTE',
             'users',
             $userId,
-            "Déconnecté : $nom $prenom (Connexion sur un autre appareil)"
+            "Déconnecté : {$nom} {$prenom} (Connexion sur un autre appareil)"
         );
+
         $_SESSION = [];
         if (session_status() === PHP_SESSION_ACTIVE) {
             session_destroy();
@@ -120,8 +125,8 @@ class SessionGuard
         $userSession = $_SESSION['user'] ?? null;
 
         if (is_array($userSession)) {
-            $rawId = $userSession['id'] ?? 0;
-            $userId = is_numeric($rawId) ? (int)$rawId : 0;
+            $rawId  = $userSession['id'] ?? 0;
+            $userId = is_numeric($rawId) ? (int) $rawId : 0;
 
             if ($userId > 0) {
                 $logger = new Log();
