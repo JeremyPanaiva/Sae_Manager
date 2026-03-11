@@ -61,8 +61,13 @@ class LoginPost implements ControllerInterface
 
         // 2. Input validation
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0,
-                "Format d'email invalide : $email");
+            $Logger->create(
+                null,
+                'ECHEC_CONNEXION',
+                'users',
+                0,
+                "Format d'email invalide : $email"
+            );
             $validationExceptions[] = new ValidationException("Le format de l'adresse email est invalide.");
         }
 
@@ -78,13 +83,24 @@ class LoginPost implements ControllerInterface
             try {
                 $userData = $User->findByEmail($email);
             } catch (DataBaseException $dbEx) {
-                $Logger->create(null, 'ERREUR_SYSTEME', 'database', 0,
-                    "Erreur BDD : " . $dbEx->getMessage());
+                $Logger->create(
+                    null,
+                    'ERREUR_SYSTEME',
+                    'database',
+                    0,
+                    "Erreur BDD : " . $dbEx->getMessage()
+                );
                 throw new ArrayException([new ValidationException("Erreur système lors de la connexion.")]);
             }
 
             if (!$userData) {
-                $Logger->create(null, 'ECHEC_CONNEXION', 'users', 0, "Email introuvable : $email");
+                $Logger->create(
+                    null,
+                    'ECHEC_CONNEXION',
+                    'users',
+                    0,
+                    "Email introuvable : $email"
+                );
                 throw new ArrayException([new ValidationException("Adresse email invalide ou inconnue.")]);
             }
 
@@ -103,7 +119,13 @@ class LoginPost implements ControllerInterface
                 ? $userData['prenom']                    : '';
 
             if ($isVerified === 0) {
-                $Logger->create($userId, 'ECHEC_CONNEXION', 'users', $userId, "Compte non vérifié : $email");
+                $Logger->create(
+                    $userId,
+                    'ECHEC_CONNEXION',
+                    'users',
+                    $userId,
+                    "Compte non vérifié : $email"
+                );
                 throw new ArrayException([
                     new ValidationException("Compte non vérifié. Veuillez consulter vos emails.")
                 ]);
@@ -124,7 +146,8 @@ class LoginPost implements ControllerInterface
 
                 if ($attempts >= $max) {
                     throw new ArrayException([
-                        new ValidationException("Trop de tentatives échouées. Votre accès est bloqué pendant 15 minutes.")
+                        new ValidationException("Trop de tentatives échouées. 
+                        Votre accès est bloqué pendant 15 minutes.")
                     ]);
                 }
 
