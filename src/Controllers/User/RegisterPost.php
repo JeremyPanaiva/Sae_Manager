@@ -42,21 +42,19 @@ class RegisterPost implements ControllerInterface
             die('Invalid request (CSRF).');
         }
 
-        $lastName  = $_POST['nom']    ?? '';
-        $firstName = $_POST['prenom'] ?? '';
-        $email = $_POST['mail'] ?? '';
-        $mdp = $_POST['mdp'] ?? '';
-        $confirm_mdp = $_POST['confirm_mdp'] ?? '';
-        $role = $_POST['role'] ?? 'etudiant';
+        $lastName   = $_POST['nom']         ?? '';
+        $firstName  = $_POST['prenom']      ?? '';
+        $email      = $_POST['mail']        ?? '';
+        $mdp        = $_POST['mdp']         ?? '';
+        $confirmMdp = $_POST['confirm_mdp'] ?? '';
+        $role       = $_POST['role']        ?? 'etudiant';
 
         $userModel = new User();
         $logger    = new Log();
         $validationExceptions = [];
 
-        // 1. Delegate password validation to PasswordValidator
-        $passwordErrors = PasswordValidator::validate($mdp);
-        if (!empty($passwordErrors)) {
-        if ($mdp !== $confirm_mdp) {
+        // 1. Password confirmation check
+        if ($mdp !== $confirmMdp) {
             $logger->create(
                 null,
                 'ECHEC_INSCRIPTION',
@@ -69,7 +67,9 @@ class RegisterPost implements ControllerInterface
             );
         }
 
-        if (strlen($mdp) < 12 || strlen($mdp) > 30) {
+        // 2. Delegate password complexity validation to PasswordValidator
+        $passwordErrors = PasswordValidator::validate($mdp);
+        if (!empty($passwordErrors)) {
             $logger->create(
                 null,
                 'ECHEC_INSCRIPTION',
@@ -80,7 +80,7 @@ class RegisterPost implements ControllerInterface
             $validationExceptions = array_merge($validationExceptions, $passwordErrors);
         }
 
-        // 2. Email format validation
+        // 3. Email format validation
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $logger->create(
                 null,
@@ -95,7 +95,7 @@ class RegisterPost implements ControllerInterface
         }
 
         try {
-            // 3. Email unicity check
+            // 4. Email unicity check
             try {
                 $userModel->emailExists($email);
             } catch (DataBaseException $dbEx) {
@@ -117,7 +117,7 @@ class RegisterPost implements ControllerInterface
                 throw new ArrayException($validationExceptions);
             }
 
-            // 4. Create account and send verification email
+            // 5. Create account and send verification email
             $verificationToken = bin2hex(random_bytes(32));
             $userModel->register($firstName, $lastName, $email, $mdp, $role, $verificationToken);
 
