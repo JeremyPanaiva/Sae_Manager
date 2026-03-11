@@ -3,173 +3,31 @@
 namespace Models\User;
 
 use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 use Models\Database;
 use Shared\Exceptions\DataBaseException;
+use Shared\Services\Email\SmtpConfiguration;
+use Shared\Services\Email\LocalMailFallback;
 use Views\Email\EmailView;
 
 /**
- * Email Service
- *
- * Handles all email sending functionality for the application using PHPMailer.
- * Supports SMTP configuration with fallback to local mail() function if SMTP fails.
- * Provides methods for sending various types of emails including:
- * - Password reset emails
- * - Account verification emails
- * - SAE creation notifications
- * - Student assignment notifications
- * - Client notifications
- * - Contact form emails
- *
- * Configuration is loaded from environment variables via Database::parseEnvVar().
+ * Handles all application email sending.
+ * Delegates SMTP config to SmtpConfiguration and fallback to LocalMailFallback.
  *
  * @package Models\User
  */
 class EmailService
 {
-    /**
-     * PHPMailer instance
-     *
-     * @var PHPMailer
-     */
     private PHPMailer $mailer;
 
-    /**
-     * Constructor
-     *
-     * Initializes PHPMailer and configures SMTP settings from environment variables.
-     *
-     * @throws DataBaseException If vendor dependencies are missing or configuration fails
-     */
+    /** @throws DataBaseException If SMTP configuration fails */
     public function __construct()
     {
-        $autoload = __DIR__ . '/../../../vendor/autoload.php';
-        if (!file_exists($autoload)) {
-            error_log('vendor/autoload.php manquant — exécuter composer install ou uploader le dossier vendor/');
-            throw new DataBaseException('Dépendances manquantes pour l\'envoi d\'emails.');
-        }
-        require_once $autoload;
-
-        $this->mailer = new PHPMailer(true);
-        $this->configureMailer();
+        $this->mailer = SmtpConfiguration::create();
     }
 
-    /**
-     * Configures PHPMailer with SMTP settings from environment variables
-     *
-     * Loads configuration for:
-     * - SMTP host, port, username, password
-     * - Encryption (TLS/SSL)
-     * - Debug settings
-     * - Sender information
-     * - SSL verification options
-     *
-     * @throws DataBaseException If configuration is invalid or FROM_EMAIL is not set
-     */
-    private function configureMailer(): void
-    {
-        try {
-            $this->mailer->isSMTP();
-            $smtpHost = Database::parseEnvVar('SMTP_HOST');
-            $smtpUser = Database::parseEnvVar('SMTP_USERNAME');
-            $smtpPass = Database::parseEnvVar('SMTP_PASSWORD');
-            $smtpSecure = Database::parseEnvVar('SMTP_SECURE');
 
-            $this->mailer->Host = $smtpHost !== false ? $smtpHost : 'smtp.alwaysdata.com';
-            $this->mailer->Username = $smtpUser !== false ? $smtpUser : '';
-            $this->mailer->Password = $smtpPass !== false ? $smtpPass : '';
-
-            $this->mailer->SMTPAuth = !empty($smtpUser) && !empty($smtpPass);
-
-            $this->mailer->SMTPSecure = $smtpSecure === 'tls'
-                ? PHPMailer::ENCRYPTION_STARTTLS
-                : PHPMailer::ENCRYPTION_SMTPS;
-
-            $smtpPort = Database::parseEnvVar('SMTP_PORT');
-            $this->mailer->Port = (int) ($smtpPort !== false ? $smtpPort : 587);
-            $this->mailer->CharSet = 'UTF-8';
-
-            $this->mailer->SMTPAutoTLS = ($smtpSecure === 'tls');
-
-            // Configure SMTP debugging
-            $smtpDebug = Database::parseEnvVar('SMTP_DEBUG');
-            if ($smtpDebug !== false && ($smtpDebug === '1' || $smtpDebug === 'true')) {
-                $this->mailer->SMTPDebug = SMTP::DEBUG_SERVER;
-
-                $smtpDebugFile = Database::parseEnvVar('SMTP_DEBUG_FILE');
-                if ($smtpDebugFile !== false && !empty($smtpDebugFile)) {
-                    $logPath = $smtpDebugFile;
-                    if ($logPath[0] !== '/') {
-                        $logPath = __DIR__ . '/../../../' . ltrim($logPath, '/');
-                    }
-
-                    $dir = dirname($logPath);
-                    if (!is_dir($dir)) {
-                        @mkdir($dir, 0755, true);
-                    }
-
-                    $this->mailer->Debugoutput = function ($str, $level) use ($logPath): void {
-                        $line = sprintf("%s [level %s] %s\n", date('c'), $level, trim((string) $str));
-                        @file_put_contents($logPath, $line, FILE_APPEND | LOCK_EX);
-                    };
-                } else {
-                    $this->mailer->Debugoutput = 'error_log';
-                }
-            } else {
-                $this->mailer->SMTPDebug = SMTP::DEBUG_OFF;
-                $this->mailer->Debugoutput = 'error_log';
-            }
-
-            // Configure sender
-            $fromEmail = Database::parseEnvVar('FROM_EMAIL');
-            $fromNameRaw = Database::parseEnvVar('FROM_NAME');
-            $fromName = $fromNameRaw !== false ? $fromNameRaw : 'SAE Manager';
-
-            if ($fromEmail === false || empty($fromEmail)) {
-                error_log('EmailService configuration:    FROM_EMAIL is not set.');
-                throw new DataBaseException('FROM_EMAIL n\'est pas configuré pour l\'envoi d\'emails.');
-            }
-
-            $this->mailer->setFrom($fromEmail, $fromName);
-            $this->mailer->addReplyTo($fromEmail, $fromName);
-
-            // SSL certificate verification options
-            $allowSelfSigned = Database::parseEnvVar('SMTP_ALLOW_SELF_SIGNED');
-            if ($allowSelfSigned === '1' || $allowSelfSigned === 'true') {
-                $this->mailer->SMTPOptions = [
-                    'ssl' => [
-                        'verify_peer' => false,
-                        'verify_peer_name' => false,
-                        'allow_self_signed' => true,
-                    ],
-                ];
-            }
-
-            error_log(sprintf(
-                "EmailService SMTP config:  host=%s port=%s user=%s secure=%s auth=%s",
-                $this->mailer->Host,
-                $this->mailer->Port,
-                $this->mailer->Username ? 'set' : 'not-set',
-                $smtpSecure !== false ? $smtpSecure : 'default',
-                $this->mailer->SMTPAuth ? 'true' : 'false'
-            ));
-        } catch (Exception $e) {
-            throw new DataBaseException("Erreur de configuration email :    " . $e->getMessage());
-        }
-    }
-
-    /**
-     * Sends a password reset email
-     *
-     * Generates a password reset link with the provided token and sends it to the user.
-     * Falls back to local mail() function if SMTP fails.
-     *
-     * @param string $email The recipient's email address
-     * @param string $token The password reset token
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendPasswordResetEmail(string $email, string $token): bool
     {
         $this->mailer->clearAddresses();
@@ -179,39 +37,20 @@ class EmailService
 
         $resetLink = $this->getBaseUrl() . "/user/reset-password?token=" . $token;
 
-        $emailView = new EmailView('password_reset', [
-            'RESET_LINK' => $resetLink
-        ]);
-
+        $emailView = new EmailView('password_reset', ['RESET_LINK' => $resetLink]);
         $this->mailer->Body = $emailView->render();
-        $this->mailer->AltBody = $this->getPasswordResetEmailTextBody($resetLink);
+        $this->mailer->AltBody = $this->textPasswordReset($resetLink);
 
         try {
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo;
-            error_log(
-                'PHPMailer SMTP exception:  ' . $e->getMessage() .
-                ' | PHPMailer ErrorInfo: ' . $phpmailerError
-            );
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($email);
+            error_log('EmailService SMTP (password_reset): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
-    /**
-     * Sends an account verification email
-     *
-     * Generates a verification link with the provided token and sends it to the new user.
-     * Falls back to local mail() function if SMTP fails.
-     *
-     * @param string $email The recipient's email address
-     * @param string $token The verification token
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendAccountVerificationEmail(string $email, string $token): bool
     {
         $this->mailer->clearAddresses();
@@ -221,41 +60,20 @@ class EmailService
 
         $verificationLink = $this->getBaseUrl() . "/user/verify-email?token=" . $token;
 
-        $emailView = new EmailView('account_verification', [
-            'VERIFICATION_LINK' => $verificationLink
-        ]);
-
+        $emailView = new EmailView('account_verification', ['VERIFICATION_LINK' => $verificationLink]);
         $this->mailer->Body = $emailView->render();
-        $this->mailer->AltBody = $this->getAccountVerificationEmailTextBody($verificationLink);
+        $this->mailer->AltBody = $this->textAccountVerification($verificationLink);
 
         try {
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo;
-            error_log(
-                'PHPMailer SMTP exception (account verification): ' . $e->getMessage() .
-                ' | PHPMailer ErrorInfo: ' . $phpmailerError
-            );
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($email);
+            error_log('EmailService SMTP (account_verification): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
-    /**
-     * Sends a SAE creation notification to a supervisor
-     *
-     * Notifies a supervisor when a client creates a new SAE proposal.
-     *
-     * @param string $responsableEmail Supervisor's email address
-     * @param string $responsableNom Supervisor's name
-     * @param string $clientNom Client's name
-     * @param string $saeTitle SAE title
-     * @param string $saeDescription SAE description
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendSaeCreationNotification(
         string $responsableEmail,
         string $responsableNom,
@@ -266,59 +84,30 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($responsableEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Nouvelle proposition de SAE';
 
             $saeUrl = $this->getBaseUrl() . '/sae';
-
             $emailView = new EmailView('sae_creation', [
                 'RESPONSABLE_NAME' => $responsableNom,
                 'CLIENT_NAME' => $clientNom,
                 'SAE_TITLE' => $saeTitle,
                 'SAE_DESCRIPTION' => $saeDescription,
-                'SAE_URL' => $saeUrl
+                'SAE_URL' => $saeUrl,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getSaeCreationEmailTextBody(
-                $responsableNom,
-                $clientNom,
-                $saeTitle,
-                $saeDescription
-            );
+            $this->mailer->AltBody = $this->textSaeCreation($responsableNom, $clientNom, $saeTitle, $saeDescription);
 
             $this->mailer->send();
-            error_log("Email de notification SAE envoyé à {$responsableEmail}");
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo;
-            error_log(
-                'PHPMailer SMTP exception (SAE notification): ' . $e->getMessage() .
-                ' | PHPMailer ErrorInfo: ' . $phpmailerError
-            );
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($responsableEmail);
+            error_log('EmailService SMTP (sae_creation): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $responsableEmail);
         }
     }
 
-    /**
-     * Sends a SAE assignment notification to a student
-     *
-     * Notifies a student when they are assigned to a SAE by a supervisor.
-     *
-     * @param string $studentEmail Student's email address
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $saeDescription SAE description
-     * @param string $responsableNom Supervisor's name
-     * @param string $clientNom Client's name
-     * @param string $dateRendu Submission deadline (optional)
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendStudentAssignmentNotification(
         string $studentEmail,
         string $studentNom,
@@ -331,21 +120,19 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($studentEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Nouvelle affectation SAE - ' . $saeTitre;
 
             $dateRenduFormatted = 'Non définie';
             if (!empty($dateRendu)) {
-                $timestamp = strtotime($dateRendu);
-                if ($timestamp !== false) {
-                    $dateRenduFormatted = date('d/m/Y', $timestamp);
+                $ts = strtotime($dateRendu);
+                if ($ts !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $ts);
                 }
             }
 
             $saeUrl = $this->getBaseUrl() . '/sae';
-
             $emailView = new EmailView('student_assignment', [
                 'STUDENT_NAME' => $studentNom,
                 'SAE_TITLE' => $saeTitre,
@@ -353,11 +140,10 @@ class EmailService
                 'RESPONSABLE_NAME' => $responsableNom,
                 'CLIENT_NAME' => $clientNom,
                 'DATE_RENDU' => $dateRenduFormatted,
-                'SAE_URL' => $saeUrl
+                'SAE_URL' => $saeUrl,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getStudentAssignmentEmailTextBody(
+            $this->mailer->AltBody = $this->textStudentAssignment(
                 $studentNom,
                 $saeTitre,
                 $saeDescription,
@@ -369,26 +155,12 @@ class EmailService
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (student assignment): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($studentEmail);
+            error_log('EmailService SMTP (student_assignment): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
-    /**
-     * Sends a student assignment notification to the client
-     *
-     * Notifies a client when a student is assigned to their SAE.
-     *
-     * @param string $clientEmail Client's email address
-     * @param string $clientNom Client's name
-     * @param string $saeTitre SAE title
-     * @param string $studentNom Student's name
-     * @param string $responsableNom Supervisor's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendClientStudentAssignmentNotification(
         string $clientEmail,
         string $clientNom,
@@ -399,365 +171,72 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($clientEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Affectation d\'un étudiant à votre SAE - ' . $saeTitre;
 
             $saeUrl = $this->getBaseUrl() . '/sae';
-
             $emailView = new EmailView('client_assignment', [
                 'CLIENT_NAME' => $clientNom,
                 'SAE_TITLE' => $saeTitre,
                 'STUDENT_NAME' => $studentNom,
                 'RESPONSABLE_NAME' => $responsableNom,
-                'SAE_URL' => $saeUrl
+                'SAE_URL' => $saeUrl,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getClientAssignmentEmailTextBody(
-                $clientNom,
-                $saeTitre,
-                $studentNom,
-                $responsableNom
-            );
+            $this->mailer->AltBody = $this->textClientAssignment($clientNom, $saeTitre, $studentNom, $responsableNom);
 
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (client assignment): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($clientEmail);
+            error_log('EmailService SMTP (client_assignment): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $clientEmail);
         }
     }
 
     /**
-     * Sends a contact form email
+     * Sends a contact form email. Reply-To is set to the user's address.
+     * Subject is sanitised to prevent header injection.
      *
-     * Sends an email from the contact form to the application's contact address.
-     * Sets the Reply-To header to the user's email for easy responses.
-     *
-     * @param string $fromUserEmail User's email address
-     * @param string $subject Email subject
-     * @param string $message Email message
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
+     * @throws DataBaseException
      */
     public function sendContactEmail(string $fromUserEmail, string $subject, string $message): bool
     {
+        $to = 'sae-manager@alwaysdata.net';
+        $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
+        $body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
+            . "De    : {$fromUserEmail}\n"
+            . "Sujet : {$safeSubject}\n"
+            . "---------\n\n"
+            . "{$message}\n";
+
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
-            $to = 'sae-manager@alwaysdata.net';
             $this->mailer->addAddress($to);
-
-            // Set Reply-To to user's email for easy responses
             if (filter_var($fromUserEmail, FILTER_VALIDATE_EMAIL)) {
                 $this->mailer->addReplyTo($fromUserEmail);
             }
-
-            // Sanitize subject to prevent header injection
-            $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
             $this->mailer->isHTML(false);
             $this->mailer->Subject = '[Contact] ' . $safeSubject;
-            $this->mailer->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
-                . "De       : {$fromUserEmail}\n"
-                . "Sujet    :  {$safeSubject}\n"
-                . "---------\n\n"
-                . "{$message}\n";
+            $this->mailer->Body = $body;
 
             $this->mailer->send();
-            error_log("Contact email sent to {$to} (reply-to: {$fromUserEmail})");
             return true;
         } catch (Exception $e) {
-            $phpmailerError = $this->mailer->ErrorInfo;
-            error_log('PHPMailer SMTP exception (contact): ' . $e->getMessage() . ' | ErrorInfo: ' . $phpmailerError);
-
-            // Fallback to local mail() function
-            try {
-                $mail = new PHPMailer(true);
-                $mail->isMail();
-                $mail->CharSet = 'UTF-8';
-
-                $from = $this->getFromEmail();
-                $fromName = $this->getFromName();
-                if (!empty($from)) {
-                    $mail->setFrom($from, $fromName);
-                    $mail->addReplyTo($fromUserEmail ?: $from, $fromName);
-                }
-
-                $mail->addAddress('sae-manager@alwaysdata.net');
-                $mail->isHTML(false);
-                $safeSubject = str_replace(["\r", "\n"], ' ', $subject);
-                $mail->Subject = '[Contact] ' . $safeSubject;
-                $mail->Body = "Message envoyé depuis le formulaire de contact SAE Manager\n\n"
-                    . "De       : {$fromUserEmail}\n"
-                    . "Sujet    :    {$safeSubject}\n"
-                    . "---------\n\n"
-                    . "{$message}\n";
-
-                $mail->send();
-                error_log('Contact email sent via local mail() fallback');
-                return true;
-            } catch (Exception $e2) {
-                $phpmailerError2 = $mail->ErrorInfo;
-                error_log(
-                    'PHPMailer fallback exception (contact): ' . $e2->getMessage() .
-                    ' | ErrorInfo:  ' . $phpmailerError2
-                );
-                throw new DataBaseException("Erreur d'envoi d'email de contact:   " . $e2->getMessage());
-            }
-        }
-    }
-
-    /**
-     * Sends email via local mail() fallback
-     *
-     * @param string $recipientEmail Recipient's email address
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If fallback also fails
-     */
-    private function sendViaFallback(string $recipientEmail): bool
-    {
-        try {
-            $mail = new PHPMailer(true);
-            $mail->isMail();
-            $mail->CharSet = 'UTF-8';
-
-            $from = $this->getFromEmail();
-            $fromName = $this->getFromName();
-            if (!empty($from)) {
-                $mail->setFrom($from, $fromName);
-                $mail->addReplyTo($from, $fromName);
-            }
-
-            $mail->addAddress($recipientEmail);
-            $mail->isHTML($this->mailer->ContentType === 'text/html');
-            $mail->Subject = $this->mailer->Subject;
-            $mail->Body = $this->mailer->Body;
-            $mail->AltBody = $this->mailer->AltBody;
-
-            $mail->send();
-            error_log('Email sent via local mail() fallback to ' . $recipientEmail);
-            return true;
-        } catch (Exception $e2) {
-            $phpmailerError2 = $mail->ErrorInfo;
-            error_log(
-                'PHPMailer fallback exception:   ' . $e2->getMessage() .
-                ' | PHPMailer ErrorInfo: ' . $phpmailerError2
+            error_log('EmailService SMTP (contact): ' . $e->getMessage());
+            return LocalMailFallback::sendContact(
+                SmtpConfiguration::getFromEmail($this->mailer),
+                SmtpConfiguration::getFromName($this->mailer),
+                $fromUserEmail,
+                $to,
+                '[Contact] ' . $safeSubject,
+                $body
             );
-            throw new DataBaseException("Erreur d'envoi d'email (SMTP et fallback): " . $e2->getMessage());
         }
     }
 
-    /**
-     * Gets the FROM email address
-     *
-     * @return string FROM email address
-     */
-    private function getFromEmail(): string
-    {
-        $from = trim($this->mailer->From);
-        if ($from !== '') {
-            return $from;
-        }
-
-        $fromEmail = Database::parseEnvVar('FROM_EMAIL');
-        return ($fromEmail !== false && !empty($fromEmail)) ? $fromEmail : 'noreply@sae-manager.com';
-    }
-
-    /**
-     * Gets the FROM name
-     *
-     * @return string FROM name
-     */
-    private function getFromName(): string
-    {
-        $fromName = trim($this->mailer->FromName);
-        if ($fromName !== '') {
-            return $fromName;
-        }
-
-        $fromNameEnv = Database::parseEnvVar('FROM_NAME');
-        return ($fromNameEnv !== false && $fromNameEnv !== '') ? $fromNameEnv : 'SAE Manager';
-    }
-
-    /**
-     * Gets the base URL for the application
-     *
-     * Determines the base URL from:
-     * 1. Localhost detection (uses current HTTP_HOST)
-     * 2. APP_URL environment variable
-     * 3. Current server configuration
-     *
-     * @return string The base URL without trailing slash
-     */
-    private function getBaseUrl(): string
-    {
-        // For local development, always use detected host
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $httpHost = is_string($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
-            if (
-                str_contains($httpHost, 'localhost') ||
-                str_contains($httpHost, '127.0.0.1')
-            ) {
-                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-                return $protocol . '://' . $httpHost;
-            }
-        }
-
-        // Check for APP_URL in environment
-        $appUrl = Database::parseEnvVar('APP_URL');
-        if ($appUrl !== false && !empty($appUrl)) {
-            return rtrim($appUrl, '/');
-        }
-
-        // Fallback to current server configuration
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = (isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']))
-            ? $_SERVER['HTTP_HOST']
-            : 'localhost';
-        $scriptName = (isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME']))
-            ? $_SERVER['SCRIPT_NAME']
-            : '';
-        $path = $scriptName !== '' ? dirname($scriptName) : '';
-        return $protocol . '://' . $host . $path;
-    }
-
-    // ===== Plain text versions (AltBody) for email clients that don't support HTML =====
-
-    /**
-     * Generates plain text version of password reset email
-     *
-     * @param string $resetLink Password reset link
-     * @return string Plain text email body
-     */
-    private function getPasswordResetEmailTextBody(string $resetLink): string
-    {
-        return "Réinitialisation de votre mot de passe - SAE Manager\n\n" .
-            "Vous avez demandé la réinitialisation de votre mot de passe.\n\n" .
-            "Lien :   {$resetLink}\n\n" .
-            "Ce lien est valide pendant 1 heure.\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Generates plain text version of account verification email
-     *
-     * @param string $verificationLink Account verification link
-     * @return string Plain text email body
-     */
-    private function getAccountVerificationEmailTextBody(string $verificationLink): string
-    {
-        return "Vérification de votre compte - SAE Manager\n\n" .
-            "Merci de vous être inscrit.   Pour activer votre compte, " .
-            "veuillez copier et coller le lien suivant dans votre navigateur :\n\n" .
-            "Lien :  {$verificationLink}\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Generates plain text version of SAE creation notification email
-     *
-     * @param string $responsableNom Supervisor's name
-     * @param string $clientNom Client's name
-     * @param string $saeTitle SAE title
-     * @param string $saeDescription SAE description
-     * @return string Plain text email body
-     */
-    private function getSaeCreationEmailTextBody(
-        string $responsableNom,
-        string $clientNom,
-        string $saeTitle,
-        string $saeDescription
-    ): string {
-        $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$responsableNom},\n\n" .
-            "Une nouvelle SAE a été créée par {$clientNom}.\n\n" .
-            "TITRE :   {$saeTitle}\n" .
-            "DESCRIPTION :  {$saeDescription}\n" .
-            "CLIENT :  {$clientNom}\n\n" .
-            "{$saeUrl}\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Generates plain text version of student assignment email
-     *
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $saeDescription SAE description
-     * @param string $responsableNom Supervisor's name
-     * @param string $clientNom Client's name
-     * @param string $dateRendu Submission deadline
-     * @return string Plain text email body
-     */
-    private function getStudentAssignmentEmailTextBody(
-        string $studentNom,
-        string $saeTitre,
-        string $saeDescription,
-        string $responsableNom,
-        string $clientNom,
-        string $dateRendu
-    ): string {
-        $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$studentNom},\n\n" .
-            "Vous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\n" .
-            "TITRE :  {$saeTitre}\n" .
-            "DESCRIPTION : {$saeDescription}\n" .
-            "CLIENT : {$clientNom}\n" .
-            "RESPONSABLE : {$responsableNom}\n" .
-            "DATE DE RENDU : {$dateRendu}\n\n" .
-            "{$saeUrl}\n\n" .
-            "Bon courage !\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Generates plain text version of client assignment notification email
-     *
-     * @param string $clientNom Client's name
-     * @param string $saeTitre SAE title
-     * @param string $studentNames Student's name(s)
-     * @param string $responsableNom Supervisor's name
-     * @return string Plain text email body
-     */
-    private function getClientAssignmentEmailTextBody(
-        string $clientNom,
-        string $saeTitre,
-        string $studentNames,
-        string $responsableNom
-    ): string {
-        $saeUrl = $this->getBaseUrl() . '/sae';
-        return "Bonjour {$clientNom},\n\n" .
-            "Un ou plusieurs étudiants ont été affectés à votre SAE par le responsable {$responsableNom}.\n\n" .
-            "SAE : {$saeTitre}\n" .
-            "ÉTUDIANT(S) AFFECTÉ(S) : {$studentNames}\n" .
-            "RESPONSABLE : {$responsableNom}\n\n" .
-            "{$saeUrl}\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-
-    /**
-     * Sends a deadline reminder email to a student (3 days before submission)
-     *
-     * Notifies a student that their SAE submission deadline is approaching in 3 days.
-     *
-     * @param string $studentEmail Student's email address
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $dateRendu Submission deadline
-     * @param string $responsableNom Supervisor's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendDeadlineReminderEmail(
         string $studentEmail,
         string $studentNom,
@@ -768,7 +247,6 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($studentEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Rappel : Date de rendu SAE dans 3 jours - ' . $saeTitre;
@@ -776,26 +254,24 @@ class EmailService
             $dateRenduFormatted = 'Non définie';
             $heureRendu = '';
             if (!empty($dateRendu)) {
-                $timestamp = strtotime($dateRendu);
-                if ($timestamp !== false) {
-                    $dateRenduFormatted = date('d/m/Y', $timestamp);
-                    $heureRendu = date('H:i', $timestamp);
+                $ts = strtotime($dateRendu);
+                if ($ts !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $ts);
+                    $heureRendu = date('H:i', $ts);
                 }
             }
 
             $saeUrl = $this->getBaseUrl() . '/sae';
-
             $emailView = new EmailView('deadline_reminder', [
                 'STUDENT_NAME' => $studentNom,
                 'SAE_TITLE' => $saeTitre,
                 'DATE_RENDU' => $dateRenduFormatted,
                 'HEURE_RENDU' => $heureRendu,
                 'RESPONSABLE_NAME' => $responsableNom,
-                'SAE_URL' => $saeUrl
+                'SAE_URL' => $saeUrl,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getDeadlineReminderEmailTextBody(
+            $this->mailer->AltBody = $this->textDeadlineReminder(
                 $studentNom,
                 $saeTitre,
                 $dateRenduFormatted,
@@ -804,59 +280,14 @@ class EmailService
             );
 
             $this->mailer->send();
-            error_log("Email de rappel envoyé à {$studentEmail} pour la SAE '{$saeTitre}'");
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (deadline reminder): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($studentEmail);
+            error_log('EmailService SMTP (deadline_reminder): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
-    /**
-     * Generates plain text version of deadline reminder email
-     *
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $dateRendu Submission deadline
-     * @param string $responsableNom Supervisor's name
-     * @return string Plain text email body
-     */
-    private function getDeadlineReminderEmailTextBody(
-        string $studentNom,
-        string $saeTitre,
-        string $dateRendu,
-        string $heureRendu,
-        string $responsableNom
-    ): string {
-        $saeUrl = $this->getBaseUrl() . '/sae';
-        $textHeure = $heureRendu ? " à $heureRendu" : "";
-        return "Bonjour {$studentNom},\n\n" .
-            "RAPPEL : Il ne vous reste que 3 JOURS avant la date de rendu de votre SAE !\n\n" .
-            "SAE : {$saeTitre}\n" .
-            "DATE DE RENDU : {$dateRendu}{$textHeure}\n" .
-            "RESPONSABLE : {$responsableNom}\n\n" .
-            "N'oubliez pas de préparer et soumettre votre livrable avant la date limite.\n\n" .
-            "Accéder à vos SAE : {$saeUrl}\n\n" .
-            "Bon courage pour la finalisation de votre projet !\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Sends an urgent deadline reminder email to a student (1 day before submission)
-     *
-     * Notifies a student that their SAE submission deadline is TOMORROW at 23:59.
-     *
-     * @param string $studentEmail Student's email address
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $dateRendu Submission deadline
-     * @param string $responsableNom Supervisor's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendUrgentDeadlineReminderEmail(
         string $studentEmail,
         string $studentNom,
@@ -867,7 +298,6 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($studentEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = '🚨 URGENT : Rendu SAE DANS 1 JOUR - ' . $saeTitre;
@@ -875,26 +305,24 @@ class EmailService
             $dateRenduFormatted = 'Non définie';
             $heureRendu = '';
             if (!empty($dateRendu)) {
-                $timestamp = strtotime($dateRendu);
-                if ($timestamp !== false) {
-                    $dateRenduFormatted = date('d/m/Y', $timestamp);
-                    $heureRendu = date('H:i', $timestamp);
+                $ts = strtotime($dateRendu);
+                if ($ts !== false) {
+                    $dateRenduFormatted = date('d/m/Y', $ts);
+                    $heureRendu = date('H:i', $ts);
                 }
             }
 
             $saeUrl = $this->getBaseUrl() . '/sae';
-
             $emailView = new EmailView('urgent_deadline_reminder', [
                 'STUDENT_NAME' => $studentNom,
                 'SAE_TITLE' => $saeTitre,
                 'DATE_RENDU' => $dateRenduFormatted,
                 'HEURE_RENDU' => $heureRendu,
                 'RESPONSABLE_NAME' => $responsableNom,
-                'SAE_URL' => $saeUrl
+                'SAE_URL' => $saeUrl,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getUrgentDeadlineReminderEmailTextBody(
+            $this->mailer->AltBody = $this->textUrgentDeadlineReminder(
                 $studentNom,
                 $saeTitre,
                 $dateRenduFormatted,
@@ -903,130 +331,37 @@ class EmailService
             );
 
             $this->mailer->send();
-            error_log("Email de rappel URGENT (J-1) envoyé à {$studentEmail} pour la SAE '{$saeTitre}'");
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (urgent deadline reminder): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($studentEmail);
+            error_log('EmailService SMTP (urgent_deadline_reminder): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
-    /**
-     * Generates plain text version of urgent deadline reminder email (J-1)
-     *
-     * @param string $studentNom Student's name
-     * @param string $saeTitre SAE title
-     * @param string $dateRendu Submission deadline
-     * @param string $responsableNom Supervisor's name
-     * @return string Plain text email body
-     */
-    private function getUrgentDeadlineReminderEmailTextBody(
-        string $studentNom,
-        string $saeTitre,
-        string $dateRendu,
-        string $responsableNom,
-        string $heureRendu,
-    ): string {
-        $saeUrl = $this->getBaseUrl() . '/sae';
-
-        $precisionHeure = $heureRendu ? " à {$heureRendu}" : "";
-        return "Bonjour {$studentNom},\n\n" .
-            "🚨 ATTENTION : Il ne vous reste qu'UN SEUL JOUR avant la date de rendu de votre SAE !\n\n" .
-            "SAE : {$saeTitre}\n" .
-            "DATE DE RENDU : DEMAIN ({$dateRendu}){$precisionHeure}\n" .
-            "RESPONSABLE : {$responsableNom}\n\n" .
-            "C'est le moment de finaliser et soumettre votre travail !\n\n" .
-            "Accéder à vos SAE : {$saeUrl}\n\n" .
-            "Bon courage pour ces dernières heures !\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-
-    /**
-     * Sends a password change notification email
-     *
-     * Notifies a real user that their password was changed from their profile.
-     *
-     * @param string $email User's email address
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendPasswordChangedNotificationEmail(string $email): bool
     {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($email);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Modification de votre mot de passe - SAE Manager';
 
             $loginLink = $this->getBaseUrl() . '/login';
-
-            $emailView = new \Views\Email\EmailView('password_changed', [
-                'LOGIN_LINK' => $loginLink
-            ]);
-
+            $emailView = new EmailView('password_changed', ['LOGIN_LINK' => $loginLink]);
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getPasswordChangedEmailTextBody($loginLink);
+            $this->mailer->AltBody = $this->textPasswordChanged($loginLink);
 
             $this->mailer->send();
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (password changed notification): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($email);
+            error_log('EmailService SMTP (password_changed): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $email);
         }
     }
 
-    /**
-     * Generates plain text version of password change notification email
-     *
-     * @param string $loginLink Link to the login page
-     * @return string Plain text email body
-     */
-    private function getPasswordChangedEmailTextBody(string $loginLink): string
-    {
-        return "Bonjour,\n\n" .
-            "Le mot de passe de votre compte SAE Manager a été modifié avec succès.\n\n" .
-            "Si vous êtes à l'origine de cette modification, vous pouvez ignorer cet email.\n\n" .
-            "ATTENTION : Si vous n'avez pas modifié votre mot de passe, un tiers a peut-être accédé à votre compte. " .
-            "Veuillez réinitialiser votre mot de passe immédiatement ou contacter un administrateur.\n\n" .
-            "Accéder à mon compte : {$loginLink}\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Sends a message from responsable to student
-     *
-     * Sends a custom message from a supervisor to a student.
-     *
-     * @param string $studentEmail Student's email address
-     * @param string $studentName Student's name
-     * @param string $subject Message subject
-     * @param string $message Message content
-     * @param string $responsableName Supervisor's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
-    /**
-     * Sends a message from responsable to student
-     *
-     * Sends a custom message from a supervisor to a student.
-     *
-     * @param string $studentEmail Student's email address
-     * @param string $studentName Student's name
-     * @param string $subject Message subject
-     * @param string $message Message content
-     * @param string $responsableName Supervisor's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
-     */
+    /** @throws DataBaseException */
     public function sendMessageToStudent(
         string $studentEmail,
         string $studentName,
@@ -1037,7 +372,6 @@ class EmailService
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($studentEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = $subject;
@@ -1046,144 +380,205 @@ class EmailService
                 'STUDENT_NAME' => $studentName,
                 'MESSAGE' => nl2br(htmlspecialchars($message)),
                 'RESPONSABLE_NAME' => $responsableName,
-                'SUBJECT' => $subject
+                'SUBJECT' => $subject,
             ]);
-
             $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = "Bonjour {$studentName},\n\n{$message}\n\n"
-                . "Cordialement,\n{$responsableName}\n"
-                . "Responsable SAE Manager";
+            $this->mailer->AltBody = "Bonjour {$studentName},\n\n{$message}\n\nCordialement,\n
+            {$responsableName}\nResponsable SAE Manager";
 
             $this->mailer->send();
-            error_log("Message envoyé à {$studentEmail} par {$responsableName}");
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (responsable message): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($studentEmail);
+            error_log('EmailService SMTP (responsable_message): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $studentEmail);
         }
     }
 
     /**
-     * Sends a warning email for an inactive account
+     * Sends an inactivity warning (GDPR — account deleted in 30 days if no login).
      *
-     * Notifies a user that their account will be deleted in 1 month due to
-     * prolonged inactivity (GDPR/CNIL compliance), unless they log in.
-     *
-     * @param string $userEmail User's email address
-     * @param string $userName User's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
+     * @throws DataBaseException
      */
     public function sendInactiveAccountWarningEmail(string $userEmail, string $userName): bool
     {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($userEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Avis de suppression de compte pour inactivité - SAE Manager';
 
             $loginLink = $this->getBaseUrl() . '/user/login';
-
             $emailView = new EmailView('inactive_account_warning', [
-                'USER_NAME' => $userName,
-                'LOGIN_LINK' => $loginLink
+                'USER_NAME'  => $userName,
+                'LOGIN_LINK' => $loginLink,
             ]);
-
-            $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getInactiveAccountWarningEmailTextBody($userName, $loginLink);
+            $this->mailer->Body    = $emailView->render();
+            $this->mailer->AltBody = $this->textInactiveAccountWarning($userName, $loginLink);
 
             $this->mailer->send();
-            error_log("Email d'avertissement d'inactivité (J-30) envoyé à {$userEmail}");
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (inactive account warning): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($userEmail);
+            error_log('EmailService SMTP (inactive_account_warning): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $userEmail);
         }
     }
 
     /**
-     * Generates plain text version of the inactive account warning email
+     * Confirms account deletion after prolonged inactivity (GDPR).
      *
-     * @param string $userName User's name
-     * @param string $loginLink Link to the login page
-     * @return string Plain text email body
-     */
-    private function getInactiveAccountWarningEmailTextBody(string $userName, string $loginLink): string
-    {
-        return "Bonjour {$userName},\n\n" .
-            "Conformément au Règlement Général sur la Protection des Données (RGPD), " .
-            "nous vous informons que votre compte SAE Manager est inactif depuis près de 3 ans.\n\n" .
-            "Afin de protéger vos données personnelles, votre compte et toutes les données " .
-            "associées seront définitivement supprimés dans 30 jours.\n\n" .
-            "Si vous souhaitez conserver votre compte, il vous suffit de vous y connecter " .
-            "avant ce délai en utilisant le lien suivant :\n" .
-            "{$loginLink}\n\n" .
-            "Si vous ne souhaitez plus utiliser nos services, aucune action de votre part " .
-            "n'est requise.\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
-    }
-
-    /**
-     * Sends an account deletion confirmation email
-     *
-     * Notifies a user that their account and data have just been permanently
-     * deleted due to prolonged inactivity (GDPR compliance).
-     *
-     * @param string $userEmail User's email address
-     * @param string $userName User's name
-     * @return bool True if email was sent successfully
-     * @throws DataBaseException If both SMTP and fallback methods fail
+     * @throws DataBaseException
      */
     public function sendAccountDeletedNotificationEmail(string $userEmail, string $userName): bool
     {
         try {
             $this->mailer->clearAddresses();
             $this->mailer->clearAttachments();
-
             $this->mailer->addAddress($userEmail);
             $this->mailer->isHTML(true);
             $this->mailer->Subject = 'Confirmation de suppression de votre compte - SAE Manager';
 
-            $emailView = new \Views\Email\EmailView('account_deleted', [
-                'USER_NAME' => $userName
-            ]);
-
-            $this->mailer->Body = $emailView->render();
-            $this->mailer->AltBody = $this->getAccountDeletedEmailTextBody($userName);
+            $emailView = new EmailView('account_deleted', ['USER_NAME' => $userName]);
+            $this->mailer->Body    = $emailView->render();
+            $this->mailer->AltBody = $this->textAccountDeleted($userName);
 
             $this->mailer->send();
-            error_log("Email de confirmation de suppression (J-36) envoyé à {$userEmail}");
             return true;
         } catch (Exception $e) {
-            error_log('PHPMailer SMTP exception (account deleted notification): ' . $e->getMessage());
-
-            // Fallback to local mail() function
-            return $this->sendViaFallback($userEmail);
+            error_log('EmailService SMTP (account_deleted): ' . $e->getMessage());
+            return LocalMailFallback::send($this->mailer, $userEmail);
         }
     }
 
+
     /**
-     * Generates plain text version of the account deletion email
-     *
-     * @param string $userName User's name
-     * @return string Plain text email body
+     * Resolves the base URL (localhost → HTTP_HOST, then APP_URL env, then server config).
      */
-    private function getAccountDeletedEmailTextBody(string $userName): string
+    private function getBaseUrl(): string
     {
-        return "Bonjour {$userName},\n\n" .
-            "Conformément à notre politique de conservation des données (RGPD) et suite à notre précédent message, " .
-            "nous vous confirmons que votre compte SAE Manager a été
-             définitivement supprimé en raison d'une inactivité prolongée (plus de 3 ans).\n\n" .
-            "Toutes vos données personnelles et historiques associés ont été effacés de nos systèmes.\n\n" .
-            "Si vous souhaitez utiliser à nouveau nos services à l'avenir, vous devrez créer un nouveau compte.\n\n" .
-            "Cordialement,\n" .
-            "L'équipe SAE Manager";
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $httpHost = is_string($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+            if (str_contains($httpHost, 'localhost') || str_contains($httpHost, '127.0.0.1')) {
+                $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+                return $protocol . '://' . $httpHost;
+            }
+        }
+        $appUrl = Database::parseEnvVar('APP_URL');
+        if ($appUrl !== false && !empty($appUrl)) {
+            return rtrim($appUrl, '/');
+        }
+        $protocol   = isset($_SERVER['HTTPS']) &&
+        $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+        $host       = isset($_SERVER['HTTP_HOST']) && is_string($_SERVER['HTTP_HOST']) ?
+            $_SERVER['HTTP_HOST'] : 'localhost';
+        $scriptName = isset($_SERVER['SCRIPT_NAME']) && is_string($_SERVER['SCRIPT_NAME']) ?
+            $_SERVER['SCRIPT_NAME'] : '';
+        $path       = $scriptName !== '' ? dirname($scriptName) : '';
+        return $protocol . '://' . $host . $path;
+    }
+
+    private function textPasswordReset(string $resetLink): string
+    {
+        return "Réinitialisation de votre mot de passe - SAE Manager\n\n"
+            . "Vous avez demandé la réinitialisation de votre mot de passe.\n\n"
+            . "Lien : {$resetLink}\n\nCe lien est valide pendant 1 heure.\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textAccountVerification(string $verificationLink): string
+    {
+        return "Vérification de votre compte - SAE Manager\n\n"
+            . "Merci de vous être inscrit. Pour activer votre compte, copiez ce lien :\n\n"
+            . "{$verificationLink}\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textSaeCreation(
+        string $responsableNom,
+        string $clientNom,
+        string $saeTitle,
+        string $saeDescription
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+        return "Bonjour {$responsableNom},\n\nUne nouvelle SAE a été créée par {$clientNom}.\n\n"
+            . "TITRE : {$saeTitle}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\n\n"
+            . "{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textStudentAssignment(
+        string $studentNom,
+        string $saeTitre,
+        string $saeDescription,
+        string $responsableNom,
+        string $clientNom,
+        string $dateRendu
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+        return "Bonjour {$studentNom},\n\nVous avez été affecté(e) à une nouvelle SAE par {$responsableNom}.\n\n"
+            . "TITRE : {$saeTitre}\nDESCRIPTION : {$saeDescription}\nCLIENT : {$clientNom}\n"
+            . "RESPONSABLE : {$responsableNom}\nDATE DE RENDU : {$dateRendu}\n\n"
+            . "{$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
+    }
+
+    private function textClientAssignment(
+        string $clientNom,
+        string $saeTitre,
+        string $studentNames,
+        string $responsableNom
+    ): string {
+        $saeUrl = $this->getBaseUrl() . '/sae';
+        return "Bonjour {$clientNom},\n\nUn ou plusieurs étudiants ont été affectés à votre SAE par 
+        {$responsableNom}.\n\n"
+            . "SAE : {$saeTitre}\nÉTUDIANT(S) : {$studentNames}\nRESPONSABLE : {$responsableNom}\n\n"
+            . "{$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textDeadlineReminder(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $heureRendu,
+        string $responsableNom
+    ): string {
+        $saeUrl    = $this->getBaseUrl() . '/sae';
+        $textHeure = $heureRendu ? " à $heureRendu" : "";
+        return "Bonjour {$studentNom},\n\nRAPPEL : Il ne vous reste que 3 JOURS avant le rendu !\n\n"
+            . "SAE : {$saeTitre}\nDATE DE RENDU : {$dateRendu}{$textHeure}\nRESPONSABLE : {$responsableNom}\n\n"
+            . "Accéder à vos SAE : {$saeUrl}\n\nBon courage !\nL'équipe SAE Manager";
+    }
+
+    private function textUrgentDeadlineReminder(
+        string $studentNom,
+        string $saeTitre,
+        string $dateRendu,
+        string $responsableNom,
+        string $heureRendu
+    ): string {
+        $saeUrl    = $this->getBaseUrl() . '/sae';
+        $precision = $heureRendu ? " à {$heureRendu}" : "";
+        return "Bonjour {$studentNom},\n\n🚨 Il ne vous reste qu'UN SEUL JOUR !\n\n"
+            . "SAE : {$saeTitre}\nDATE DE RENDU : DEMAIN ({$dateRendu}){$precision}\nRESPONSABLE : 
+            {$responsableNom}\n\n"
+            . "Accéder à vos SAE : {$saeUrl}\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textPasswordChanged(string $loginLink): string
+    {
+        return "Bonjour,\n\nVotre mot de passe SAE Manager a été modifié avec succès.\n\n"
+            . "Si vous n'êtes pas à l'origine de cette modification, 
+            réinitialisez votre mot de passe immédiatement.\n\n"
+            . "Accéder à mon compte : {$loginLink}\n\nCordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textInactiveAccountWarning(string $userName, string $loginLink): string
+    {
+        return "Bonjour {$userName},\n\nVotre compte SAE Manager est inactif depuis près de 3 ans.\n\n"
+            . "Il sera supprimé dans 30 jours. Pour le conserver, connectez-vous :\n{$loginLink}\n\n"
+            . "Cordialement,\nL'équipe SAE Manager";
+    }
+
+    private function textAccountDeleted(string $userName): string
+    {
+        return "Bonjour {$userName},\n\nVotre compte SAE Manager a été définitivement supprimé "
+            . "en raison d'une inactivité prolongée (plus de 3 ans).\n\n"
+            . "Toutes vos données ont été effacées.\n\nCordialement,\nL'équipe SAE Manager";
     }
 }

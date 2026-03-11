@@ -58,12 +58,14 @@ class SessionGuard
         }
 
         // 4. Concurrent Session Check (Single Device Enforcement)
-        $userData = $_SESSION['user'];
-        $rawId = $userData['id'] ?? 0;
-        $userId = is_numeric($rawId) ? (int)$rawId : 0;
+        // $_SESSION['user'] is guaranteed to be an array by the check at step 1
+        /** @var array<string, mixed> $sessionUser */
+        $sessionUser = $_SESSION['user'];
+        $rawId       = $sessionUser['id'] ?? 0;
+        $userId      = is_numeric($rawId) ? (int) $rawId : 0;
 
         if ($userId > 0) {
-            $userModel = new User();
+            $userModel   = new User();
             $storedToken = $userModel->getStoredJwtToken($userId);
 
             if ($storedToken !== null && $storedToken !== $rawToken) {
@@ -84,15 +86,9 @@ class SessionGuard
      */
     private static function handleConcurrentLogout(int $userId, bool $redirect): void
     {
-        $userData = $_SESSION['user'] ?? [];
-        $userArray = is_array($userData) ? $userData : [];
-
-        // Fix: Use is_string check to satisfy "Cannot cast mixed to string"
-        $rawNom = $userArray['nom'] ?? '';
-        $nom = is_string($rawNom) ? $rawNom : '';
-
-        $rawPrenom = $userArray['prenom'] ?? '';
-        $prenom = is_string($rawPrenom) ? $rawPrenom : 'Utilisateur';
+        $user   = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+        $nom    = is_string($user['nom']    ?? null) ? (string) $user['nom']    : '';
+        $prenom = is_string($user['prenom'] ?? null) ? (string) $user['prenom'] : 'Utilisateur';
 
         $logger = new Log();
         $logger->create(
