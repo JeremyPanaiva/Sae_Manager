@@ -55,12 +55,11 @@ class CreateSaeController implements ControllerInterface
         RoleGuard::requireRoleOrForbid('client');
 
         // Extract client information
-        $clientIdRaw = $_SESSION['user']['id']     ?? 0;
-        $clientId    = is_numeric($clientIdRaw)    ? (int) $clientIdRaw : 0;
-        $nomRaw      = $_SESSION['user']['nom']    ?? '';
-        $prenomRaw   = $_SESSION['user']['prenom'] ?? '';
-        $nom         = is_string($nomRaw)          ? $nomRaw    : '';
-        $prenom      = is_string($prenomRaw)       ? $prenomRaw : '';
+        $user        = isset($_SESSION['user']) && is_array($_SESSION['user']) ? $_SESSION['user'] : [];
+        $clientIdRaw = $user['id']     ?? 0;
+        $clientId    = is_numeric($clientIdRaw) ? (int) $clientIdRaw : 0;
+        $nom         = is_string($user['nom']    ?? null) ? $user['nom']    : '';
+        $prenom      = is_string($user['prenom'] ?? null) ? $user['prenom'] : '';
         $clientNom   = $nom . ' ' . $prenom;
 
         // Extract and sanitize form data
