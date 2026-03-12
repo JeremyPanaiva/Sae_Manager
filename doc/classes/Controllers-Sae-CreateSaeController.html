@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,7 +306,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/CreateSaeController.php"><a href="files/controllers-sae-createsaecontroller.html"><abbr title="Controllers/Sae/CreateSaeController.php">CreateSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">19</span>
+    <span class="phpdocumentor-element-found-in__line">23</span>
 
     </aside>
 
@@ -294,8 +314,9 @@
 
 
     <section class="phpdocumentor-description"><p>Handles the creation of new SAE (Situation d'Apprentissage et d'Évaluation)
-by clients.  Sends email notifications to all supervisors (responsables)
-when a new SAE is created.</p>
+by clients. Sends email notifications to all supervisors (responsables)
+when a new SAE is created.
+Role verification is delegated to RoleGuard.</p>
 </section>
 
 
@@ -356,7 +377,7 @@ when a new SAE is created.</p>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
     </dl>
 
@@ -379,7 +400,7 @@ when a new SAE is created.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/CreateSaeController.php"><a href="files/controllers-sae-createsaecontroller.html"><abbr title="Controllers/Sae/CreateSaeController.php">CreateSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">26</span>
+    <span class="phpdocumentor-element-found-in__line">30</span>
 
     </aside>
 
@@ -424,7 +445,7 @@ when a new SAE is created.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/CreateSaeController.php"><a href="files/controllers-sae-createsaecontroller.html"><abbr title="Controllers/Sae/CreateSaeController.php">CreateSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">36</span>
+    <span class="phpdocumentor-element-found-in__line">40</span>
 
     </aside>
 
@@ -462,11 +483,11 @@ and sends email notifications to all supervisors about the new opportunity.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/CreateSaeController.php"><a href="files/controllers-sae-createsaecontroller.html"><abbr title="Controllers/Sae/CreateSaeController.php">CreateSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">139</span>
+    <span class="phpdocumentor-element-found-in__line">123</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -475,9 +496,7 @@ and sends email notifications to all supervisors about the new opportunity.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Note: This matches any HTTP method, but the control() method enforces POST.</p>
-</section>
-
+    
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -485,7 +504,7 @@ and sends email notifications to all supervisors about the new opportunity.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -494,7 +513,7 @@ and sends email notifications to all supervisors about the new opportunity.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -508,7 +527,7 @@ and sends email notifications to all supervisors about the new opportunity.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/creer_sae'</p>
+                <section class="phpdocumentor-description"><p>True if path is '/creer_sae'.</p>
 </section>
 
             </section>

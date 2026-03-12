@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -290,12 +310,11 @@
 
     </aside>
 
-            <p class="phpdocumentor-summary">Contact form submission controller</p>
+            <p class="phpdocumentor-summary">Class ContactPost</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles POST requests from the contact form.  Validates user input,
-sends the contact email via EmailService, and redirects with appropriate
-success or error messages.</p>
+    <section class="phpdocumentor-description"><p>Handles the submission of the contact form.
+It processes input data and logs the communication attempt using the Audit Logger.</p>
 </section>
 
 
@@ -332,7 +351,6 @@ success or error messages.</p>
     <span>
         &nbsp;= &#039;/contact&#039;                            </span>
 </dt>
-<dd>Contact form submission route path</dd>
 
     </dl>
 
@@ -349,14 +367,14 @@ success or error messages.</p>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Main controller method</dd>
+<dd>Executes the contact controller logic.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-Legal-ContactPost.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if the router supports this controller.</dd>
 
     </dl>
 
@@ -379,16 +397,15 @@ success or error messages.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Legal/ContactPost.php"><a href="files/controllers-legal-contactpost.html"><abbr title="Controllers/Legal/ContactPost.php">ContactPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">24</span>
+    <span class="phpdocumentor-element-found-in__line">19</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Contact form submission route path</p>
-
+    
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PATH</span>
     = <span class="phpdocumentor-signature__default-value">&#039;/contact&#039;</span>
 </code>
@@ -424,11 +441,11 @@ success or error messages.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Legal/ContactPost.php"><a href="files/controllers-legal-contactpost.html"><abbr title="Controllers/Legal/ContactPost.php">ContactPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">51</span>
+    <span class="phpdocumentor-element-found-in__line">29</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Main controller method</p>
+        <p class="phpdocumentor-summary">Executes the contact controller logic.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -437,14 +454,11 @@ success or error messages.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Validates contact form data (email, subject, message), sends the email
-via EmailService, and redirects with query parameters indicating success or failure.</p>
-<p>Validation errors:</p>
-<ul>
-<li>missing_fields: One or more required fields are empty</li>
-<li>invalid_email:  Email format is invalid</li>
-<li>mail_failed: Email sending failed</li>
-</ul>
+        <section class="phpdocumentor-description"><ol>
+<li>Sanitizes and strictly types input data (fixing PHPStan 'mixed' errors).</li>
+<li>Safely retrieves user session data (fixing PHPStan 'offset access' errors).</li>
+<li>Logs the event and redirects the user.</li>
+</ol>
 </section>
 
     
@@ -468,15 +482,15 @@ via EmailService, and redirects with query parameters indicating success or fail
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Legal/ContactPost.php"><a href="files/controllers-legal-contactpost.html"><abbr title="Controllers/Legal/ContactPost.php">ContactPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">33</span>
+    <span class="phpdocumentor-element-found-in__line">79</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if the router supports this controller.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">support</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$path</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$method</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">support</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$chemin</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$method</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -485,11 +499,11 @@ via EmailService, and redirects with query parameters indicating success or fail
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$path</span>
+                <span class="phpdocumentor-argument-list__argument__name">$chemin</span>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The request path.</p>
 </section>
 
             </dd>
@@ -498,7 +512,7 @@ via EmailService, and redirects with query parameters indicating success or fail
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method.</p>
 </section>
 
             </dd>
@@ -512,7 +526,7 @@ via EmailService, and redirects with query parameters indicating success or fail
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/contact' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/contact' and method is POST.</p>
 </section>
 
             </section>

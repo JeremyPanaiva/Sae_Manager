@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,16 +306,17 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/RegisterPost.php"><a href="files/controllers-user-registerpost.html"><abbr title="Controllers/User/RegisterPost.php">RegisterPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">27</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">User registration submission controller</p>
+            <p class="phpdocumentor-summary">Class RegisterPost</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles POST requests from the registration form.  Validates user input including
-password complexity requirements, checks for existing email addresses, creates the
-user account, and sends a verification email.</p>
+    <section class="phpdocumentor-description"><p>User registration submission controller.
+Handles POST requests from the registration form.
+Password complexity validation is delegated to PasswordValidator.
+Creates the user account, sends a verification email on success, and logs failures.</p>
 </section>
 
 
@@ -335,14 +356,14 @@ user account, and sends a verification email.</p>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Main controller method</dd>
+<dd>Main controller method for registration.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-User-RegisterPost.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
     </dl>
 
@@ -372,11 +393,11 @@ user account, and sends a verification email.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/RegisterPost.php"><a href="files/controllers-user-registerpost.html"><abbr title="Controllers/User/RegisterPost.php">RegisterPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">44</span>
+    <span class="phpdocumentor-element-found-in__line">34</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Main controller method</p>
+        <p class="phpdocumentor-summary">Main controller method for registration.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -385,23 +406,7 @@ user account, and sends a verification email.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Validates registration form data, creates a new user account with a verification
-token, sends a verification email, and redirects to login on success.
-Displays validation errors on failure.</p>
-<p>Password requirements:</p>
-<ul>
-<li>Between 8 and 20 characters</li>
-<li>At least one uppercase letter</li>
-<li>At least one lowercase letter</li>
-<li>At least one digit</li>
-</ul>
-<p>Email requirements:</p>
-<ul>
-<li>Valid email format</li>
-<li>Not already registered in the system</li>
-</ul>
-</section>
-
+    
     
     
 
@@ -427,11 +432,11 @@ Displays validation errors on failure.</p>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">support</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$path</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$method</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">support</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$chemin</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$method</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">bool</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -440,11 +445,11 @@ Displays validation errors on failure.</p>
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$path</span>
+                <span class="phpdocumentor-argument-list__argument__name">$chemin</span>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -453,7 +458,7 @@ Displays validation errors on failure.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -467,7 +472,7 @@ Displays validation errors on failure.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/user/register' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/user/register' and method is POST.</p>
 </section>
 
             </section>

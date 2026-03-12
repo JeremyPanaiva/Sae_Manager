@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,16 +306,16 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Login.php"><a href="files/controllers-user-login.html"><abbr title="Controllers/User/Login.php">Login.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">18</span>
+    <span class="phpdocumentor-element-found-in__line">19</span>
 
     </aside>
 
             <p class="phpdocumentor-summary">User login form controller</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles GET requests to display the login form.  Processes URL query parameters
+    <section class="phpdocumentor-description"><p>Handles GET requests to display the login form. Processes URL query parameters
 to display success messages (e.g., after registration, password reset, email verification)
-or error messages (e.g., invalid verification token, database errors).</p>
+or error messages (e.g., invalid verification token, concurrent login detection).</p>
 </section>
 
 
@@ -356,7 +376,7 @@ or error messages (e.g., invalid verification token, database errors).</p>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
     </dl>
 
@@ -379,7 +399,7 @@ or error messages (e.g., invalid verification token, database errors).</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Login.php"><a href="files/controllers-user-login.html"><abbr title="Controllers/User/Login.php">Login.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">25</span>
+    <span class="phpdocumentor-element-found-in__line">26</span>
 
     </aside>
 
@@ -424,7 +444,7 @@ or error messages (e.g., invalid verification token, database errors).</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Login.php"><a href="files/controllers-user-login.html"><abbr title="Controllers/User/Login.php">Login.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">36</span>
+    <span class="phpdocumentor-element-found-in__line">37</span>
 
     </aside>
 
@@ -438,8 +458,8 @@ or error messages (e.g., invalid verification token, database errors).</p>
         </div>
     
         <section class="phpdocumentor-description"><p>Displays the login form with appropriate success or error messages based on
-URL query parameters.  Handles various scenarios like successful registration,
-password reset, account verification, and email changes.</p>
+URL query parameters. Handles various scenarios like successful registration,
+password reset, session expiration, and concurrent login detection.</p>
 </section>
 
     
@@ -463,11 +483,11 @@ password reset, account verification, and email changes.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Login.php"><a href="files/controllers-user-login.html"><abbr title="Controllers/User/Login.php">Login.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">81</span>
+    <span class="phpdocumentor-element-found-in__line">108</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -484,7 +504,7 @@ password reset, account verification, and email changes.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -493,7 +513,7 @@ password reset, account verification, and email changes.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -507,7 +527,7 @@ password reset, account verification, and email changes.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/user/login' and method is GET</p>
+                <section class="phpdocumentor-description"><p>True if path is '/user/login' and method is GET.</p>
 </section>
 
             </section>

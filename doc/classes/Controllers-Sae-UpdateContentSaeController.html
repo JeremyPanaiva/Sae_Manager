@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,7 +306,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/UpdateContentSaeController.php"><a href="files/controllers-sae-updatecontentsaecontroller.html"><abbr title="Controllers/Sae/UpdateContentSaeController.php">UpdateContentSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">17</span>
+    <span class="phpdocumentor-element-found-in__line">21</span>
 
     </aside>
 
@@ -294,7 +314,8 @@
 
 
     <section class="phpdocumentor-description"><p>Handles updates to SAE (Situation d'Apprentissage et d'Évaluation) title and description
-by clients who created them.  Only the client who owns the SAE can modify its content.</p>
+by clients who created them. Only the client who owns the SAE can modify its content.
+Role verification is delegated to RoleGuard.</p>
 </section>
 
 
@@ -355,7 +376,7 @@ by clients who created them.  Only the client who owns the SAE can modify its co
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
     </dl>
 
@@ -378,7 +399,7 @@ by clients who created them.  Only the client who owns the SAE can modify its co
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/UpdateContentSaeController.php"><a href="files/controllers-sae-updatecontentsaecontroller.html"><abbr title="Controllers/Sae/UpdateContentSaeController.php">UpdateContentSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">24</span>
+    <span class="phpdocumentor-element-found-in__line">28</span>
 
     </aside>
 
@@ -423,7 +444,7 @@ by clients who created them.  Only the client who owns the SAE can modify its co
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/UpdateContentSaeController.php"><a href="files/controllers-sae-updatecontentsaecontroller.html"><abbr title="Controllers/Sae/UpdateContentSaeController.php">UpdateContentSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">34</span>
+    <span class="phpdocumentor-element-found-in__line">38</span>
 
     </aside>
 
@@ -461,11 +482,11 @@ and redirects to the SAE management page with success or error message.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/UpdateContentSaeController.php"><a href="files/controllers-sae-updatecontentsaecontroller.html"><abbr title="Controllers/Sae/UpdateContentSaeController.php">UpdateContentSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">83</span>
+    <span class="phpdocumentor-element-found-in__line">80</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -482,7 +503,7 @@ and redirects to the SAE management page with success or error message.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -491,7 +512,7 @@ and redirects to the SAE management page with success or error message.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -505,7 +526,7 @@ and redirects to the SAE management page with success or error message.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/update_sae' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/update_sae' and method is POST.</p>
 </section>
 
             </section>

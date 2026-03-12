@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,16 +306,17 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/LoginPost.php"><a href="files/controllers-user-loginpost.html"><abbr title="Controllers/User/LoginPost.php">LoginPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">26</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">User login submission controller</p>
+            <p class="phpdocumentor-summary">Class LoginPost</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles POST requests from the login form.   Validates credentials, checks account
-verification status, and creates a user session on successful authentication.
-Displays validation errors if login fails.</p>
+    <section class="phpdocumentor-description"><p>Handles the HTTP POST request for user authentication.
+Brute-force protection is delegated to RateLimiter.
+JWT token generation handles session management.
+Updates the last connection timestamp (GDPR/CNIL compliance).</p>
 </section>
 
 
@@ -335,14 +356,14 @@ Displays validation errors if login fails.</p>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Main controller method</dd>
+<dd>Executes the login logic with rate limiting and session management.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-User-LoginPost.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller should handle the current request.</dd>
 
     </dl>
 
@@ -372,11 +393,11 @@ Displays validation errors if login fails.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/LoginPost.php"><a href="files/controllers-user-loginpost.html"><abbr title="Controllers/User/LoginPost.php">LoginPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">34</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Main controller method</p>
+        <p class="phpdocumentor-summary">Executes the login logic with rate limiting and session management.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -385,11 +406,7 @@ Displays validation errors if login fails.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Validates login credentials (email and password), verifies account is activated,
-and creates a session with user information on successful authentication.
-Displays error messages for invalid credentials, unverified accounts, or database errors.</p>
-</section>
-
+    
     
     
 
@@ -411,11 +428,11 @@ Displays error messages for invalid credentials, unverified accounts, or databas
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/LoginPost.php"><a href="files/controllers-user-loginpost.html"><abbr title="Controllers/User/LoginPost.php">LoginPost.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">133</span>
+    <span class="phpdocumentor-element-found-in__line">200</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller should handle the current request.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -432,7 +449,7 @@ Displays error messages for invalid credentials, unverified accounts, or databas
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested URL path.</p>
 </section>
 
             </dd>
@@ -441,7 +458,7 @@ Displays error messages for invalid credentials, unverified accounts, or databas
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method.</p>
 </section>
 
             </dd>
@@ -455,7 +472,7 @@ Displays error messages for invalid credentials, unverified accounts, or databas
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/user/login' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/user/login' and method is 'POST'.</p>
 </section>
 
             </section>

@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,15 +306,16 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Logout.php"><a href="files/controllers-user-logout.html"><abbr title="Controllers/User/Logout.php">Logout.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">16</span>
+    <span class="phpdocumentor-element-found-in__line">18</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">User logout controller</p>
+            <p class="phpdocumentor-summary">Class Logout</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles user logout by destroying the session and redirecting to the home page.
-Clears all session data to ensure the user is fully logged out.</p>
+    <section class="phpdocumentor-description"><p>Handles user disconnection.
+Clears the JWT token from the database, ensures the logout event is recorded
+in the audit logs before destroying the session and redirecting the user.</p>
 </section>
 
 
@@ -331,7 +352,6 @@ Clears all session data to ensure the user is fully logged out.</p>
     <span>
         &nbsp;= &quot;/user/logout&quot;                            </span>
 </dt>
-<dd>Logout route path</dd>
 
     </dl>
 
@@ -348,14 +368,14 @@ Clears all session data to ensure the user is fully logged out.</p>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Main controller method</dd>
+<dd>Executes the logout logic.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-User-Logout.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Router Support Check</dd>
 
     </dl>
 
@@ -378,16 +398,15 @@ Clears all session data to ensure the user is fully logged out.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Logout.php"><a href="files/controllers-user-logout.html"><abbr title="Controllers/User/Logout.php">Logout.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">23</span>
+    <span class="phpdocumentor-element-found-in__line">20</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Logout route path</p>
-
+    
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
     <span class="phpdocumentor-signature__visibility">public</span>
-        <span class="phpdocumentor-signature__type">string</span>
+        <span class="phpdocumentor-signature__type">mixed</span>
     <span class="phpdocumentor-signature__name">PATH</span>
     = <span class="phpdocumentor-signature__default-value">&quot;/user/logout&quot;</span>
 </code>
@@ -423,11 +442,11 @@ Clears all session data to ensure the user is fully logged out.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Logout.php"><a href="files/controllers-user-logout.html"><abbr title="Controllers/User/Logout.php">Logout.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">34</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Main controller method</p>
+        <p class="phpdocumentor-summary">Executes the logout logic.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -436,9 +455,13 @@ Clears all session data to ensure the user is fully logged out.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Destroys the user session and redirects to the home page.
-Note: The view rendering after header redirect is unreachable code
-and could be removed.</p>
+        <section class="phpdocumentor-description"><ol>
+<li>Checks if a user is currently logged in using strict type checks.</li>
+<li>Logs the 'DECONNEXION' event via the Log model.</li>
+<li>Invalidates the JWT token in the database.</li>
+<li>Destroys the PHP session.</li>
+<li>Redirects to the homepage.</li>
+</ol>
 </section>
 
     
@@ -462,11 +485,11 @@ and could be removed.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/Logout.php"><a href="files/controllers-user-logout.html"><abbr title="Controllers/User/Logout.php">Logout.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">58</span>
+    <span class="phpdocumentor-element-found-in__line">85</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Router Support Check</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -483,7 +506,7 @@ and could be removed.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path (e.g., '/login', '/dashboard')</p>
 </section>
 
             </dd>
@@ -492,7 +515,7 @@ and could be removed.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (e.g., 'GET', 'POST', 'PUT', 'DELETE')</p>
 </section>
 
             </dd>
@@ -506,7 +529,7 @@ and could be removed.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/user/logout' and method is GET</p>
+                <section class="phpdocumentor-description"><p>True if this controller handles the request, false otherwise</p>
 </section>
 
             </section>

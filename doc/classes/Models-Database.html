@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -281,27 +301,23 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Database.php"><a href="files/models-database.html"><abbr title="Models/Database.php">Database.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">26</span>
+    <span class="phpdocumentor-element-found-in__line">21</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">Database connection manager</p>
+            <p class="phpdocumentor-summary">Class Database</p>
 
 
-    <section class="phpdocumentor-description"><p>Provides a singleton database connection using mysqli.  Handles connection
-initialization, configuration loading from environment variables or . env file,
-and connection health checks.</p>
-<p>Configuration is loaded from environment variables or a .env file in the following order:</p>
-<ol>
-<li>System environment variables (getenv)</li>
-<li>.env file in project root</li>
-</ol>
-<p>Required environment variables:</p>
+    <section class="phpdocumentor-description"><p>Singleton database connection manager using MySQLi.</p>
 <ul>
-<li>DB_HOST: Database host</li>
-<li>DB_USER: Database username</li>
-<li>DB_PASSWORD:  Database password</li>
-<li>DB_NAME: Database name</li>
+<li>Features:</li>
+</ul>
+<ul>
+<li>Environment variable parsing (supports .env files).</li>
+<li>Singleton pattern to prevent multiple simultaneous connections.</li>
+<li>Context Injection: Automatically passes the current User ID, IP address,
+and System Info to MySQL session variables (@current_user_id, etc.)
+so that SQL Triggers can accurately populate the audit logs.</li>
 </ul>
 </section>
 
@@ -334,7 +350,7 @@ and connection health checks.</p>
     <span>
                         &nbsp;: <abbr title="\mysqli">mysqli</abbr>|null            </span>
 </dt>
-<dd>Singleton database connection instance</dd>
+<dd>Singleton instance of the database connection.</dd>
 
     </dl>
 
@@ -349,21 +365,21 @@ and connection health checks.</p>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Checks if the database connection is alive</dd>
+<dd>Checks if the database connection is alive.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-Database.html#method_getConnection">getConnection()</a>
     <span>
                                 &nbsp;: <abbr title="\mysqli">mysqli</abbr>    </span>
 </dt>
-<dd>Gets the database connection instance</dd>
+<dd>Retrieves the active database connection instance.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-Database.html#method_parseEnvVar">parseEnvVar()</a>
     <span>
                                 &nbsp;: string|false    </span>
 </dt>
-<dd>Parses an environment variable from system or .env file</dd>
+<dd>Parses an environment variable from system or .env file.</dd>
 
     </dl>
 
@@ -395,11 +411,11 @@ and connection health checks.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Database.php"><a href="files/models-database.html"><abbr title="Models/Database.php">Database.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">33</span>
+    <span class="phpdocumentor-element-found-in__line">28</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Singleton database connection instance</p>
+        <p class="phpdocumentor-summary">Singleton instance of the database connection.</p>
 
     
     <code class="phpdocumentor-code phpdocumentor-signature ">
@@ -438,11 +454,11 @@ and connection health checks.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Database.php"><a href="files/models-database.html"><abbr title="Models/Database.php">Database.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">138</span>
+    <span class="phpdocumentor-element-found-in__line">182</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if the database connection is alive</p>
+        <p class="phpdocumentor-summary">Checks if the database connection is alive.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -452,7 +468,7 @@ and connection health checks.</p>
         </div>
     
         <section class="phpdocumentor-description"><p>Verifies the database connection is established and responsive.
-Useful for health checks and connection validation.</p>
+Useful for health checks (e.g., API status endpoints).</p>
 </section>
 
     
@@ -469,7 +485,7 @@ Useful for health checks and connection validation.</p>
                 <dd class="phpdocumentor-tag-list__definition">
                                                                 <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
                                                             
-                                                 <section class="phpdocumentor-description"><p>If connection is not available or not responding</p>
+                                                 <section class="phpdocumentor-description"><p>If connection is not available or not responding.</p>
 </section>
 
                                     </dd>
@@ -493,11 +509,11 @@ Useful for health checks and connection validation.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Database.php"><a href="files/models-database.html"><abbr title="Models/Database.php">Database.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">44</span>
+    <span class="phpdocumentor-element-found-in__line">42</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Gets the database connection instance</p>
+        <p class="phpdocumentor-summary">Retrieves the active database connection instance.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -506,8 +522,11 @@ Useful for health checks and connection validation.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Creates a new connection if one doesn't exist (singleton pattern).
-Sets character encoding to utf8mb4 for proper Unicode support.</p>
+        <section class="phpdocumentor-description"><p>Initializes the connection if it does not exist, and injects PHP
+context (Session, IP, User Agent) into MySQL session variables
+(@current_user_id, @current_user_ip, @current_user_agent).
+This allows SQL triggers to accurately populate audit logs, even
+for local development environments (e.g., 127.0.0.1).</p>
 </section>
 
     
@@ -524,7 +543,7 @@ Sets character encoding to utf8mb4 for proper Unicode support.</p>
                 <dd class="phpdocumentor-tag-list__definition">
                                                                 <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
                                                             
-                                                 <section class="phpdocumentor-description"><p>If connection fails</p>
+                                                 <section class="phpdocumentor-description"><p>If the connection fails to establish.</p>
 </section>
 
                                     </dd>
@@ -536,7 +555,7 @@ Sets character encoding to utf8mb4 for proper Unicode support.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type"><abbr title="\mysqli">mysqli</abbr></span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>The database connection</p>
+                <section class="phpdocumentor-description"><p>The active database connection object.</p>
 </section>
 
             </section>
@@ -556,11 +575,11 @@ Sets character encoding to utf8mb4 for proper Unicode support.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Database.php"><a href="files/models-database.html"><abbr title="Models/Database.php">Database.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">78</span>
+    <span class="phpdocumentor-element-found-in__line">126</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Parses an environment variable from system or .env file</p>
+        <p class="phpdocumentor-summary">Parses an environment variable from system or .env file.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -569,8 +588,8 @@ Sets character encoding to utf8mb4 for proper Unicode support.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Checks system environment variables first, then falls back to .env file
-if the variable is not set.  Supports quoted values and ignores comments.</p>
+        <section class="phpdocumentor-description"><p>Checks system environment variables first, then falls back to the .env file
+if the variable is not set. Supports quoted values and ignores comments.</p>
 </section>
 
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
@@ -580,7 +599,7 @@ if the variable is not set.  Supports quoted values and ignores comments.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The environment variable name to retrieve</p>
+                    <section class="phpdocumentor-description"><p>The environment variable name to retrieve.</p>
 </section>
 
             </dd>
@@ -594,7 +613,7 @@ if the variable is not set.  Supports quoted values and ignores comments.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">string|false</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>The variable value, or false if not found</p>
+                <section class="phpdocumentor-description"><p>The variable value, or false if not found.</p>
 </section>
 
             </section>
