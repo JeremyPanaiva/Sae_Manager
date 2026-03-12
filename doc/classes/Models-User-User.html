@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -347,6 +367,13 @@ and account verification.  Handles interactions with the users table in the data
 <dd>Deletes a user account</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_deleteInactiveAccounts">deleteInactiveAccounts()</a>
+    <span>
+                                &nbsp;: int    </span>
+</dt>
+<dd>Deletes user accounts that have been inactive for a specified number of months.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-User-User.html#method_emailExists">emailExists()</a>
     <span>
                                 &nbsp;: void    </span>
@@ -389,6 +416,28 @@ and account verification.  Handles interactions with the users table in the data
 <dd>Retrieves a user by their ID</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_getStoredJwtToken">getStoredJwtToken()</a>
+    <span>
+                                &nbsp;: string|null    </span>
+</dt>
+<dd>Retrieves the current stored JWT token for a specific user.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_getUsersForDeletion">getUsersForDeletion()</a>
+    <span>
+                                &nbsp;: array&lt;int, array&lt;string, mixed&gt;&gt;    </span>
+</dt>
+<dd>Retrieves users who are scheduled for immediate deletion due to inactivity.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_getUsersForInactivityWarning">getUsersForInactivityWarning()</a>
+    <span>
+                                &nbsp;: array&lt;int, array&lt;string, mixed&gt;&gt;    </span>
+</dt>
+<dd>Retrieves users who have been inactive for a specific number of months
+to send them a warning email before account deletion.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-User-User.html#method_getUsersPaginated">getUsersPaginated()</a>
     <span>
                                 &nbsp;: array&lt;int, array&lt;string, mixed&gt;&gt;    </span>
@@ -403,11 +452,25 @@ and account verification.  Handles interactions with the users table in the data
 <dd>Registers a new user</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_saveJwtToken">saveJwtToken()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Saves the JWT token for a user in the database.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-User-User.html#method_updateEmail">updateEmail()</a>
     <span>
                                 &nbsp;: void    </span>
 </dt>
 <dd>Updates a user&#039;s email address and requests re-verification</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-User-User.html#method_updateLastConnection">updateLastConnection()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Updates the last connection timestamp for a specific user.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-User-User.html#method_verifyAccount">verifyAccount()</a>
@@ -444,7 +507,7 @@ and account verification.  Handles interactions with the users table in the data
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">472</span>
+    <span class="phpdocumentor-element-found-in__line">686</span>
 
     </aside>
 
@@ -496,7 +559,7 @@ and account verification.  Handles interactions with the users table in the data
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">262</span>
+    <span class="phpdocumentor-element-found-in__line">264</span>
 
     </aside>
 
@@ -556,7 +619,7 @@ and account verification.  Handles interactions with the users table in the data
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">359</span>
+    <span class="phpdocumentor-element-found-in__line">361</span>
 
     </aside>
 
@@ -608,6 +671,82 @@ Related data is automatically deleted via ON DELETE CASCADE constraints.</p>
         
     
     
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_deleteInactiveAccounts">
+        deleteInactiveAccounts()
+        <a href="classes/Models-User-User.html#method_deleteInactiveAccounts" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">528</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Deletes user accounts that have been inactive for a specified number of months.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">deleteInactiveAccounts</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$months</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>This method is used by the automated cleanup script to comply with
+GDPR data retention policies (e.g., deleting accounts inactive for 36 months).
+It sets a MySQL variable to let the trigger know it's a GDPR deletion.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$months</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The threshold of inactivity in months (e.g., 36).</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-User-User.html#method_deleteInactiveAccounts#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If the database deletion query fails.</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">int</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The number of user accounts successfully deleted.</p>
+</section>
+
+            </section>
+
 </article>
                     <article
         class="phpdocumentor-element
@@ -901,7 +1040,7 @@ Related data is automatically deleted via ON DELETE CASCADE constraints.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">293</span>
+    <span class="phpdocumentor-element-found-in__line">295</span>
 
     </aside>
 
@@ -961,7 +1100,7 @@ Related data is automatically deleted via ON DELETE CASCADE constraints.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">325</span>
+    <span class="phpdocumentor-element-found-in__line">327</span>
 
     </aside>
 
@@ -1014,6 +1153,228 @@ Related data is automatically deleted via ON DELETE CASCADE constraints.</p>
         <span class="phpdocumentor-signature__response_type">array&lt;string, mixed&gt;|null</span>
                     &mdash;
                 <section class="phpdocumentor-description"><p>User data or null if not found</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getStoredJwtToken">
+        getStoredJwtToken()
+        <a href="classes/Models-User-User.html#method_getStoredJwtToken" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">647</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves the current stored JWT token for a specific user.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">getStoredJwtToken</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Used to detect concurrent sessions by comparing the session's token
+with the one stored in the database.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$userId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The unique identifier of the user.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-User-User.html#method_getStoredJwtToken#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If database connection or query fails.</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">string|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The stored JWT token or null if not found.</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getUsersForDeletion">
+        getUsersForDeletion()
+        <a href="classes/Models-User-User.html#method_getUsersForDeletion" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">606</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves users who are scheduled for immediate deletion due to inactivity.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getUsersForDeletion</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$months</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$months</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The inactivity threshold in months (e.g., 36)</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-User-User.html#method_getUsersForDeletion#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If database connection or query fails</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Array of users to delete</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getUsersForInactivityWarning">
+        getUsersForInactivityWarning()
+        <a href="classes/Models-User-User.html#method_getUsersForInactivityWarning" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">566</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves users who have been inactive for a specific number of months
+to send them a warning email before account deletion.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getUsersForInactivityWarning</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$months</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Selects users whose last connection is older than X months but newer than X+1 months.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$months</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The inactivity threshold in months (e.g., 35)</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-User-User.html#method_getUsersForInactivityWarning#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If database connection or query fails</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>Array of users</p>
 </section>
 
             </section>
@@ -1236,6 +1597,62 @@ unverified and requires email verification via the verification token.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_saveJwtToken">
+        saveJwtToken()
+        <a href="classes/Models-User-User.html#method_saveJwtToken" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">477</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Saves the JWT token for a user in the database.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">saveJwtToken</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$token</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$userId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The user's ID</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$token</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The JWT token to save</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_updateEmail">
         updateEmail()
         <a href="classes/Models-User-User.html#method_updateEmail" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1244,7 +1661,7 @@ unverified and requires email verification via the verification token.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">396</span>
+    <span class="phpdocumentor-element-found-in__line">398</span>
 
     </aside>
 
@@ -1321,6 +1738,73 @@ and sets the account to unverified status.  User must verify the new email.</p>
             -public
                                                         "
 >
+    <h4 class="phpdocumentor-element__name" id="method_updateLastConnection">
+        updateLastConnection()
+        <a href="classes/Models-User-User.html#method_updateLastConnection" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">499</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Updates the last connection timestamp for a specific user.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+                    <span class="phpdocumentor-signature__name">updateLastConnection</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>This method is called upon successful login to track user activity
+for GDPR/CNIL compliance, allowing the identification of inactive accounts.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$userId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The unique identifier of the user.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-User-User.html#method_updateLastConnection#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If the database update query fails.</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                                        "
+>
     <h4 class="phpdocumentor-element__name" id="method_verifyAccount">
         verifyAccount()
         <a href="classes/Models-User-User.html#method_verifyAccount" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1329,7 +1813,7 @@ and sets the account to unverified status.  User must verify the new email.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/User/User.php"><a href="files/models-user-user.html"><abbr title="Models/User/User.php">User.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">423</span>
+    <span class="phpdocumentor-element-found-in__line">425</span>
 
     </aside>
 
@@ -1508,15 +1992,21 @@ is currently unverified.  Removes the token after successful verification.</p>
                                             <li class=""><a href="classes/Models-User-User.html#method_checkDatabaseConnection">checkDatabaseConnection()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_countUsers">countUsers()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_deleteAccount">deleteAccount()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_deleteInactiveAccounts">deleteInactiveAccounts()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_emailExists">emailExists()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_findByEmail">findByEmail()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_getAllByRole">getAllByRole()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_getAllResponsables">getAllResponsables()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_getAllStudents">getAllStudents()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_getById">getById()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_getStoredJwtToken">getStoredJwtToken()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_getUsersForDeletion">getUsersForDeletion()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_getUsersForInactivityWarning">getUsersForInactivityWarning()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_getUsersPaginated">getUsersPaginated()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_register">register()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_saveJwtToken">saveJwtToken()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_updateEmail">updateEmail()</a></li>
+                                            <li class=""><a href="classes/Models-User-User.html#method_updateLastConnection">updateLastConnection()</a></li>
                                             <li class=""><a href="classes/Models-User-User.html#method_verifyAccount">verifyAccount()</a></li>
                                     </ul>
             </li>

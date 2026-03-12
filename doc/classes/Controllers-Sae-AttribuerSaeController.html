@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,7 +306,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/AttribuerSaeController.php"><a href="files/controllers-sae-attribuersaecontroller.html"><abbr title="Controllers/Sae/AttribuerSaeController.php">AttribuerSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">22</span>
+    <span class="phpdocumentor-element-found-in__line">26</span>
 
     </aside>
 
@@ -295,7 +315,8 @@
 
     <section class="phpdocumentor-description"><p>Handles the assignment of students to SAE (Situation d'Apprentissage et d'Évaluation)
 by supervisors (responsables). Sends email notifications to assigned students and
-the client who created the SAE.</p>
+the client who created the SAE.
+Role verification is delegated to RoleGuard.</p>
 </section>
 
 
@@ -356,7 +377,7 @@ the client who created the SAE.</p>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
     </dl>
 
@@ -379,7 +400,7 @@ the client who created the SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/AttribuerSaeController.php"><a href="files/controllers-sae-attribuersaecontroller.html"><abbr title="Controllers/Sae/AttribuerSaeController.php">AttribuerSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">29</span>
+    <span class="phpdocumentor-element-found-in__line">33</span>
 
     </aside>
 
@@ -424,7 +445,7 @@ the client who created the SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/AttribuerSaeController.php"><a href="files/controllers-sae-attribuersaecontroller.html"><abbr title="Controllers/Sae/AttribuerSaeController.php">AttribuerSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">39</span>
+    <span class="phpdocumentor-element-found-in__line">43</span>
 
     </aside>
 
@@ -462,11 +483,11 @@ and sends email notifications to all involved parties (students and client).</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/AttribuerSaeController.php"><a href="files/controllers-sae-attribuersaecontroller.html"><abbr title="Controllers/Sae/AttribuerSaeController.php">AttribuerSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">269</span>
+    <span class="phpdocumentor-element-found-in__line">215</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -483,7 +504,7 @@ and sends email notifications to all involved parties (students and client).</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -492,7 +513,7 @@ and sends email notifications to all involved parties (students and client).</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -506,7 +527,7 @@ and sends email notifications to all involved parties (students and client).</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/attribuer_sae' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/attribuer_sae' and method is POST.</p>
 </section>
 
             </section>

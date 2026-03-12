@@ -36,11 +36,6 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Controllers-Dashboard-DashboardController.html#method_calculateCountdown"
         },                {
-            "fqsen": "\\Controllers\\Dashboard\\DashboardController\u003A\u003AgenerateCountdownHTML\u0028\u0029",
-            "name": "generateCountdownHTML",
-            "summary": "",
-            "url": "classes/Controllers-Dashboard-DashboardController.html#method_generateCountdownHTML"
-        },                {
             "fqsen": "\\Controllers\\Dashboard\\DashboardController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
             "summary": "Determines\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
@@ -51,29 +46,59 @@ Search.appendIndex(
             "summary": "",
             "url": "classes/Controllers-Dashboard-DashboardController.html#constant_PATH"
         },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController",
+            "name": "SendMessageController",
+            "summary": "Send\u0020Message\u0020Controller",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html"
+        },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController\u003A\u003AgetPath\u0028\u0029",
+            "name": "getPath",
+            "summary": "",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html#method_getPath"
+        },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController\u003A\u003AgetMethod\u0028\u0029",
+            "name": "getMethod",
+            "summary": "",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html#method_getMethod"
+        },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Determines\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Main\u0020controller\u0020method.",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\Dashboard\\SendMessageController\u003A\u003APATH",
+            "name": "PATH",
+            "summary": "",
+            "url": "classes/Controllers-Dashboard-SendMessageController.html#constant_PATH"
+        },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController",
             "name": "TodoController",
-            "summary": "",
+            "summary": "TodoController",
             "url": "classes/Controllers-Dashboard-TodoController.html"
         },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020execution\u0020method",
+            "summary": "Main\u0020controller\u0020method.",
             "url": "classes/Controllers-Dashboard-TodoController.html#method_control"
         },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController\u003A\u003AhandleAdd\u0028\u0029",
             "name": "handleAdd",
-            "summary": "",
+            "summary": "Handles\u0020adding\u0020a\u0020new\u0020task.",
             "url": "classes/Controllers-Dashboard-TodoController.html#method_handleAdd"
         },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController\u003A\u003AhandleToggle\u0028\u0029",
             "name": "handleToggle",
-            "summary": "",
+            "summary": "Handles\u0020toggling\u0020a\u0020task\u0027s\u0020completion\u0020status.",
             "url": "classes/Controllers-Dashboard-TodoController.html#method_handleToggle"
         },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController\u003A\u003AhandleDelete\u0028\u0029",
             "name": "handleDelete",
-            "summary": "",
+            "summary": "Handles\u0020deleting\u0020a\u0020task.",
             "url": "classes/Controllers-Dashboard-TodoController.html#method_handleDelete"
         },                {
             "fqsen": "\\Controllers\\Dashboard\\TodoController\u003A\u003Asupport\u0028\u0029",
@@ -133,22 +158,22 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Legal\\ContactPost",
             "name": "ContactPost",
-            "summary": "Contact\u0020form\u0020submission\u0020controller",
+            "summary": "Class\u0020ContactPost",
             "url": "classes/Controllers-Legal-ContactPost.html"
-        },                {
-            "fqsen": "\\Controllers\\Legal\\ContactPost\u003A\u003Asupport\u0028\u0029",
-            "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
-            "url": "classes/Controllers-Legal-ContactPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Legal\\ContactPost\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Executes\u0020the\u0020contact\u0020controller\u0020logic.",
             "url": "classes/Controllers-Legal-ContactPost.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\Legal\\ContactPost\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Checks\u0020if\u0020the\u0020router\u0020supports\u0020this\u0020controller.",
+            "url": "classes/Controllers-Legal-ContactPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Legal\\ContactPost\u003A\u003APATH",
             "name": "PATH",
-            "summary": "Contact\u0020form\u0020submission\u0020route\u0020path",
+            "summary": "",
             "url": "classes/Controllers-Legal-ContactPost.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\Legal\\MentionsLegalesController",
@@ -191,6 +216,36 @@ Search.appendIndex(
             "summary": "Site\u0020map\u0020page\u0020route\u0020path",
             "url": "classes/Controllers-Legal-PlanDuSiteController.html#constant_PATH"
         },                {
+            "fqsen": "\\Controllers\\Logs\\DailyExportController",
+            "name": "DailyExportController",
+            "summary": "Class\u0020DailyExportController",
+            "url": "classes/Controllers-Logs-DailyExportController.html"
+        },                {
+            "fqsen": "\\Controllers\\Logs\\DailyExportController\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Determines\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
+            "url": "classes/Controllers-Logs-DailyExportController.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\Logs\\DailyExportController\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Main\u0020controller\u0020execution\u0020method.",
+            "url": "classes/Controllers-Logs-DailyExportController.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\Logs\\WeeklyArchiveController",
+            "name": "WeeklyArchiveController",
+            "summary": "Class\u0020WeeklyArchiveController",
+            "url": "classes/Controllers-Logs-WeeklyArchiveController.html"
+        },                {
+            "fqsen": "\\Controllers\\Logs\\WeeklyArchiveController\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Determines\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
+            "url": "classes/Controllers-Logs-WeeklyArchiveController.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\Logs\\WeeklyArchiveController\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Main\u0020controller\u0020execution\u0020method.",
+            "url": "classes/Controllers-Logs-WeeklyArchiveController.html#method_control"
+        },                {
             "fqsen": "\\Controllers\\Sae\\AttribuerSaeController",
             "name": "AttribuerSaeController",
             "summary": "SAE\u0020assignment\u0020controller",
@@ -203,7 +258,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Sae\\AttribuerSaeController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-AttribuerSaeController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\AttribuerSaeController\u003A\u003APATH",
@@ -268,7 +323,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Sae\\CreateSaeController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-CreateSaeController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\CreateSaeController\u003A\u003APATH",
@@ -311,9 +366,14 @@ Search.appendIndex(
             "summary": "Main\u0020controller\u0020method",
             "url": "classes/Controllers-Sae-DeleteSaeController.html#method_control"
         },                {
+            "fqsen": "\\Controllers\\Sae\\DeleteSaeController\u003A\u003AgetSaesWithResponsable\u0028\u0029",
+            "name": "getSaesWithResponsable",
+            "summary": "Retrieves\u0020the\u0020client\u0027s\u0020SAE\u0020list\u0020with\u0020supervisor\u0020information.",
+            "url": "classes/Controllers-Sae-DeleteSaeController.html#method_getSaesWithResponsable"
+        },                {
             "fqsen": "\\Controllers\\Sae\\DeleteSaeController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-DeleteSaeController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\DeleteSaeController\u003A\u003APATH",
@@ -373,7 +433,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Sae\\UnassignSaeController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-UnassignSaeController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\UnassignSaeController\u003A\u003APATH",
@@ -393,13 +453,33 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Sae\\UpdateContentSaeController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-UpdateContentSaeController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\UpdateContentSaeController\u003A\u003APATH",
             "name": "PATH",
             "summary": "SAE\u0020update\u0020route\u0020path",
             "url": "classes/Controllers-Sae-UpdateContentSaeController.html#constant_PATH"
+        },                {
+            "fqsen": "\\Controllers\\Sae\\UpdateLinkController",
+            "name": "UpdateLinkController",
+            "summary": "UpdateLinkController",
+            "url": "classes/Controllers-Sae-UpdateLinkController.html"
+        },                {
+            "fqsen": "\\Controllers\\Sae\\UpdateLinkController\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Main\u0020controller\u0020method",
+            "url": "classes/Controllers-Sae-UpdateLinkController.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\Sae\\UpdateLinkController\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "url": "classes/Controllers-Sae-UpdateLinkController.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\Sae\\UpdateLinkController\u003A\u003APATH",
+            "name": "PATH",
+            "summary": "Route\u0020path\u0020for\u0020updating\u0020the\u0020SAE\u0020project\u0020link",
+            "url": "classes/Controllers-Sae-UpdateLinkController.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\Sae\\UpdateSaeDateController",
             "name": "UpdateSaeDateController",
@@ -413,7 +493,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\Sae\\UpdateSaeDateController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-Sae-UpdateSaeDateController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\Sae\\UpdateSaeDateController\u003A\u003APATH",
@@ -443,23 +523,43 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\User\\ChangePasswordPost",
             "name": "ChangePasswordPost",
-            "summary": "Change\u0020password\u0020submission\u0020controller",
+            "summary": "Class\u0020ChangePasswordPost",
             "url": "classes/Controllers-User-ChangePasswordPost.html"
         },                {
             "fqsen": "\\Controllers\\User\\ChangePasswordPost\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-User-ChangePasswordPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\ChangePasswordPost\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Main\u0020controller\u0020method.",
             "url": "classes/Controllers-User-ChangePasswordPost.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\ChangePasswordPost\u003A\u003APATH",
             "name": "PATH",
-            "summary": "Change\u0020password\u0020route\u0020path",
+            "summary": "Change\u0020password\u0020route\u0020path.",
             "url": "classes/Controllers-User-ChangePasswordPost.html#constant_PATH"
+        },                {
+            "fqsen": "\\Controllers\\User\\CheckSessionSync",
+            "name": "CheckSessionSync",
+            "summary": "Check\u0020Session\u0020Sync\u0020Controller",
+            "url": "classes/Controllers-User-CheckSessionSync.html"
+        },                {
+            "fqsen": "\\Controllers\\User\\CheckSessionSync\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Executes\u0020the\u0020session\u0020validation.",
+            "url": "classes/Controllers-User-CheckSessionSync.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\User\\CheckSessionSync\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Supports\u0020only\u0020the\u0020GET\u0020method\u0020for\u0020this\u0020endpoint.",
+            "url": "classes/Controllers-User-CheckSessionSync.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\User\\CheckSessionSync\u003A\u003APATH",
+            "name": "PATH",
+            "summary": "",
+            "url": "classes/Controllers-User-CheckSessionSync.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\User\\ForgotPassword",
             "name": "ForgotPassword",
@@ -501,6 +601,41 @@ Search.appendIndex(
             "summary": "Forgot\u0020password\u0020route\u0020path",
             "url": "classes/Controllers-User-ForgotPasswordPost.html#constant_PATH"
         },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController",
+            "name": "InactiveUserCleanupController",
+            "summary": "Inactive\u0020User\u0020Cleanup\u0020Controller",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003Asupport\u0028\u0029",
+            "name": "support",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020current\u0020request\u0020route.",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#method_support"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003Acontrol\u0028\u0029",
+            "name": "control",
+            "summary": "Main\u0020control\u0020method\u0020that\u0020delegates\u0020to\u0020execute\u0028\u0029.",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#method_control"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003Aexecute\u0028\u0029",
+            "name": "execute",
+            "summary": "Executes\u0020the\u0020cleanup\u0020and\u0020warning\u0020process.",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#method_execute"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003AgetSecretToken\u0028\u0029",
+            "name": "getSecretToken",
+            "summary": "Retrieves\u0020the\u0020secret\u0020token\u0020from\u0020environment\u0020variables.",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#method_getSecretToken"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003AWARNING_MONTHS",
+            "name": "WARNING_MONTHS",
+            "summary": "",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#constant_WARNING_MONTHS"
+        },                {
+            "fqsen": "\\Controllers\\User\\InactiveUserCleanupController\u003A\u003ADELETION_MONTHS",
+            "name": "DELETION_MONTHS",
+            "summary": "",
+            "url": "classes/Controllers-User-InactiveUserCleanupController.html#constant_DELETION_MONTHS"
+        },                {
             "fqsen": "\\Controllers\\User\\ListUsers",
             "name": "ListUsers",
             "summary": "User\u0020list\u0020controller",
@@ -533,7 +668,7 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\User\\Login\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-User-Login.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\Login\u003A\u003APATH",
@@ -543,67 +678,67 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\User\\LoginPost",
             "name": "LoginPost",
-            "summary": "User\u0020login\u0020submission\u0020controller",
+            "summary": "Class\u0020LoginPost",
             "url": "classes/Controllers-User-LoginPost.html"
         },                {
             "fqsen": "\\Controllers\\User\\LoginPost\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Executes\u0020the\u0020login\u0020logic\u0020with\u0020rate\u0020limiting\u0020and\u0020session\u0020management.",
             "url": "classes/Controllers-User-LoginPost.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\LoginPost\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020should\u0020handle\u0020the\u0020current\u0020request.",
             "url": "classes/Controllers-User-LoginPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\Logout",
             "name": "Logout",
-            "summary": "User\u0020logout\u0020controller",
+            "summary": "Class\u0020Logout",
             "url": "classes/Controllers-User-Logout.html"
         },                {
             "fqsen": "\\Controllers\\User\\Logout\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Executes\u0020the\u0020logout\u0020logic.",
             "url": "classes/Controllers-User-Logout.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\Logout\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Router\u0020Support\u0020Check",
             "url": "classes/Controllers-User-Logout.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\Logout\u003A\u003APATH",
             "name": "PATH",
-            "summary": "Logout\u0020route\u0020path",
+            "summary": "",
             "url": "classes/Controllers-User-Logout.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController",
             "name": "ProfileController",
-            "summary": "User\u0020profile\u0020controller",
+            "summary": "Class\u0020ProfileController",
             "url": "classes/Controllers-User-ProfileController.html"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-User-ProfileController.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Main\u0020controller\u0020method.",
             "url": "classes/Controllers-User-ProfileController.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController\u003A\u003AhandleDelete\u0028\u0029",
             "name": "handleDelete",
-            "summary": "Handles\u0020permanent\u0020account\u0020deletion",
+            "summary": "Handles\u0020permanent\u0020account\u0020deletion.",
             "url": "classes/Controllers-User-ProfileController.html#method_handleDelete"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController\u003A\u003APATH",
             "name": "PATH",
-            "summary": "Profile\u0020page\u0020route\u0020path",
+            "summary": "Profile\u0020page\u0020route\u0020path.",
             "url": "classes/Controllers-User-ProfileController.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\User\\ProfileController\u003A\u003APATH_DELETE",
             "name": "PATH_DELETE",
-            "summary": "Account\u0020deletion\u0020route\u0020path",
+            "summary": "Account\u0020deletion\u0020route\u0020path.",
             "url": "classes/Controllers-User-ProfileController.html#constant_PATH_DELETE"
         },                {
             "fqsen": "\\Controllers\\User\\Register",
@@ -623,17 +758,17 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\User\\RegisterPost",
             "name": "RegisterPost",
-            "summary": "User\u0020registration\u0020submission\u0020controller",
+            "summary": "Class\u0020RegisterPost",
             "url": "classes/Controllers-User-RegisterPost.html"
         },                {
             "fqsen": "\\Controllers\\User\\RegisterPost\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Main\u0020controller\u0020method\u0020for\u0020registration.",
             "url": "classes/Controllers-User-RegisterPost.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\RegisterPost\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-User-RegisterPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\ResetPassword",
@@ -658,22 +793,22 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Controllers\\User\\ResetPasswordPost",
             "name": "ResetPasswordPost",
-            "summary": "Password\u0020reset\u0020submission\u0020controller",
+            "summary": "Class\u0020ResetPasswordPost",
             "url": "classes/Controllers-User-ResetPasswordPost.html"
         },                {
             "fqsen": "\\Controllers\\User\\ResetPasswordPost\u003A\u003Acontrol\u0028\u0029",
             "name": "control",
-            "summary": "Main\u0020controller\u0020method",
+            "summary": "Main\u0020controller\u0020method.",
             "url": "classes/Controllers-User-ResetPasswordPost.html#method_control"
         },                {
             "fqsen": "\\Controllers\\User\\ResetPasswordPost\u003A\u003Asupport\u0028\u0029",
             "name": "support",
-            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method",
+            "summary": "Checks\u0020if\u0020this\u0020controller\u0020supports\u0020the\u0020given\u0020route\u0020and\u0020HTTP\u0020method.",
             "url": "classes/Controllers-User-ResetPasswordPost.html#method_support"
         },                {
             "fqsen": "\\Controllers\\User\\ResetPasswordPost\u003A\u003APATH",
             "name": "PATH",
-            "summary": "Password\u0020reset\u0020route\u0020path",
+            "summary": "Password\u0020reset\u0020route\u0020path.",
             "url": "classes/Controllers-User-ResetPasswordPost.html#constant_PATH"
         },                {
             "fqsen": "\\Controllers\\User\\VerifyEmailController",
@@ -693,27 +828,27 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Models\\Database",
             "name": "Database",
-            "summary": "Database\u0020connection\u0020manager",
+            "summary": "Class\u0020Database",
             "url": "classes/Models-Database.html"
         },                {
             "fqsen": "\\Models\\Database\u003A\u003AgetConnection\u0028\u0029",
             "name": "getConnection",
-            "summary": "Gets\u0020the\u0020database\u0020connection\u0020instance",
+            "summary": "Retrieves\u0020the\u0020active\u0020database\u0020connection\u0020instance.",
             "url": "classes/Models-Database.html#method_getConnection"
         },                {
             "fqsen": "\\Models\\Database\u003A\u003AparseEnvVar\u0028\u0029",
             "name": "parseEnvVar",
-            "summary": "Parses\u0020an\u0020environment\u0020variable\u0020from\u0020system\u0020or\u0020.env\u0020file",
+            "summary": "Parses\u0020an\u0020environment\u0020variable\u0020from\u0020system\u0020or\u0020.env\u0020file.",
             "url": "classes/Models-Database.html#method_parseEnvVar"
         },                {
             "fqsen": "\\Models\\Database\u003A\u003AcheckConnection\u0028\u0029",
             "name": "checkConnection",
-            "summary": "Checks\u0020if\u0020the\u0020database\u0020connection\u0020is\u0020alive",
+            "summary": "Checks\u0020if\u0020the\u0020database\u0020connection\u0020is\u0020alive.",
             "url": "classes/Models-Database.html#method_checkConnection"
         },                {
             "fqsen": "\\Models\\Database\u003A\u003A\u0024conn",
             "name": "conn",
-            "summary": "Singleton\u0020database\u0020connection\u0020instance",
+            "summary": "Singleton\u0020instance\u0020of\u0020the\u0020database\u0020connection.",
             "url": "classes/Models-Database.html#property_conn"
         },                {
             "fqsen": "\\Models\\Sae\\Sae",
@@ -861,6 +996,26 @@ Search.appendIndex(
             "summary": "Retrieves\u0020all\u0020SAE\u0020attributions\u0020with\u0020deadline\u0020in\u0020exactly\u00201\u0020day",
             "url": "classes/Models-Sae-SaeAttribution.html#method_getAttributionsWithDeadlineIn1Day"
         },                {
+            "fqsen": "\\Models\\Sae\\SaeAttribution\u003A\u003AupdateGithubLink\u0028\u0029",
+            "name": "updateGithubLink",
+            "summary": "Updates\u0020the\u0020project\u0020delivery\u0020link\u0020\u0028GitHub\/Drive\u0029\u0020for\u0020all\u0020students\u0020in\u0020a\u0020group.",
+            "url": "classes/Models-Sae-SaeAttribution.html#method_updateGithubLink"
+        },                {
+            "fqsen": "\\Models\\Sae\\SaeAttribution\u003A\u003AgetResponsableId\u0028\u0029",
+            "name": "getResponsableId",
+            "summary": "Retrieves\u0020the\u0020supervisor\u0020ID\u0020for\u0020a\u0020specific\u0020student\u0020and\u0020SAE.",
+            "url": "classes/Models-Sae-SaeAttribution.html#method_getResponsableId"
+        },                {
+            "fqsen": "\\Models\\Sae\\SaeAttribution\u003A\u003AgetSaeForStudentAndResponsable\u0028\u0029",
+            "name": "getSaeForStudentAndResponsable",
+            "summary": "Retrieves\u0020the\u0020SAE\u0020information\u0020for\u0020a\u0020student\u0020assigned\u0020by\u0020a\u0020specific\u0020supervisor",
+            "url": "classes/Models-Sae-SaeAttribution.html#method_getSaeForStudentAndResponsable"
+        },                {
+            "fqsen": "\\Models\\Sae\\SaeAttribution\u003A\u003AgetMessageRecipientsByResponsable\u0028\u0029",
+            "name": "getMessageRecipientsByResponsable",
+            "summary": "Retrieves\u0020message\u0020recipients\u0020grouped\u0020by\u0020SAE\u0020for\u0020a\u0020specific\u0020supervisor.",
+            "url": "classes/Models-Sae-SaeAttribution.html#method_getMessageRecipientsByResponsable"
+        },                {
             "fqsen": "\\Models\\Sae\\SaeAvis",
             "name": "SaeAvis",
             "summary": "SAE\u0020Avis\u0020\u0028Feedback\u0029\u0020model",
@@ -913,118 +1068,153 @@ Search.appendIndex(
         },                {
             "fqsen": "\\Models\\User\\EmailService",
             "name": "EmailService",
-            "summary": "Email\u0020Service",
+            "summary": "Handles\u0020all\u0020application\u0020email\u0020sending.",
             "url": "classes/Models-User-EmailService.html"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003A__construct\u0028\u0029",
             "name": "__construct",
-            "summary": "Constructor",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method___construct"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AconfigureMailer\u0028\u0029",
-            "name": "configureMailer",
-            "summary": "Configures\u0020PHPMailer\u0020with\u0020SMTP\u0020settings\u0020from\u0020environment\u0020variables",
-            "url": "classes/Models-User-EmailService.html#method_configureMailer"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendPasswordResetEmail\u0028\u0029",
             "name": "sendPasswordResetEmail",
-            "summary": "Sends\u0020a\u0020password\u0020reset\u0020email",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendPasswordResetEmail"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendAccountVerificationEmail\u0028\u0029",
             "name": "sendAccountVerificationEmail",
-            "summary": "Sends\u0020an\u0020account\u0020verification\u0020email",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendAccountVerificationEmail"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendSaeCreationNotification\u0028\u0029",
             "name": "sendSaeCreationNotification",
-            "summary": "Sends\u0020a\u0020SAE\u0020creation\u0020notification\u0020to\u0020a\u0020supervisor",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendSaeCreationNotification"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendStudentAssignmentNotification\u0028\u0029",
             "name": "sendStudentAssignmentNotification",
-            "summary": "Sends\u0020a\u0020SAE\u0020assignment\u0020notification\u0020to\u0020a\u0020student",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendStudentAssignmentNotification"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendClientStudentAssignmentNotification\u0028\u0029",
             "name": "sendClientStudentAssignmentNotification",
-            "summary": "Sends\u0020a\u0020student\u0020assignment\u0020notification\u0020to\u0020the\u0020client",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendClientStudentAssignmentNotification"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendContactEmail\u0028\u0029",
             "name": "sendContactEmail",
-            "summary": "Sends\u0020a\u0020contact\u0020form\u0020email",
+            "summary": "Sends\u0020a\u0020contact\u0020form\u0020email.\u0020Reply\u002DTo\u0020is\u0020set\u0020to\u0020the\u0020user\u0027s\u0020address.",
             "url": "classes/Models-User-EmailService.html#method_sendContactEmail"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendViaFallback\u0028\u0029",
-            "name": "sendViaFallback",
-            "summary": "Sends\u0020email\u0020via\u0020local\u0020mail\u0028\u0029\u0020fallback",
-            "url": "classes/Models-User-EmailService.html#method_sendViaFallback"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetFromEmail\u0028\u0029",
-            "name": "getFromEmail",
-            "summary": "Gets\u0020the\u0020FROM\u0020email\u0020address",
-            "url": "classes/Models-User-EmailService.html#method_getFromEmail"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetFromName\u0028\u0029",
-            "name": "getFromName",
-            "summary": "Gets\u0020the\u0020FROM\u0020name",
-            "url": "classes/Models-User-EmailService.html#method_getFromName"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetBaseUrl\u0028\u0029",
-            "name": "getBaseUrl",
-            "summary": "Gets\u0020the\u0020base\u0020URL\u0020for\u0020the\u0020application",
-            "url": "classes/Models-User-EmailService.html#method_getBaseUrl"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetPasswordResetEmailTextBody\u0028\u0029",
-            "name": "getPasswordResetEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020password\u0020reset\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getPasswordResetEmailTextBody"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetAccountVerificationEmailTextBody\u0028\u0029",
-            "name": "getAccountVerificationEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020account\u0020verification\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getAccountVerificationEmailTextBody"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetSaeCreationEmailTextBody\u0028\u0029",
-            "name": "getSaeCreationEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020SAE\u0020creation\u0020notification\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getSaeCreationEmailTextBody"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetStudentAssignmentEmailTextBody\u0028\u0029",
-            "name": "getStudentAssignmentEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020student\u0020assignment\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getStudentAssignmentEmailTextBody"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetClientAssignmentEmailTextBody\u0028\u0029",
-            "name": "getClientAssignmentEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020client\u0020assignment\u0020notification\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getClientAssignmentEmailTextBody"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendDeadlineReminderEmail\u0028\u0029",
             "name": "sendDeadlineReminderEmail",
-            "summary": "Sends\u0020a\u0020deadline\u0020reminder\u0020email\u0020to\u0020a\u0020student\u0020\u00283\u0020days\u0020before\u0020submission\u0029",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendDeadlineReminderEmail"
-        },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetDeadlineReminderEmailTextBody\u0028\u0029",
-            "name": "getDeadlineReminderEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020deadline\u0020reminder\u0020email",
-            "url": "classes/Models-User-EmailService.html#method_getDeadlineReminderEmailTextBody"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendUrgentDeadlineReminderEmail\u0028\u0029",
             "name": "sendUrgentDeadlineReminderEmail",
-            "summary": "Sends\u0020an\u0020urgent\u0020deadline\u0020reminder\u0020email\u0020to\u0020a\u0020student\u0020\u00281\u0020day\u0020before\u0020submission\u0029",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#method_sendUrgentDeadlineReminderEmail"
         },                {
-            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetUrgentDeadlineReminderEmailTextBody\u0028\u0029",
-            "name": "getUrgentDeadlineReminderEmailTextBody",
-            "summary": "Generates\u0020plain\u0020text\u0020version\u0020of\u0020urgent\u0020deadline\u0020reminder\u0020email\u0020\u0028J\u002D1\u0029",
-            "url": "classes/Models-User-EmailService.html#method_getUrgentDeadlineReminderEmailTextBody"
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendPasswordChangedNotificationEmail\u0028\u0029",
+            "name": "sendPasswordChangedNotificationEmail",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_sendPasswordChangedNotificationEmail"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendMessageToStudent\u0028\u0029",
+            "name": "sendMessageToStudent",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_sendMessageToStudent"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendInactiveAccountWarningEmail\u0028\u0029",
+            "name": "sendInactiveAccountWarningEmail",
+            "summary": "Sends\u0020an\u0020inactivity\u0020warning\u0020\u0028GDPR\u0020\u2014\u0020account\u0020deleted\u0020in\u002030\u0020days\u0020if\u0020no\u0020login\u0029.",
+            "url": "classes/Models-User-EmailService.html#method_sendInactiveAccountWarningEmail"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AsendAccountDeletedNotificationEmail\u0028\u0029",
+            "name": "sendAccountDeletedNotificationEmail",
+            "summary": "Confirms\u0020account\u0020deletion\u0020after\u0020prolonged\u0020inactivity\u0020\u0028GDPR\u0029.",
+            "url": "classes/Models-User-EmailService.html#method_sendAccountDeletedNotificationEmail"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AgetBaseUrl\u0028\u0029",
+            "name": "getBaseUrl",
+            "summary": "Resolves\u0020the\u0020base\u0020URL\u0020\u0028localhost\u0020\u2192\u0020HTTP_HOST,\u0020then\u0020APP_URL\u0020env,\u0020then\u0020server\u0020config\u0029.",
+            "url": "classes/Models-User-EmailService.html#method_getBaseUrl"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextPasswordReset\u0028\u0029",
+            "name": "textPasswordReset",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textPasswordReset"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextAccountVerification\u0028\u0029",
+            "name": "textAccountVerification",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textAccountVerification"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextSaeCreation\u0028\u0029",
+            "name": "textSaeCreation",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textSaeCreation"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextStudentAssignment\u0028\u0029",
+            "name": "textStudentAssignment",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textStudentAssignment"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextClientAssignment\u0028\u0029",
+            "name": "textClientAssignment",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textClientAssignment"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextDeadlineReminder\u0028\u0029",
+            "name": "textDeadlineReminder",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textDeadlineReminder"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextUrgentDeadlineReminder\u0028\u0029",
+            "name": "textUrgentDeadlineReminder",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textUrgentDeadlineReminder"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextPasswordChanged\u0028\u0029",
+            "name": "textPasswordChanged",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textPasswordChanged"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextInactiveAccountWarning\u0028\u0029",
+            "name": "textInactiveAccountWarning",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textInactiveAccountWarning"
+        },                {
+            "fqsen": "\\Models\\User\\EmailService\u003A\u003AtextAccountDeleted\u0028\u0029",
+            "name": "textAccountDeleted",
+            "summary": "",
+            "url": "classes/Models-User-EmailService.html#method_textAccountDeleted"
         },                {
             "fqsen": "\\Models\\User\\EmailService\u003A\u003A\u0024mailer",
             "name": "mailer",
-            "summary": "PHPMailer\u0020instance",
+            "summary": "",
             "url": "classes/Models-User-EmailService.html#property_mailer"
+        },                {
+            "fqsen": "\\Models\\User\\Log",
+            "name": "Log",
+            "summary": "Class\u0020Log",
+            "url": "classes/Models-User-Log.html"
+        },                {
+            "fqsen": "\\Models\\User\\Log\u003A\u003Acreate\u0028\u0029",
+            "name": "create",
+            "summary": "Creates\u0020a\u0020new\u0020audit\u0020log\u0020entry\u0020in\u0020the\u0020database.",
+            "url": "classes/Models-User-Log.html#method_create"
+        },                {
+            "fqsen": "\\Models\\User\\Log\u003A\u003AgetIpAddress\u0028\u0029",
+            "name": "getIpAddress",
+            "summary": "Retrieves\u0020the\u0020client\u0027s\u0020IP\u0020address.",
+            "url": "classes/Models-User-Log.html#method_getIpAddress"
+        },                {
+            "fqsen": "\\Models\\User\\Log\u003A\u003AgetSystemInfo\u0028\u0029",
+            "name": "getSystemInfo",
+            "summary": "Parses\u0020the\u0020HTTP\u0020User\u0020Agent\u0020to\u0020return\u0020a\u0020readable\u0020string\u0020representing\u0020the\u0020OS\u0020and\u0020Browser.",
+            "url": "classes/Models-User-Log.html#method_getSystemInfo"
         },                {
             "fqsen": "\\Models\\User\\PasswordResetToken",
             "name": "PasswordResetToken",
@@ -1111,6 +1301,36 @@ Search.appendIndex(
             "summary": "Verifies\u0020a\u0020user\u0020account\u0020using\u0020a\u0020verification\u0020token",
             "url": "classes/Models-User-User.html#method_verifyAccount"
         },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AsaveJwtToken\u0028\u0029",
+            "name": "saveJwtToken",
+            "summary": "Saves\u0020the\u0020JWT\u0020token\u0020for\u0020a\u0020user\u0020in\u0020the\u0020database.",
+            "url": "classes/Models-User-User.html#method_saveJwtToken"
+        },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AupdateLastConnection\u0028\u0029",
+            "name": "updateLastConnection",
+            "summary": "Updates\u0020the\u0020last\u0020connection\u0020timestamp\u0020for\u0020a\u0020specific\u0020user.",
+            "url": "classes/Models-User-User.html#method_updateLastConnection"
+        },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AdeleteInactiveAccounts\u0028\u0029",
+            "name": "deleteInactiveAccounts",
+            "summary": "Deletes\u0020user\u0020accounts\u0020that\u0020have\u0020been\u0020inactive\u0020for\u0020a\u0020specified\u0020number\u0020of\u0020months.",
+            "url": "classes/Models-User-User.html#method_deleteInactiveAccounts"
+        },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AgetUsersForInactivityWarning\u0028\u0029",
+            "name": "getUsersForInactivityWarning",
+            "summary": "Retrieves\u0020users\u0020who\u0020have\u0020been\u0020inactive\u0020for\u0020a\u0020specific\u0020number\u0020of\u0020months\nto\u0020send\u0020them\u0020a\u0020warning\u0020email\u0020before\u0020account\u0020deletion.",
+            "url": "classes/Models-User-User.html#method_getUsersForInactivityWarning"
+        },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AgetUsersForDeletion\u0028\u0029",
+            "name": "getUsersForDeletion",
+            "summary": "Retrieves\u0020users\u0020who\u0020are\u0020scheduled\u0020for\u0020immediate\u0020deletion\u0020due\u0020to\u0020inactivity.",
+            "url": "classes/Models-User-User.html#method_getUsersForDeletion"
+        },                {
+            "fqsen": "\\Models\\User\\User\u003A\u003AgetStoredJwtToken\u0028\u0029",
+            "name": "getStoredJwtToken",
+            "summary": "Retrieves\u0020the\u0020current\u0020stored\u0020JWT\u0020token\u0020for\u0020a\u0020specific\u0020user.",
+            "url": "classes/Models-User-User.html#method_getStoredJwtToken"
+        },                {
             "fqsen": "\\Models\\User\\User\u003A\u003AcheckDatabaseConnection\u0028\u0029",
             "name": "checkDatabaseConnection",
             "summary": "Checks\u0020database\u0020connection",
@@ -1185,6 +1405,26 @@ Search.appendIndex(
             "name": "headerData",
             "summary": "Additional\u0020header\u0020data\u0020for\u0020the\u0020view",
             "url": "classes/Models-User-UserList.html#property_headerData"
+        },                {
+            "fqsen": "\\Shared\\CsrfGuard",
+            "name": "CsrfGuard",
+            "summary": "CsrfGuard\u0020\u002D\u0020Protection\u0020against\u0020Cross\u002DSite\u0020Request\u0020Forgery\u0020attacks",
+            "url": "classes/Shared-CsrfGuard.html"
+        },                {
+            "fqsen": "\\Shared\\CsrfGuard\u003A\u003AgenerateToken\u0028\u0029",
+            "name": "generateToken",
+            "summary": "Generates\u0020a\u0020CSRF\u0020token\u0020and\u0020stores\u0020it\u0020in\u0020the\u0020session.",
+            "url": "classes/Shared-CsrfGuard.html#method_generateToken"
+        },                {
+            "fqsen": "\\Shared\\CsrfGuard\u003A\u003AgetHiddenField\u0028\u0029",
+            "name": "getHiddenField",
+            "summary": "Returns\u0020the\u0020hidden\u0020HTML\u0020field\u0020to\u0020include\u0020in\u0020each\u0020form.",
+            "url": "classes/Shared-CsrfGuard.html#method_getHiddenField"
+        },                {
+            "fqsen": "\\Shared\\CsrfGuard\u003A\u003Avalidate\u0028\u0029",
+            "name": "validate",
+            "summary": "Validates\u0020the\u0020submitted\u0020CSRF\u0020token\u0020\u0028max\u0020duration\u003A\u00201\u0020hour\u0029.",
+            "url": "classes/Shared-CsrfGuard.html#method_validate"
         },                {
             "fqsen": "\\Shared\\Exceptions\\ArrayException",
             "name": "ArrayException",
@@ -1395,6 +1635,256 @@ Search.appendIndex(
             "name": "__construct",
             "summary": "Constructor",
             "url": "classes/Shared-Exceptions-ValidationException.html#method___construct"
+        },                {
+            "fqsen": "\\Shared\\InputValidator",
+            "name": "InputValidator",
+            "summary": "InputValidator\u0020\u002D\u0020Centralized\u0020user\u0020input\u0020validation.",
+            "url": "classes/Shared-InputValidator.html"
+        },                {
+            "fqsen": "\\Shared\\InputValidator\u003A\u003Aemail\u0028\u0029",
+            "name": "email",
+            "summary": "",
+            "url": "classes/Shared-InputValidator.html#method_email"
+        },                {
+            "fqsen": "\\Shared\\InputValidator\u003A\u003Ainteger\u0028\u0029",
+            "name": "integer",
+            "summary": "",
+            "url": "classes/Shared-InputValidator.html#method_integer"
+        },                {
+            "fqsen": "\\Shared\\InputValidator\u003A\u003Astring\u0028\u0029",
+            "name": "string",
+            "summary": "",
+            "url": "classes/Shared-InputValidator.html#method_string"
+        },                {
+            "fqsen": "\\Shared\\InputValidator\u003A\u003AsafeFilename\u0028\u0029",
+            "name": "safeFilename",
+            "summary": "",
+            "url": "classes/Shared-InputValidator.html#method_safeFilename"
+        },                {
+            "fqsen": "\\Shared\\JwtService",
+            "name": "JwtService",
+            "summary": "JwtService",
+            "url": "classes/Shared-JwtService.html"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003Agenerate\u0028\u0029",
+            "name": "generate",
+            "summary": "Generates\u0020a\u0020signed\u0020JWT\u0020for\u0020the\u0020given\u0020user\u0020payload.",
+            "url": "classes/Shared-JwtService.html#method_generate"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003Avalidate\u0028\u0029",
+            "name": "validate",
+            "summary": "Validates\u0020a\u0020JWT\u0020string\u0020and\u0020returns\u0020its\u0020decoded\u0020payload.",
+            "url": "classes/Shared-JwtService.html#method_validate"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003Asign\u0028\u0029",
+            "name": "sign",
+            "summary": "Signs\u0020a\u0020string\u0020using\u0020HMAC\u002DSHA256.",
+            "url": "classes/Shared-JwtService.html#method_sign"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003Abase64UrlEncode\u0028\u0029",
+            "name": "base64UrlEncode",
+            "summary": "Encodes\u0020a\u0020string\u0020using\u0020Base64Url\u0020\u0028URL\u002Dsafe\u0020Base64\u0020without\u0020padding\u0029.",
+            "url": "classes/Shared-JwtService.html#method_base64UrlEncode"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003Abase64UrlDecode\u0028\u0029",
+            "name": "base64UrlDecode",
+            "summary": "Decodes\u0020a\u0020Base64Url\u002Dencoded\u0020string.",
+            "url": "classes/Shared-JwtService.html#method_base64UrlDecode"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003ASECRET",
+            "name": "SECRET",
+            "summary": "Secret\u0020key\u0020used\u0020to\u0020sign\u0020tokens.",
+            "url": "classes/Shared-JwtService.html#constant_SECRET"
+        },                {
+            "fqsen": "\\Shared\\JwtService\u003A\u003ATTL",
+            "name": "TTL",
+            "summary": "Token\u0020lifetime\u0020in\u0020seconds\u0020\u00281\u0020hour\u0029.",
+            "url": "classes/Shared-JwtService.html#constant_TTL"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator",
+            "name": "PasswordValidator",
+            "summary": "PasswordValidator\u0020\u2014\u0020Password\u0020complexity\u0020validation\u0020service.",
+            "url": "classes/Shared-PasswordValidator.html"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator\u003A\u003Avalidate\u0028\u0029",
+            "name": "validate",
+            "summary": "Validates\u0020the\u0020given\u0020password\u0020against\u0020all\u0020complexity\u0020rules.",
+            "url": "classes/Shared-PasswordValidator.html#method_validate"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator\u003A\u003AisValid\u0028\u0029",
+            "name": "isValid",
+            "summary": "Returns\u0020true\u0020if\u0020the\u0020password\u0020passes\u0020all\u0020complexity\u0020rules.",
+            "url": "classes/Shared-PasswordValidator.html#method_isValid"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator\u003A\u003AMIN_LENGTH",
+            "name": "MIN_LENGTH",
+            "summary": "",
+            "url": "classes/Shared-PasswordValidator.html#constant_MIN_LENGTH"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator\u003A\u003AMAX_LENGTH",
+            "name": "MAX_LENGTH",
+            "summary": "",
+            "url": "classes/Shared-PasswordValidator.html#constant_MAX_LENGTH"
+        },                {
+            "fqsen": "\\Shared\\PasswordValidator\u003A\u003ASPECIAL_CHARS_REGEX",
+            "name": "SPECIAL_CHARS_REGEX",
+            "summary": "",
+            "url": "classes/Shared-PasswordValidator.html#constant_SPECIAL_CHARS_REGEX"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter",
+            "name": "RateLimiter",
+            "summary": "RateLimiter\u0020\u2014\u0020Protection\u0020against\u0020abuse\u0020and\u0020request\u0020flooding.",
+            "url": "classes/Shared-RateLimiter.html"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003Acheck\u0028\u0029",
+            "name": "check",
+            "summary": "Checks\u0020if\u0020the\u0020current\u0020request\u0020exceeds\u0020the\u0020rate\u0020limit\u0020for\u0020a\u0020given\u0020action.",
+            "url": "classes/Shared-RateLimiter.html#method_check"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003AgetLockoutRemainingSeconds\u0028\u0029",
+            "name": "getLockoutRemainingSeconds",
+            "summary": "Checks\u0020whether\u0020the\u0020given\u0020email\u0020is\u0020currently\u0020locked\u0020out.",
+            "url": "classes/Shared-RateLimiter.html#method_getLockoutRemainingSeconds"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003ArecordFailedLoginAttempt\u0028\u0029",
+            "name": "recordFailedLoginAttempt",
+            "summary": "Records\u0020a\u0020failed\u0020login\u0020attempt\u0020for\u0020the\u0020given\u0020email.",
+            "url": "classes/Shared-RateLimiter.html#method_recordFailedLoginAttempt"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003AgetLoginMaxAttempts\u0028\u0029",
+            "name": "getLoginMaxAttempts",
+            "summary": "Returns\u0020the\u0020maximum\u0020number\u0020of\u0020allowed\u0020login\u0020attempts.",
+            "url": "classes/Shared-RateLimiter.html#method_getLoginMaxAttempts"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003AclearLoginAttempts\u0028\u0029",
+            "name": "clearLoginAttempts",
+            "summary": "Clears\u0020all\u0020login\u0020attempt\u0020and\u0020lockout\u0020data\u0020for\u0020the\u0020given\u0020email.",
+            "url": "classes/Shared-RateLimiter.html#method_clearLoginAttempts"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003AattemptsKey\u0028\u0029",
+            "name": "attemptsKey",
+            "summary": "Returns\u0020the\u0020session\u0020key\u0020used\u0020to\u0020store\u0020failed\u0020attempt\u0020count\u0020for\u0020an\u0020email.",
+            "url": "classes/Shared-RateLimiter.html#method_attemptsKey"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003AlockoutKey\u0028\u0029",
+            "name": "lockoutKey",
+            "summary": "Returns\u0020the\u0020session\u0020key\u0020used\u0020to\u0020store\u0020the\u0020lockout\u0020expiry\u0020timestamp\u0020for\u0020an\u0020email.",
+            "url": "classes/Shared-RateLimiter.html#method_lockoutKey"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003ALOGIN_MAX_ATTEMPTS",
+            "name": "LOGIN_MAX_ATTEMPTS",
+            "summary": "",
+            "url": "classes/Shared-RateLimiter.html#constant_LOGIN_MAX_ATTEMPTS"
+        },                {
+            "fqsen": "\\Shared\\RateLimiter\u003A\u003ALOGIN_LOCKOUT_DURATION",
+            "name": "LOGIN_LOCKOUT_DURATION",
+            "summary": "",
+            "url": "classes/Shared-RateLimiter.html#constant_LOGIN_LOCKOUT_DURATION"
+        },                {
+            "fqsen": "\\Shared\\RoleGuard",
+            "name": "RoleGuard",
+            "summary": "RoleGuard\u0020\u2014\u0020Centralised\u0020role\u002Dbased\u0020access\u0020control.",
+            "url": "classes/Shared-RoleGuard.html"
+        },                {
+            "fqsen": "\\Shared\\RoleGuard\u003A\u003ArequireRole\u0028\u0029",
+            "name": "requireRole",
+            "summary": "Asserts\u0020that\u0020the\u0020session\u0020user\u0027s\u0020role\u0020matches\u0020the\u0020expected\u0020role.",
+            "url": "classes/Shared-RoleGuard.html#method_requireRole"
+        },                {
+            "fqsen": "\\Shared\\RoleGuard\u003A\u003ArequireRoleOrForbid\u0028\u0029",
+            "name": "requireRoleOrForbid",
+            "summary": "Asserts\u0020that\u0020the\u0020session\u0020user\u0027s\u0020role\u0020matches\u0020the\u0020expected\u0020role.",
+            "url": "classes/Shared-RoleGuard.html#method_requireRoleOrForbid"
+        },                {
+            "fqsen": "\\Shared\\RoleGuard\u003A\u003AgetCurrentRole\u0028\u0029",
+            "name": "getCurrentRole",
+            "summary": "Returns\u0020the\u0020current\u0020session\u0020user\u0027s\u0020role,\u0020or\u0020an\u0020empty\u0020string\u0020if\u0020not\u0020set.",
+            "url": "classes/Shared-RoleGuard.html#method_getCurrentRole"
+        },                {
+            "fqsen": "\\Shared\\Sanitizer",
+            "name": "Sanitizer",
+            "summary": "Sanitizer\u0020\u002D\u0020Escaping\u0020utilities\u0020to\u0020prevent\u0020XSS\u0020attacks.",
+            "url": "classes/Shared-Sanitizer.html"
+        },                {
+            "fqsen": "\\Shared\\Sanitizer\u003A\u003AescapeHtml\u0028\u0029",
+            "name": "escapeHtml",
+            "summary": "Escapes\u0020a\u0020string\u0020for\u0020safe\u0020HTML\u0020display.",
+            "url": "classes/Shared-Sanitizer.html#method_escapeHtml"
+        },                {
+            "fqsen": "\\Shared\\Sanitizer\u003A\u003AescapeAttr\u0028\u0029",
+            "name": "escapeAttr",
+            "summary": "Escapes\u0020a\u0020string\u0020for\u0020use\u0020in\u0020an\u0020HTML\u0020attribute.",
+            "url": "classes/Shared-Sanitizer.html#method_escapeAttr"
+        },                {
+            "fqsen": "\\Shared\\Sanitizer\u003A\u003AescapeJs\u0028\u0029",
+            "name": "escapeJs",
+            "summary": "Escapes\u0020a\u0020string\u0020for\u0020inline\u0020JavaScript.",
+            "url": "classes/Shared-Sanitizer.html#method_escapeJs"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\LocalMailFallback",
+            "name": "LocalMailFallback",
+            "summary": "Fallback\u0020Mailer",
+            "url": "classes/Shared-Services-Email-LocalMailFallback.html"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\LocalMailFallback\u003A\u003Asend\u0028\u0029",
+            "name": "send",
+            "summary": "Sends\u0020an\u0020email\u0020via\u0020the\u0020native\u0020mail\u0028\u0029\u0020function,\ncopying\u0020Subject,\u0020Body\u0020and\u0020AltBody\u0020from\u0020the\u0020SMTP\u0020mailer.",
+            "url": "classes/Shared-Services-Email-LocalMailFallback.html#method_send"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\LocalMailFallback\u003A\u003AsendContact\u0028\u0029",
+            "name": "sendContact",
+            "summary": "Sends\u0020a\u0020contact\u0020form\u0020email\u0020via\u0020the\u0020native\u0020mail\u0028\u0029\u0020function.",
+            "url": "classes/Shared-Services-Email-LocalMailFallback.html#method_sendContact"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\SmtpConfiguration",
+            "name": "SmtpConfiguration",
+            "summary": "SMTP\u0020Mailer\u0020Factory",
+            "url": "classes/Shared-Services-Email-SmtpConfiguration.html"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\SmtpConfiguration\u003A\u003Acreate\u0028\u0029",
+            "name": "create",
+            "summary": "Creates\u0020and\u0020returns\u0020a\u0020fully\u0020configured\u0020PHPMailer\u0020instance.",
+            "url": "classes/Shared-Services-Email-SmtpConfiguration.html#method_create"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\SmtpConfiguration\u003A\u003Aconfigure\u0028\u0029",
+            "name": "configure",
+            "summary": "Applies\u0020SMTP\u0020configuration\u0020to\u0020an\u0020existing\u0020PHPMailer\u0020instance.",
+            "url": "classes/Shared-Services-Email-SmtpConfiguration.html#method_configure"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\SmtpConfiguration\u003A\u003AgetFromEmail\u0028\u0029",
+            "name": "getFromEmail",
+            "summary": "Returns\u0020the\u0020FROM\u0020email\u0020address\u0020from\u0020the\u0020mailer\u0020or\u0020the\u0020environment.",
+            "url": "classes/Shared-Services-Email-SmtpConfiguration.html#method_getFromEmail"
+        },                {
+            "fqsen": "\\Shared\\Services\\Email\\SmtpConfiguration\u003A\u003AgetFromName\u0028\u0029",
+            "name": "getFromName",
+            "summary": "Returns\u0020the\u0020FROM\u0020name\u0020from\u0020the\u0020mailer\u0020or\u0020the\u0020environment.",
+            "url": "classes/Shared-Services-Email-SmtpConfiguration.html#method_getFromName"
+        },                {
+            "fqsen": "\\Shared\\SessionGuard",
+            "name": "SessionGuard",
+            "summary": "SessionGuard",
+            "url": "classes/Shared-SessionGuard.html"
+        },                {
+            "fqsen": "\\Shared\\SessionGuard\u003A\u003Acheck\u0028\u0029",
+            "name": "check",
+            "summary": "Validates\u0020the\u0020current\u0020session\u0020JWT\u0020and\u0020checks\u0020for\u0020concurrent\u0020login.",
+            "url": "classes/Shared-SessionGuard.html#method_check"
+        },                {
+            "fqsen": "\\Shared\\SessionGuard\u003A\u003AhandleConcurrentLogout\u0028\u0029",
+            "name": "handleConcurrentLogout",
+            "summary": "Handles\u0020logout\u0020specifically\u0020when\u0020a\u0020concurrent\u0020session\u0020is\u0020detected.",
+            "url": "classes/Shared-SessionGuard.html#method_handleConcurrentLogout"
+        },                {
+            "fqsen": "\\Shared\\SessionGuard\u003A\u003AexpireSession\u0028\u0029",
+            "name": "expireSession",
+            "summary": "Destroys\u0020the\u0020session\u0020and\u0020logs\u0020the\u0020expiration\u0020event.",
+            "url": "classes/Shared-SessionGuard.html#method_expireSession"
+        },                {
+            "fqsen": "\\Shared\\SessionGuard\u003A\u003AclearSession\u0028\u0029",
+            "name": "clearSession",
+            "summary": "Properly\u0020clears\u0020and\u0020destroys\u0020the\u0020session.",
+            "url": "classes/Shared-SessionGuard.html#method_clearSession"
         },                {
             "fqsen": "\\Views\\AbstractView",
             "name": "AbstractView",
@@ -1641,6 +2131,11 @@ Search.appendIndex(
             "summary": "Generates\u0020role\u002Dspecific\u0020HTML\u0020content\u0020for\u0020the\u0020dashboard",
             "url": "classes/Views-Dashboard-DashboardView.html#method_buildContentHtml"
         },                {
+            "fqsen": "\\Views\\Dashboard\\DashboardView\u003A\u003AgenerateCountdownHTML\u0028\u0029",
+            "name": "generateCountdownHTML",
+            "summary": "Generates\u0020the\u0020HTML\u0020for\u0020the\u0020project\u0020deadline\u0020countdown.",
+            "url": "classes/Views-Dashboard-DashboardView.html#method_generateCountdownHTML"
+        },                {
             "fqsen": "\\Views\\Dashboard\\DashboardView\u003A\u003ATITLE_KEY",
             "name": "TITLE_KEY",
             "summary": "Template\u0020data\u0020key\u0020for\u0020page\u0020title",
@@ -1660,6 +2155,11 @@ Search.appendIndex(
             "name": "ROLE_KEY",
             "summary": "Template\u0020data\u0020key\u0020for\u0020user\u0020role",
             "url": "classes/Views-Dashboard-DashboardView.html#constant_ROLE_KEY"
+        },                {
+            "fqsen": "\\Views\\Dashboard\\DashboardView\u003A\u003AMESSAGE_RECIPIENTS_KEY",
+            "name": "MESSAGE_RECIPIENTS_KEY",
+            "summary": "Template\u0020data\u0020key\u0020for\u0020message\u0020recipients\u0020grouped\u0020by\u0020SAE",
+            "url": "classes/Views-Dashboard-DashboardView.html#constant_MESSAGE_RECIPIENTS_KEY"
         },                {
             "fqsen": "\\Views\\Dashboard\\DashboardView\u003A\u003A\u0024title",
             "name": "title",
@@ -2251,6 +2751,11 @@ Search.appendIndex(
             "summary": "",
             "url": "namespaces/controllers-legal.html"
         },                {
+            "fqsen": "\\Controllers\\Logs",
+            "name": "Logs",
+            "summary": "",
+            "url": "namespaces/controllers-logs.html"
+        },                {
             "fqsen": "\\Controllers\\Sae",
             "name": "Sae",
             "summary": "",
@@ -2276,15 +2781,25 @@ Search.appendIndex(
             "summary": "",
             "url": "namespaces/models-user.html"
         },                {
+            "fqsen": "\\Shared",
+            "name": "Shared",
+            "summary": "",
+            "url": "namespaces/shared.html"
+        },                {
             "fqsen": "\\Shared\\Exceptions",
             "name": "Exceptions",
             "summary": "",
             "url": "namespaces/shared-exceptions.html"
         },                {
-            "fqsen": "\\Shared",
-            "name": "Shared",
+            "fqsen": "\\Shared\\Services\\Email",
+            "name": "Email",
             "summary": "",
-            "url": "namespaces/shared.html"
+            "url": "namespaces/shared-services-email.html"
+        },                {
+            "fqsen": "\\Shared\\Services",
+            "name": "Services",
+            "summary": "",
+            "url": "namespaces/shared-services.html"
         },                {
             "fqsen": "\\Views",
             "name": "Views",

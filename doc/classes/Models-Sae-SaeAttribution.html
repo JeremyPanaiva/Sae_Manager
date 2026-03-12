@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -378,11 +398,25 @@ cannot be assigned to the same SAE multiple times.</p>
 <dd>Retrieves all feedback (avis) for a specific SAE attribution</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getMessageRecipientsByResponsable">getMessageRecipientsByResponsable()</a>
+    <span>
+                                &nbsp;: array&lt;int, array{sae_id: int, sae_name: string, students: array<int,array{id: int, prenom: string, nom: string}>}&gt;    </span>
+</dt>
+<dd>Retrieves message recipients grouped by SAE for a specific supervisor.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getResponsableForSae">getResponsableForSae()</a>
     <span>
                                 &nbsp;: array&lt;string, mixed&gt;|null    </span>
 </dt>
 <dd>Retrieves the supervisor who assigned a SAE</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getResponsableId">getResponsableId()</a>
+    <span>
+                                &nbsp;: int|null    </span>
+</dt>
+<dd>Retrieves the supervisor ID for a specific student and SAE.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getSaeForResponsable">getSaeForResponsable()</a>
@@ -397,6 +431,13 @@ cannot be assigned to the same SAE multiple times.</p>
                                 &nbsp;: array&lt;int, array&lt;string, mixed&gt;&gt;    </span>
 </dt>
 <dd>Retrieves all SAE assigned to a specific student</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getSaeForStudentAndResponsable">getSaeForStudentAndResponsable()</a>
+    <span>
+                                &nbsp;: array&lt;string, mixed&gt;|null    </span>
+</dt>
+<dd>Retrieves the SAE information for a student assigned by a specific supervisor</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Models-Sae-SaeAttribution.html#method_getStudentsByAttribution">getStudentsByAttribution()</a>
@@ -446,6 +487,13 @@ cannot be assigned to the same SAE multiple times.</p>
                                 &nbsp;: void    </span>
 </dt>
 <dd>Updates the submission deadline for all students assigned to a SAE by a supervisor</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -public">
+    <a class="" href="classes/Models-Sae-SaeAttribution.html#method_updateGithubLink">updateGithubLink()</a>
+    <span>
+                                &nbsp;: void    </span>
+</dt>
+<dd>Updates the project delivery link (GitHub/Drive) for all students in a group.</dd>
 
     </dl>
 
@@ -664,7 +712,7 @@ deadline if the supervisor has already made assignments to this SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">495</span>
+    <span class="phpdocumentor-element-found-in__line">493</span>
 
     </aside>
 
@@ -677,10 +725,7 @@ deadline if the supervisor has already made assignments to this SAE.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Checks that the supervisor making the unassignment request is the same
-supervisor who originally assigned the student to the SAE.</p>
-</section>
-
+    
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -759,7 +804,7 @@ supervisor who originally assigned the student to the SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">458</span>
+    <span class="phpdocumentor-element-found-in__line">459</span>
 
     </aside>
 
@@ -838,7 +883,7 @@ supervisor who originally assigned the student to the SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">334</span>
+    <span class="phpdocumentor-element-found-in__line">335</span>
 
     </aside>
 
@@ -910,7 +955,7 @@ supervisor who originally assigned the student to the SAE.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">765</span>
+    <span class="phpdocumentor-element-found-in__line">751</span>
 
     </aside>
 
@@ -923,11 +968,7 @@ supervisor who originally assigned the student to the SAE.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Returns attributions where the submission deadline (date_rendu) is exactly 1 day
-from today. Used for sending urgent reminder emails to students.
-Note: Since deadline is at 8:0, students still have the full day to submit.</p>
-</section>
-
+    
     
     
     <h5 class="phpdocumentor-tag-list__heading" id="tags">
@@ -974,7 +1015,7 @@ Note: Since deadline is at 8:0, students still have the full day to submit.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">709</span>
+    <span class="phpdocumentor-element-found-in__line">700</span>
 
     </aside>
 
@@ -987,10 +1028,7 @@ Note: Since deadline is at 8:0, students still have the full day to submit.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Returns attributions where the submission deadline (date_rendu) is exactly 3 days
-from today. Used for sending reminder emails to students.</p>
-</section>
-
+    
     
     
     <h5 class="phpdocumentor-tag-list__heading" id="tags">
@@ -1037,7 +1075,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">365</span>
+    <span class="phpdocumentor-element-found-in__line">366</span>
 
     </aside>
 
@@ -1101,6 +1139,72 @@ from today. Used for sending reminder emails to students.</p>
             -public
                                     -static                    "
 >
+    <h4 class="phpdocumentor-element__name" id="method_getMessageRecipientsByResponsable">
+        getMessageRecipientsByResponsable()
+        <a href="classes/Models-Sae-SaeAttribution.html#method_getMessageRecipientsByResponsable" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">897</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves message recipients grouped by SAE for a specific supervisor.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getMessageRecipientsByResponsable</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$responsableId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;int, array{sae_id: int, sae_name: string, students: array<int,array{id: int, prenom: string, nom: string}>}&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$responsableId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-Sae-SaeAttribution.html#method_getMessageRecipientsByResponsable#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If database operation fails</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;int, array{sae_id: int, sae_name: string, students: array<int,array{id: int, prenom: string, nom: string}>}&gt;</span>
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
     <h4 class="phpdocumentor-element__name" id="method_getResponsableForSae">
         getResponsableForSae()
         <a href="classes/Models-Sae-SaeAttribution.html#method_getResponsableForSae" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1109,7 +1213,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">631</span>
+    <span class="phpdocumentor-element-found-in__line">628</span>
 
     </aside>
 
@@ -1162,6 +1266,66 @@ from today. Used for sending reminder emails to students.</p>
         <span class="phpdocumentor-signature__response_type">array&lt;string, mixed&gt;|null</span>
                     &mdash;
                 <section class="phpdocumentor-description"><p>Supervisor information (id, nom, prenom) or null if unassigned</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getResponsableId">
+        getResponsableId()
+        <a href="classes/Models-Sae-SaeAttribution.html#method_getResponsableId" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">827</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves the supervisor ID for a specific student and SAE.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getResponsableId</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$saeId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$studentId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">int|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$saeId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$studentId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">int|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>The supervisor ID or null if not found.</p>
 </section>
 
             </section>
@@ -1255,7 +1419,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">587</span>
+    <span class="phpdocumentor-element-found-in__line">583</span>
 
     </aside>
 
@@ -1268,9 +1432,7 @@ from today. Used for sending reminder emails to students.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Includes information about the supervisor, client, and submission deadline.</p>
-</section>
-
+    
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -1321,6 +1483,90 @@ from today. Used for sending reminder emails to students.</p>
             -public
                                     -static                    "
 >
+    <h4 class="phpdocumentor-element__name" id="method_getSaeForStudentAndResponsable">
+        getSaeForStudentAndResponsable()
+        <a href="classes/Models-Sae-SaeAttribution.html#method_getSaeForStudentAndResponsable" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">856</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves the SAE information for a student assigned by a specific supervisor</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">getSaeForStudentAndResponsable</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$studentId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$responsableId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;string, mixed&gt;|null</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Used to find which SAE a student is working on under a particular supervisor.
+Returns the first matching SAE if multiple exist.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$studentId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the student</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$responsableId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the supervisor</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-Sae-SaeAttribution.html#method_getSaeForStudentAndResponsable#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If database operation fails</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;string, mixed&gt;|null</span>
+                    &mdash;
+                <section class="phpdocumentor-description"><p>SAE information (sae_id, sae_name) or null if not found</p>
+</section>
+
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
     <h4 class="phpdocumentor-element__name" id="method_getStudentsByAttribution">
         getStudentsByAttribution()
         <a href="classes/Models-Sae-SaeAttribution.html#method_getStudentsByAttribution" class="headerlink"><i class="fas fa-link"></i></a>
@@ -1329,7 +1575,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">666</span>
+    <span class="phpdocumentor-element-found-in__line">661</span>
 
     </aside>
 
@@ -1342,9 +1588,7 @@ from today. Used for sending reminder emails to students.</p>
     <div class="phpdocumentor-label-line">
         </div>
     
-        <section class="phpdocumentor-description"><p>Returns the student associated with a given attribution ID.</p>
-</section>
-
+    
         <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
     <dl class="phpdocumentor-argument-list">
                     <dt class="phpdocumentor-argument-list__entry">
@@ -1547,7 +1791,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">554</span>
+    <span class="phpdocumentor-element-found-in__line">552</span>
 
     </aside>
 
@@ -1718,7 +1962,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">432</span>
+    <span class="phpdocumentor-element-found-in__line">433</span>
 
     </aside>
 
@@ -1791,7 +2035,7 @@ from today. Used for sending reminder emails to students.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">392</span>
+    <span class="phpdocumentor-element-found-in__line">393</span>
 
     </aside>
 
@@ -1850,6 +2094,88 @@ from today. Used for sending reminder emails to students.</p>
                                                                 <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
                                                             
                                                  <section class="phpdocumentor-description"><p>If database operation fails</p>
+</section>
+
+                                    </dd>
+                                            </dl>
+
+        
+    
+    
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -public
+                                    -static                    "
+>
+    <h4 class="phpdocumentor-element__name" id="method_updateGithubLink">
+        updateGithubLink()
+        <a href="classes/Models-Sae-SaeAttribution.html#method_updateGithubLink" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Models/Sae/SaeAttribution.php"><a href="files/models-sae-saeattribution.html"><abbr title="Models/Sae/SaeAttribution.php">SaeAttribution.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">805</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Updates the project delivery link (GitHub/Drive) for all students in a group.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">public</span>
+            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">updateGithubLink</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$saeId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$responsableId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$link</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">void</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+    
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$saeId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the SAE</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$responsableId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The ID of the supervisor managing the group</p>
+</section>
+
+            </dd>
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$link</span>
+                : <span class="phpdocumentor-argument-list__argument__type">string|null</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The URL of the repository or shared folder.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+    <h5 class="phpdocumentor-tag-list__heading" id="tags">
+        Tags
+        <a href="classes/Models-Sae-SaeAttribution.html#method_updateGithubLink#tags" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h5>
+    <dl class="phpdocumentor-tag-list">
+                                    <dt class="phpdocumentor-tag-list__entry">
+                    <span class="phpdocumentor-tag__name">throws</span>
+                </dt>
+                <dd class="phpdocumentor-tag-list__definition">
+                                                                <span class="phpdocumentor-tag-link"><a href="classes/Shared-Exceptions-DataBaseException.html"><abbr title="\Shared\Exceptions\DataBaseException">DataBaseException</abbr></a></span>
+                                                            
+                                                 <section class="phpdocumentor-description"><p>If the SQL statement cannot be prepared or executed.</p>
 </section>
 
                                     </dd>
@@ -1982,9 +2308,12 @@ from today. Used for sending reminder emails to students.</p>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getAttributionsWithDeadlineIn1Day">getAttributionsWithDeadlineIn1Day()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getAttributionsWithDeadlineIn3Days">getAttributionsWithDeadlineIn3Days()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getAvisBySaeAttribution">getAvisBySaeAttribution()</a></li>
+                                            <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getMessageRecipientsByResponsable">getMessageRecipientsByResponsable()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getResponsableForSae">getResponsableForSae()</a></li>
+                                            <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getResponsableId">getResponsableId()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getSaeForResponsable">getSaeForResponsable()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getSaeForStudent">getSaeForStudent()</a></li>
+                                            <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getSaeForStudentAndResponsable">getSaeForStudentAndResponsable()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getStudentsByAttribution">getStudentsByAttribution()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getStudentsBySae">getStudentsBySae()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_getStudentsForSae">getStudentsForSae()</a></li>
@@ -1992,6 +2321,7 @@ from today. Used for sending reminder emails to students.</p>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_isStudentAssignedToSae">isStudentAssignedToSae()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_removeFromStudent">removeFromStudent()</a></li>
                                             <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_updateDateRendu">updateDateRendu()</a></li>
+                                            <li class=""><a href="classes/Models-Sae-SaeAttribution.html#method_updateGithubLink">updateGithubLink()</a></li>
                                     </ul>
             </li>
                     </ul>

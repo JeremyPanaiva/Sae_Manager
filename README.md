@@ -111,6 +111,11 @@ You can verify the code quality or generate the documentation using the followin
     firefox doc/index.html
     ```
 
+- **Open PHPDoc (alternative)**:
+    ```bash
+    php -S localhost:8001 -t doc
+    ```
+
 ---
 
 ## 🚀 Features

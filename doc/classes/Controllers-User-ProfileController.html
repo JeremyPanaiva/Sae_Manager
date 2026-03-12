@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,16 +306,18 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">19</span>
+    <span class="phpdocumentor-element-found-in__line">26</span>
 
     </aside>
 
-            <p class="phpdocumentor-summary">User profile controller</p>
+            <p class="phpdocumentor-summary">Class ProfileController</p>
 
 
-    <section class="phpdocumentor-description"><p>Handles displaying and updating user profile information, as well as account deletion.
-Allows users to modify their name, first name, and email address.  When the email is
-changed, a verification email is sent and the user must re-verify their account.</p>
+    <section class="phpdocumentor-description"><p>User profile controller.
+Handles displaying and updating user profile information, as well as account deletion.
+Allows users to modify their name, first name, and email address. When the email is
+changed, a verification email is sent and the user must re-verify their account.
+Logs security events such as failed account deletion attempts.</p>
 </section>
 
 
@@ -332,14 +354,14 @@ changed, a verification email is sent and the user must re-verify their account.
     <span>
         &nbsp;= &#039;/user/profile&#039;                            </span>
 </dt>
-<dd>Profile page route path</dd>
+<dd>Profile page route path.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -constant -public">
     <a class="" href="classes/Controllers-User-ProfileController.html#constant_PATH_DELETE">PATH_DELETE</a>
     <span>
         &nbsp;= &#039;/user/profile/delete&#039;                            </span>
 </dt>
-<dd>Account deletion route path</dd>
+<dd>Account deletion route path.</dd>
 
     </dl>
 
@@ -356,21 +378,21 @@ changed, a verification email is sent and the user must re-verify their account.
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Main controller method</dd>
+<dd>Main controller method.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-User-ProfileController.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/Controllers-User-ProfileController.html#method_handleDelete">handleDelete()</a>
     <span>
                                 &nbsp;: void    </span>
 </dt>
-<dd>Handles permanent account deletion</dd>
+<dd>Handles permanent account deletion.</dd>
 
     </dl>
 
@@ -393,11 +415,11 @@ changed, a verification email is sent and the user must re-verify their account.
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">26</span>
+    <span class="phpdocumentor-element-found-in__line">32</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Profile page route path</p>
+        <p class="phpdocumentor-summary">Profile page route path.</p>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
@@ -424,11 +446,11 @@ changed, a verification email is sent and the user must re-verify their account.
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">33</span>
+    <span class="phpdocumentor-element-found-in__line">38</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Account deletion route path</p>
+        <p class="phpdocumentor-summary">Account deletion route path.</p>
 
     
     <code class="phpdocumentor-signature phpdocumentor-code ">
@@ -469,11 +491,11 @@ changed, a verification email is sent and the user must re-verify their account.
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">57</span>
+    <span class="phpdocumentor-element-found-in__line">62</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Main controller method</p>
+        <p class="phpdocumentor-summary">Main controller method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -508,11 +530,11 @@ Routes account deletion requests to handleDelete().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">42</span>
+    <span class="phpdocumentor-element-found-in__line">47</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -529,7 +551,7 @@ Routes account deletion requests to handleDelete().</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -538,7 +560,7 @@ Routes account deletion requests to handleDelete().</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -552,7 +574,7 @@ Routes account deletion requests to handleDelete().</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path matches profile routes with appropriate methods</p>
+                <section class="phpdocumentor-description"><p>True if path matches profile routes with appropriate methods.</p>
 </section>
 
             </section>
@@ -572,11 +594,11 @@ Routes account deletion requests to handleDelete().</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/User/ProfileController.php"><a href="files/controllers-user-profilecontroller.html"><abbr title="Controllers/User/ProfileController.php">ProfileController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">204</span>
+    <span class="phpdocumentor-element-found-in__line">238</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Handles permanent account deletion</p>
+        <p class="phpdocumentor-summary">Handles permanent account deletion.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
@@ -586,7 +608,8 @@ Routes account deletion requests to handleDelete().</p>
         </div>
     
         <section class="phpdocumentor-description"><p>Deletes the user account and all associated data from the database,
-destroys the session, and redirects to the home page.</p>
+destroys the session, and redirects to the home page. Verifies the user's
+password before deletion and logs any failed attempts.</p>
 </section>
 
     

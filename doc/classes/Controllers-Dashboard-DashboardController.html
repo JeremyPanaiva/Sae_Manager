@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -285,7 +305,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">12</span>
+    <span class="phpdocumentor-element-found-in__line">13</span>
 
     </aside>
 
@@ -345,12 +365,6 @@
 <dd>Main controller execution method</dd>
 
             <dt class="phpdocumentor-table-of-contents__entry -method -public">
-    <a class="" href="classes/Controllers-Dashboard-DashboardController.html#method_generateCountdownHTML">generateCountdownHTML()</a>
-    <span>
-                                &nbsp;: string    </span>
-</dt>
-
-            <dt class="phpdocumentor-table-of-contents__entry -method -public">
     <a class="" href="classes/Controllers-Dashboard-DashboardController.html#method_support">support()</a>
     <span>
                                 &nbsp;: bool    </span>
@@ -366,7 +380,7 @@
             <dt class="phpdocumentor-table-of-contents__entry -method -private">
     <a class="" href="classes/Controllers-Dashboard-DashboardController.html#method_prepareDashboardData">prepareDashboardData()</a>
     <span>
-                                &nbsp;: array{saes: array<int,array<string,mixed>>}    </span>
+                                &nbsp;: array{saes: array<int,array<string,mixed>>, message_recipients: array<int,array<string,mixed>>}    </span>
 </dt>
 
     </dl>
@@ -390,7 +404,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">14</span>
+    <span class="phpdocumentor-element-found-in__line">15</span>
 
     </aside>
 
@@ -434,7 +448,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">16</span>
+    <span class="phpdocumentor-element-found-in__line">17</span>
 
     </aside>
 
@@ -468,61 +482,6 @@
             -public
                                     -static                    "
 >
-    <h4 class="phpdocumentor-element__name" id="method_generateCountdownHTML">
-        generateCountdownHTML()
-        <a href="classes/Controllers-Dashboard-DashboardController.html#method_generateCountdownHTML" class="headerlink"><i class="fas fa-link"></i></a>
-
-    </h4>
-    <aside class="phpdocumentor-element-found-in">
-    <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
-    :
-    <span class="phpdocumentor-element-found-in__line">175</span>
-
-    </aside>
-
-    
-    <code class="phpdocumentor-code phpdocumentor-signature ">
-    <span class="phpdocumentor-signature__visibility">public</span>
-            <span class="phpdocumentor-signature__static">static</span>        <span class="phpdocumentor-signature__name">generateCountdownHTML</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool}|null&nbsp;</span><span class="phpdocumentor-signature__argument__name">$countdown</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$uniqueId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">string</span></code>
-
-    <div class="phpdocumentor-label-line">
-        </div>
-    
-    
-        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
-    <dl class="phpdocumentor-argument-list">
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$countdown</span>
-                : <span class="phpdocumentor-argument-list__argument__type">array{expired: bool, jours?: int, heures?: int, minutes?: int, timestamp?: int, urgent?: bool}|null</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                
-            </dd>
-                    <dt class="phpdocumentor-argument-list__entry">
-                <span class="phpdocumentor-argument-list__argument__name">$uniqueId</span>
-                : <span class="phpdocumentor-argument-list__argument__type">string</span>
-                            </dt>
-            <dd class="phpdocumentor-argument-list__definition">
-                
-            </dd>
-            </dl>
-
-    
-
-        
-    
-            <section>
-        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type">string</span>
-            </section>
-
-</article>
-                    <article
-        class="phpdocumentor-element
-            -method
-            -public
-                                    -static                    "
->
     <h4 class="phpdocumentor-element__name" id="method_support">
         support()
         <a href="classes/Controllers-Dashboard-DashboardController.html#method_support" class="headerlink"><i class="fas fa-link"></i></a>
@@ -531,7 +490,7 @@
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">221</span>
+    <span class="phpdocumentor-element-found-in__line">180</span>
 
     </aside>
 
@@ -596,7 +555,7 @@ Controllers should return true only for routes and methods they handle.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">136</span>
+    <span class="phpdocumentor-element-found-in__line">149</span>
 
     </aside>
 
@@ -644,14 +603,14 @@ Controllers should return true only for routes and methods they handle.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Dashboard/DashboardController.php"><a href="files/controllers-dashboard-dashboardcontroller.html"><abbr title="Controllers/Dashboard/DashboardController.php">DashboardController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">54</span>
+    <span class="phpdocumentor-element-found-in__line">58</span>
 
     </aside>
 
     
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">private</span>
-                    <span class="phpdocumentor-signature__name">prepareDashboardData</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$role</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array{saes: array<int,array<string,mixed>>}</span></code>
+                    <span class="phpdocumentor-signature__name">prepareDashboardData</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$userId</span></span><span class="phpdocumentor-signature__argument"><span>, </span><span class="phpdocumentor-signature__argument__type">string&nbsp;</span><span class="phpdocumentor-signature__argument__name">$role</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array{saes: array<int,array<string,mixed>>, message_recipients: array<int,array<string,mixed>>}</span></code>
 
     <div class="phpdocumentor-label-line">
         </div>
@@ -681,7 +640,7 @@ Controllers should return true only for routes and methods they handle.</p>
     
             <section>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
-        <span class="phpdocumentor-signature__response_type">array{saes: array<int,array<string,mixed>>}</span>
+        <span class="phpdocumentor-signature__response_type">array{saes: array<int,array<string,mixed>>, message_recipients: array<int,array<string,mixed>>}</span>
             </section>
 
 </article>
@@ -808,7 +767,6 @@ Controllers should return true only for routes and methods they handle.</p>
             <li>
                 <ul class="phpdocumentor-list -clean">
                                             <li class=""><a href="classes/Controllers-Dashboard-DashboardController.html#method_control">control()</a></li>
-                                            <li class=""><a href="classes/Controllers-Dashboard-DashboardController.html#method_generateCountdownHTML">generateCountdownHTML()</a></li>
                                             <li class=""><a href="classes/Controllers-Dashboard-DashboardController.html#method_support">support()</a></li>
                                             <li class=""><a href="classes/Controllers-Dashboard-DashboardController.html#method_calculateCountdown">calculateCountdown()</a></li>
                                             <li class=""><a href="classes/Controllers-Dashboard-DashboardController.html#method_prepareDashboardData">prepareDashboardData()</a></li>

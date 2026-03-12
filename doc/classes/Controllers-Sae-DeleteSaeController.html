@@ -73,6 +73,10 @@
                 
             </li>
                     <li>
+                <a href="namespaces/controllers-logs.html" class="">Logs</a>
+                
+            </li>
+                    <li>
                 <a href="namespaces/controllers-sae.html" class="">Sae</a>
                 
             </li>
@@ -102,6 +106,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="namespaces/shared-exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="namespaces/shared-services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -152,11 +160,19 @@
 </h4>
     <ul class="phpdocumentor-list">
                     <li>
+                <a href="packages/Controllers-Dashboard.html" class="">Dashboard</a>
+                
+            </li>
+                    <li>
                 <a href="packages/Controllers-Home.html" class="">Home</a>
                 
             </li>
                     <li>
                 <a href="packages/Controllers-Legal.html" class="">Legal</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Controllers-Logs.html" class="">Logs</a>
                 
             </li>
                     <li>
@@ -189,6 +205,10 @@
     <ul class="phpdocumentor-list">
                     <li>
                 <a href="packages/Shared-Exceptions.html" class="">Exceptions</a>
+                
+            </li>
+                    <li>
+                <a href="packages/Shared-Services.html" class="">Services</a>
                 
             </li>
             </ul>
@@ -286,7 +306,7 @@
         <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/DeleteSaeController.php"><a href="files/controllers-sae-deletesaecontroller.html"><abbr title="Controllers/Sae/DeleteSaeController.php">DeleteSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">20</span>
+    <span class="phpdocumentor-element-found-in__line">24</span>
 
     </aside>
 
@@ -295,7 +315,8 @@
 
     <section class="phpdocumentor-description"><p>Handles the deletion of SAE (Situation d'Apprentissage et d'Évaluation) by clients.
 Prevents deletion if the SAE has already been assigned to students.
-Displays appropriate error messages and SAE list on failure.</p>
+Displays appropriate error messages and SAE list on failure.
+Role verification is delegated to RoleGuard.</p>
 </section>
 
 
@@ -356,7 +377,14 @@ Displays appropriate error messages and SAE list on failure.</p>
     <span>
                                 &nbsp;: bool    </span>
 </dt>
-<dd>Checks if this controller supports the given route and HTTP method</dd>
+<dd>Checks if this controller supports the given route and HTTP method.</dd>
+
+            <dt class="phpdocumentor-table-of-contents__entry -method -private">
+    <a class="" href="classes/Controllers-Sae-DeleteSaeController.html#method_getSaesWithResponsable">getSaesWithResponsable()</a>
+    <span>
+                                &nbsp;: array&lt;int, array&lt;string, mixed&gt;&gt;    </span>
+</dt>
+<dd>Retrieves the client&#039;s SAE list with supervisor information.</dd>
 
     </dl>
 
@@ -379,7 +407,7 @@ Displays appropriate error messages and SAE list on failure.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/DeleteSaeController.php"><a href="files/controllers-sae-deletesaecontroller.html"><abbr title="Controllers/Sae/DeleteSaeController.php">DeleteSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">27</span>
+    <span class="phpdocumentor-element-found-in__line">31</span>
 
     </aside>
 
@@ -424,7 +452,7 @@ Displays appropriate error messages and SAE list on failure.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/DeleteSaeController.php"><a href="files/controllers-sae-deletesaecontroller.html"><abbr title="Controllers/Sae/DeleteSaeController.php">DeleteSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">38</span>
+    <span class="phpdocumentor-element-found-in__line">42</span>
 
     </aside>
 
@@ -438,7 +466,7 @@ Displays appropriate error messages and SAE list on failure.</p>
         </div>
     
         <section class="phpdocumentor-description"><p>Validates client authentication, checks if SAE can be deleted (not assigned),
-and performs deletion.   Handles various error cases by displaying the SAE view
+and performs deletion. Handles various error cases by displaying the SAE view
 with appropriate error messages.</p>
 </section>
 
@@ -463,11 +491,11 @@ with appropriate error messages.</p>
     <aside class="phpdocumentor-element-found-in">
     <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/DeleteSaeController.php"><a href="files/controllers-sae-deletesaecontroller.html"><abbr title="Controllers/Sae/DeleteSaeController.php">DeleteSaeController.php</abbr></a></abbr>
     :
-    <span class="phpdocumentor-element-found-in__line">165</span>
+    <span class="phpdocumentor-element-found-in__line">141</span>
 
     </aside>
 
-        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method</p>
+        <p class="phpdocumentor-summary">Checks if this controller supports the given route and HTTP method.</p>
 
     <code class="phpdocumentor-code phpdocumentor-signature ">
     <span class="phpdocumentor-signature__visibility">public</span>
@@ -484,7 +512,7 @@ with appropriate error messages.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The requested route path</p>
+                    <section class="phpdocumentor-description"><p>The requested route path.</p>
 </section>
 
             </dd>
@@ -493,7 +521,7 @@ with appropriate error messages.</p>
                 : <span class="phpdocumentor-argument-list__argument__type">string</span>
                             </dt>
             <dd class="phpdocumentor-argument-list__definition">
-                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.)</p>
+                    <section class="phpdocumentor-description"><p>The HTTP method (GET, POST, etc.).</p>
 </section>
 
             </dd>
@@ -507,9 +535,62 @@ with appropriate error messages.</p>
         <h5 class="phpdocumentor-return-value__heading">Return values</h5>
         <span class="phpdocumentor-signature__response_type">bool</span>
                     &mdash;
-                <section class="phpdocumentor-description"><p>True if path is '/delete_sae' and method is POST</p>
+                <section class="phpdocumentor-description"><p>True if path is '/delete_sae' and method is POST.</p>
 </section>
 
+            </section>
+
+</article>
+                    <article
+        class="phpdocumentor-element
+            -method
+            -private
+                                                        "
+>
+    <h4 class="phpdocumentor-element__name" id="method_getSaesWithResponsable">
+        getSaesWithResponsable()
+        <a href="classes/Controllers-Sae-DeleteSaeController.html#method_getSaesWithResponsable" class="headerlink"><i class="fas fa-link"></i></a>
+
+    </h4>
+    <aside class="phpdocumentor-element-found-in">
+    <abbr class="phpdocumentor-element-found-in__file" title="Controllers/Sae/DeleteSaeController.php"><a href="files/controllers-sae-deletesaecontroller.html"><abbr title="Controllers/Sae/DeleteSaeController.php">DeleteSaeController.php</abbr></a></abbr>
+    :
+    <span class="phpdocumentor-element-found-in__line">120</span>
+
+    </aside>
+
+        <p class="phpdocumentor-summary">Retrieves the client&#039;s SAE list with supervisor information.</p>
+
+    <code class="phpdocumentor-code phpdocumentor-signature ">
+    <span class="phpdocumentor-signature__visibility">private</span>
+                    <span class="phpdocumentor-signature__name">getSaesWithResponsable</span><span>(</span><span class="phpdocumentor-signature__argument"><span class="phpdocumentor-signature__argument__type">int&nbsp;</span><span class="phpdocumentor-signature__argument__name">$clientId</span></span><span>)</span><span> : </span><span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span></code>
+
+    <div class="phpdocumentor-label-line">
+        </div>
+    
+        <section class="phpdocumentor-description"><p>Returns an empty array if a database error occurs.</p>
+</section>
+
+        <h5 class="phpdocumentor-argument-list__heading">Parameters</h5>
+    <dl class="phpdocumentor-argument-list">
+                    <dt class="phpdocumentor-argument-list__entry">
+                <span class="phpdocumentor-argument-list__argument__name">$clientId</span>
+                : <span class="phpdocumentor-argument-list__argument__type">int</span>
+                            </dt>
+            <dd class="phpdocumentor-argument-list__definition">
+                    <section class="phpdocumentor-description"><p>The client's user ID.</p>
+</section>
+
+            </dd>
+            </dl>
+
+    
+
+        
+    
+            <section>
+        <h5 class="phpdocumentor-return-value__heading">Return values</h5>
+        <span class="phpdocumentor-signature__response_type">array&lt;int, array&lt;string, mixed&gt;&gt;</span>
             </section>
 
 </article>
@@ -637,6 +718,7 @@ with appropriate error messages.</p>
                 <ul class="phpdocumentor-list -clean">
                                             <li class=""><a href="classes/Controllers-Sae-DeleteSaeController.html#method_control">control()</a></li>
                                             <li class=""><a href="classes/Controllers-Sae-DeleteSaeController.html#method_support">support()</a></li>
+                                            <li class=""><a href="classes/Controllers-Sae-DeleteSaeController.html#method_getSaesWithResponsable">getSaesWithResponsable()</a></li>
                                     </ul>
             </li>
                     </ul>
