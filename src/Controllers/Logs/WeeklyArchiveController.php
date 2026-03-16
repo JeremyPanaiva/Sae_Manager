@@ -7,40 +7,20 @@ use ZipArchive;
 
 /**
  * Class WeeklyArchiveController
- *
- * Handles the weekly archiving of daily CSV log files.
- * Compresses all CSV files from the current_week directory into a single ZIP file,
- * stores it in the archive directory, and cleans up old archives exceeding the retention policy (1 year).
- *
- * @package Controllers\Logs
  */
 class WeeklyArchiveController implements ControllerInterface
 {
-    /**
-     * Determines if this controller supports the given route and HTTP method.
-     *
-     * @param string $chemin The requested route path.
-     * @param string $method The HTTP method.
-     * @return bool True if the route is '/logs/weekly-archive' and method is 'GET', false otherwise.
-     */
     public static function support(string $chemin, string $method): bool
     {
         return $chemin === '/logs/weekly-archive' && $method === 'GET';
     }
 
-    /**
-     * Main controller execution method.
-     *
-     * Validates the security token, compresses existing CSV files into a ZIP archive,
-     * deletes the original CSV files, and removes ZIP files older than 365 days.
-     *
-     * @return void
-     */
     public function control(): void
     {
-        $validToken = 'eff686a19e04dd1ac6ebabedb5bd65fbb63c5d5d19980b5f7c261d2527c35a55';
+        // Token récupéré depuis les variables d'environnement
+        $validToken = getenv('TOKEN') ?: ($_ENV['TOKEN'] ?? null);
 
-        if (!isset($_GET['token']) || $_GET['token'] !== $validToken) {
+        if (!$validToken || !isset($_GET['token']) || $_GET['token'] !== $validToken) {
             http_response_code(403);
             die('Access denied.');
         }
@@ -52,40 +32,49 @@ class WeeklyArchiveController implements ControllerInterface
             mkdir($archiveDir, 0755, true);
         }
 
-        // 1. Zip the CSV files
+        // 1️⃣ Compression des CSV
         $csvFiles = glob($currentWeekDir . '*.csv');
 
         if ($csvFiles !== false && !empty($csvFiles)) {
+
             $zip = new ZipArchive();
+
             $weekNumber = date('W', strtotime('-1 week'));
             $year = date('Y', strtotime('-1 week'));
+
             $zipFilename = $archiveDir . "semaine_{$weekNumber}_{$year}.zip";
 
             if ($zip->open($zipFilename, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true) {
+
                 foreach ($csvFiles as $file) {
                     $zip->addFile($file, basename($file));
                 }
+
                 $zip->close();
 
-                // Remove original CSV files after successful archiving
+                // Suppression des CSV après archivage
                 foreach ($csvFiles as $file) {
                     unlink($file);
                 }
-                echo "Archive $zipFilename created successfully.\n";
+
+                echo "Archive created successfully: $zipFilename\n";
             } else {
                 echo "Failed to create the ZIP archive.\n";
             }
+
         } else {
             echo "No CSV files to archive this week.\n";
         }
 
-        // 2. Clean up archives older than 1 year (365 days)
+        // 2️⃣ Suppression des archives > 1 an
         $zipArchives = glob($archiveDir . '*.zip');
         $oneYearAgo = time() - (365 * 24 * 60 * 60);
+
         $deletedFiles = 0;
 
         if ($zipArchives !== false) {
             foreach ($zipArchives as $file) {
+
                 if (is_file($file) && filemtime($file) !== false && filemtime($file) < $oneYearAgo) {
                     unlink($file);
                     $deletedFiles++;
